@@ -594,6 +594,20 @@ Additionally, check you are able to %1 the server config file: %2</source>
         <source>&lt;p&gt;Keyboard layout support requires matching layouts on all computers. The following layouts from the other computer are not installed on this computer:&lt;/p&gt;&lt;p&gt;&lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Please install them to enable support for these layouts.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>This computer</source>
+        <translation>이 컴퓨터</translation>
+    </message>
+    <message>
+        <source>Input: %1 - %2</source>
+        <translation>입력: %1 - %2</translation>
+    </message>
+    <message>
+        <source>%1
+%2
+%3</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -1291,6 +1305,54 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Using a log level higher than Info may affect performance.</source>
         <translation type="unfinished">Info보다 높은 로그 레벨을 사용하면 성능에 영향을 미칠 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>Input language</source>
+        <translation>입력 언어</translation>
+    </message>
+    <message>
+        <source>Synchronize Korean/English input state</source>
+        <translation>한/영 입력 상태 동기화</translation>
+    </message>
+    <message>
+        <source>CJK raw scan codes</source>
+        <translation>CJK 원시 스캔 코드</translation>
+    </message>
+    <message>
+        <source>On screen entry</source>
+        <translation>화면 진입 시</translation>
+    </message>
+    <message>
+        <source>Normalize shared text to NFC</source>
+        <translation>공유 텍스트를 NFC로 정규화</translation>
+    </message>
+    <message>
+        <source>macOS inter-key delay</source>
+        <translation>macOS 키 입력 간격</translation>
+    </message>
+    <message>
+        <source> us</source>
+        <translation> μs</translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation>항상</translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation>사용 안 함</translation>
+    </message>
+    <message>
+        <source>Keep remote state</source>
+        <translation>원격 상태 유지</translation>
+    </message>
+    <message>
+        <source>Force English</source>
+        <translation>영문 입력으로 전환</translation>
+    </message>
+    <message>
+        <source>Follow this computer</source>
+        <translation>이 컴퓨터 상태 따르기</translation>
     </message>
 </context>
 <context>

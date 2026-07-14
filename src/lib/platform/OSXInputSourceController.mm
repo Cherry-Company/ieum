@@ -218,7 +218,8 @@ TISInputSourceRef OSXInputSourceController::resolveKorean() const
     auto source = static_cast<TISInputSourceRef>(const_cast<void *>(CFArrayGetValueAtIndex(sources.get(), i)));
     if (sourceCategory(source) == deskflow::InputLanguageCategory::InputMethod &&
         boolProperty(source, kTISPropertyInputSourceIsSelectCapable) && isKorean(source)) {
-      return static_cast<TISInputSourceRef>(CFRetain(source));
+      CFRetain(source);
+      return source;
     }
   }
   return nullptr;
@@ -258,5 +259,6 @@ TISInputSourceRef OSXInputSourceController::resolveId(const std::string &wantedS
     return nullptr;
   }
   auto source = static_cast<TISInputSourceRef>(const_cast<void *>(CFArrayGetValueAtIndex(sources.get(), 0)));
-  return static_cast<TISInputSourceRef>(CFRetain(source));
+  CFRetain(source);
+  return source;
 }

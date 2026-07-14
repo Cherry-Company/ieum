@@ -594,6 +594,20 @@ Además, verifique que puede %1 el archivo de configuración del servidor: %2</t
         <source>&lt;p&gt;Keyboard layout support requires matching layouts on all computers. The following layouts from the other computer are not installed on this computer:&lt;/p&gt;&lt;p&gt;&lt;b&gt;%1&lt;/b&gt;&lt;/p&gt;&lt;p&gt;Please install them to enable support for these layouts.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>This computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input: %1 - %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1
+%2
+%3</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -1291,6 +1305,54 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
     <message>
         <source>Using a log level higher than Info may affect performance.</source>
         <translation type="unfinished">Utilizar un nivel de registro superior a Info puede afectar el rendimiento.</translation>
+    </message>
+    <message>
+        <source>Input language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Synchronize Korean/English input state</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CJK raw scan codes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>On screen entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Normalize shared text to NFC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>macOS inter-key delay</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> us</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Always</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Never</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keep remote state</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Force English</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Follow this computer</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

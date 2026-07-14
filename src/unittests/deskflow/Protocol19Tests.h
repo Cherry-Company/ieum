@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include "base/Log.h"
+
 #include <QTest>
 
 class Protocol19Tests : public QObject
@@ -14,4 +16,7 @@ class Protocol19Tests : public QObject
 private Q_SLOTS:
   void inputLanguageControlRoundTrip();
   void inputLanguageStatusRoundTrip();
+
+private:
+  Log m_log;
 };

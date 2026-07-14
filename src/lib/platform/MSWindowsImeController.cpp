@@ -11,6 +11,7 @@
 #include "base/Log.h"
 
 #include <Imm.h>
+#include <immdev.h>
 
 #include <chrono>
 #include <iomanip>
