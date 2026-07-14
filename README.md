@@ -2,32 +2,112 @@
 <!-- SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception -->
 
 <p align="center">
-  <img src="artwork/ieum-icon-1024.png" alt="Ieum icon" width="152">
+  <img src="artwork/ieum-icon-1024.png" alt="Ieum icon" width="156">
 </p>
 
-# 이음 (Ieum)
+<h1 align="center">이음 (Ieum)</h1>
 
-**이음**은 여러 컴퓨터를 한 대의 키보드와 마우스로 제어하는 IME 네이티브 소프트 KVM입니다.
-Windows와 macOS를 오갈 때 한/영 상태, 조합 중인 입력, 원시 스캔코드와 유니코드 클립보드를
-일관되게 전달하는 데 초점을 둡니다.
+<p align="center"><strong>한글과 CJK 입력기를 키 매핑이 아닌 입력 상태로 다루는 IME 네이티브 소프트 KVM</strong></p>
+
+<p align="center">
+  한국어 · <a href="README.en.md">English</a> · <a href="README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
+  <a href="https://github.com/victoriousian/ieum/releases"><img src="https://img.shields.io/github/v/release/victoriousian/ieum?include_prereleases&label=release" alt="Release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--only-blue" alt="GPL-2.0-only"></a>
+</p>
+
+이음은 한 대의 키보드와 마우스로 Windows, macOS, Linux 컴퓨터를 오가게 해주는 소프트웨어
+KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
+원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
+
+> 현재 단계는 `v0.1.0-alpha.2`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
+
+## 한국어 입력은 단순한 키 매핑이 아닙니다
+
+일반 소프트 KVM은 물리 키를 문자 코드로 번역해 반대편에서 다시 키로 합성합니다. 정적인 자판
+레이아웃에는 잘 맞지만 한글·중국어·일본어 입력은 **입력기 상태와 조합 중 문자열(preedit)** 에 의해
+결정됩니다. 이 상태를 전달하지 않으면 키가 도착해도 다음 문제가 생깁니다.
+
+| 증상 | 구조적 원인 |
+| --- | --- |
+| Windows 한/영키로 Mac 입력기가 바뀌지 않음 | 한/영은 문자가 아니라 입력 모드 전환 명령인데 일반 키 이벤트로 처리됨 |
+| 서버 표시와 실제 입력창의 한/영 상태가 다름 | 클라이언트의 실제 입력 소스를 확인하고 회신하는 채널이 없음 |
+| `한`이 `ㅎㅏㄴ`처럼 간헐적으로 분리됨 | 입력 중 소스 전환, 이중 이벤트 주입 경로, 이벤트 순서 붕괴가 조합 세션을 끊음 |
+| Mac에서 복사한 한글이 Windows에서 분리됨 | macOS의 분해형 문자열이 NFC로 정규화되지 않음 |
+
+이음은 이 문제를 “특수키 하나 추가”가 아니라 **입력 상태를 프로토콜의 일부로 만드는 문제**로
+다룹니다.
+
+## 이음이 바꾸는 것
+
+### 1. 입력 소스 제어 채널
+
+프로토콜 1.9의 `DILC`/`CILS` 메시지로 서버가 입력 소스 전환을 요청하고, 클라이언트가 실제 적용된
+입력 소스를 다시 보고합니다. 서버의 추정값이 아니라 클라이언트 운영체제의 상태를 진실의 원천으로
+사용합니다.
+
+### 2. IME 네이티브 키 경로
+
+IME가 활성화되면 문자 `KeyID` 재번역을 우회하고 PC Set-1 원시 스캔코드로 물리 키 위치를 전달할
+수 있습니다. 조합은 원격 컴퓨터의 네이티브 IME가 담당하므로 CJK 입력 중 레이아웃 번역이 개입하지
+않습니다.
+
+### 3. macOS 이벤트 합성 일관성
+
+입력기 사용 중에는 하나의 영속 `CGEventSource`와 FIFO 경로를 사용하고, 이벤트 타임스탬프·키보드
+종류·반복 상태를 명시합니다. 키마다 서로 다른 주입 계층을 오가는 동작을 피합니다.
+
+### 4. 유니코드 클립보드 정규화
+
+macOS에서 공유되는 UTF-8 텍스트를 NFC로 정규화해 Windows 애플리케이션과 파일명에서 발생하는
+한글 자소 분리를 줄입니다.
+
+```mermaid
+flowchart LR
+    A["물리 키보드"] --> B["Ieum Server"]
+    B -->|"키 · 스캔코드"| C["암호화된 KVM 채널"]
+    B -->|"DILC 입력 소스 요청"| C
+    C --> D["Ieum Client"]
+    D --> E["Windows IMM32 / macOS TIS"]
+    E -->|"CILS 실제 상태"| D
+    D -->|"상태 회신"| B
+```
+
+## 현재 상태
+
+| 영역 | 상태 |
+| --- | --- |
+| Ieum 브랜드, 아이콘, 앱·설치 프로그램 이름 | 완료 |
+| Windows x64/ARM64, macOS Intel/Apple Silicon 패키지 | CI 빌드·패키지 검사 통과 |
+| `DILC`/`CILS`, raw scancode, macOS 이벤트 소스, NFC 경로 | 구현 및 자동 테스트 포함 |
+| Linux/Flatpak 패키지 | 실험적 제공 |
+| Windows ↔ macOS 실기 10분 입력 매트릭스 | **대기 중** |
+| Windows 코드 서명, Apple 서명·공증 | **대기 중** |
+| iPadOS | 시스템 전역 입력 주입용 공개 API가 없어 지원하지 않음 |
+
+실기 수용 기준은 한/영 전환 20회 상태 불일치 0건, 앱별 10분 입력에서 자소 분리 0건, 입력 지연
+증가 p95 2ms 미만입니다. 현재 릴리스는 이 결과를 달성했다고 미리 주장하지 않습니다.
 
 ## 다운로드
 
-[Ieum v0.1.0-alpha.2 설치 파일](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2)
+[Ieum v0.1.0-alpha.2 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2)
 
-| 운영체제 | 파일 |
+| 운영체제 | 설치 파일 |
 | --- | --- |
 | Apple Silicon Mac | `Ieum-0.1.0-alpha.2-macos-arm64.dmg` |
 | Intel Mac | `Ieum-0.1.0-alpha.2-macos-x86_64.dmg` |
 | Intel/AMD 64비트 Windows | `Ieum-0.1.0-alpha.2-win-x64.msi` |
 | ARM64 Windows | `Ieum-0.1.0-alpha.2-win-arm64.msi` |
 
-Windows는 설치 없이 실행할 수 있는 `portable.7z` 패키지도 함께 제공합니다. 다운로드한 파일은
-릴리스의 `SHA256SUMS.txt`로 검증할 수 있습니다.
+Windows용 `portable.7z`와 Linux 패키지도 릴리스에 포함됩니다. 모든 파일은 함께 제공되는
+`SHA256SUMS.txt`로 검증할 수 있습니다.
 
-현재 알파 패키지는 개발자 인증서로 서명하거나 Apple에 공증하지 않았습니다. macOS에서 차단되면
-앱을 `/Applications`로 옮긴 뒤 다음 명령을 실행하고, 시스템 설정에서 접근성 및 입력 모니터링
-권한을 허용하세요.
+현재 알파 패키지는 서명되거나 Apple에 공증되지 않았습니다. macOS에서는 앱을 `/Applications`로
+옮긴 뒤 필요하면 다음 명령을 실행하고, 시스템 설정에서 접근성 및 입력 모니터링 권한을 허용하세요.
 
 ```sh
 xattr -dr com.apple.quarantine /Applications/Ieum.app
@@ -35,33 +115,48 @@ xattr -dr com.apple.quarantine /Applications/Ieum.app
 
 Windows에서는 SmartScreen 경고가 표시될 수 있습니다.
 
-## 주요 기능
-
-- 프로토콜 1.9 `DILC`/`CILS` 채널을 통한 원격 입력 소스 제어 및 상태 확인
-- Windows IMM32와 macOS TIS 기반 한/영 및 입력 소스 동기화
-- IME 활성 중 KeyID 변환을 우회하는 PC Set-1 원시 스캔코드 경로
-- macOS 합성 이벤트의 동일 `CGEventSource` 및 타임스탬프 유지
-- macOS에서 공유하는 UTF-8 텍스트의 NFC 정규화
-- 입력 상태 오버레이와 `Preferences > Advanced` 동기화 정책
-- TLS 암호화, 화면 전환, 클립보드 공유와 기존 KVM 프로토콜 호환
-
 ## 빠른 시작
 
 1. 제어할 컴퓨터 모두에 Ieum을 설치합니다.
 2. 키보드와 마우스가 연결된 컴퓨터에서 `Server`를 선택합니다.
 3. 나머지 컴퓨터에서 `Client`를 선택하고 서버 주소를 입력합니다.
-4. 서버의 화면 배치에서 각 컴퓨터 위치를 지정한 뒤 시작합니다.
+4. 서버 화면 배치에서 각 컴퓨터의 위치를 지정한 뒤 시작합니다.
 
 IME 동작과 운영체제별 권한은 [IME 사용 안내](docs/user/ime.md)를 확인하세요.
 
-## 지원 범위
+## 오픈소스와 유료 제품 방향
 
-- Windows 10/11 x64 및 Windows 11 ARM64
-- macOS 12 이상 Intel, macOS 14 이상 Apple Silicon
-- Linux는 소스 빌드와 CI 패키지를 제공하지만 IME 동기화의 주 대상은 Windows와 macOS입니다.
+이음의 로컬 KVM 코어와 현재 배포 코드는
+`GPL-2.0-only WITH LicenseRef-OpenSSL-Exception`으로 공개합니다. GPL 코어를 그대로 사용하면서
+동일 실행 파일 안의 핵심 기능만 소스 비공개로 잠그는 모델은 사용하지 않습니다.
 
-iPadOS 설치 파일은 제공하지 않습니다. 소프트 KVM 클라이언트에는 다른 앱까지 제어하는 전역 입력
-주입 권한이 필요하며, 일반 iPadOS 앱에는 해당 기능을 구현할 공개 API가 없습니다.
+수익화는 다음 경계를 기준으로 검토합니다. 아래 유료 항목은 **계획**이며 현재 판매 중인 상품이
+아닙니다.
+
+| 영역 | 공개/유료 방향 |
+| --- | --- |
+| Community | 같은 네트워크의 로컬 KVM, IME 동기화, 클립보드와 프로토콜 코어는 GPL로 공개 |
+| 공식 배포 | 코드 서명·Apple 공증, 안정 업데이트 채널, 간편 설치와 검증된 바이너리 제공에 비용 부과 가능 |
+| Teams/Cloud | 호스팅 릴레이·장치 검색, 팀 정책, SSO, 감사 기록, 관리 콘솔을 별도 서비스로 제공 가능 |
+| 지원 | 우선 기술지원, 배포 지원, 기업용 통합과 유지보수 계약 가능 |
+
+GPL 바이너리는 유료로 배포할 수 있지만 구매자는 대응 소스를 받고 재배포할 권리를 가집니다. 따라서
+지속 가능한 유료 가치는 소스 접근 제한보다 **공식 서명, 운영 편의, 호스팅 서비스와 지원**에 둡니다.
+폐쇄형 모듈을 도입할 경우에는 코어와 별도 프로세스·네트워크 서비스 경계를 유지하고 사전 라이선스
+검토를 거칩니다. 근거는 [GNU GPL v2 FAQ](https://www.gnu.org/licenses/old-licenses/gpl-2.0-faq.en.html)를
+참고하세요. 이 방향은 법률 자문이 아니며 실제 유료 배포 전에는 저작권·상표·서비스 경계를 별도로
+검토해야 합니다.
+
+## 로드맵
+
+- [x] 포크 부트스트랩과 Ieum 브랜드 전환
+- [x] 입력 소스 제어 프로토콜과 운영체제별 컨트롤러
+- [x] IME raw scancode 경로, macOS 이벤트 경로, NFC 정규화
+- [x] Windows/macOS/Linux 설치 패키지 자동화
+- [ ] Windows ↔ macOS 실기 입력 매트릭스 공개
+- [ ] 코드 서명·Apple 공증과 안정 업데이트 채널
+- [ ] 네트워크 릴레이·장치 검색의 제품/서비스 경계 설계
+- [ ] 정식 `v1.0.0` 수용 기준 확정
 
 ## 빌드와 테스트
 
@@ -71,13 +166,17 @@ cmake --build build --config Release
 ctest --test-dir build --output-on-failure
 ```
 
-자세한 환경별 절차는 [빌드 문서](docs/dev/build.md)를 참고하세요. GitHub Actions는 Windows x64/ARM64,
-macOS Intel/Apple Silicon, Linux 배포판, Flatpak과 FreeBSD 빌드를 검증합니다.
+자세한 절차는 [빌드 문서](docs/dev/build.md), 프로토콜은
+[프로토콜 레퍼런스](docs/dev/protocol_reference.md), 기준선과 남은 실기 검증은
+[Phase 0 보고서](phase0_report.md)를 참고하세요.
+
+GitHub Actions는 Windows x64/ARM64, macOS Intel/Apple Silicon, 여러 Linux 배포판, Flatpak과
+FreeBSD 빌드를 검증합니다.
 
 ## 계보와 라이선스
 
 Ieum은 `deskflow/deskflow`의 `39bf4fb`에서 포크해 개발하고 있습니다. 프로토콜 호환성과 기존 macOS
-권한 승계를 위해 일부 내부 바이너리명 및 `org.deskflow.deskflow` 식별자는 유지합니다. 사용자에게
+권한 승계를 위해 일부 내부 바이너리명과 `org.deskflow.deskflow` 식별자는 유지합니다. 사용자에게
 표시되는 제품명, 앱 아이콘, 설치 프로그램과 릴리스는 Ieum으로 관리합니다.
 
 코드는 `GPL-2.0-only WITH LicenseRef-OpenSSL-Exception`에 따라 배포합니다. 원저작자 고지와 라이선스

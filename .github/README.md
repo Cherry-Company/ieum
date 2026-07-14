@@ -3,12 +3,12 @@
 
 # Ieum
 
-Ieum is an IME-native software KVM for sharing one keyboard and mouse across Windows, macOS, and Linux computers.
-It adds explicit input-source synchronization, raw scancode transport, and Unicode clipboard normalization for
-reliable Korean and CJK input across operating systems.
+Ieum is an IME-native software KVM for reliable Korean and CJK input across Windows, macOS, and Linux.
 
-- [Project README](../README.md)
+- [한국어 프로젝트 문서](../README.md)
+- [English project README](../README.en.md)
+- [简体中文项目说明](../README.zh-CN.md)
 - [Releases](https://github.com/victoriousian/ieum/releases)
 - [Issue tracker](https://github.com/victoriousian/ieum/issues)
 
-Ieum is derived from Deskflow and retains its upstream copyright and license notices.
+Ieum is derived from Deskflow and preserves its upstream copyright and license notices.
