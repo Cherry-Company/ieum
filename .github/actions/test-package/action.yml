@@ -17,7 +17,9 @@ runs:
         if [ "$RUNNER_OS" == "macOS" ]; then
           dmg=$(ls build/deskflow-*.dmg | head -1)
           echo "Y" | hdiutil attach "$dmg" -nobrowse -mountpoint /tmp/deskflow-dmg
-          /tmp/deskflow-dmg/Deskflow.app/Contents/MacOS/deskflow-core --version
+          core=$(find /tmp/deskflow-dmg -path "*/Contents/MacOS/deskflow-core" -type f | head -1)
+          test -n "$core"
+          "$core" --version
           hdiutil detach /tmp/deskflow-dmg
 
         elif [ "$RUNNER_OS" == "Windows" ]; then
