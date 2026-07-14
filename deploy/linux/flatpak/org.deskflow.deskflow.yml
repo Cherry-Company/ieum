@@ -2,7 +2,7 @@ app-id: org.deskflow.deskflow
 runtime: org.kde.Platform
 runtime-version: "6.10"
 sdk: org.kde.Sdk
-command: deskflow
+command: ieum
 finish-args:
   - --share=ipc
   - --socket=wayland
@@ -86,4 +86,3 @@ modules:
     sources:
       - type: dir
         path: ../../../
-

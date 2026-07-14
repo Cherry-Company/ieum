@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2024 Chris Rizzitello <sithlord48@gmail.com>
 # SPDX-License-Identifier: MIT
 
-name: "Install dependencies for deskflow"
-description: "Install the dependencies needed to build deskflow"
+name: "Install dependencies for Ieum"
+description: "Install the dependencies needed to build Ieum"
 
 inputs:
   like:
@@ -107,4 +107,3 @@ runs:
         wix extension add --global WixToolset.Util.wixext/5.0.2
         wix extension add --global WixToolset.Firewall.wixext/5.0.2
       shell: pwsh
-

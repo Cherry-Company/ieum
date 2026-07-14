@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: MIT
 
 version = 1
-SPDX-PackageName = "deskflow"
-SPDX-PackageSupplier = "Deskflow Devs"
-SPDX-PackageDownloadLocation = "https://github.com/deskflow/deskflow"
+SPDX-PackageName = "Ieum"
+SPDX-PackageSupplier = "Ieum Developers"
+SPDX-PackageDownloadLocation = "https://github.com/victoriousian/ieum"
 
 [[annotations]]
 path = [
@@ -15,6 +15,7 @@ path = [
  , ".gitignore"
  , "cspell.json"
  , "sonar-project.properties"
+ , "VERSION"
  , "cmake/vcpkg.json.in"
  , "**/*.md"
  , "docs/**"
@@ -34,18 +35,25 @@ SPDX-License-Identifier = "MIT"
 
 [[annotations]]
 path = [
-   "deploy/mac/dmg-background.tiff"
- , "deploy/mac/dmg-volume.icns"
- , "deploy/linux/org.deskflow.deskflow.png"
- , "deploy/windows/wix-banner.png"
- , "deploy/windows/wix-dialog.png"
- , "src/apps/res/icons/deskflow-**/apps/64/deskflow*.svg"
- , "src/apps/res/image/welcome.png"
- , "src/apps/res/Deskflow.icns"
- , "src/apps/res/deskflow.ico"
+   "src/apps/res/image/welcome.png"
  , "src/apps/res/deskflow.qrc"
 ]
 SPDX-FileCopyrightText = "Deskflow Developers"
+SPDX-License-Identifier = "GPL-2.0-only"
+
+[[annotations]]
+path = [
+   "artwork/*.png"
+ , "deploy/mac/dmg-background.tiff"
+ , "deploy/mac/ieum-volume.icns"
+ , "deploy/linux/org.deskflow.deskflow.png"
+ , "deploy/windows/wix-banner.png"
+ , "deploy/windows/wix-dialog.png"
+ , "src/apps/res/Ieum.icns"
+ , "src/apps/res/ieum.ico"
+ , "src/apps/res/icons/deskflow-**/apps/64/org.deskflow.deskflow*.png"
+]
+SPDX-FileCopyrightText = "(C) 2026 Ieum Developers"
 SPDX-License-Identifier = "GPL-2.0-only"
 
 [[annotations]]

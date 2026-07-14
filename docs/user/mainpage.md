@@ -1,14 +1,13 @@
-**Deskflow** is a free and open source keyboard and mouse sharing app.
-Use the keyboard, mouse, or trackpad of one computer to control nearby computers,
-and work seamlessly between them.
+<!-- SPDX-FileCopyrightText: (C) 2026 Ieum Developers -->
+<!-- SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception -->
 
+# Ieum User Guide
 
-## Configuration
-Our [Configuration] page has example configurations
+Ieum shares one keyboard and mouse across nearby computers and synchronizes IME state between Windows and macOS.
 
+- [IME synchronization](ime.md)
+- [Configuration reference](configuration.md)
+- [Project releases](https://github.com/victoriousian/ieum/releases)
 
-## More info
-
-For more info, see our [Wiki](https://github.com/deskflow/deskflow/wiki).
-
-[Configuration]:configuration.md
+The desktop application is named `Ieum`. The helper process remains `deskflow-core` for wire-protocol and upgrade
+compatibility.

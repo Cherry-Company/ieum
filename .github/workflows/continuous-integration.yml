@@ -6,7 +6,7 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [master, "ieum/**"]
+    branches: ["ieum/main"]
     tags:
       - "v*"
   pull_request:
@@ -18,7 +18,7 @@ concurrency:
 
 env:
   GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  PACKAGE_PREFIX: "deskflow"
+  PACKAGE_PREFIX: "Ieum"
   PACKAGE_PATH: ./dist
   CMAKE_CONFIGURE: "cmake -Bbuild -DCMAKE_BUILD_TYPE=Release -DSKIP_BUILD_TESTS=ON -DCMAKE_COMPILE_WARNING_AS_ERROR=ON"
 
@@ -264,7 +264,7 @@ jobs:
         run: echo "C:\Program Files\doxygen\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Configure
-        run: ${{env.CMAKE_CONFIGURE}} ${{ matrix.target.config-args }} ${{ steps.get-deps.outputs.vcpkg-cmake-config }} -DPACKAGE_VERSION_LABEL="${{env.DESKFLOW_PACKAGE_VERSION}}"
+        run: ${{env.CMAKE_CONFIGURE}} ${{ matrix.target.config-args }} ${{ steps.get-deps.outputs.vcpkg-cmake-config }} -DPACKAGE_VERSION_LABEL="${{env.IEUM_PACKAGE_VERSION}}"
 
       - name: Build
         shell: bash
@@ -298,7 +298,7 @@ jobs:
             sudo -u build makepkg -s
             export OSNAME=$(cat /etc/os-release | grep ^ID= | sed 's/ID=//g')
             export ARCH=$(uname -m)
-            mv *.pkg.tar.zst deskflow-${{env.DESKFLOW_PACKAGE_VERSION}}-${OSNAME}-${ARCH}.pkg.tar.zst
+            mv *.pkg.tar.zst Ieum-${{env.IEUM_PACKAGE_VERSION}}-${OSNAME}-${ARCH}.pkg.tar.zst
             cd ..
           fi
 
@@ -322,7 +322,7 @@ jobs:
           like: ${{ matrix.target.like }}
 
       - name: Update Development Documentation
-        if: matrix.target.like == 'arch' && github.ref == 'refs/heads/master'
+        if: matrix.target.like == 'arch' && github.ref == 'refs/heads/ieum/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -333,7 +333,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: package-${{ env.PACKAGE_PREFIX }}-${{ matrix.target.name }}
-          path: ${{github.workspace}}/build/deskflow[-_]*.*
+          path: ${{github.workspace}}/build/Ieum[-_]*.*
 
   # Technically, "unix" is a misnomer, but we use it here to mean "Unix-like BSD-derived".
   unix:
@@ -404,7 +404,7 @@ jobs:
       - name: Build
         uses: flatpak/flatpak-github-actions/flatpak-builder@v6
         with:
-          bundle: deskflow-${{env.DESKFLOW_PACKAGE_VERSION}}-linux-${{matrix.flatpak.arch}}.flatpak
+          bundle: Ieum-${{env.IEUM_PACKAGE_VERSION}}-linux-${{matrix.flatpak.arch}}.flatpak
           manifest-path: deploy/linux/flatpak/org.deskflow.deskflow.yml
           cache-key: flatpak-builder-${{matrix.flatpak.arch}}-2.0
           arch: ${{matrix.flatpak.arch}}
@@ -417,11 +417,11 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: package-${{ env.PACKAGE_PREFIX }}-flatpak-${{matrix.flatpak.arch}}
-          path: ${{github.workspace}}/deskflow[-_]*.flatpak
+          path: ${{github.workspace}}/Ieum[-_]*.flatpak
 
   release:
     needs: ci-passed
-    if: (github.ref == 'refs/heads/master') || (contains(github.ref, '/tags/v'))
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
 
     steps:
@@ -438,52 +438,19 @@ jobs:
         id: generate_notes
         shell: bash
         run: |
-          mv $GITHUB_WORKSPACE/package-*/deskflow-* .
+          mv $GITHUB_WORKSPACE/package-*/Ieum-* .
           rm -rf $GITHUB_WORKSPACE/package-*
-          echo "Build: ${{env.DESKFLOW_VERSION }}" > sums.txt
-          sha256sum deskflow-* >> sums.txt
-          export changes=$(git log --abbrev=8 --abbrev-commit --pretty=format:" - %s(%h) by %an" continuous..HEAD)
-          echo -e "## Latest Changes:\n$changes" > changelog.txt
-
-      - name: Update continuous tag
-        if: (github.ref == 'refs/heads/master') && !(contains(github.ref, '/tags/v'))
-        run: gh release delete continuous --cleanup-tag
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-      - name: Deploy continuous
-        if: (github.ref == 'refs/heads/master') && !(contains(github.ref, '/tags/v'))
-        uses: softprops/action-gh-release@v3
-        with:
-          token: "${{ secrets.GITHUB_TOKEN }}"
-          tag_name: "continuous"
-          name: "Continuous v${{env.DESKFLOW_VERSION}}"
-          prerelease: true
-          append_body: false
-          generate_release_notes: false
-          body_path: changelog.txt
-          files: |
-            deskflow-*
-            sums.txt
+          echo "Build: ${{env.IEUM_VERSION }}" > SHA256SUMS.txt
+          sha256sum Ieum-* >> SHA256SUMS.txt
 
       - name: Deploy release
-        if: contains(github.ref, '/tags/v')
         uses: softprops/action-gh-release@v3
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
+          name: "Ieum ${{ github.ref_name }}"
           generate_release_notes: true
-          make_latest: true
-          prerelease: false
+          make_latest: ${{ !contains(github.ref_name, '-') }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
           files: |
-            deskflow-*
-            sums.txt
-
-      - name: Update Homebrewtap
-        shell: bash
-        run: |
-          curl -L -X POST \
-          -H "Accept: application/vnd.github+json" \
-          -H "Authorization: Bearer ${{ secrets.DF_TAP_TOKEN }}" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          https://api.github.com/repos/deskflow/homebrew-tap/dispatches \
-          -d '{"event_type":"update_tap"}'
+            Ieum-*
+            SHA256SUMS.txt

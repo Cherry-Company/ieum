@@ -24,6 +24,7 @@ Q_SIGNALS:
   void updateFound(const QString &version);
 
 private:
+  friend class VersionCheckerTests;
   static int compareVersions(const QString &left, const QString &right);
 
   /**

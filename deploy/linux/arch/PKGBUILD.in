@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: (C) 2024 Deskflow Developers
 # SPDX-License-Identifier: MIT
-# Maintainer: Deskflow Developers
+# Maintainer: Ieum Developers
 
-_basename=@CMAKE_PROJECT_NAME@
+_basename=ieum
 pkgname=${_basename}-git
 pkgver=@CMAKE_PROJECT_VERSION@
 pkgrel=1
@@ -11,7 +11,7 @@ url="@CMAKE_PROJECT_HOMEPAGE_URL@"
 arch=('i686' 'x86_64' 'armv7h' 'aarch64')
 license=(LicenseRef-GPL-2.0-only-WITH-OpenSSL-Exception)
 conflicts=('synergy-git' 'synergy-1.6' 'synergy1-bin' 'synergy2-bin' 'synergy3-bin' 'synergy3-beta-bin' 'synergy3-stable-bin' 'barrier' 'barrier-git' 'barrier-headless' 'barrier-headless-git' 'input-leap' 'input-leap-git' 'input-leap-headless-git' 'input-leap-headless' 'waynergy' 'waynergy-git' 'qsynergy' 'slim-synergy' 'quicksynergy' 'deskflow')
-provides=("$_basename")
+provides=("$_basename" 'deskflow')
 depends=(
   gcc-libs
   glib2

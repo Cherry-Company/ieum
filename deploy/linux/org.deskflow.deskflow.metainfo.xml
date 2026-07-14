@@ -3,16 +3,16 @@
 	<id>org.deskflow.deskflow</id>
 	<metadata_license>CC0-1.0</metadata_license>
 	<project_license>GPL-2.0-only</project_license>
-	<name>Deskflow</name>
+	<name>Ieum</name>
 	<developer id="org.deskflow">
-		<name>Deskflow Developers</name>
+		<name>Ieum Developers</name>
 	</developer>
-	<summary>Software Keyboard and mouse sharing</summary>
+	<summary>IME-native keyboard and mouse sharing</summary>
 	<summary xml:lang="zh_CN">用软件共享键鼠</summary>
 	<summary xml:lang="ko">키보드 및 마우스 공유 소프트웨어</summary>
 	<description>
 		<p>
-			Use the keyboard, mouse, or trackpad of one computer to control nearby computers, and work seamlessly between them.
+			Use the keyboard, mouse, or trackpad of one computer to control nearby computers while keeping IME state synchronized across Windows and macOS.
 		</p>
 		<p xml:lang="zh_CN">
 			使用一台计算机的键盘、鼠标或触控板来控制附近的其它计算机，并在它们之间无缝工作。
@@ -22,38 +22,11 @@
 		</p>
 	</description>
 	<launchable type="desktop-id">org.deskflow.deskflow.desktop</launchable>
-	<url type="homepage">https://deskflow.org</url>
-	<url type="bugtracker">https://github.com/deskflow/deskflow/issues</url>
-	<url type="faq">https://github.com/deskflow/deskflow/wiki/Project-FAQ</url>
-	<url type="help">https://github.com/deskflow/deskflow/wiki#user-guides</url>
-	<url type="vcs-browser">https://github.com/deskflow/deskflow</url>
-	<url type="contribute">https://github.com/deskflow/deskflow/wiki/Contributing</url>
-	<screenshots>
-		<screenshot type="default">
-			<image>https://deskflow.org/screenshots/deskflow-client.png</image>
-			<caption>Deskflow in client mode on KDE</caption>
-		</screenshot>
-		<screenshot>
-			<image>https://deskflow.org/screenshots/deskflow-server.png</image>
-			<caption>Deskflow in server mode on KDE</caption>
-		</screenshot>
-		<screenshot>
-			<image>https://deskflow.org/screenshots/deskflow-log.png</image>
-			<caption>Deskflow with the log visible on KDE</caption>
-		</screenshot>
-		<screenshot>
-			<image>https://deskflow.org/screenshots/deskflow-client-dark.png</image>
-			<caption>Deskflow in client mode on KDE (dark mode)</caption>
-		</screenshot>
-		<screenshot>
-			<image>https://deskflow.org/screenshots/deskflow-server-dark.png</image>
-			<caption>Deskflow in server mode on KDE (dark mode)</caption>
-		</screenshot>
-		<screenshot>
-			<image>https://deskflow.org/screenshots/deskflow-log-dark.png</image>
-			<caption>Deskflow with the log visible on KDE (dark mode)</caption>
-		</screenshot>
-	</screenshots>
+	<url type="homepage">https://github.com/victoriousian/ieum</url>
+	<url type="bugtracker">https://github.com/victoriousian/ieum/issues</url>
+	<url type="help">https://github.com/victoriousian/ieum#readme</url>
+	<url type="vcs-browser">https://github.com/victoriousian/ieum</url>
+	<url type="contribute">https://github.com/victoriousian/ieum/blob/ieum/main/.github/CONTRIBUTING.md</url>
 	<provides> <id>org.deskflow.deskflow.desktop</id> </provides>
 	<categories>
 		<category>Utility</category>

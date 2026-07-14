@@ -1,10 +1,10 @@
 name: Feature request
-description: Had an idea how to improve Deskflow? Share it with us.
+description: Had an idea how to improve Ieum? Share it with us.
 type: "Triage [feature]"
 body:
   - type: markdown
     attributes:
-      value: Thanks for taking the time to help us improve Deskflow.
+      value: Thanks for taking the time to help us improve Ieum.
 
   - type: textarea
     id: request

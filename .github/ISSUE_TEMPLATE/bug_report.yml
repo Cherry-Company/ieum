@@ -1,16 +1,16 @@
 name: Bug report
-description: If you find a bug in Deskflow, please let us know so we can fix it.
+description: If you find a bug in Ieum, please let us know so we can fix it.
 type: "Triage [bug]"
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to help us improve Deskflow.
+        Thanks for taking the time to help us improve Ieum.
 
         <b>Sanity checks</b>
         > [!IMPORTANT]
-        > 1. Try the latest [continuous build](https://github.com/deskflow/deskflow/releases).
-        > 2. Wayland users, please review the [known issues](https://github.com/deskflow/deskflow/discussions/7499).
+        > 1. Try the latest [continuous build](https://github.com/victoriousian/ieum/releases).
+        > 2. Wayland users, please review the [known issues](https://github.com/victoriousian/ieum/discussions/7499).
         > 3. macOS users, if the app crashes, try [Apple's solution](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac).
         > 4. Search for existing issues and avoid creating duplicates.
         > 5. Provide descriptive title for this issue.
@@ -27,10 +27,10 @@ body:
   - type: textarea
     id: version
     attributes:
-      label: Deskflow version info
-      description: Please paste only the Deskflow version info, accessible via the **Help** menu in the **About** dialog using the **Copy version info** button.
+      label: Ieum version info
+      description: Please paste only the Ieum version info, accessible via the **Help** menu in the **About** dialog using the **Copy version info** button.
       placeholder: |
-        Deskflow: 1.2.3.4 (deadc0de)
+        Ieum: 1.2.3.4 (deadc0de)
         Qt: 3.2.1
         System: Hannah Montana Linux (Workstation Edition)
         Session: Unity (Compiz)
@@ -54,10 +54,10 @@ body:
   - type: textarea
     id: config
     attributes:
-      label: Deskflow configuration
+      label: Ieum configuration
       description: |
         Please provide a very brief description of your configuration.
-        There is no need to provide operating system details here, as they are included when you paste the version info in the **Deskflow version info** section above.
+        There is no need to provide operating system details here, as they are included when you paste the version info in the **Ieum version info** section above.
         If you're using Linux, please provide the name of the distribution.
       placeholder: |
         - Windows 11 server, Ubuntu client, and macOS 15 client
@@ -74,7 +74,7 @@ body:
         Please list the _numbered steps_ to reproduce the issue.
         If you're not sure, please provide as much detail as possible.
       placeholder: |
-        1. Start Deskflow
+        1. Start Ieum
         2. Click 'Configure Server'
         3. Click 'Apply'
 
@@ -105,7 +105,7 @@ body:
         - Any ideas about what maybe causing the problem?
         - Any workarounds that you've discovered?
         - What other apps are you running?
-        - Does the issue stop you using Deskflow entirely?
-        - Did restarting Deskflow or the computer help?
+        - Does the issue stop you using Ieum entirely?
+        - Did restarting Ieum or the computer help?
         - Are the locales matching across all your systems?
         - Anything else you can think of?

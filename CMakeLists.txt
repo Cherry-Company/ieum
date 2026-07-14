@@ -38,24 +38,16 @@ if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
       ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
     )
     execute_process(
-      COMMAND ${GIT_EXECUTABLE} describe --long --match v* --always
+      COMMAND ${GIT_EXECUTABLE} describe --long --match "v[0-9]*" --always
       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
       OUTPUT_VARIABLE GITREV
       ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE
     )
-    string(FIND "${GITREV}" "v" isRev)
-    if(NOT ${isRev} EQUAL -1)
-      string(REGEX MATCH [0-9]+ MAJOR ${GITREV})
-      string(REGEX MATCH \\.[0-9]+ MINOR ${GITREV})
-      string(REPLACE "." "" MINOR "${MINOR}")
-      string(REGEX MATCH [0-9]+\- PATCH ${GITREV})
-      string(REPLACE "-" "" PATCH "${PATCH}")
-      string(REGEX MATCH \-[0-9]+\- TWEAK ${GITREV})
-      string(REPLACE "-" "" TWEAK "${TWEAK}")
-      set(DESKFLOW_VERSION_MAJOR ${MAJOR})
-      set(DESKFLOW_VERSION_MINOR ${MINOR})
-      set(DESKFLOW_VERSION_PATCH ${PATCH})
-      set(DESKFLOW_VERSION_TWEAK ${TWEAK})
+    if(GITREV MATCHES "^v([0-9]+)\\.([0-9]+)\\.([0-9]+)(-[0-9A-Za-z.]+)?-([0-9]+)-g[0-9a-f]+$")
+      set(DESKFLOW_VERSION_MAJOR ${CMAKE_MATCH_1})
+      set(DESKFLOW_VERSION_MINOR ${CMAKE_MATCH_2})
+      set(DESKFLOW_VERSION_PATCH ${CMAKE_MATCH_3})
+      set(DESKFLOW_VERSION_TWEAK ${CMAKE_MATCH_5})
     else()
       set(DESKFLOW_VERSION_TWEAK "9999")
     endif()
@@ -88,6 +80,12 @@ set(CMAKE_PROJECT_COPYRIGHT "(C) 2024-2026 ${CMAKE_PROJECT_VENDOR}")
 # Keep the upstream reverse-DNS id for macOS permission continuity and protocol compatibility.
 set(CMAKE_PROJECT_CONTACT "${CMAKE_PROJECT_PROPER_NAME} <https://github.com/victoriousian/ieum/issues>")
 set(CMAKE_PROJECT_REV_FQDN "org.deskflow.deskflow")
+
+if(PACKAGE_VERSION_LABEL AND NOT PACKAGE_VERSION_LABEL STREQUAL "continuous")
+  set(CMAKE_PROJECT_RELEASE_VERSION "${PACKAGE_VERSION_LABEL}")
+else()
+  set(CMAKE_PROJECT_RELEASE_VERSION "${CMAKE_PROJECT_VERSION}")
+endif()
 
 #Unset the vars used in the project call
 unset(DESKFLOW_VERSION_MAJOR)

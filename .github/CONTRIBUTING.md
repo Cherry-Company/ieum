@@ -1,13 +1,15 @@
-# Contributing to Deskflow
+<!-- SPDX-FileCopyrightText: (C) 2026 Ieum Developers -->
+<!-- SPDX-License-Identifier: MIT -->
 
-Thanks for your interest in contributing to Deskflow! We welcome all kinds of contributions — bug reports, feature suggestions, documentation improvements, and code.
+# Contributing to Ieum
 
-## Read the Full Guidelines
+Bug reports, feature proposals, documentation fixes, translations, and code contributions are welcome.
 
-To keep this repository clean and contribution-friendly, we've outlined our full contributing guidelines on the Deskflow Wiki:
+1. Search the [issue tracker](https://github.com/victoriousian/ieum/issues) before opening a new issue.
+2. Base changes on `ieum/main` and keep commits focused.
+3. Add or update tests for behavior changes.
+4. Run the relevant build, unit tests, and formatting checks before opening a pull request.
+5. Preserve upstream copyright and license notices when modifying inherited files.
 
-👉 [How to Contribute to Deskflow](https://github.com/deskflow/deskflow/wiki/Contributing)
-
-Please take a moment to read through the page before opening an issue or submitting a pull request.
-
-Thanks again for helping make Deskflow better!
+IME work should document both the source and destination operating systems, active keyboard layouts, and the
+expected `DILC`/`CILS` state transition.

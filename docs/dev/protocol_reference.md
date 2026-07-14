@@ -1,10 +1,10 @@
 # Protocol Reference {#protocol_reference}
 
-This document provides a comprehensive reference for the Deskflow network protocol. It is the primary source of information for developers implementing Deskflow clients or extending the protocol.
+This document describes the Deskflow-compatible network protocol implemented by Ieum. It is the primary source of information for developers implementing compatible clients or extending Ieum's protocol support.
 
 ## Protocol Overview
 
-The Deskflow protocol enables keyboard and mouse sharing between multiple computers over a TCP network connection. The protocol uses two distinct sets of terminology to describe the roles of the computers involved:
+The protocol enables keyboard and mouse sharing between multiple computers over a TCP network connection. It uses two distinct sets of terminology to describe the roles of the computers involved:
 
 - **Network Role (Client/Server)**: This describes the connection architecture.
   - **Server**: The machine that listens for incoming TCP connections.
@@ -450,7 +450,7 @@ Client                                 Server
 ### Debug Tools
 
 - **Wireshark**: Capture and analyze network traffic
-- **Protocol Logs**: Enable verbose logging in Deskflow
+- **Protocol Logs**: Enable verbose logging in Ieum
 - **Message Validation**: Check message format against specification
 
 ## Platform-Specific Implementations

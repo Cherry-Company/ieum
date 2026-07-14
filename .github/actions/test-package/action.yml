@@ -15,7 +15,7 @@ runs:
       shell: bash
       run: |
         if [ "$RUNNER_OS" == "macOS" ]; then
-          dmg=$(ls build/deskflow-*.dmg | head -1)
+          dmg=$(ls build/Ieum-*.dmg | head -1)
           echo "Y" | hdiutil attach "$dmg" -nobrowse -mountpoint /tmp/deskflow-dmg
           core=$(find /tmp/deskflow-dmg -path "*/Contents/MacOS/deskflow-core" -type f | head -1)
           test -n "$core"
@@ -23,8 +23,8 @@ runs:
           hdiutil detach /tmp/deskflow-dmg
 
         elif [ "$RUNNER_OS" == "Windows" ]; then
-          7z x build/deskflow-*-portable.7z -otmp/deskflow-pkg
-          exe=$(find tmp/deskflow-pkg -name "deskflow-core.exe" -type f | head -1)
+          7z x build/Ieum-*-portable.7z -otmp/ieum-pkg
+          exe=$(find tmp/ieum-pkg -name "deskflow-core.exe" -type f | head -1)
           exe_dir=$(dirname "$exe")
           pkg_root=$(dirname "$exe_dir")
           export PATH="$exe_dir:$pkg_root:$pkg_root/lib:$PATH"
@@ -32,13 +32,13 @@ runs:
 
         elif [ "$RUNNER_OS" == "Linux" ]; then
           if [ "${{inputs.like}}" == "debian" ]; then
-            apt-get install -y ./build/deskflow-*.deb
+            apt-get install -y ./build/Ieum-*.deb
           elif [ "${{inputs.like}}" == "fedora" ]; then
-            dnf install -y build/deskflow-*.rpm
+            dnf install -y build/Ieum-*.rpm
           elif [ "${{inputs.like}}" == "suse" ]; then
-            zypper install -y --allow-unsigned-rpm build/deskflow-*.rpm
+            zypper install -y --allow-unsigned-rpm build/Ieum-*.rpm
           elif [ "${{inputs.like}}" == "arch" ]; then
-            pacman -U --noconfirm build/deskflow-*.pkg.tar.zst
+            pacman -U --noconfirm build/Ieum-*.pkg.tar.zst
           else
             echo "Unknown like: ${{inputs.like}}"
             exit 1

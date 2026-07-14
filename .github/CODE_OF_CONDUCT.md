@@ -1,18 +1,19 @@
-# Deskflow Code of Conduct
+<!-- SPDX-FileCopyrightText: (C) 2026 Ieum Developers -->
+<!-- SPDX-License-Identifier: MIT -->
+
+# Ieum Code of Conduct
 
 ## Our Pledge
 
-We want the Deskflow community to be one where everyone can work together. We pledge to keep our community focused on the project and the code around the project. 
+We are committed to a respectful, harassment-free project community for everyone.
 
-## Community Standards
+## Standards
 
- * Keep interactions respectful and focused on the project
- * Contributions are expected to follow the [contribution guide](https://github.com/deskflow/deskflow/wiki/Contributing).
- 
+- Keep technical discussion specific, constructive, and focused on the project.
+- Respect contributors and users regardless of background or experience.
+- Do not publish private information or use insulting, discriminatory, or threatening language.
+
 ## Enforcement
 
-Enforcement will be done at the descression of the Deskflow Moderators.
-
- 1. Warning
- 2. Temporary ban
- 3. Permanent banning
+Report conduct concerns privately to the repository owner. Project maintainers may warn, temporarily restrict,
+or permanently remove participants whose behavior violates these standards.

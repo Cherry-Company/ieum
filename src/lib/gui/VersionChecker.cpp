@@ -29,8 +29,8 @@ void VersionChecker::checkLatest() const
   auto request = QNetworkRequest(url);
   auto userAgent = QString("%1 %2 on %3").arg(kAppName, kVersion, QSysInfo::prettyProductName());
   request.setHeader(QNetworkRequest::UserAgentHeader, userAgent);
-  request.setRawHeader("X-Deskflow-Version", kVersion);
-  request.setRawHeader("X-Deskflow-Language", qPrintable(QLocale::system().name()));
+  request.setRawHeader("X-Ieum-Version", kVersion);
+  request.setRawHeader("X-Ieum-Language", qPrintable(QLocale::system().name()));
   m_network->get(request);
 }
 
@@ -46,7 +46,7 @@ void VersionChecker::replyFinished(QNetworkReply *reply)
 
   qDebug("version check server success, http status: %d", httpStatus);
 
-  const auto newestVersion = QString(reply->readAll());
+  const auto newestVersion = QString(reply->readAll()).trimmed();
   reply->deleteLater();
   qDebug("version check response: %s", qPrintable(newestVersion));
 
@@ -69,25 +69,27 @@ int VersionChecker::getStageVersion(QString stage)
   const char *stableName = "stable";
   const char *rcName = "rc";
   const char *betaName = "beta";
+  const char *alphaName = "alpha";
 
   // use max int for stable so it's always the highest value.
   const int stableValue = INT_MAX;
-  const int rcValue = 2;
-  const int betaValue = 1;
+  const int rcValue = 3000;
+  const int betaValue = 2000;
+  const int alphaValue = 1000;
   const int otherValue = 0;
 
   if (stage.isEmpty() || stage == stableName) {
     return stableValue;
-  } else if (stage.startsWith(rcName, Qt::CaseInsensitive)) {
-    static QRegularExpression re("\\d*", QRegularExpression::CaseInsensitiveOption);
+  } else if (stage.startsWith(rcName, Qt::CaseInsensitive) || stage.startsWith(betaName, Qt::CaseInsensitive) ||
+             stage.startsWith(alphaName, Qt::CaseInsensitive)) {
+    static QRegularExpression re("(\\d+)$", QRegularExpression::CaseInsensitiveOption);
     auto match = re.match(stage);
-    if (match.hasMatch()) {
-      // return the rc value plus the rc number (e.g. 2 + 1)
-      // this should be ok since stable is max int.
-      return rcValue + match.captured(1).toInt();
-    }
-  } else if (stage == betaName) {
-    return betaValue;
+    const int sequence = match.hasMatch() ? match.captured(1).toInt() : 0;
+    if (stage.startsWith(rcName, Qt::CaseInsensitive))
+      return rcValue + sequence;
+    if (stage.startsWith(betaName, Qt::CaseInsensitive))
+      return betaValue + sequence;
+    return alphaValue + sequence;
   }
 
   return otherValue;
