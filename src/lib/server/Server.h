@@ -13,6 +13,7 @@
 #include "common/NetworkProtocol.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/ClipboardTypes.h"
+#include "deskflow/InputLanguageTypes.h"
 #include "deskflow/KeyTypes.h"
 #include "deskflow/MouseTypes.h"
 #include "server/Config.h"
@@ -199,6 +200,7 @@ public:
   void getClients(std::vector<std::string> &list) const;
   void sendConnectedClientsIpc() const;
   size_t getMaximumClipboardSizeBytes() const;
+  void onInputLanguageStatus(BaseClientProxy *client, const deskflow::InputLanguageStatus &status) const;
 
   //@}
 
@@ -323,8 +325,14 @@ private:
   void handleToggleScreenEvent(const Event &);
   void handleKeyboardBroadcastEvent(const Event &event);
   void handleLockCursorToScreenEvent(const Event &event);
+  void handlePrimaryInputLanguageChanged(const Event &event);
 
   // event processing
+  bool isInputLanguageControl(const BaseClientProxy *client, KeyID id) const;
+  KeyButton buttonForClient(const BaseClientProxy *client, KeyButton button) const;
+  void sendKeyDown(BaseClientProxy *client, KeyID, KeyModifierMask, KeyButton, const std::string &);
+  void sendKeyUp(BaseClientProxy *client, KeyID, KeyModifierMask, KeyButton);
+  void sendKeyRepeat(BaseClientProxy *client, KeyID, KeyModifierMask, int32_t, KeyButton, const std::string &);
   void onClipboardChanged(const BaseClientProxy *sender, ClipboardID id, uint32_t seqNum);
   void onScreensaver(bool activated);
   void onKeyDown(KeyID, KeyModifierMask, KeyButton, const std::string &, const char *screens);

@@ -8,6 +8,7 @@
 #pragma once
 
 #include "deskflow/IClient.h"
+#include "deskflow/InputLanguageTypes.h"
 
 namespace deskflow {
 class IStream;
@@ -80,6 +81,18 @@ public:
   virtual void fileChunkSending(uint8_t mark, char *data, size_t dataSize) = 0;
   virtual std::string getSecureInputApp() const = 0;
   virtual void secureInputNotification(const std::string &app) const = 0;
+  virtual int16_t protocolMinorVersion() const
+  {
+    return 0;
+  }
+  virtual void inputLanguageControl(deskflow::InputLanguageAction, const std::string &)
+  {
+    // unsupported before protocol 1.9
+  }
+  virtual deskflow::InputLanguageStatus inputLanguageStatus() const
+  {
+    return {};
+  }
   std::string getName() const override;
   virtual deskflow::IStream *getStream() const = 0;
 

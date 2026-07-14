@@ -76,16 +76,17 @@ endif()
 project(
   deskflow
   VERSION "${DESKFLOW_VERSION_MAJOR}.${DESKFLOW_VERSION_MINOR}.${DESKFLOW_VERSION_PATCH}.${DESKFLOW_VERSION_TWEAK}"
-  DESCRIPTION "Keyboard and mouse sharing utility"
-  HOMEPAGE_URL "https://deskflow.org"
+  DESCRIPTION "IME-native keyboard and mouse sharing utility"
+  HOMEPAGE_URL "https://github.com/victoriousian/ieum"
   LANGUAGES C CXX
 )
 
 # Define Additional "PROJECT" vars for packaging and metadata
-set(CMAKE_PROJECT_PROPER_NAME "Deskflow")
+set(CMAKE_PROJECT_PROPER_NAME "Ieum")
 set(CMAKE_PROJECT_VENDOR "${CMAKE_PROJECT_PROPER_NAME} Devs")
 set(CMAKE_PROJECT_COPYRIGHT "(C) 2024-2026 ${CMAKE_PROJECT_VENDOR}")
-set(CMAKE_PROJECT_CONTACT "${CMAKE_PROJECT_PROPER_NAME} <maintainers@deskflow.org>")
+# Keep the upstream reverse-DNS id for macOS permission continuity and protocol compatibility.
+set(CMAKE_PROJECT_CONTACT "${CMAKE_PROJECT_PROPER_NAME} <https://github.com/victoriousian/ieum/issues>")
 set(CMAKE_PROJECT_REV_FQDN "org.deskflow.deskflow")
 
 #Unset the vars used in the project call

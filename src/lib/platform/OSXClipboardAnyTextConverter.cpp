@@ -7,7 +7,40 @@
 
 #include "platform/OSXClipboardAnyTextConverter.h"
 
+#include "common/Settings.h"
+
 #include <algorithm>
+
+namespace {
+
+std::string normalizeNfc(const std::string &value)
+{
+  const auto source = CFStringCreateWithBytes(
+      kCFAllocatorDefault, reinterpret_cast<const UInt8 *>(value.data()), static_cast<CFIndex>(value.size()),
+      kCFStringEncodingUTF8, false
+  );
+  if (source == nullptr) {
+    return value;
+  }
+  const auto normalized = CFStringCreateMutableCopy(kCFAllocatorDefault, 0, source);
+  CFRelease(source);
+  if (normalized == nullptr) {
+    return value;
+  }
+  CFStringNormalize(normalized, kCFStringNormalizationFormC);
+
+  const CFRange range = CFRangeMake(0, CFStringGetLength(normalized));
+  CFIndex size = 0;
+  CFStringGetBytes(normalized, range, kCFStringEncodingUTF8, 0, false, nullptr, 0, &size);
+  std::string result(static_cast<size_t>(size), '\0');
+  CFStringGetBytes(
+      normalized, range, kCFStringEncodingUTF8, 0, false, reinterpret_cast<UInt8 *>(result.data()), size, nullptr
+  );
+  CFRelease(normalized);
+  return result;
+}
+
+} // namespace
 
 //
 // OSXClipboardAnyTextConverter
@@ -27,7 +60,8 @@ std::string OSXClipboardAnyTextConverter::fromIClipboard(const std::string &data
 std::string OSXClipboardAnyTextConverter::toIClipboard(const std::string &data) const
 {
   // convert text then newlines
-  return convertLinefeedToUnix(doToIClipboard(data));
+  const auto converted = convertLinefeedToUnix(doToIClipboard(data));
+  return Settings::value(Settings::Client::ClipboardNormalizeNfc).toBool() ? normalizeNfc(converted) : converted;
 }
 
 static bool isLF(char ch)

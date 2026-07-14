@@ -213,6 +213,15 @@ QVariant Settings::defaultValue(const QString &key)
   if (key == Client::YScrollScale || key == Client::XScrollScale)
     return 1.0;
 
+  if (key == Client::CjkRawScancode)
+    return QStringLiteral("auto");
+
+  if (key == Client::EnterScreenLang)
+    return QStringLiteral("keep");
+
+  if (key == Client::MacInterKeyDelayMicros)
+    return 0;
+
   if (key == Server::Protocol)
     return networkProtocolToOption(NetworkProtocol::Barrier);
 

@@ -44,6 +44,8 @@ if(WIN32)
     MSWindowsEventQueueBuffer.h
     MSWindowsHook.cpp
     MSWindowsHook.h
+    MSWindowsImeController.cpp
+    MSWindowsImeController.h
     MSWindowsKeyState.cpp
     MSWindowsKeyState.h
     MSWindowsPowerManager.cpp
@@ -86,6 +88,8 @@ elseif(APPLE)
     OSXEventQueueBuffer.h
     OSXKeyState.cpp
     OSXKeyState.h
+    OSXInputSourceController.h
+    OSXInputSourceController.mm
     OSXMediaKeySupport.h
     OSXMediaKeySupport.m
     OSXPasteboardPeeker.h
@@ -174,6 +178,10 @@ endif()
 add_library(platform STATIC ${PLATFORM_SOURCES})
 
 target_link_libraries(platform client ${libs})
+
+if(WIN32)
+  target_link_libraries(platform imm32)
+endif()
 
 if(UNIX)
   target_link_libraries(

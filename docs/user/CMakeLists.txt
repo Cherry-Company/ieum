@@ -11,6 +11,7 @@ doxygen_add_docs(user-docs ${CMAKE_CURRENT_SOURCE_DIR} COMMENT "Generating user 
 target_sources(user-docs PRIVATE
   mainpage.md
   configuration.md
+  ime.md
 )
 
 install(

@@ -36,6 +36,7 @@ class EventQueueTimer;
 class Mutex;
 class Thread;
 class OSXKeyState;
+class OSXInputSourceController;
 class OSXScreenSaver;
 class IEventQueue;
 class Mutex;
@@ -93,6 +94,10 @@ public:
   void setSequenceNumber(uint32_t) override;
   bool isPrimary() const override;
   std::string getSecureInputApp() const override;
+  void inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target) override;
+  deskflow::InputLanguageStatus inputLanguageStatus() const override;
+  KeyButton canonicalizeKeyButton(KeyButton button) const override;
+  bool fakeRawKey(KeyButton button, KeyModifierMask mask, bool press, bool repeat) override;
 
   void waitForCarbonLoop() const;
 
@@ -250,6 +255,7 @@ private:
 
   // keyboard stuff
   OSXKeyState *m_keyState;
+  std::unique_ptr<OSXInputSourceController> m_inputSourceController;
 
   // clipboards
   OSXClipboard m_pasteboard;

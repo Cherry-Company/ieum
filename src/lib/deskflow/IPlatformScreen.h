@@ -13,6 +13,7 @@
 #include "deskflow/IPrimaryScreen.h"
 #include "deskflow/IScreen.h"
 #include "deskflow/ISecondaryScreen.h"
+#include "deskflow/InputLanguageTypes.h"
 #include "deskflow/OptionTypes.h"
 
 class IClipboard;
@@ -134,6 +135,30 @@ public:
   alternative on other platforms
   */
   virtual std::string getSecureInputApp() const = 0;
+
+  //! Apply an IME/input-source command. Unsupported platforms keep their current state.
+  virtual void inputLanguageControl(deskflow::InputLanguageAction, const std::string &)
+  {
+    // do nothing
+  }
+
+  //! Return the active platform input source.
+  virtual deskflow::InputLanguageStatus inputLanguageStatus() const
+  {
+    return {};
+  }
+
+  //! Convert a platform KeyButton into a canonical PC Set-1 scancode.
+  virtual KeyButton canonicalizeKeyButton(KeyButton button) const
+  {
+    return button;
+  }
+
+  //! Inject one canonical Set-1 event without character/layout translation.
+  virtual bool fakeRawKey(KeyButton, KeyModifierMask, bool, bool)
+  {
+    return false;
+  }
 
   //@}
   //! @name accessors

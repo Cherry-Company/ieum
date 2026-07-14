@@ -137,6 +137,7 @@ public:
   KeyModifierMask pollActiveModifiers() const override;
   int32_t pollActiveGroup() const override;
   void pollPressedKeys(KeyButtonSet &pressedKeys) const override;
+  bool fakeRawKey(KeyButton scancode, bool press, bool repeat);
 
   // KeyState overrides
   void onKey(KeyButton button, bool down, KeyModifierMask newState) override;

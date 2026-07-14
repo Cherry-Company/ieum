@@ -9,6 +9,7 @@
 
 #include "deskflow/ClipboardTypes.h"
 #include "deskflow/IScreen.h"
+#include "deskflow/InputLanguageTypes.h"
 #include "deskflow/KeyTypes.h"
 #include "deskflow/MouseTypes.h"
 #include "deskflow/OptionTypes.h"
@@ -128,6 +129,15 @@ public:
   match the given modifier mask.
   */
   void keyUp(KeyID id, KeyModifierMask, KeyButton);
+
+  bool rawKeyDown(KeyButton button, KeyModifierMask mask);
+  bool rawKeyRepeat(KeyButton button, KeyModifierMask mask, int32_t count);
+  bool rawKeyUp(KeyButton button, KeyModifierMask mask);
+
+  void inputLanguageControl(InputLanguageAction action, const std::string &target);
+  InputLanguageStatus inputLanguageStatus() const;
+
+  KeyButton canonicalizeKeyButton(KeyButton button) const;
 
   //! Notify of mouse press
   /*!

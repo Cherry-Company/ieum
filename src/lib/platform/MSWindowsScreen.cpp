@@ -25,6 +25,7 @@
 #include "platform/MSWindowsClipboard.h"
 #include "platform/MSWindowsDesks.h"
 #include "platform/MSWindowsEventQueueBuffer.h"
+#include "platform/MSWindowsImeController.h"
 #include "platform/MSWindowsKeyState.h"
 #include "platform/MSWindowsScreenSaver.h"
 
@@ -110,6 +111,7 @@ MSWindowsScreen::MSWindowsScreen(bool isPrimary, bool useHooks, IEventQueue *eve
     updateScreenShape();
     m_class = createWindowClass();
     m_window = createWindow(m_class, LPCWSTR(kAppName));
+    m_imeController = std::make_unique<MSWindowsImeController>(m_events, getEventTarget());
     setupMouseKeys();
     LOG_DEBUG("screen shape: %d,%d %dx%d %s", m_x, m_y, m_w, m_h, m_multimon ? "(multi-monitor)" : "");
     LOG_DEBUG("window is 0x%08x", m_window);
@@ -120,6 +122,7 @@ MSWindowsScreen::MSWindowsScreen(bool isPrimary, bool useHooks, IEventQueue *eve
 
     OleInitialize(0);
   } catch (...) {
+    m_imeController.reset();
     delete m_keyState;
     delete m_desks;
     delete m_screensaver;
@@ -145,6 +148,7 @@ MSWindowsScreen::~MSWindowsScreen()
   disable();
   m_events->adoptBuffer(nullptr);
   m_events->removeHandler(EventTypes::System, m_events->getSystemTarget());
+  m_imeController.reset();
   delete m_keyState;
   delete m_desks;
   delete m_screensaver;
@@ -1439,11 +1443,32 @@ void MSWindowsScreen::handleFixes()
 {
   // fix clipboard chain
   fixClipboardViewer();
+  m_imeController->poll();
 
   // update keys if keyboard layouts have changed
   if (m_keyState->didGroupsChange()) {
     updateKeys();
   }
+}
+
+void MSWindowsScreen::inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target)
+{
+  m_imeController->control(action, target);
+}
+
+deskflow::InputLanguageStatus MSWindowsScreen::inputLanguageStatus() const
+{
+  return m_imeController->status();
+}
+
+KeyButton MSWindowsScreen::canonicalizeKeyButton(KeyButton button) const
+{
+  return button;
+}
+
+bool MSWindowsScreen::fakeRawKey(KeyButton button, KeyModifierMask, bool press, bool repeat)
+{
+  return m_keyState->fakeRawKey(button, press, repeat);
 }
 
 void MSWindowsScreen::fixClipboardViewer()

@@ -6,6 +6,22 @@ if(WIN32)
 endif()
 
 create_test(
+  NAME CanonicalScancodeTests
+  DEPENDS app
+  LIBS arch base ${extra_libs}
+  SOURCE CanonicalScancodeTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+)
+
+create_test(
+  NAME Protocol19Tests
+  DEPENDS app
+  LIBS arch base io ${extra_libs}
+  SOURCE Protocol19Tests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+)
+
+create_test(
   NAME ClipboardTests
   DEPENDS app
   LIBS arch base io ${extra_libs}
@@ -62,4 +78,3 @@ if(BUILD_X11_SUPPORT)
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
   )
 endif()
-

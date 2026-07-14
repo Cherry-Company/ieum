@@ -45,7 +45,7 @@ static const int16_t kProtocolMajorVersion = 1;
  * @note When incrementing the minor version, the Deskflow application version should also increment
  * @since Protocol version 1.0
  */
-static const int16_t kProtocolMinorVersion = 8;
+static const int16_t kProtocolMinorVersion = 9;
 
 /**
  * @brief Default TCP port for Deskflow connections
@@ -1125,6 +1125,35 @@ extern const char *const kMsgDSecureInputNotification;
  * @since Protocol version 1.8
  */
 extern const char *const kMsgDLanguageSynchronisation;
+
+/**
+ * @brief IME/input-source control
+ *
+ * **Message Code**: `"DILC"`
+ * **Direction**: Primary -> Secondary
+ * **Format**: `"DILC%1i%s"`
+ * **Parameters**:
+ * - `$1`: action (`0` toggle, `1` set, `2` query)
+ * - `$2`: target language or input-source identifier
+ *
+ * @since Protocol version 1.9
+ */
+extern const char *const kMsgDInputLangControl;
+
+/**
+ * @brief Actual secondary input-source status
+ *
+ * **Message Code**: `"CILS"`
+ * **Direction**: Secondary -> Primary
+ * **Format**: `"CILS%s%1i%1i"`
+ * **Parameters**:
+ * - `$1`: platform input-source identifier
+ * - `$2`: category (`0` key layout, `1` input method, `2` unknown)
+ * - `$3`: composition/preedit active flag
+ *
+ * @since Protocol version 1.9
+ */
+extern const char *const kMsgCInputLangStatus;
 
 /** @} */ // end of protocol_system group
 

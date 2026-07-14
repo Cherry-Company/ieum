@@ -13,6 +13,8 @@
 #include <Carbon/Carbon.h>
 
 #include <map>
+#include <mutex>
+#include <optional>
 #include <vector>
 
 class IOSXKeyResource;
@@ -28,7 +30,7 @@ public:
 
   OSXKeyState(IEventQueue *events, std::vector<std::string> layouts, bool isLangSyncEnabled);
   OSXKeyState(IEventQueue *events, deskflow::KeyMap &keyMap, std::vector<std::string> layouts, bool isLangSyncEnabled);
-  ~OSXKeyState() override = default;
+  ~OSXKeyState() override;
 
   //! @name modifiers
   //@{
@@ -85,6 +87,7 @@ public:
   void pollPressedKeys(KeyButtonSet &pressedKeys) const override;
 
   CGEventFlags getModifierStateAsOSXFlags() const;
+  bool fakeRawKey(KeyButton scancode, KeyModifierMask mask, bool press, bool repeat);
 
 protected:
   // KeyState overrides
@@ -138,7 +141,11 @@ private:
 
   void setKeyboardModifiers(CGKeyCode virtualKey, bool keyDown);
 
-  void postKeyboardKey(CGKeyCode virtualKey, bool keyDown);
+  void postKeyboardKey(
+      CGKeyCode virtualKey, bool keyDown, bool repeat = false,
+      std::optional<KeyModifierMask> modifierMask = std::nullopt
+  );
+  bool isInputMethodActive() const;
 
 private:
   // OS X uses a physical key if 0 for the 'A' key.  deskflow reserves
@@ -150,7 +157,7 @@ private:
     KeyButtonOffset = 1
   };
 
-  using GroupMap = std::map<CFDataRef, int32_t>;
+  using GroupMap = std::map<std::string, int32_t>;
   using VirtualKeyMap = std::map<uint32_t, KeyID>;
 
   VirtualKeyMap m_virtualKeyMap;
@@ -162,4 +169,7 @@ private:
   bool m_altPressed;
   bool m_superPressed;
   bool m_capsPressed;
+  CGEventSourceRef m_eventSource = nullptr;
+  CGEventTimestamp m_lastEventTimestamp = 0;
+  std::mutex m_eventSourceMutex;
 };

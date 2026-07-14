@@ -599,6 +599,22 @@ void CoreProcess::onCoreIpcMessageReceived(const QString &command, const QString
     Q_EMIT peerFingerprint(args);
   } else if (command == "missingKeyboardLayouts") {
     Q_EMIT missingKeyboardLayouts(args);
+  } else if (command == "inputLanguageStatus") {
+    const auto fields = args.split("|");
+    if (fields.size() != 4) {
+      qWarning("core ipc got malformed input language status: %s", qUtf8Printable(args));
+      return;
+    }
+
+    bool categoryOk = false;
+    bool composingOk = false;
+    const auto category = fields.at(2).toInt(&categoryOk);
+    const auto composing = fields.at(3).toInt(&composingOk);
+    if (!categoryOk || !composingOk || category < 0 || category > 2 || composing < 0 || composing > 1) {
+      qWarning("core ipc got invalid input language status: %s", qUtf8Printable(args));
+      return;
+    }
+    Q_EMIT inputLanguageStatusChanged(fields.at(0), fields.at(1), category, composing != 0);
   }
 }
 

@@ -229,6 +229,9 @@ enum class EventTypes : uint32_t
   /// This event is sent whenever a clipboard chunk is transferred.
   ClipboardSending,
 
+  /// The active OS input source changed. Event data is InputLanguageStatus.
+  InputLanguageChanged,
+
   /// Start libei
   EIConnected,
 

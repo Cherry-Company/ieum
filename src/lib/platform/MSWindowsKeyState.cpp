@@ -1218,6 +1218,26 @@ void MSWindowsKeyState::fakeKey(const Keystroke &keystroke)
   }
 }
 
+bool MSWindowsKeyState::fakeRawKey(KeyButton scancode, bool press, bool repeat)
+{
+  if (scancode == 0) {
+    return false;
+  }
+  if ((scancode & ~0x1ffu) != 0) {
+    LOG_WARN("invalid canonical scancode 0x%04x", scancode);
+    return false;
+  }
+  DWORD flags = KEYEVENTF_SCANCODE;
+  if (!press) {
+    flags |= KEYEVENTF_KEYUP;
+  }
+  if ((scancode & 0x100u) != 0) {
+    flags |= KEYEVENTF_EXTENDEDKEY;
+  }
+  m_desks->fakeKeyEvent(0, static_cast<WORD>(scancode & 0xffu), flags, repeat);
+  return true;
+}
+
 KeyModifierMask &MSWindowsKeyState::getActiveModifiersRValue()
 {
   if (m_useSavedModifiers) {

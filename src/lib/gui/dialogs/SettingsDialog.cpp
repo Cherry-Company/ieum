@@ -32,6 +32,13 @@ SettingsDialog::SettingsDialog(QWidget *parent, const ServerConfig &serverConfig
 
   ui->setupUi(this);
 
+  ui->comboCjkRawScancode->addItem(tr("Automatic"), QStringLiteral("auto"));
+  ui->comboCjkRawScancode->addItem(tr("Always"), QStringLiteral("on"));
+  ui->comboCjkRawScancode->addItem(tr("Never"), QStringLiteral("off"));
+  ui->comboEnterScreenLang->addItem(tr("Keep remote state"), QStringLiteral("keep"));
+  ui->comboEnterScreenLang->addItem(tr("Force English"), QStringLiteral("force-en"));
+  ui->comboEnterScreenLang->addItem(tr("Follow this computer"), QStringLiteral("follow-server"));
+
   // these are enabled by the control next to them
   ui->lineCommandEnter->setEnabled(false);
   ui->lineCommandExit->setEnabled(false);
@@ -141,6 +148,11 @@ void SettingsDialog::initConnections() const
   connect(ui->cbRunExitCommand, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->lineCommandEnter, &QLineEdit::textChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->lineCommandExit, &QLineEdit::textChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->cbImeSync, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->comboCjkRawScancode, &QComboBox::currentIndexChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->comboEnterScreenLang, &QComboBox::currentIndexChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->cbClipboardNormalizeNfc, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->spinMacInterKeyDelayMicros, &QSpinBox::valueChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
 }
 
 void SettingsDialog::regenCertificates()
@@ -220,6 +232,12 @@ void SettingsDialog::updateText()
   ui->buttonBox->button(QDialogButtonBox::Cancel)->setToolTip(tr("Close and forget changes"));
   ui->buttonBox->button(QDialogButtonBox::Reset)->setToolTip(tr("Reset to stored values"));
   ui->buttonBox->button(QDialogButtonBox::RestoreDefaults)->setToolTip(tr("Reset to default values"));
+  ui->comboCjkRawScancode->setItemText(0, tr("Automatic"));
+  ui->comboCjkRawScancode->setItemText(1, tr("Always"));
+  ui->comboCjkRawScancode->setItemText(2, tr("Never"));
+  ui->comboEnterScreenLang->setItemText(0, tr("Keep remote state"));
+  ui->comboEnterScreenLang->setItemText(1, tr("Force English"));
+  ui->comboEnterScreenLang->setItemText(2, tr("Follow this computer"));
 }
 
 void SettingsDialog::accept()
@@ -246,6 +264,11 @@ void SettingsDialog::accept()
   Settings::setValue(Settings::Core::EnableExitCommand, ui->cbRunExitCommand->isChecked());
   Settings::setValue(Settings::Core::ScreenEnterCommand, ui->lineCommandEnter->text());
   Settings::setValue(Settings::Core::ScreenExitCommand, ui->lineCommandExit->text());
+  Settings::setValue(Settings::Client::ImeSync, ui->cbImeSync->isChecked());
+  Settings::setValue(Settings::Client::CjkRawScancode, ui->comboCjkRawScancode->currentData());
+  Settings::setValue(Settings::Client::EnterScreenLang, ui->comboEnterScreenLang->currentData());
+  Settings::setValue(Settings::Client::ClipboardNormalizeNfc, ui->cbClipboardNormalizeNfc->isChecked());
+  Settings::setValue(Settings::Client::MacInterKeyDelayMicros, ui->spinMacInterKeyDelayMicros->value());
 
   Settings::ProcessMode mode;
   if (ui->groupService->isChecked())
@@ -274,6 +297,15 @@ void SettingsDialog::loadFromConfig()
   ui->cbRunExitCommand->setChecked(Settings::value(Settings::Core::EnableExitCommand).toBool());
   ui->lineCommandEnter->setText(Settings::value(Settings::Core::ScreenEnterCommand).toString());
   ui->lineCommandExit->setText(Settings::value(Settings::Core::ScreenExitCommand).toString());
+  ui->cbImeSync->setChecked(Settings::value(Settings::Client::ImeSync).toBool());
+  ui->comboCjkRawScancode->setCurrentIndex(
+      ui->comboCjkRawScancode->findData(Settings::value(Settings::Client::CjkRawScancode).toString())
+  );
+  ui->comboEnterScreenLang->setCurrentIndex(
+      ui->comboEnterScreenLang->findData(Settings::value(Settings::Client::EnterScreenLang).toString())
+  );
+  ui->cbClipboardNormalizeNfc->setChecked(Settings::value(Settings::Client::ClipboardNormalizeNfc).toBool());
+  ui->spinMacInterKeyDelayMicros->setValue(Settings::value(Settings::Client::MacInterKeyDelayMicros).toInt());
 
   const auto processMode = Settings::value(Settings::Core::ProcessMode).value<Settings::ProcessMode>();
   ui->groupService->setChecked(processMode == Settings::ProcessMode::Service);
@@ -389,6 +421,7 @@ void SettingsDialog::updateControls()
   ui->cbRunExitCommand->setEnabled(writable);
   ui->lineCommandEnter->setEnabled(writable && ui->cbRunEnterCommand->isChecked());
   ui->lineCommandExit->setEnabled(writable && ui->cbRunExitCommand->isChecked());
+  ui->groupInputLanguage->setEnabled(writable);
 
   // Portable mode only ever applies to Windows.
   // Daemon options should only be available on Windows when *not* in portable mode.
@@ -443,6 +476,13 @@ bool SettingsDialog::isModified() const
       (ui->cbRunExitCommand->isChecked() != Settings::value(Settings::Core::EnableExitCommand).toBool()) ||
       (ui->lineCommandEnter->text() != Settings::value(Settings::Core::ScreenEnterCommand).toString()) ||
       (ui->lineCommandExit->text() != Settings::value(Settings::Core::ScreenExitCommand).toString()) ||
+      (ui->cbImeSync->isChecked() != Settings::value(Settings::Client::ImeSync).toBool()) ||
+      (ui->comboCjkRawScancode->currentData().toString() != Settings::value(Settings::Client::CjkRawScancode).toString()
+      ) ||
+      (ui->comboEnterScreenLang->currentData().toString() !=
+       Settings::value(Settings::Client::EnterScreenLang).toString()) ||
+      (ui->cbClipboardNormalizeNfc->isChecked() != Settings::value(Settings::Client::ClipboardNormalizeNfc).toBool()) ||
+      (ui->spinMacInterKeyDelayMicros->value() != Settings::value(Settings::Client::MacInterKeyDelayMicros).toInt()) ||
       (I18N::nativeTo639Name(ui->comboLanguage->currentText()) != Settings::value(Settings::Core::Language).toString());
 
   if (!ignoreInterface)
@@ -479,6 +519,15 @@ bool SettingsDialog::isDefault() const
       (ui->lineCommandExit->text() == Settings::defaultValue(Settings::Core::ScreenExitCommand).toString()) &&
       (ui->cbRunEnterCommand->isChecked() == Settings::defaultValue(Settings::Core::EnableEnterCommand).toBool()) &&
       (ui->cbRunExitCommand->isChecked() == Settings::defaultValue(Settings::Core::EnableExitCommand).toBool()) &&
+      (ui->cbImeSync->isChecked() == Settings::defaultValue(Settings::Client::ImeSync).toBool()) &&
+      (ui->comboCjkRawScancode->currentData().toString() ==
+       Settings::defaultValue(Settings::Client::CjkRawScancode).toString()) &&
+      (ui->comboEnterScreenLang->currentData().toString() ==
+       Settings::defaultValue(Settings::Client::EnterScreenLang).toString()) &&
+      (ui->cbClipboardNormalizeNfc->isChecked() ==
+       Settings::defaultValue(Settings::Client::ClipboardNormalizeNfc).toBool()) &&
+      (ui->spinMacInterKeyDelayMicros->value() ==
+       Settings::defaultValue(Settings::Client::MacInterKeyDelayMicros).toInt()) &&
       (ui->comboLanguage->currentText() == "English")
   );
 }
@@ -500,6 +549,15 @@ void SettingsDialog::resetToDefault()
   ui->cbRunExitCommand->setChecked(Settings::defaultValue(Settings::Core::EnableExitCommand).toBool());
   ui->lineCommandEnter->setText(Settings::defaultValue(Settings::Core::ScreenEnterCommand).toString());
   ui->lineCommandExit->setText(Settings::defaultValue(Settings::Core::ScreenExitCommand).toString());
+  ui->cbImeSync->setChecked(Settings::defaultValue(Settings::Client::ImeSync).toBool());
+  ui->comboCjkRawScancode->setCurrentIndex(
+      ui->comboCjkRawScancode->findData(Settings::defaultValue(Settings::Client::CjkRawScancode).toString())
+  );
+  ui->comboEnterScreenLang->setCurrentIndex(
+      ui->comboEnterScreenLang->findData(Settings::defaultValue(Settings::Client::EnterScreenLang).toString())
+  );
+  ui->cbClipboardNormalizeNfc->setChecked(Settings::defaultValue(Settings::Client::ClipboardNormalizeNfc).toBool());
+  ui->spinMacInterKeyDelayMicros->setValue(Settings::defaultValue(Settings::Client::MacInterKeyDelayMicros).toInt());
 
   const auto autoHide = Settings::defaultValue(Settings::Gui::Autohide).toBool();
   ui->rbCloseToTray->setChecked(autoHide);

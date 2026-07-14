@@ -274,6 +274,7 @@ void MainWindow::connectSlots()
   connect(&m_coreProcess, &CoreProcess::retryIn, this, &MainWindow::updateTimeoutDelay);
   connect(&m_coreProcess, &CoreProcess::peerFingerprint, this, &MainWindow::handlePeerFingerprint);
   connect(&m_coreProcess, &CoreProcess::missingKeyboardLayouts, this, &MainWindow::handleMissingKeyboardLayouts);
+  connect(&m_coreProcess, &CoreProcess::inputLanguageStatusChanged, this, &MainWindow::handleInputLanguageStatus);
 
   if (Settings::value(Settings::Gui::AutoStartCore).toBool()) {
     connect(ui->btnToggleCore, &QPushButton::clicked, m_actionStopCore, &QAction::trigger, Qt::UniqueConnection);
@@ -375,6 +376,19 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
   if (reason != QSystemTrayIcon::Trigger)
     return;
   isVisible() ? hide() : showAndActivate();
+}
+
+void MainWindow::handleInputLanguageStatus(const QString &client, const QString &sourceId, int category, bool composing)
+{
+  Q_UNUSED(composing)
+  const auto inputLabel = category == 1 ? QString::fromUtf8("\xed\x95\x9c") : QStringLiteral("A");
+  const auto peerLabel = client == QStringLiteral("local") ? tr("This computer") : client;
+  const auto status = tr("Input: %1 - %2").arg(inputLabel, peerLabel);
+
+  m_trayIcon->setToolTip(tr("%1\n%2\n%3").arg(kAppName, status, sourceId));
+  if (m_trayIcon->isVisible()) {
+    m_trayIcon->showMessage(kAppName, status, QSystemTrayIcon::NoIcon, 300);
+  }
 }
 
 void MainWindow::coreProcessError(CoreProcess::Error error)

@@ -120,6 +120,7 @@ private:
   void handleConnectionRefused(deskflow::core::ConnectionRefusal reason);
   void handlePeerFingerprint(const QString &fingerprint);
   void handleMissingKeyboardLayouts(const QString &layouts);
+  void handleInputLanguageStatus(const QString &client, const QString &sourceId, int category, bool composing);
   void closeEvent(QCloseEvent *event) override;
   void secureSocket(bool secureSocket);
   void connectSlots();

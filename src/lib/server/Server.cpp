@@ -10,6 +10,7 @@
 
 #include "base/IEventQueue.h"
 #include "base/Log.h"
+#include "common/Settings.h"
 #include "deskflow/AppUtil.h"
 #include "deskflow/DeskflowException.h"
 #include "deskflow/IPlatformScreen.h"
@@ -119,6 +120,9 @@ Server::Server(ServerConfig &config, PrimaryClient *primaryClient, deskflow::Scr
   m_events->addHandler(EventTypes::PrimaryScreenFakeInputEnd, m_inputFilter, [this](const auto &) {
     m_primaryClient->fakeInputEnd();
   });
+  m_events->addHandler(EventTypes::InputLanguageChanged, m_primaryClient->getEventTarget(), [this](const auto &event) {
+    handlePrimaryInputLanguageChanged(event);
+  });
 
   // add connection
   addClient(m_primaryClient);
@@ -157,6 +161,7 @@ Server::~Server()
   m_events->removeHandler(PrimaryScreenSaverDeactivated, m_primaryClient->getEventTarget());
   m_events->removeHandler(PrimaryScreenFakeInputBegin, m_inputFilter);
   m_events->removeHandler(PrimaryScreenFakeInputEnd, m_inputFilter);
+  m_events->removeHandler(InputLanguageChanged, m_primaryClient->getEventTarget());
   m_events->removeHandler(Timer, this);
   stopSwitch();
 
@@ -477,6 +482,18 @@ void Server::switchScreen(BaseClientProxy *dst, int32_t x, int32_t y, bool forSc
 
     // enter new screen
     m_active->enter(x, y, m_seqNum, m_primaryClient->getToggleMask(), forScreensaver);
+
+    if (m_active->protocolMinorVersion() >= 9 && Settings::value(Settings::Client::ImeSync).toBool()) {
+      const auto enterPolicy = Settings::value(Settings::Client::EnterScreenLang).toString().toLower();
+      if (enterPolicy == QStringLiteral("force-en")) {
+        m_active->inputLanguageControl(deskflow::InputLanguageAction::Set, "en");
+      } else if (enterPolicy == QStringLiteral("follow-server")) {
+        const auto status = m_screen->inputLanguageStatus();
+        m_active->inputLanguageControl(deskflow::InputLanguageAction::Set, status.isInputMethod() ? "ko" : "en");
+      } else {
+        m_active->inputLanguageControl(deskflow::InputLanguageAction::Query, "");
+      }
+    }
 
     if (m_enableClipboard) {
       // send the clipboard data to new active screen
@@ -1525,7 +1542,7 @@ void Server::onKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const s
 
   // relay
   if (!m_keyboardBroadcasting && IKeyState::KeyInfo::isDefault(screens)) {
-    m_active->keyDown(id, mask, button, lang);
+    sendKeyDown(m_active, id, mask, button, lang);
   } else {
     if (!screens && m_keyboardBroadcasting) {
       screens = m_keyboardBroadcastingScreens.c_str();
@@ -1535,7 +1552,7 @@ void Server::onKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const s
     }
     for (ClientList::const_iterator index = m_clients.begin(); index != m_clients.end(); ++index) {
       if (IKeyState::KeyInfo::contains(screens, index->first)) {
-        index->second->keyDown(id, mask, button, lang);
+        sendKeyDown(index->second, id, mask, button, lang);
       }
     }
   }
@@ -1548,7 +1565,7 @@ void Server::onKeyUp(KeyID id, KeyModifierMask mask, KeyButton button, const cha
 
   // relay
   if (!m_keyboardBroadcasting && IKeyState::KeyInfo::isDefault(screens)) {
-    m_active->keyUp(id, mask, button);
+    sendKeyUp(m_active, id, mask, button);
   } else {
     if (!screens && m_keyboardBroadcasting) {
       screens = m_keyboardBroadcastingScreens.c_str();
@@ -1558,7 +1575,7 @@ void Server::onKeyUp(KeyID id, KeyModifierMask mask, KeyButton button, const cha
     }
     for (ClientList::const_iterator index = m_clients.begin(); index != m_clients.end(); ++index) {
       if (IKeyState::KeyInfo::contains(screens, index->first)) {
-        index->second->keyUp(id, mask, button);
+        sendKeyUp(index->second, id, mask, button);
       }
     }
   }
@@ -1573,7 +1590,82 @@ void Server::onKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyButto
   assert(m_active != nullptr);
 
   // relay
-  m_active->keyRepeat(id, mask, count, button, lang);
+  sendKeyRepeat(m_active, id, mask, count, button, lang);
+}
+
+bool Server::isInputLanguageControl(const BaseClientProxy *client, KeyID id) const
+{
+  return client != nullptr && !client->isPrimary() && client->protocolMinorVersion() >= 9 &&
+         Settings::value(Settings::Client::ImeSync).toBool() && (id == kKeyHangul || id == kKeyHanja);
+}
+
+KeyButton Server::buttonForClient(const BaseClientProxy *client, KeyButton button) const
+{
+  if (client == nullptr || client->isPrimary() || client->protocolMinorVersion() < 9) {
+    return button;
+  }
+  const KeyButton canonical = m_screen->canonicalizeKeyButton(button);
+  return canonical;
+}
+
+void Server::sendKeyDown(
+    BaseClientProxy *client, KeyID id, KeyModifierMask mask, KeyButton button, const std::string &lang
+)
+{
+  if (isInputLanguageControl(client, id)) {
+    const auto action = id == kKeyHangul ? deskflow::InputLanguageAction::Toggle : deskflow::InputLanguageAction::Set;
+    client->inputLanguageControl(action, id == kKeyHanja ? "hanja" : "");
+    return;
+  }
+  client->keyDown(id, mask, buttonForClient(client, button), lang);
+}
+
+void Server::sendKeyUp(BaseClientProxy *client, KeyID id, KeyModifierMask mask, KeyButton button)
+{
+  if (!isInputLanguageControl(client, id)) {
+    client->keyUp(id, mask, buttonForClient(client, button));
+  }
+}
+
+void Server::sendKeyRepeat(
+    BaseClientProxy *client, KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &lang
+)
+{
+  if (!isInputLanguageControl(client, id)) {
+    client->keyRepeat(id, mask, count, buttonForClient(client, button), lang);
+  }
+}
+
+void Server::onInputLanguageStatus(BaseClientProxy *client, const deskflow::InputLanguageStatus &status) const
+{
+  ipcSendToClient(
+      "inputLanguageStatus", QStringLiteral("%1|%2|%3|%4")
+                                 .arg(QString::fromStdString(client->getName()))
+                                 .arg(QString::fromStdString(status.m_sourceId))
+                                 .arg(static_cast<int>(status.m_category))
+                                 .arg(status.m_composing ? 1 : 0)
+  );
+}
+
+void Server::handlePrimaryInputLanguageChanged(const Event &event)
+{
+  const auto *status = dynamic_cast<const deskflow::InputLanguageStatus *>(event.getDataObject());
+  if (status == nullptr) {
+    return;
+  }
+
+  ipcSendToClient(
+      "inputLanguageStatus", QStringLiteral("local|%1|%2|%3")
+                                 .arg(QString::fromStdString(status->m_sourceId))
+                                 .arg(static_cast<int>(status->m_category))
+                                 .arg(status->m_composing ? 1 : 0)
+  );
+
+  const auto enterPolicy = Settings::value(Settings::Client::EnterScreenLang).toString().toLower();
+  if (m_active != nullptr && !m_active->isPrimary() && m_active->protocolMinorVersion() >= 9 &&
+      Settings::value(Settings::Client::ImeSync).toBool() && enterPolicy == QStringLiteral("follow-server")) {
+    m_active->inputLanguageControl(deskflow::InputLanguageAction::Set, status->isInputMethod() ? "ko" : "en");
+  }
 }
 
 void Server::onMouseDown(ButtonID id)

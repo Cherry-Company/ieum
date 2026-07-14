@@ -10,11 +10,15 @@
 
 #include "deskflow/ClipboardChunk.h"
 #include "deskflow/ClipboardTypes.h"
+#include "deskflow/InputLanguageTypes.h"
 #include "deskflow/KeyTypes.h"
 #include "deskflow/KeyboardLayoutManager.h"
 
+#include <set>
+
 class Client;
 class ClientInfo;
+class Event;
 class EventQueueTimer;
 class IClipboard;
 namespace deskflow {
@@ -99,6 +103,10 @@ private:
   void secureInputNotification();
   void setServerLanguages();
   void setActiveServerLanguage(const std::string_view &language);
+  void inputLanguageControl();
+  void handleInputLanguageChanged(const Event &event);
+  void sendInputLanguageStatus(const deskflow::InputLanguageStatus &status);
+  bool rawScancodeEnabled() const;
 
 private:
   using MessageParser = ConnectionResult (ServerProxy::*)(const uint8_t *);
@@ -129,4 +137,6 @@ private:
   ClipboardChunkAssemblyState m_clipboardChunkState;
   bool m_isUserNotifiedAboutLayoutSyncError = false;
   deskflow::KeyboardLayoutManager m_layoutManager;
+  deskflow::InputLanguageStatus m_inputLanguageStatus;
+  std::set<KeyButton> m_rawScancodeButtons;
 };

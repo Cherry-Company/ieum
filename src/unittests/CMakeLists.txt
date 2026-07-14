@@ -74,7 +74,7 @@ endif()
 get_property(PROJECT_TESTS GLOBAL PROPERTY ${CMAKE_PROJECT_NAME}_tests)
 
 if(APPLE)
-  set(guiApp Deskflow)
+  set(guiApp ${CMAKE_PROJECT_PROPER_NAME})
 else()
   set(guiApp deskflow)
 endif()

@@ -412,12 +412,10 @@ static bool keyboardHookHandler(WPARAM wParam, LPARAM lParam)
       break;
 
     case VK_HANGUL:
-      // pass these modifiers if using a low level hook, discard
-      // them if not.
-      if (g_hookThread == 0) {
-        return true;
-      }
-      break;
+    case VK_HANJA:
+      // IME commands are relayed through DILC. Never mutate the primary
+      // computer's local IME while the cursor is on a secondary screen.
+      return true;
 
     default:
       // discard

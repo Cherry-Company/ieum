@@ -242,6 +242,41 @@ void Screen::keyUp(KeyID, KeyModifierMask, KeyButton button)
   m_screen->fakeKeyUp(button);
 }
 
+bool Screen::rawKeyDown(KeyButton button, KeyModifierMask mask)
+{
+  return m_screen->fakeRawKey(button, mask, true, false);
+}
+
+bool Screen::rawKeyRepeat(KeyButton button, KeyModifierMask mask, int32_t count)
+{
+  while (count-- > 0) {
+    if (!m_screen->fakeRawKey(button, mask, true, true)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool Screen::rawKeyUp(KeyButton button, KeyModifierMask mask)
+{
+  return m_screen->fakeRawKey(button, mask, false, false);
+}
+
+void Screen::inputLanguageControl(InputLanguageAction action, const std::string &target)
+{
+  m_screen->inputLanguageControl(action, target);
+}
+
+InputLanguageStatus Screen::inputLanguageStatus() const
+{
+  return m_screen->inputLanguageStatus();
+}
+
+KeyButton Screen::canonicalizeKeyButton(KeyButton button) const
+{
+  return m_screen->canonicalizeKeyButton(button);
+}
+
 void Screen::mouseDown(ButtonID button)
 {
   m_screen->fakeMouseButton(button, true);

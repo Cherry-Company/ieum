@@ -9,6 +9,7 @@
 #pragma once
 
 #include "deskflow/IClient.h"
+#include "deskflow/InputLanguageTypes.h"
 
 #include "base/EventTypes.h"
 #include "common/Enums.h"
@@ -145,6 +146,11 @@ public:
   void keyDown(KeyID, KeyModifierMask, KeyButton, const std::string &) override;
   void keyRepeat(KeyID, KeyModifierMask, int32_t count, KeyButton, const std::string &lang) override;
   void keyUp(KeyID, KeyModifierMask, KeyButton) override;
+  bool rawKeyDown(KeyButton, KeyModifierMask);
+  bool rawKeyRepeat(KeyButton, KeyModifierMask, int32_t count);
+  bool rawKeyUp(KeyButton, KeyModifierMask);
+  void inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target);
+  deskflow::InputLanguageStatus inputLanguageStatus() const;
   void mouseDown(ButtonID) override;
   void mouseUp(ButtonID) override;
   void mouseMove(int32_t xAbs, int32_t yAbs) override;

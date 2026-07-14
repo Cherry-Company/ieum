@@ -530,3 +530,14 @@ When extending the protocol:
 ---
 
 *This documentation is generated from the source code and is always up-to-date with the latest protocol implementation.*
+
+## Ieum Input Language Extension (v1.9)
+
+Ieum negotiates protocol minor version 9. A 1.9 primary can send
+`DILC%1i%s` to request an input-source toggle (`0`), absolute set (`1`), or
+status query (`2`). The secondary reports its actual OS state with
+`CILS%s%1i%1i`: source id, source category, and composition flag.
+
+The secondary is authoritative. The primary never infers remote IME state
+from its own language indicator, and peers below protocol 1.9 continue to use
+the existing key and language synchronization messages.

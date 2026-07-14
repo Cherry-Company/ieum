@@ -11,6 +11,7 @@
 #include "base/IEventQueue.h"
 #include "base/Log.h"
 #include "client/Client.h"
+#include "common/Settings.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/ClipboardChunk.h"
 #include "deskflow/DeskflowException.h"
@@ -46,6 +47,9 @@ ServerProxy::ServerProxy(Client *client, deskflow::IStream *stream, IEventQueue 
   m_events->addHandler(EventTypes::ClipboardSending, this, [this](const auto &e) {
     ClipboardChunk::send(m_stream, e.getDataObject());
   });
+  m_events->addHandler(EventTypes::InputLanguageChanged, m_client->getEventTarget(), [this](const auto &e) {
+    handleInputLanguageChanged(e);
+  });
 
   // send heartbeat
   setKeepAliveRate(kKeepAliveRate);
@@ -56,6 +60,7 @@ ServerProxy::~ServerProxy()
   setKeepAliveRate(-1.0);
   m_events->removeHandler(EventTypes::StreamInputReady, m_stream->getEventTarget());
   m_events->removeHandler(EventTypes::ClipboardSending, this);
+  m_events->removeHandler(EventTypes::InputLanguageChanged, m_client->getEventTarget());
 }
 
 void ServerProxy::resetKeepAliveAlarm()
@@ -229,6 +234,10 @@ ServerProxy::ConnectionResult ServerProxy::parseMessage(const uint8_t *code)
     LOG_VERBOSE("recv key down id=0x%08x, mask=0x%04x, button=0x%04x", id, mask, button);
 
     keyDown(id, mask, button, "");
+  }
+
+  else if (memcmp(code, kMsgDInputLangControl, 4) == 0) {
+    inputLanguageControl();
   }
 
   else if (memcmp(code, kMsgDKeyDownLang, 4) == 0) {
@@ -575,10 +584,17 @@ void ServerProxy::keyDown(uint16_t id, uint16_t mask, uint16_t button, const std
 {
   // get mouse up to date
   flushCompressedMouse();
-  setActiveServerLanguage(lang);
+  if (!m_inputLanguageStatus.isInputMethod()) {
+    setActiveServerLanguage(lang);
+  }
+
+  if (rawScancodeEnabled() && m_client->rawKeyDown(button, static_cast<KeyModifierMask>(mask))) {
+    m_rawScancodeButtons.insert(button);
+    return;
+  }
 
   // translate
-  KeyID id2 = translateKey(static_cast<KeyID>(id));
+  KeyID id2 = m_inputLanguageStatus.isInputMethod() ? static_cast<KeyID>(id) : translateKey(static_cast<KeyID>(id));
   KeyModifierMask mask2 = translateModifierMask(static_cast<KeyModifierMask>(mask));
   if (id2 != static_cast<KeyID>(id) || mask2 != static_cast<KeyModifierMask>(mask))
     LOG_VERBOSE("key down translated to id=0x%08x, mask=0x%04x", id2, mask2);
@@ -605,8 +621,13 @@ void ServerProxy::keyRepeat()
        id, mask, count, button, lang.c_str())
   );
 
+  if (m_rawScancodeButtons.contains(button)) {
+    m_client->rawKeyRepeat(button, static_cast<KeyModifierMask>(mask), count);
+    return;
+  }
+
   // translate
-  KeyID id2 = translateKey(static_cast<KeyID>(id));
+  KeyID id2 = m_inputLanguageStatus.isInputMethod() ? static_cast<KeyID>(id) : translateKey(static_cast<KeyID>(id));
   KeyModifierMask mask2 = translateModifierMask(static_cast<KeyModifierMask>(mask));
   if (id2 != static_cast<KeyID>(id) || mask2 != static_cast<KeyModifierMask>(mask))
     LOG_VERBOSE("key repeat translated to id=0x%08x, mask=0x%04x", id2, mask2);
@@ -627,8 +648,13 @@ void ServerProxy::keyUp()
   ProtocolUtil::readf(m_stream, kMsgDKeyUp + 4, &id, &mask, &button);
   LOG_VERBOSE("recv key up id=0x%08x, mask=0x%04x, button=0x%04x", id, mask, button);
 
+  if (m_rawScancodeButtons.erase(button) != 0) {
+    m_client->rawKeyUp(button, static_cast<KeyModifierMask>(mask));
+    return;
+  }
+
   // translate
-  KeyID id2 = translateKey(static_cast<KeyID>(id));
+  KeyID id2 = m_inputLanguageStatus.isInputMethod() ? static_cast<KeyID>(id) : translateKey(static_cast<KeyID>(id));
   KeyModifierMask mask2 = translateModifierMask(static_cast<KeyModifierMask>(mask));
   if (id2 != static_cast<KeyID>(id) || mask2 != static_cast<KeyModifierMask>(mask))
     LOG_VERBOSE("key up translated to id=0x%08x, mask=0x%04x", id2, mask2);
@@ -839,6 +865,54 @@ void ServerProxy::setServerLanguages()
   std::string serverLayout;
   ProtocolUtil::readf(m_stream, kMsgDLanguageSynchronisation + 4, &serverLayout);
   m_layoutManager.setRemoteLayouts(serverLayout);
+}
+
+void ServerProxy::inputLanguageControl()
+{
+  int8_t action = 0;
+  std::string target;
+  ProtocolUtil::readf(m_stream, kMsgDInputLangControl + 4, &action, &target);
+  if (action < static_cast<int8_t>(deskflow::InputLanguageAction::Toggle) ||
+      action > static_cast<int8_t>(deskflow::InputLanguageAction::Query)) {
+    LOG_WARN("server sent invalid input language action %d", action);
+    sendInputLanguageStatus(m_client->inputLanguageStatus());
+    return;
+  }
+
+  if (Settings::value(Settings::Client::ImeSync).toBool()) {
+    m_client->inputLanguageControl(static_cast<deskflow::InputLanguageAction>(action), target);
+  }
+  sendInputLanguageStatus(m_client->inputLanguageStatus());
+}
+
+void ServerProxy::handleInputLanguageChanged(const Event &event)
+{
+  const auto *status = dynamic_cast<const deskflow::InputLanguageStatus *>(event.getDataObject());
+  if (status != nullptr) {
+    sendInputLanguageStatus(*status);
+  }
+}
+
+void ServerProxy::sendInputLanguageStatus(const deskflow::InputLanguageStatus &status)
+{
+  if (status.m_sourceId.empty() && status.m_category == deskflow::InputLanguageCategory::Unknown) {
+    LOG_VERBOSE("input language status is unavailable on this platform");
+  }
+
+  m_inputLanguageStatus = status;
+  const int8_t category = static_cast<int8_t>(status.m_category);
+  const int8_t composing = status.m_composing ? 1 : 0;
+  ProtocolUtil::writef(m_stream, kMsgCInputLangStatus, &status.m_sourceId, category, composing);
+  ipcSendToClient(
+      "inputLanguageStatus",
+      QStringLiteral("local|%1|%2|%3").arg(QString::fromStdString(status.m_sourceId)).arg(category).arg(composing)
+  );
+}
+
+bool ServerProxy::rawScancodeEnabled() const
+{
+  const auto mode = Settings::value(Settings::Client::CjkRawScancode).toString().toLower();
+  return mode == QStringLiteral("on") || (mode == QStringLiteral("auto") && m_inputLanguageStatus.isInputMethod());
 }
 
 void ServerProxy::setActiveServerLanguage(const std::string_view &language)

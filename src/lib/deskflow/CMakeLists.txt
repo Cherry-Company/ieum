@@ -30,6 +30,8 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   AppUtil.h
   Chunk.cpp
   Chunk.h
+  CanonicalScancode.cpp
+  CanonicalScancode.h
   ClientApp.cpp
   ClientApp.h
   ClipboardTypes.h
@@ -44,6 +46,7 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   IClient.h
   IClipboard.cpp
   IClipboard.h
+  InputLanguageTypes.h
   IKeyState.cpp
   IKeyState.h
   IPlatformScreen.cpp

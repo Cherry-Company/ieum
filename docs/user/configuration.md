@@ -54,6 +54,11 @@ It will begin with `[client]`
 |:--------------------------|:------------------:|:-----------|
 | dynamicConnectionInterval | `true` or `false`  | Use dynamic connection retry times based on number of previously failed attempts [default: false] |
 | languageSync              | `true` or `false`  | Sync to server language [default: true] |
+| imeSync                   | `true` or `false`  | Synchronize the actual Korean/English input method state [default: true] |
+| cjkRawScancode            | `auto`, `on`, or `off` | Send canonical Set-1 scan codes; `auto` enables it while an IME is active [default: auto] |
+| enterScreenLang           | `keep`, `force-en`, or `follow-server` | Input state policy when entering a remote screen [default: keep] |
+| clipboardNormalizeNFC     | `true` or `false`  | Normalize shared text to Unicode NFC on macOS [default: true] |
+| macInterKeyDelayMicros    | Integer 0 - 2000   | Delay after synthesized macOS key events in microseconds [default: 0] |
 | remoteHost                | `IP` or `hostname` | The remote host(s) to connect to. Use a comma separated list when you want to try several hosts |
 | yScrollScale              | Double 0.1 - 10.0  | Vertical mouse scrolling will be scaled by this amount on the client [default: 1.0] |
 | xScrollScale              | Double 0.1 - 10.0  | Horizontal mouse scrolling will be scaled by this amount on the client [default: 1.0] |

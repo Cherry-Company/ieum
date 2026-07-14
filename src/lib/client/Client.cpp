@@ -271,6 +271,31 @@ void Client::keyUp(KeyID id, KeyModifierMask mask, KeyButton button)
   m_screen->keyUp(id, mask, button);
 }
 
+bool Client::rawKeyDown(KeyButton button, KeyModifierMask mask)
+{
+  return m_screen->rawKeyDown(button, mask);
+}
+
+bool Client::rawKeyRepeat(KeyButton button, KeyModifierMask mask, int32_t count)
+{
+  return m_screen->rawKeyRepeat(button, mask, count);
+}
+
+bool Client::rawKeyUp(KeyButton button, KeyModifierMask mask)
+{
+  return m_screen->rawKeyUp(button, mask);
+}
+
+void Client::inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target)
+{
+  m_screen->inputLanguageControl(action, target);
+}
+
+deskflow::InputLanguageStatus Client::inputLanguageStatus() const
+{
+  return m_screen->inputLanguageStatus();
+}
+
 void Client::mouseDown(ButtonID id)
 {
   m_screen->mouseDown(id);

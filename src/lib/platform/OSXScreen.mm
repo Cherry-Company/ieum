@@ -18,6 +18,7 @@
 #include "client/Client.h"
 #include "common/ExitCodes.h"
 #include "common/Settings.h"
+#include "deskflow/CanonicalScancode.h"
 #include "deskflow/ClientApp.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/DisplayInvalidException.h"
@@ -28,6 +29,7 @@
 #include "mt/Thread.h"
 #include "platform/OSXClipboard.h"
 #include "platform/OSXEventQueueBuffer.h"
+#include "platform/OSXInputSourceController.h"
 #include "platform/OSXKeyState.h"
 #include "platform/OSXMediaKeySupport.h"
 #include "platform/OSXPasteboardPeeker.h"
@@ -117,6 +119,7 @@ OSXScreen::OSXScreen(IEventQueue *events, bool isPrimary, bool enableLangSync)
   try {
     m_screensaver = new OSXScreenSaver(m_events, getEventTarget());
     m_keyState = new OSXKeyState(m_events, AppUtil::instance().getKeyboardLayoutList(), enableLangSync);
+    m_inputSourceController = std::make_unique<OSXInputSourceController>(m_events, getEventTarget());
 
     if (Settings::value(Settings::Core::PreventSleep).toBool()) {
       m_powerManager.disableSleep();
@@ -164,6 +167,7 @@ OSXScreen::OSXScreen(IEventQueue *events, bool isPrimary, bool enableLangSync)
 
     CGDisplayRemoveReconfigurationCallback(displayReconfigurationCallback, this);
 
+    m_inputSourceController.reset();
     delete m_keyState;
     delete m_screensaver;
     throw;
@@ -210,11 +214,35 @@ OSXScreen::~OSXScreen()
 
   CGDisplayRemoveReconfigurationCallback(displayReconfigurationCallback, this);
 
+  m_inputSourceController.reset();
   delete m_keyState;
   delete m_screensaver;
 
   delete m_carbonLoopMutex;
   delete m_carbonLoopReady;
+}
+
+void OSXScreen::inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target)
+{
+  m_inputSourceController->control(action, target);
+}
+
+deskflow::InputLanguageStatus OSXScreen::inputLanguageStatus() const
+{
+  return m_inputSourceController->status();
+}
+
+KeyButton OSXScreen::canonicalizeKeyButton(KeyButton button) const
+{
+  if (button == 0) {
+    return 0;
+  }
+  return deskflow::scancode::set1FromMacVirtualKey(button - 1).value_or(0);
+}
+
+bool OSXScreen::fakeRawKey(KeyButton button, KeyModifierMask mask, bool press, bool repeat)
+{
+  return m_keyState->fakeRawKey(button, mask, press, repeat);
 }
 
 void *OSXScreen::getEventTarget() const

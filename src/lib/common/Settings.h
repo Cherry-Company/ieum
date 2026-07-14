@@ -41,6 +41,11 @@ public:
     inline static const auto YScrollScale = QStringLiteral("client/yScrollScale");
     inline static const auto XScrollScale = QStringLiteral("client/xScrollScale");
     inline static const auto LanguageSync = QStringLiteral("client/languageSync");
+    inline static const auto ImeSync = QStringLiteral("client/imeSync");
+    inline static const auto CjkRawScancode = QStringLiteral("client/cjkRawScancode");
+    inline static const auto EnterScreenLang = QStringLiteral("client/enterScreenLang");
+    inline static const auto ClipboardNormalizeNfc = QStringLiteral("client/clipboardNormalizeNFC");
+    inline static const auto MacInterKeyDelayMicros = QStringLiteral("client/macInterKeyDelayMicros");
     inline static const auto RemoteHost = QStringLiteral("client/remoteHost");
     inline static const auto XdpRestoreToken = QStringLiteral("client/xdpRestoreToken");
   };
@@ -248,6 +253,11 @@ private:
     , Settings::Client::InvertYScroll
     , Settings::Client::InvertXScroll
     , Settings::Client::LanguageSync
+    , Settings::Client::ImeSync
+    , Settings::Client::CjkRawScancode
+    , Settings::Client::EnterScreenLang
+    , Settings::Client::ClipboardNormalizeNfc
+    , Settings::Client::MacInterKeyDelayMicros
     , Settings::Client::RemoteHost
     , Settings::Client::YScrollScale
     , Settings::Client::XScrollScale
@@ -341,6 +351,8 @@ private:
   inline static const QStringList m_defaultTrueValues = {
       Settings::Core::UseHooks
     , Settings::Client::LanguageSync
+    , Settings::Client::ImeSync
+    , Settings::Client::ClipboardNormalizeNfc
     , Settings::Gui::CloseToTray
     , Settings::Gui::CloseReminder
     , Settings::Gui::LogExpanded

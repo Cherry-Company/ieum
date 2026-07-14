@@ -39,4 +39,12 @@ void OSXClipboardTests::formatConvert_UTF8()
   QCOMPARE(converter.toIClipboard("test data\r"), "test data\n");
 }
 
+void OSXClipboardTests::formatConvert_UTF8_normalizesNfc()
+{
+  OSXClipboardUTF8Converter converter;
+  const std::string decomposed = "\xE1\x84\x92\xE1\x85\xA1\xE1\x86\xAB\r";
+  const std::string composed = "\xED\x95\x9C\n";
+  QCOMPARE(converter.toIClipboard(decomposed), composed);
+}
+
 QTEST_MAIN(OSXClipboardTests)

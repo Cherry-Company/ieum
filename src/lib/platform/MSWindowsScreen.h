@@ -13,6 +13,7 @@
 #include "platform/MSWindowsPowerManager.h"
 
 #include <map>
+#include <memory>
 #include <string>
 
 #define WIN32_LEAN_AND_MEAN
@@ -21,6 +22,7 @@
 class EventQueueTimer;
 class MSWindowsDesks;
 class MSWindowsKeyState;
+class MSWindowsImeController;
 class MSWindowsScreenSaver;
 class Thread;
 class MSWindowsDropTarget;
@@ -121,6 +123,10 @@ public:
   void setSequenceNumber(uint32_t) override;
   bool isPrimary() const override;
   std::string getSecureInputApp() const override;
+  void inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target) override;
+  deskflow::InputLanguageStatus inputLanguageStatus() const override;
+  KeyButton canonicalizeKeyButton(KeyButton button) const override;
+  bool fakeRawKey(KeyButton button, KeyModifierMask mask, bool press, bool repeat) override;
 
 protected:
   // IPlatformScreen overrides
@@ -309,6 +315,7 @@ private:
 
   // keyboard stuff
   MSWindowsKeyState *m_keyState = nullptr;
+  std::unique_ptr<MSWindowsImeController> m_imeController;
 
   // hot key stuff
   HotKeyMap m_hotKeys;
