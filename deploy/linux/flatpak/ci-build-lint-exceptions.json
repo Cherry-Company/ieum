@@ -1,6 +1,7 @@
 {
     "org.deskflow.deskflow": [
         "appstream-external-screenshot-url",
-        "appstream-screenshots-not-mirrored-in-ostree"
+        "appstream-screenshots-not-mirrored-in-ostree",
+        "metainfo-missing-screenshots"
     ]
 }
