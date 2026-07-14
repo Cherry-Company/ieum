@@ -16,8 +16,7 @@ const auto kOrgDomain = QStringLiteral("deskflow.org");
 const auto kUrlApp = QStringLiteral("https://github.com/victoriousian/ieum");
 const auto kUrlHelp = QStringLiteral("https://github.com/victoriousian/ieum/issues");
 const auto kUrlDownload = QStringLiteral("https://github.com/victoriousian/ieum/releases");
-const auto kUrlUpdateCheck =
-    QStringLiteral("https://raw.githubusercontent.com/victoriousian/ieum/ieum/main/VERSION");
+const auto kUrlUpdateCheck = QStringLiteral("https://raw.githubusercontent.com/victoriousian/ieum/ieum/main/VERSION");
 
 #if defined(Q_OS_LINUX)
 const auto kUrlGnomeTrayFix = QStringLiteral("https://extensions.gnome.org/extension/615/appindicator-support/");
