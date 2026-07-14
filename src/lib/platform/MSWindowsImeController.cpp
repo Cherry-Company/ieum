@@ -11,12 +11,19 @@
 #include "base/Log.h"
 
 #include <Imm.h>
-#include <immdev.h>
 
 #include <chrono>
 #include <iomanip>
 #include <sstream>
 #include <thread>
+
+namespace {
+
+// Desktop Windows SDKs omit these legacy WM_IME_CONTROL command constants.
+constexpr WPARAM kImcGetOpenStatus = 0x0005;
+constexpr WPARAM kImcSetOpenStatus = 0x0006;
+
+} // namespace
 
 MSWindowsImeController::MSWindowsImeController(IEventQueue *events, void *eventTarget)
     : m_events(events),
@@ -89,7 +96,7 @@ bool MSWindowsImeController::openStatus() const
     return false;
   }
   DWORD_PTR result = 0;
-  if (SendMessageTimeout(ime, WM_IME_CONTROL, IMC_GETOPENSTATUS, 0, SMTO_ABORTIFHUNG | SMTO_BLOCK, 100, &result) == 0) {
+  if (SendMessageTimeout(ime, WM_IME_CONTROL, kImcGetOpenStatus, 0, SMTO_ABORTIFHUNG | SMTO_BLOCK, 100, &result) == 0) {
     return false;
   }
   return result != 0;
@@ -103,7 +110,7 @@ bool MSWindowsImeController::setOpenStatus(bool open) const
   }
   DWORD_PTR result = 0;
   return SendMessageTimeout(
-             ime, WM_IME_CONTROL, IMC_SETOPENSTATUS, static_cast<LPARAM>(open), SMTO_ABORTIFHUNG | SMTO_BLOCK, 100,
+             ime, WM_IME_CONTROL, kImcSetOpenStatus, static_cast<LPARAM>(open), SMTO_ABORTIFHUNG | SMTO_BLOCK, 100,
              &result
          ) != 0;
 }
