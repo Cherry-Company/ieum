@@ -5,12 +5,17 @@
   <img src="artwork/ieum-icon-1024.png" alt="Ieum icon" width="156">
 </p>
 
-<h1 align="center">Ieum（이음）</h1>
+<h1 align="center">Ieum</h1>
 
-<p align="center"><strong>不把韩语与 CJK 输入视为简单按键映射，而是同步输入法状态的原生软件 KVM</strong></p>
+<p align="center"><strong>跨 Windows、macOS 和 Linux 的软件 KVM</strong></p>
 
 <p align="center">
   <a href="README.md">한국어</a> · <a href="README.en.md">English</a> · 简体中文
+</p>
+
+<p align="center">
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2"><strong>下载 이음 (Ieum)</strong></a>
+  · <a href="#支持开发"><strong>支持开发</strong></a>
 </p>
 
 <p align="center">
@@ -25,6 +30,26 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 
 > 当前版本为 `v0.1.0-alpha.2`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
+
+## 产品名称与界面
+
+韩语界面显示 **이음 (Ieum)**，并突出稳定的韩语与 CJK 输入；其他界面语言显示 **Ieum**，介绍语为
+“跨 Windows、macOS 和 Linux 的软件 KVM”。为保持兼容性，可执行文件名与设置路径继续使用
+`Ieum`。
+
+主窗口现已采用系统调色板材质、服务端/客户端分段控件、清晰的功能层级和稳定的响应式尺寸。
+Qt 实现参考了 Apple WWDC26 Liquid Glass 对层级、标准控件、克制使用效果、可调整窗口和辅助功能
+的要求，而不是逐像素模仿 Apple 界面。实现规则与官方资料见
+[界面设计原则](docs/design/visual-system.md)。
+
+## 支持开发
+
+**如果 이음 (Ieum) 对你有帮助，请考虑支持项目开发。** 资金将用于 Windows 代码签名、Apple
+Developer Program 与公证、真机测试设备、中继基础设施和持续维护。
+
+`victoriousian` 的 GitHub Sponsors 收款资料目前正在准备中。在资料激活之前，项目不会把未获批准的
+付款链接或个人银行账户作为官方赞助渠道。激活后，可从这里和代码库的 Sponsor 按钮进行单次或定期
+赞助。在此之前，Star、真机测试结果、使用反馈和可复现的错误报告同样能直接帮助项目。
 
 ## 韩语输入不只是按键映射
 
@@ -90,7 +115,7 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.2 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2)
+[이음 (Ieum) v0.1.0-alpha.2 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2)
 
 | 操作系统 | 安装文件 |
 | --- | --- |

@@ -47,6 +47,10 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/victoriousian/ieum/graphs/contributors&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;Code Contributors&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>About %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ActionDialog</name>
@@ -327,31 +331,31 @@ Do you want to connect to the server?
     <name>MainWindow</name>
     <message>
         <source>This computer&apos;s name:</source>
-        <translation>Имя этого компьютера:</translation>
+        <translation type="vanished">Имя этого компьютера:</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name can&apos;t have have spaces or special characters&lt;/p&gt;&lt;p&gt;Use Enter to save the name change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Имя не может содержать пробелы или специальные символы.&lt;/p&gt;&lt;p&gt;Нажмите Enter, чтобы сохранить изменения.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Имя не может содержать пробелы или специальные символы.&lt;/p&gt;&lt;p&gt;Нажмите Enter, чтобы сохранить изменения.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Edit Computer Name</source>
-        <translation>Изменить имя компьютера</translation>
+        <translation type="vanished">Изменить имя компьютера</translation>
     </message>
     <message>
         <source>Use this computer&apos;s keyboard and mouse
 (make this computer the server)</source>
-        <translation>Использовать мышь и клавиатуру этого компьютера
+        <translation type="vanished">Использовать мышь и клавиатуру этого компьютера
 (сделать этот компьютер сервером)</translation>
     </message>
     <message>
         <source>Use another computer’s mouse and keyboard
 (make this computer the client)</source>
-        <translation>Использовать мышь и клавиатуру другого компьютера
+        <translation type="vanished">Использовать мышь и клавиатуру другого компьютера
 (сделать этот компьютер клиентом)</translation>
     </message>
     <message>
         <source>&amp;Configure Server</source>
-        <translation>&amp;Настроить сервер</translation>
+        <translation type="vanished">&amp;Настроить сервер</translation>
     </message>
     <message>
         <source>Export server configuration</source>
@@ -359,7 +363,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>You must select a mode</source>
-        <translation>Необходимо выбрать режим</translation>
+        <translation type="vanished">Необходимо выбрать режим</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -548,15 +552,15 @@ Valid names:
     </message>
     <message>
         <source>&amp;Configure Client</source>
-        <translation type="unfinished">&amp;Настройка клиента</translation>
+        <translation type="obsolete">&amp;Настройка клиента</translation>
     </message>
     <message>
         <source>Connect to:</source>
-        <translation type="unfinished">Подключиться к:</translation>
+        <translation type="obsolete">Подключиться к:</translation>
     </message>
     <message>
         <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;Имя хоста или IP-адрес серверного компьютера.&lt;br/&gt;Может содержать список, разделенный запятыми.&lt;/html&gt;</translation>
+        <translation type="obsolete">&lt;html&gt;Имя хоста или IP-адрес серверного компьютера.&lt;br/&gt;Может содержать список, разделенный запятыми.&lt;/html&gt;</translation>
     </message>
     <message>
         <source>read</source>
@@ -604,6 +608,52 @@ Additionally, check you are able to %1 the server config file: %2</source>
 %3</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>This device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Names cannot contain spaces or special characters.&lt;/p&gt;&lt;p&gt;Press Enter to save the change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit computer name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Share this keyboard and mouse
+Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use a shared keyboard and mouse
+Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a mode to continue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma-separated list.&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -611,6 +661,17 @@ Additionally, check you are able to %1 the server config file: %2</source>
         <source>Unnamed</source>
         <extracomment>Used as the hostname. Translation may not contain spaces</extracomment>
         <translation>Без_имени</translation>
+    </message>
+</context>
+<context>
+    <name>ProductIdentity</name>
+    <message>
+        <source>Ieum</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Software KVM across Windows, macOS, and Linux</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

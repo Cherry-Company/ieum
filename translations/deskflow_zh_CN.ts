@@ -47,6 +47,10 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/victoriousian/ieum/graphs/contributors&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;Code Contributors&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>About %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ActionDialog</name>
@@ -327,31 +331,31 @@ Do you want to connect to the server?
     <name>MainWindow</name>
     <message>
         <source>This computer&apos;s name:</source>
-        <translation>此计算机名称：</translation>
+        <translation type="vanished">此计算机名称：</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name can&apos;t have have spaces or special characters&lt;/p&gt;&lt;p&gt;Use Enter to save the name change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;名称不能包含空格或特殊字符&lt;/p&gt;&lt;p&gt;按 Enter 键保存更改。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;名称不能包含空格或特殊字符&lt;/p&gt;&lt;p&gt;按 Enter 键保存更改。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Edit Computer Name</source>
-        <translation>编辑计算机名称</translation>
+        <translation type="vanished">编辑计算机名称</translation>
     </message>
     <message>
         <source>Use this computer&apos;s keyboard and mouse
 (make this computer the server)</source>
-        <translation>使用此计算机的键盘和鼠标
+        <translation type="vanished">使用此计算机的键盘和鼠标
 (将此计算机设为服务器)</translation>
     </message>
     <message>
         <source>Use another computer’s mouse and keyboard
 (make this computer the client)</source>
-        <translation>使用另一台计算机的鼠标和键盘
+        <translation type="vanished">使用另一台计算机的鼠标和键盘
 (将此计算机设为客户端)</translation>
     </message>
     <message>
         <source>&amp;Configure Server</source>
-        <translation>配置服务器(&amp;C)</translation>
+        <translation type="vanished">配置服务器(&amp;C)</translation>
     </message>
     <message>
         <source>Export server configuration</source>
@@ -359,7 +363,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>You must select a mode</source>
-        <translation>您必须选择一种模式</translation>
+        <translation type="vanished">您必须选择一种模式</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -548,15 +552,15 @@ Valid names:
     </message>
     <message>
         <source>&amp;Configure Client</source>
-        <translation type="unfinished">配置客户端(&amp;C)</translation>
+        <translation type="obsolete">配置客户端(&amp;C)</translation>
     </message>
     <message>
         <source>Connect to:</source>
-        <translation type="unfinished">连接到：</translation>
+        <translation type="obsolete">连接到：</translation>
     </message>
     <message>
         <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;服务器计算机的主机名或 IP 地址。&lt;br/&gt;可以包含以逗号分隔的列表。&lt;/html&gt;</translation>
+        <translation type="obsolete">&lt;html&gt;服务器计算机的主机名或 IP 地址。&lt;br/&gt;可以包含以逗号分隔的列表。&lt;/html&gt;</translation>
     </message>
     <message>
         <source>read</source>
@@ -604,6 +608,52 @@ Additionally, check you are able to %1 the server config file: %2</source>
 %3</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>This device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Names cannot contain spaces or special characters.&lt;/p&gt;&lt;p&gt;Press Enter to save the change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit computer name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Share this keyboard and mouse
+Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use a shared keyboard and mouse
+Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a mode to continue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma-separated list.&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -611,6 +661,17 @@ Additionally, check you are able to %1 the server config file: %2</source>
         <source>Unnamed</source>
         <extracomment>Used as the hostname. Translation may not contain spaces</extracomment>
         <translation>未命名</translation>
+    </message>
+</context>
+<context>
+    <name>ProductIdentity</name>
+    <message>
+        <source>Ieum</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Software KVM across Windows, macOS, and Linux</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

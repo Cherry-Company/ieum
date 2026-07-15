@@ -14,6 +14,7 @@
 #include "common/I18N.h"
 #include "common/Settings.h"
 #include "gui/Messages.h"
+#include "gui/StyleUtils.h"
 #include "gui/TlsUtility.h"
 #include "gui/core/NetworkMonitor.h"
 
@@ -31,6 +32,7 @@ SettingsDialog::SettingsDialog(QWidget *parent, const ServerConfig &serverConfig
 {
 
   ui->setupUi(this);
+  applyIeumDialogStyle(*this);
 
   ui->comboCjkRawScancode->addItem(tr("Automatic"), QStringLiteral("auto"));
   ui->comboCjkRawScancode->addItem(tr("Always"), QStringLiteral("on"));

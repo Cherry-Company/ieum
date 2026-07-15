@@ -15,6 +15,7 @@
 #include "gui/Diagnostic.h"
 #include "gui/MainWindow.h"
 #include "gui/Messages.h"
+#include "gui/ProductIdentity.h"
 #include "gui/StyleUtils.h"
 
 #include <QApplication>
@@ -65,6 +66,10 @@ int main(int argc, char *argv[])
 
   // Ensure the I18N object is made before strings
   QTextStream(stdout) << "initial language: " << I18N::currentLanguage() << '\n';
+  QGuiApplication::setApplicationDisplayName(productDisplayName());
+  QObject::connect(I18N::instance(), &I18N::languageChanged, &app, [] {
+    QGuiApplication::setApplicationDisplayName(productDisplayName());
+  });
 
   // Add Command Line Options
   auto helpOption = QCommandLineOption({"h", "help"}, "Display Help on the command line");
@@ -112,7 +117,9 @@ int main(int argc, char *argv[])
     if (!socket.waitForConnected()) {
       // If we can't connect to the other instance tell the user its running.
       // This should never happen but just incase we should show something
-      QMessageBox::information(nullptr, kAppName, QObject::tr("%1 is already running").arg(kAppName));
+      QMessageBox::information(
+          nullptr, productDisplayName(), QObject::tr("%1 is already running").arg(productDisplayName())
+      );
     }
     socket.disconnectFromServer();
     return s_exitDuplicate;
@@ -135,7 +142,7 @@ int main(int argc, char *argv[])
         "Please drag %1 to the Applications folder, "
         "and open it from there."
     );
-    QMessageBox::information(nullptr, kAppName, msgBody.arg(kAppName));
+    QMessageBox::information(nullptr, productDisplayName(), msgBody.arg(productDisplayName()));
     return 1;
   }
 

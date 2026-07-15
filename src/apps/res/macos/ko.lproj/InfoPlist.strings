@@ -1,0 +1,5 @@
+/* SPDX-FileCopyrightText: (C) 2026 Ieum Developers */
+/* SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception */
+
+"CFBundleDisplayName" = "이음 (Ieum)";
+"NSLocalNetworkUsageDescription" = "이음은 서버와 연결된 클라이언트가 통신할 수 있도록 로컬 네트워크를 사용합니다.";

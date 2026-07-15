@@ -321,6 +321,13 @@ jobs:
         with:
           like: ${{ matrix.target.like }}
 
+      - name: Build Korean Windows installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cpack --config build/CPackConfig.cmake -B build -G WIX `
+            -D 'CPACK_IEUM_INSTALLER_LOCALE=ko-KR'
+
       - name: Update Development Documentation
         if: matrix.target.like == 'arch' && github.ref == 'refs/heads/ieum/main'
         uses: peaceiris/actions-gh-pages@v4
@@ -449,7 +456,7 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          name: "Ieum ${{ github.ref_name }}"
+          name: "이음 (Ieum) ${{ github.ref_name }}"
           generate_release_notes: true
           make_latest: ${{ !contains(github.ref_name, '-') }}
           prerelease: ${{ contains(github.ref_name, '-') }}

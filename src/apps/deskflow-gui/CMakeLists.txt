@@ -31,8 +31,11 @@ elseif(BUILD_OSX_BUNDLE)
     @ONLY
   )
 
-  set(platform_extra ../res/Ieum.icns)
-  set_source_files_properties(${platform_extra} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+  set(bundle_icon ../res/Ieum.icns)
+  set(bundle_localizations ../res/macos/ko.lproj/InfoPlist.strings)
+  set_source_files_properties(${bundle_icon} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+  set_source_files_properties(${bundle_localizations} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/ko.lproj")
+  set(platform_extra ${bundle_icon} ${bundle_localizations})
 endif()
 
 add_executable(${target} WIN32 MACOSX_BUNDLE

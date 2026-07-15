@@ -12,12 +12,16 @@
 #include "common/Constants.h"
 #include "common/Settings.h"
 #include "common/VersionInfo.h"
+#include "gui/ProductIdentity.h"
+#include "gui/StyleUtils.h"
 
 #include <QClipboard>
 
 AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui{std::make_unique<Ui::AboutDialog>()}
 {
   ui->setupUi(this);
+  deskflow::gui::applyIeumDialogStyle(*this);
+  setWindowTitle(tr("About %1").arg(deskflow::gui::productDisplayName()));
 
   const int px = (fontMetrics().height() * 6);
   const QSize pixmapSize(px, px);
@@ -30,7 +34,8 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui{std::make_unique
   connect(ui->btnCopyVersion, &QPushButton::clicked, this, &AboutDialog::copyVersionText);
 
   ui->lblVersion->setText(kDisplayVersion);
-  ui->lblDescription->setText(kAppDescription);
+  ui->lblName->setText(deskflow::gui::productDisplayName());
+  ui->lblDescription->setText(deskflow::gui::productTagline());
   ui->lblCopyright->setText(kCopyright);
 
   // Use non-breaking space in each awesome dev name so names are not split across lines.
@@ -49,8 +54,11 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui{std::make_unique
 
 void AboutDialog::copyVersionText() const
 {
-  QString infoString = QStringLiteral("%1: %2 (%3)\nQt: %4\nSystem: %5")
-                           .arg(kAppName, kVersion, kVersionGitSha, qVersion(), QSysInfo::prettyProductName());
+  QString infoString =
+      QStringLiteral("%1: %2 (%3)\nQt: %4\nSystem: %5")
+          .arg(
+              deskflow::gui::productDisplayName(), kVersion, kVersionGitSha, qVersion(), QSysInfo::prettyProductName()
+          );
   if (Settings::isPortableMode()) {
     infoString.append(QStringLiteral("\nPortable Mode"));
   }

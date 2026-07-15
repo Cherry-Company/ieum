@@ -14,6 +14,11 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2"><strong>이음 다운로드</strong></a>
+  · <a href="#후원"><strong>후원하기</strong></a>
+</p>
+
+<p align="center">
   <a href="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
   <a href="https://github.com/victoriousian/ieum/releases"><img src="https://img.shields.io/github/v/release/victoriousian/ieum?include_prereleases&label=release" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--only-blue" alt="GPL-2.0-only"></a>
@@ -25,6 +30,27 @@ KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제�
 
 > 현재 단계는 `v0.1.0-alpha.2`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
+
+## 언어별 제품 표기와 인터페이스
+
+한국어 UI에서는 **이음 (Ieum)** 과 “한글과 CJK 입력을 안정적으로 잇는 소프트웨어 KVM”을
+표시합니다. 그 외 언어에서는 **Ieum** 과 “Software KVM across Windows, macOS, and Linux”를
+표시합니다. 실행 파일과 설정 경로는 기존 설치와의 호환성을 위해 `Ieum`으로 유지합니다.
+
+메인 화면은 시스템 팔레트, 서버/클라이언트 세그먼트, 절제된 반투명 기능 레이어를 사용하도록
+리팩터링했습니다. Apple의 WWDC26 Liquid Glass 지침 중 명확한 계층, 표준 컨트롤, 가변 창 크기,
+효과의 절제와 접근성 원칙을 Qt에 맞게 적용했습니다. 구현 기준과 공식 출처는
+[이음 인터페이스 원칙](docs/design/visual-system.md)에 정리되어 있습니다.
+
+## 후원
+
+**이음이 도움이 됐다면 개발을 후원해 주세요.** 후원금은 Windows 코드 서명, Apple Developer
+Program과 공증, 실기 테스트 장비, 릴레이 인프라와 지속적인 유지보수에 사용합니다.
+
+현재 `victoriousian` GitHub Sponsors 결제 프로필은 개설 준비 중입니다. 승인되지 않은 결제 링크나
+개인 계좌를 공식 후원 경로처럼 게시하지 않으며, 프로필이 활성화되면 이 위치와 저장소의 Sponsor
+버튼에서 일회성·정기 후원을 받을 예정입니다. 금전 후원 전에도 저장소 Star, 사용 후기, 실기 테스트
+결과와 버그 제보는 프로젝트에 직접적인 도움이 됩니다.
 
 ## 한국어 입력은 단순한 키 매핑이 아닙니다
 
@@ -94,7 +120,7 @@ flowchart LR
 
 ## 다운로드
 
-[Ieum v0.1.0-alpha.2 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2)
+[이음 (Ieum) v0.1.0-alpha.2 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2)
 
 | 운영체제 | 설치 파일 |
 | --- | --- |

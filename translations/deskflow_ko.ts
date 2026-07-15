@@ -40,6 +40,10 @@ p, li { white-space: pre-wrap; }
         <translation>이음 정보</translation>
     </message>
     <message>
+        <source>About %1</source>
+        <translation>%1 정보</translation>
+    </message>
+    <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
@@ -326,32 +330,80 @@ Do you want to connect to the server?
 <context>
     <name>MainWindow</name>
     <message>
+        <source>This device</source>
+        <translation>이 기기</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Names cannot contain spaces or special characters.&lt;/p&gt;&lt;p&gt;Press Enter to save the change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;이름에는 공백이나 특수 문자를 사용할 수 없습니다.&lt;/p&gt;&lt;p&gt;Enter 키를 눌러 변경 내용을 저장하세요.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Edit computer name</source>
+        <translation>컴퓨터 이름 편집</translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation>연결 모드</translation>
+    </message>
+    <message>
+        <source>Share this keyboard and mouse
+Server</source>
+        <translation>이 키보드와 마우스 공유
+서버</translation>
+    </message>
+    <message>
+        <source>Use a shared keyboard and mouse
+Client</source>
+        <translation>공유된 키보드와 마우스 사용
+클라이언트</translation>
+    </message>
+    <message>
+        <source>&amp;Configure server</source>
+        <translation>서버 설정(&amp;C)</translation>
+    </message>
+    <message>
+        <source>&amp;Configure client</source>
+        <translation>클라이언트 설정(&amp;C)</translation>
+    </message>
+    <message>
+        <source>Select a mode to continue</source>
+        <translation>계속하려면 모드를 선택하세요</translation>
+    </message>
+    <message>
+        <source>Connect to</source>
+        <translation>연결 대상</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma-separated list.&lt;/html&gt;</source>
+        <translation>&lt;html&gt;서버 컴퓨터의 호스트 이름 또는 IP 주소입니다.&lt;br/&gt;쉼표로 구분한 목록을 사용할 수 있습니다.&lt;/html&gt;</translation>
+    </message>
+    <message>
         <source>This computer&apos;s name:</source>
-        <translation>이 컴퓨터 이름:</translation>
+        <translation type="vanished">이 컴퓨터 이름:</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name can&apos;t have have spaces or special characters&lt;/p&gt;&lt;p&gt;Use Enter to save the name change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;이름에는 공백이나 특수문자를 사용할 수 없습니다&lt;/p&gt;&lt;p&gt;Enter 키로 이름 변경을 저장합니다.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;이름에는 공백이나 특수문자를 사용할 수 없습니다&lt;/p&gt;&lt;p&gt;Enter 키로 이름 변경을 저장합니다.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Edit Computer Name</source>
-        <translation>컴퓨터 이름 편집</translation>
+        <translation type="vanished">컴퓨터 이름 편집</translation>
     </message>
     <message>
         <source>Use this computer&apos;s keyboard and mouse
 (make this computer the server)</source>
-        <translation>이 컴퓨터의 키보드와 마우스를 사용
+        <translation type="vanished">이 컴퓨터의 키보드와 마우스를 사용
 (이 컴퓨터를 서버로 설정)</translation>
     </message>
     <message>
         <source>Use another computer’s mouse and keyboard
 (make this computer the client)</source>
-        <translation>다른 컴퓨터의 키보드와 마우스를 사용
+        <translation type="vanished">다른 컴퓨터의 키보드와 마우스를 사용
 (이 컴퓨터를 클라이언트로 설정)</translation>
     </message>
     <message>
         <source>&amp;Configure Server</source>
-        <translation>서버 설정(&amp;C)</translation>
+        <translation type="vanished">서버 설정(&amp;C)</translation>
     </message>
     <message>
         <source>Export server configuration</source>
@@ -359,7 +411,7 @@ Do you want to connect to the server?
     </message>
     <message>
         <source>You must select a mode</source>
-        <translation>모드를 선택해야 합니다</translation>
+        <translation type="vanished">모드를 선택해야 합니다</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -548,15 +600,15 @@ Valid names:
     </message>
     <message>
         <source>&amp;Configure Client</source>
-        <translation type="unfinished">클라이언트 구성 (&amp;C)</translation>
+        <translation type="obsolete">클라이언트 구성 (&amp;C)</translation>
     </message>
     <message>
         <source>Connect to:</source>
-        <translation type="unfinished">연결 대상:</translation>
+        <translation type="obsolete">연결 대상:</translation>
     </message>
     <message>
         <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
-        <translation>&lt;html&gt;서버 컴퓨터의 호스트 이름 또는 IP 주소입니다.&lt;br/&gt;목록 요소는 쉼표로 구분됩니다.&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;서버 컴퓨터의 호스트 이름 또는 IP 주소입니다.&lt;br/&gt;목록 요소는 쉼표로 구분됩니다.&lt;/html&gt;</translation>
     </message>
     <message>
         <source>read</source>
@@ -611,6 +663,17 @@ Additionally, check you are able to %1 the server config file: %2</source>
         <source>Unnamed</source>
         <extracomment>Used as the hostname. Translation may not contain spaces</extracomment>
         <translation>이름없음</translation>
+    </message>
+</context>
+<context>
+    <name>ProductIdentity</name>
+    <message>
+        <source>Ieum</source>
+        <translation>이음 (Ieum)</translation>
+    </message>
+    <message>
+        <source>Software KVM across Windows, macOS, and Linux</source>
+        <translation>한글과 CJK 입력을 안정적으로 잇는 소프트웨어 KVM</translation>
     </message>
 </context>
 <context>

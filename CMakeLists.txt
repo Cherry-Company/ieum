@@ -68,7 +68,7 @@ endif()
 project(
   deskflow
   VERSION "${DESKFLOW_VERSION_MAJOR}.${DESKFLOW_VERSION_MINOR}.${DESKFLOW_VERSION_PATCH}.${DESKFLOW_VERSION_TWEAK}"
-  DESCRIPTION "IME-native keyboard and mouse sharing utility"
+  DESCRIPTION "Software KVM across Windows, macOS, and Linux"
   HOMEPAGE_URL "https://github.com/victoriousian/ieum"
   LANGUAGES C CXX
 )

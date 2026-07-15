@@ -11,6 +11,7 @@
 #include "ui_MainWindow.h"
 
 #include "Diagnostic.h"
+#include "ProductIdentity.h"
 #include "StyleUtils.h"
 
 #include "dialogs/AboutDialog.h"
@@ -82,6 +83,8 @@ MainWindow::MainWindow()
       m_networkMonitor{new NetworkMonitor(this)}
 {
   ui->setupUi(this);
+  applyIeumMainWindowStyle(*this);
+  ui->lblBrandIcon->setPixmap(QIcon::fromTheme(kRevFqdnName).pixmap(QSize(48, 48)));
 
   setWindowIcon(QIcon::fromTheme(kRevFqdnName));
 
@@ -142,7 +145,7 @@ MainWindow::MainWindow()
   if (TlsUtility::isEnabled()) {
     if (Settings::value(Settings::Security::KeySize).toInt() < 2048) {
       QMessageBox::information(
-          this, kAppName,
+          this, productDisplayName(),
           tr("Your current TLS key is smaller than the minimum allowed size, A new key 2048-bit key will be generated.")
       );
       Settings::setValue(Settings::Security::KeySize, 2048);
@@ -173,8 +176,11 @@ void MainWindow::restoreWindow()
 {
   auto windowGeometry = Settings::value(Settings::Gui::WindowGeometry).toRect();
   const auto totalGeometry = QGuiApplication::primaryScreen()->availableGeometry();
-  if (!windowGeometry.isValid()) {
+  const auto requiredSize = minimumSizeHint().expandedTo(QSize(700, 0));
+  if (!windowGeometry.isValid() || windowGeometry.width() < requiredSize.width() ||
+      windowGeometry.height() < requiredSize.height()) {
     adjustSize();
+    resize(size().expandedTo(requiredSize));
     windowGeometry = geometry();
   } else {
     setGeometry(windowGeometry);
@@ -385,9 +391,9 @@ void MainWindow::handleInputLanguageStatus(const QString &client, const QString 
   const auto peerLabel = client == QStringLiteral("local") ? tr("This computer") : client;
   const auto status = tr("Input: %1 - %2").arg(inputLabel, peerLabel);
 
-  m_trayIcon->setToolTip(tr("%1\n%2\n%3").arg(kAppName, status, sourceId));
+  m_trayIcon->setToolTip(tr("%1\n%2\n%3").arg(productDisplayName(), status, sourceId));
   if (m_trayIcon->isVisible()) {
-    m_trayIcon->showMessage(kAppName, status, QSystemTrayIcon::NoIcon, 300);
+    m_trayIcon->showMessage(productDisplayName(), status, QSystemTrayIcon::NoIcon, 300);
   }
 }
 
@@ -409,7 +415,7 @@ void MainWindow::coreProcessError(CoreProcess::Error error)
       message.append(tr("\nAdditionally, check you are able to %1 the server config file: %2")
                          .arg(mode, Settings::serverConfigFile()));
     }
-    QMessageBox::warning(this, kAppName, message);
+    QMessageBox::warning(this, productDisplayName(), message);
   }
 }
 
@@ -716,9 +722,9 @@ void MainWindow::setupTrayIcon()
 void MainWindow::applyConfig()
 {
   if (Settings::value(Settings::Gui::ShowVersionInTitle).toBool()) {
-    setWindowTitle(QStringLiteral("%1 - %2").arg(kAppName, kDisplayVersion));
+    setWindowTitle(QStringLiteral("%1 - %2").arg(productDisplayName(), kDisplayVersion));
   } else {
-    setWindowTitle(kAppName);
+    setWindowTitle(productDisplayName());
   }
 
   if (const auto host = Settings::value(Settings::Client::RemoteHost).toString(); !host.isEmpty())
@@ -825,7 +831,7 @@ void MainWindow::handleConnectionRefused(deskflow::core::ConnectionRefusal reaso
 
   const auto address = Settings::value(Settings::Client::RemoteHost).toString();
   QMessageBox::warning(
-      this, tr("%1 Connection Error").arg(kAppName),
+      this, tr("%1 Connection Error").arg(productDisplayName()),
       tr("<p>Failed to connect to the server '%1'.</p>"
          "<p>A Client with your name is already connected to the server.</p>"
          "Please ensure that you're using a unique name and that only a "
@@ -1030,7 +1036,9 @@ void MainWindow::changeEvent(QEvent *e)
   QMainWindow::changeEvent(e);
   if (e->type() == QEvent::PaletteChange) {
     updateIconTheme();
+    applyIeumMainWindowStyle(*this);
     setWindowIcon(QIcon::fromTheme(kRevFqdnName));
+    ui->lblBrandIcon->setPixmap(QIcon::fromTheme(kRevFqdnName).pixmap(QSize(48, 48)));
     setTrayIcon();
   } else if (e->type() == QEvent::LanguageChange) {
     ui->retranslateUi(this);
@@ -1058,6 +1066,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::updateText()
 {
+  ui->lblProductName->setText(productDisplayName());
+  ui->lblTagline->setText(productTagline());
+
   m_menuFile->setTitle(tr("&File"));
   m_menuEdit->setTitle(tr("&Edit"));
   m_menuView->setTitle(tr("&View"));
@@ -1069,13 +1080,13 @@ void MainWindow::updateText()
   m_actionQuit->setText(tr("&Quit"));
   m_actionTrayQuit->setText(tr("&Quit"));
   //: %1 will be the replaced with the appname
-  m_actionRestore->setText(tr("&Open %1").arg(kAppName));
+  m_actionRestore->setText(tr("&Open %1").arg(productDisplayName()));
   m_actionSettings->setText(tr("&Preferences"));
   m_actionStartCore->setText(tr("&Start"));
   m_actionRestartCore->setText(tr("Rest&art"));
   m_actionStopCore->setText(tr("S&top"));
   //: %1 will be the replaced with the appname
-  m_actionAbout->setText(tr("About %1...").arg(kAppName));
+  m_actionAbout->setText(tr("About %1...").arg(productDisplayName()));
 
   //: start / restart core shortcut
   m_actionStartCore->setShortcut(QKeySequence(tr("Ctrl+S")));

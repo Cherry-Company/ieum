@@ -47,6 +47,10 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://github.com/victoriousian/ieum/graphs/contributors&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;Code Contributors&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>About %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ActionDialog</name>
@@ -327,15 +331,15 @@ Vuoi connetterti al server?
     <name>MainWindow</name>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name can&apos;t have have spaces or special characters&lt;/p&gt;&lt;p&gt;Use Enter to save the name change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Il nome non può contenere spazi o caratteri speciali&lt;/p&gt;&lt;p&gt;Usa Invio per salvare la modifica del nome.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Il nome non può contenere spazi o caratteri speciali&lt;/p&gt;&lt;p&gt;Usa Invio per salvare la modifica del nome.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Edit Computer Name</source>
-        <translation>Modifica nome computer</translation>
+        <translation type="vanished">Modifica nome computer</translation>
     </message>
     <message>
         <source>&amp;Configure Server</source>
-        <translation>&amp;Configura Server</translation>
+        <translation type="vanished">&amp;Configura Server</translation>
     </message>
     <message>
         <source>Export server configuration</source>
@@ -343,7 +347,7 @@ Vuoi connetterti al server?
     </message>
     <message>
         <source>You must select a mode</source>
-        <translation>Devi selezionare una modalità</translation>
+        <translation type="vanished">Devi selezionare una modalità</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -532,31 +536,31 @@ Nomi validi:
     </message>
     <message>
         <source>This computer&apos;s name:</source>
-        <translation>Nome di questo computer:</translation>
+        <translation type="vanished">Nome di questo computer:</translation>
     </message>
     <message>
         <source>Use this computer&apos;s keyboard and mouse
 (make this computer the server)</source>
-        <translation>Usa tastiera e mouse di questo computer
+        <translation type="vanished">Usa tastiera e mouse di questo computer
 (imposta questo computer come server)</translation>
     </message>
     <message>
         <source>Use another computer’s mouse and keyboard
 (make this computer the client)</source>
-        <translation>Usa mouse e tastiera di un altro computer
+        <translation type="vanished">Usa mouse e tastiera di un altro computer
 (imposta questo computer come client)</translation>
     </message>
     <message>
         <source>&amp;Configure Client</source>
-        <translation type="unfinished">&amp;Configurare il client</translation>
+        <translation type="obsolete">&amp;Configurare il client</translation>
     </message>
     <message>
         <source>Connect to:</source>
-        <translation type="unfinished">Connettiti a:</translation>
+        <translation type="obsolete">Connettiti a:</translation>
     </message>
     <message>
         <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
-        <translation type="unfinished">&lt;html&gt;Nome host o indirizzo IP del computer server.&lt;br/&gt;Può contenere un elenco separato da virgole.&lt;/html&gt;</translation>
+        <translation type="obsolete">&lt;html&gt;Nome host o indirizzo IP del computer server.&lt;br/&gt;Può contenere un elenco separato da virgole.&lt;/html&gt;</translation>
     </message>
     <message>
         <source>read</source>
@@ -604,6 +608,52 @@ Inoltre, verifica di poter %1 il file di configurazione del server: %2</translat
 %3</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>This device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Names cannot contain spaces or special characters.&lt;/p&gt;&lt;p&gt;Press Enter to save the change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit computer name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Share this keyboard and mouse
+Server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use a shared keyboard and mouse
+Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a mode to continue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Configure client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma-separated list.&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -611,6 +661,17 @@ Inoltre, verifica di poter %1 il file di configurazione del server: %2</translat
         <source>Unnamed</source>
         <extracomment>Used as the hostname. Translation may not contain spaces</extracomment>
         <translation>Senzanome</translation>
+    </message>
+</context>
+<context>
+    <name>ProductIdentity</name>
+    <message>
+        <source>Ieum</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Software KVM across Windows, macOS, and Linux</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

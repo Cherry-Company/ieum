@@ -32,6 +32,7 @@ add_library(${target} STATIC
   MainWindow.ui
   Messages.cpp
   Messages.h
+  ProductIdentity.h
   ScreenSetupModel.cpp
   ScreenSetupModel.h
   StyleUtils.h

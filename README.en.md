@@ -7,10 +7,15 @@
 
 <h1 align="center">Ieum</h1>
 
-<p align="center"><strong>An IME-native software KVM that treats Korean and CJK input as state, not key mapping</strong></p>
+<p align="center"><strong>Software KVM across Windows, macOS, and Linux</strong></p>
 
 <p align="center">
   <a href="README.md">한국어</a> · English · <a href="README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2"><strong>Download Ieum</strong></a>
+  · <a href="#support-development"><strong>Support development</strong></a>
 </p>
 
 <p align="center">
@@ -25,6 +30,28 @@ clipboard data** into one consistent input path across operating systems.
 
 > The current release is `v0.1.0-alpha.2`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
+
+## Product identity and interface
+
+The Korean UI presents **이음 (Ieum)** with a Korean/CJK input-focused description. Every other UI language
+presents **Ieum** with “Software KVM across Windows, macOS, and Linux.” Executable names and settings paths
+remain `Ieum` for compatibility.
+
+The main window now uses system-palette materials, a server/client segmented control, clear functional layers,
+and stable responsive dimensions. It adapts Apple's WWDC26 Liquid Glass guidance on hierarchy, standard
+controls, restrained effects, resizable windows, and accessibility to Qt rather than imitating Apple pixels.
+See the [interface principles](docs/design/visual-system.md) for implementation rules and official sources.
+
+## Support development
+
+**If Ieum is useful to you, please consider supporting its development.** Funding will be used for Windows code
+signing, the Apple Developer Program and notarization, physical test hardware, relay infrastructure, and ongoing
+maintenance.
+
+The `victoriousian` GitHub Sponsors payment profile is currently being prepared. Ieum will not present an
+unapproved payment link or personal bank account as an official funding channel. Once the profile is active,
+one-time and recurring sponsorships will be available here and through the repository Sponsor button. Stars,
+field-test results, usage reports, and actionable bug reports are valuable contributions in the meantime.
 
 ## Korean input is not just key mapping
 
@@ -94,7 +121,7 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[Ieum v0.1.0-alpha.2 release](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2)
+[이음 (Ieum) v0.1.0-alpha.2 release](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2)
 
 | Operating system | Installer |
 | --- | --- |
