@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2"><strong>Download Ieum</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.3"><strong>Download Ieum</strong></a>
   · <a href="#support-development"><strong>Support development</strong></a>
 </p>
 
@@ -28,7 +28,7 @@ Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers
 screen edge: it connects **Korean/English mode, IME composition sessions, physical key positions, and Unicode
 clipboard data** into one consistent input path across operating systems.
 
-> The current release is `v0.1.0-alpha.2`. Automated builds and unit tests pass, but the long-running physical
+> The current release is `v0.1.0-alpha.3`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
 
 ## Product identity and interface
@@ -121,14 +121,16 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[이음 (Ieum) v0.1.0-alpha.2 release](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2)
+[이음 (Ieum) v0.1.0-alpha.3 release](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.3)
 
 | Operating system | Installer |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.2-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.2-macos-x86_64.dmg` |
-| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.2-win-x64.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.2-win-arm64.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.3-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.3-macos-x86_64.dmg` |
+| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.3-win-x64.msi` |
+| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.3-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.3-win-arm64.msi` |
+| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.3-win-arm64-ko-KR.msi` |
 
 Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
 `SHA256SUMS.txt`.

@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2"><strong>下载 이음 (Ieum)</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.3"><strong>下载 Ieum</strong></a>
   · <a href="#支持开发"><strong>支持开发</strong></a>
 </p>
 
@@ -28,7 +28,7 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 还试图把不同系统中的 **韩/英输入状态、输入法组合会话、物理按键位置和 Unicode 剪贴板**连接成
 一致的输入链路。
 
-> 当前版本为 `v0.1.0-alpha.2`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
+> 当前版本为 `v0.1.0-alpha.3`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
 
 ## 产品名称与界面
@@ -115,14 +115,16 @@ flowchart LR
 
 ## 下载
 
-[이음 (Ieum) v0.1.0-alpha.2 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2)
+[Ieum v0.1.0-alpha.3 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.3)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.2-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.2-macos-x86_64.dmg` |
-| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.2-win-x64.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.2-win-arm64.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.3-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.3-macos-x86_64.dmg` |
+| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.3-win-x64.msi` |
+| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.3-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.3-win-arm64.msi` |
+| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.3-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
 

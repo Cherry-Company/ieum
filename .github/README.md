@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.3"><strong>이음 다운로드</strong></a>
   · <a href="#후원"><strong>후원하기</strong></a>
 </p>
 
@@ -28,7 +28,7 @@
 KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
 원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
 
-> 현재 단계는 `v0.1.0-alpha.2`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 현재 단계는 `v0.1.0-alpha.3`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
 
 ## 언어별 제품 표기와 인터페이스
@@ -99,14 +99,16 @@ flowchart LR
 
 ## 다운로드
 
-[이음 (Ieum) v0.1.0-alpha.2 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.2)
+[이음 (Ieum) v0.1.0-alpha.3 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.3)
 
 | 운영체제 | 설치 파일 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.2-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.2-macos-x86_64.dmg` |
-| Intel/AMD 64비트 Windows | `Ieum-0.1.0-alpha.2-win-x64.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.2-win-arm64.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.3-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.3-macos-x86_64.dmg` |
+| Intel/AMD 64비트 Windows | `Ieum-0.1.0-alpha.3-win-x64.msi` |
+| Intel/AMD 64비트 Windows 한국어 설치 화면 | `Ieum-0.1.0-alpha.3-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.3-win-arm64.msi` |
+| ARM64 Windows 한국어 설치 화면 | `Ieum-0.1.0-alpha.3-win-arm64-ko-KR.msi` |
 
 Windows용 `portable.7z`와 Linux 패키지도 릴리스에 포함됩니다. 모든 파일은 함께 제공되는
 `SHA256SUMS.txt`로 검증할 수 있습니다. 현재 알파 패키지는 서명되거나 Apple에 공증되지 않았습니다.
