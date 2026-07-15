@@ -3,8 +3,8 @@
     <ServiceInstall
       Id="ServiceInstall"
       Name="Ieum"
-      DisplayName="Ieum"
-      Description="Runs the Core process on secure desktops (UAC prompts, login screen, etc)."
+      DisplayName="@WIX_SERVICE_DISPLAY_NAME@"
+      Description="@WIX_SERVICE_DESCRIPTION@"
       ErrorControl="normal"
       Start="auto"
       Type="ownProcess">
@@ -21,8 +21,8 @@
   </CPackWiXFragment>
 
   <CPackWiXFragment Id="CM_CP_deskflow_core.exe">
-    <firewall:FirewallException Id="ServerFirewallException" Name="Ieum Server" Program="[INSTALL_ROOT]deskflow-core.exe" Scope="any"/>
-    <firewall:FirewallException Id="ClientFirewallException" Name="Ieum Client" Program="[INSTALL_ROOT]deskflow-core.exe" Scope="any"/>
+    <firewall:FirewallException Id="ServerFirewallException" Name="@WIX_SERVER_FIREWALL_NAME@" Program="[INSTALL_ROOT]deskflow-core.exe" Scope="any"/>
+    <firewall:FirewallException Id="ClientFirewallException" Name="@WIX_CLIENT_FIREWALL_NAME@" Program="[INSTALL_ROOT]deskflow-core.exe" Scope="any"/>
   </CPackWiXFragment>
 
   <CPackWiXFragment Id="#PRODUCT">
@@ -82,7 +82,7 @@
            Value="RunIeum"
            Condition= "WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed" />
        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
-       <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="Run Ieum when finished" />
+       <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="@WIX_RUN_IEUM_TEXT@" />
     </UI>
     <CustomAction
       Id="CheckVCRedist"

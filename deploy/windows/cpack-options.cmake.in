@@ -8,6 +8,9 @@ endif()
 if(CPACK_GENERATOR MATCHES WIX AND CPACK_IEUM_INSTALLER_LOCALE STREQUAL "ko-KR")
   set(CPACK_PACKAGE_NAME "이음 (Ieum)")
   set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-ko-KR")
+  set(CPACK_PACKAGE_EXECUTABLES "ieum" "이음 (Ieum)")
+  set(CPACK_WIX_PROGRAM_MENU_FOLDER "이음 (Ieum)")
+  set(CPACK_WIX_PATCH_FILE "@CMAKE_CURRENT_BINARY_DIR@/wix-patch-ko-KR.xml")
   # WixUI ships Korean resources, while the firewall extension only ships en-US.
   # Keep Korean as the primary installer culture and fall back for extension-only strings.
   set(CPACK_WIX_CULTURES "ko-KR;en-US")

@@ -48,10 +48,25 @@ list(APPEND CPACK_WIX_EXTENSIONS "WixToolset.Util.wixext" "WixToolset.Firewall.w
 # Make sure to also put the xmlns for the ext into the wix block on generated files
 list(APPEND CPACK_WIX_CUSTOM_XMLNS "util=http://wixtoolset.org/schemas/v4/wxs/util" "firewall=http://wixtoolset.org/schemas/v4/wxs/firewall")
 
-# The patch has to know the full path of our msm file
+# The patches have to know the full path of our custom action DLL.
+set(WIX_SERVICE_DISPLAY_NAME "Ieum")
+set(WIX_SERVICE_DESCRIPTION "Runs the Core process on secure desktops (UAC prompts, login screen, etc).")
+set(WIX_SERVER_FIREWALL_NAME "Ieum Server")
+set(WIX_CLIENT_FIREWALL_NAME "Ieum Client")
+set(WIX_RUN_IEUM_TEXT "Run Ieum when finished")
 configure_file(
   ${MY_DIR}/wix-patch.xml.in
   ${CMAKE_CURRENT_BINARY_DIR}/wix-patch.xml @ONLY
+)
+
+set(WIX_SERVICE_DISPLAY_NAME "이음 (Ieum)")
+set(WIX_SERVICE_DESCRIPTION "보안 데스크톱(UAC 알림, 로그인 화면 등)에서 코어 프로세스를 실행합니다.")
+set(WIX_SERVER_FIREWALL_NAME "이음 (Ieum) 서버")
+set(WIX_CLIENT_FIREWALL_NAME "이음 (Ieum) 클라이언트")
+set(WIX_RUN_IEUM_TEXT "완료 후 이음 (Ieum) 실행")
+configure_file(
+  ${MY_DIR}/wix-patch.xml.in
+  ${CMAKE_CURRENT_BINARY_DIR}/wix-patch-ko-KR.xml @ONLY
 )
 
 # This patch set ups filewall rules, the service and msm module
