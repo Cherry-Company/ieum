@@ -1036,7 +1036,6 @@ void MainWindow::changeEvent(QEvent *e)
   QMainWindow::changeEvent(e);
   if (e->type() == QEvent::PaletteChange) {
     updateIconTheme();
-    applyIeumMainWindowStyle(*this);
     setWindowIcon(QIcon::fromTheme(kRevFqdnName));
     ui->lblBrandIcon->setPixmap(QIcon::fromTheme(kRevFqdnName).pixmap(QSize(48, 48)));
     setTrayIcon();

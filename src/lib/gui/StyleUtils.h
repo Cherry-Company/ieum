@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QFileInfoList>
 #include <QFontDatabase>
+#include <QGuiApplication>
 #include <QIcon>
 #include <QPalette>
 #include <QStyleHints>
@@ -68,7 +69,7 @@ inline QColor blendedColor(const QColor &first, const QColor &second, qreal seco
 
 inline void applyIeumMainWindowStyle(QWidget &window)
 {
-  const auto palette = window.palette();
+  const auto palette = QGuiApplication::palette();
   const auto windowColor = palette.color(QPalette::Window);
   const auto baseColor = palette.color(QPalette::Base);
   const auto textColor = palette.color(QPalette::WindowText);
@@ -79,7 +80,7 @@ inline void applyIeumMainWindowStyle(QWidget &window)
   const auto hover = blendedColor(windowColor, textColor, isDarkMode() ? 0.12 : 0.07);
   const auto disabled = blendedColor(windowColor, textColor, 0.34);
 
-  window.setStyleSheet(QStringLiteral(R"(
+  const auto styleSheet = QStringLiteral(R"(
 QMainWindow#MainWindow, QWidget#topLevelWidget {
   background-color: %1;
   color: %3;
@@ -178,18 +179,21 @@ QStatusBar {
   border-top: 1px solid %5;
 }
 )")
-                           .arg(cssColor(windowColor))
-                           .arg(cssColor(baseColor, isDarkMode() ? 174 : 205))
-                           .arg(cssColor(textColor))
-                           .arg(cssColor(secondaryText))
-                           .arg(cssColor(border))
-                           .arg(cssColor(windowColor, isDarkMode() ? 150 : 178))
-                           .arg(cssColor(hover))
-                           .arg(cssColor(accent))
-                           .arg(cssColor(accentText))
-                           .arg(cssColor(baseColor))
-                           .arg(cssColor(blendedColor(accent, textColor, isDarkMode() ? 0.12 : 0.08)))
-                           .arg(cssColor(disabled)));
+                              .arg(cssColor(windowColor))
+                              .arg(cssColor(baseColor, isDarkMode() ? 174 : 205))
+                              .arg(cssColor(textColor))
+                              .arg(cssColor(secondaryText))
+                              .arg(cssColor(border))
+                              .arg(cssColor(windowColor, isDarkMode() ? 150 : 178))
+                              .arg(cssColor(hover))
+                              .arg(cssColor(accent))
+                              .arg(cssColor(accentText))
+                              .arg(cssColor(baseColor))
+                              .arg(cssColor(blendedColor(accent, textColor, isDarkMode() ? 0.12 : 0.08)))
+                              .arg(cssColor(disabled));
+
+  if (window.styleSheet() != styleSheet)
+    window.setStyleSheet(styleSheet);
 }
 
 inline void applyIeumDialogStyle(QWidget &dialog)

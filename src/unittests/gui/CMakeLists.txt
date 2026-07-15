@@ -19,6 +19,13 @@ create_test(
 )
 
 create_test(
+  NAME StyleUtilsTests
+  DEPENDS gui
+  SOURCE StyleUtilsTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+create_test(
   NAME VersionCheckerTests
   DEPENDS gui
   SOURCE VersionCheckerTests.cpp
