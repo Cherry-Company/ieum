@@ -327,6 +327,16 @@ jobs:
         run: |
           cpack --config build/CPackConfig.cmake -B build -G WIX `
             -D 'CPACK_IEUM_INSTALLER_LOCALE=ko-KR'
+          if ($LASTEXITCODE -ne 0) {
+            $cpackExitCode = $LASTEXITCODE
+            Get-ChildItem build/_CPack_Packages -Recurse -Filter wix.log |
+              ForEach-Object {
+                Write-Host "::group::$($_.FullName)"
+                Get-Content $_.FullName
+                Write-Host "::endgroup::"
+              }
+            exit $cpackExitCode
+          }
 
       - name: Update Development Documentation
         if: matrix.target.like == 'arch' && github.ref == 'refs/heads/ieum/main'
