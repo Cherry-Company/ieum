@@ -23,6 +23,9 @@ namespace {
 constexpr WPARAM kImcGetOpenStatus = 0x0005;
 constexpr WPARAM kImcSetOpenStatus = 0x0006;
 
+// Upper bound on how long an IME query may hold the event loop.
+constexpr UINT kImeQueryTimeoutMs = 20;
+
 } // namespace
 
 MSWindowsImeController::MSWindowsImeController(IEventQueue *events, void *eventTarget)
@@ -58,13 +61,29 @@ void MSWindowsImeController::control(deskflow::InputLanguageAction action, const
   emitStatus(status());
 }
 
+bool MSWindowsImeController::hasImeOpenState(LANGID language)
+{
+  switch (PRIMARYLANGID(language)) {
+  case LANG_KOREAN:
+  case LANG_JAPANESE:
+  case LANG_CHINESE:
+    return true;
+  default:
+    return false;
+  }
+}
+
 deskflow::InputLanguageStatus MSWindowsImeController::status() const
 {
   const HWND foreground = GetForegroundWindow();
   DWORD threadId = foreground != nullptr ? GetWindowThreadProcessId(foreground, nullptr) : 0;
   const HKL layout = GetKeyboardLayout(threadId);
   const LANGID language = LOWORD(reinterpret_cast<ULONG_PTR>(layout));
-  const bool imeOpen = openStatus();
+
+  // openStatus() is a cross-process send. Layouts that can never have an open
+  // IME answer from the layout alone, which keeps the poll off that path
+  // entirely for Latin keyboards.
+  const bool imeOpen = hasImeOpenState(language) && openStatus();
 
   std::ostringstream source;
   source << (imeOpen ? "windows.ime." : "windows.keylayout.") << std::hex << std::setw(4) << std::setfill('0')
@@ -96,7 +115,10 @@ bool MSWindowsImeController::openStatus() const
     return false;
   }
   DWORD_PTR result = 0;
-  if (SendMessageTimeout(ime, WM_IME_CONTROL, kImcGetOpenStatus, 0, SMTO_ABORTIFHUNG | SMTO_BLOCK, 100, &result) == 0) {
+  // No SMTO_BLOCK: this runs on the event loop, which must keep pumping. The
+  // timeout is short because a poll that stalls costs input latency.
+  if (SendMessageTimeout(ime, WM_IME_CONTROL, kImcGetOpenStatus, 0, SMTO_ABORTIFHUNG, kImeQueryTimeoutMs, &result) ==
+      0) {
     return false;
   }
   return result != 0;
@@ -110,7 +132,7 @@ bool MSWindowsImeController::setOpenStatus(bool open) const
   }
   DWORD_PTR result = 0;
   return SendMessageTimeout(
-             ime, WM_IME_CONTROL, kImcSetOpenStatus, static_cast<LPARAM>(open), SMTO_ABORTIFHUNG | SMTO_BLOCK, 100,
+             ime, WM_IME_CONTROL, kImcSetOpenStatus, static_cast<LPARAM>(open), SMTO_ABORTIFHUNG, kImeQueryTimeoutMs,
              &result
          ) != 0;
 }

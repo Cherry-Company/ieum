@@ -232,12 +232,14 @@ deskflow::InputLanguageStatus OSXScreen::inputLanguageStatus() const
   return m_inputSourceController->status();
 }
 
-KeyButton OSXScreen::canonicalizeKeyButton(KeyButton button) const
+std::optional<KeyButton> OSXScreen::canonicalKeyButton(KeyButton button) const
 {
   if (button == 0) {
-    return 0;
+    return std::nullopt;
   }
-  return deskflow::scancode::set1FromMacVirtualKey(button - 1).value_or(0);
+  // Keys with no Set-1 position (F13-F20, JIS-only keys, the volume keys, fn)
+  // report nothing so the caller leaves the mac virtual key alone.
+  return deskflow::scancode::set1FromMacVirtualKey(button - 1);
 }
 
 bool OSXScreen::fakeRawKey(KeyButton button, KeyModifierMask mask, bool press, bool repeat)

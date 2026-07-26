@@ -540,4 +540,24 @@ status query (`2`). The secondary reports its actual OS state with
 
 The secondary is authoritative. The primary never infers remote IME state
 from its own language indicator, and peers below protocol 1.9 continue to use
-the existing key and language synchronization messages.
+the existing key and language synchronization messages. Version gating is
+symmetric: the primary withholds `DILC` from peers below 1.9, and the
+secondary withholds `CILS` from servers below 1.9, since an unknown message
+code costs the receiver the remainder of the stream.
+
+The composition flag is reserved and always `0`. No supported platform lets
+one process observe another's preedit state, so only the input source is
+reported. Readers must still accept `1`.
+
+### Canonical scancode flag
+
+Bit `0x8000` of the `button` field in `DKDN`, `DKRP` and `DKUP` marks the
+value as a canonical PC Set-1 scancode rather than a platform key button. A
+primary sets it only for keys it can express as Set-1, which on an X11 or
+libei primary is no key at all, because evdev keycodes are not Set-1 codes.
+A secondary may take the raw injection path only for a flagged button.
+
+Set-1 codes fit in the low 9 bits, which is also the width a secondary masks
+a server key handle down to, so a peer that does not know the flag recovers
+the same key handle and simply keeps translating. Both directions therefore
+degrade to the pre-1.9 behavior with no version bump.

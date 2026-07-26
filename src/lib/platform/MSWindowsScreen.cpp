@@ -18,6 +18,7 @@
 #include "common/Constants.h"
 #include "common/Settings.h"
 #include "deskflow/App.h"
+#include "deskflow/CanonicalScancode.h"
 #include "deskflow/ClientApp.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/KeyMap.h"
@@ -185,6 +186,12 @@ void MSWindowsScreen::enable()
   m_fixTimer = m_events->newTimer(1.0, nullptr);
   m_events->addHandler(EventTypes::Timer, m_fixTimer, [this](const auto &) { handleFixes(); });
 
+  // Windows has no input-source change notification, so the IME state is
+  // polled. It needs to converge well inside the screen-switch budget, which
+  // the 1 s fix timer cannot do.
+  m_imeTimer = m_events->newTimer(0.25, nullptr);
+  m_events->addHandler(EventTypes::Timer, m_imeTimer, [this](const auto &) { m_imeController->poll(); });
+
   // install our clipboard snooper
   if (!AddClipboardFormatListener(m_window)) {
     LOG_WARN("failed to add the clipboard format listener: %d", GetLastError());
@@ -231,6 +238,13 @@ void MSWindowsScreen::disable()
     m_events->removeHandler(EventTypes::Timer, m_fixTimer);
     m_events->deleteTimer(m_fixTimer);
     m_fixTimer = nullptr;
+  }
+
+  // uninstall ime timer
+  if (m_imeTimer != nullptr) {
+    m_events->removeHandler(EventTypes::Timer, m_imeTimer);
+    m_events->deleteTimer(m_imeTimer);
+    m_imeTimer = nullptr;
   }
 
   m_isOnScreen = m_isPrimary;
@@ -1443,7 +1457,6 @@ void MSWindowsScreen::handleFixes()
 {
   // fix clipboard chain
   fixClipboardViewer();
-  m_imeController->poll();
 
   // update keys if keyboard layouts have changed
   if (m_keyState->didGroupsChange()) {
@@ -1461,9 +1474,10 @@ deskflow::InputLanguageStatus MSWindowsScreen::inputLanguageStatus() const
   return m_imeController->status();
 }
 
-KeyButton MSWindowsScreen::canonicalizeKeyButton(KeyButton button) const
+std::optional<KeyButton> MSWindowsScreen::canonicalKeyButton(KeyButton button) const
 {
-  return button;
+  // Windows key buttons already are Set-1 codes, with the 0xe0 prefix in bit 8.
+  return deskflow::scancode::isSet1Scancode(button) ? std::optional<KeyButton>(button) : std::nullopt;
 }
 
 bool MSWindowsScreen::fakeRawKey(KeyButton button, KeyModifierMask, bool press, bool repeat)

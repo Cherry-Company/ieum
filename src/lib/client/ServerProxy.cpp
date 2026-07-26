@@ -12,6 +12,7 @@
 #include "base/Log.h"
 #include "client/Client.h"
 #include "common/Settings.h"
+#include "deskflow/CanonicalScancode.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/ClipboardChunk.h"
 #include "deskflow/DeskflowException.h"
@@ -57,6 +58,9 @@ ServerProxy::ServerProxy(Client *client, deskflow::IStream *stream, IEventQueue 
 
 ServerProxy::~ServerProxy()
 {
+  // the screen outlives this proxy, so a key held when the link dropped can
+  // still be released
+  releaseRawScancodeButtons();
   setKeepAliveRate(-1.0);
   m_events->removeHandler(EventTypes::StreamInputReady, m_stream->getEventTarget());
   m_events->removeHandler(EventTypes::ClipboardSending, this);
@@ -518,6 +522,9 @@ void ServerProxy::enter()
   m_serverLayout = "";
   m_isUserNotifiedAboutLayoutSyncError = false;
 
+  // defensive: nothing should still be held from the previous visit
+  releaseRawScancodeButtons();
+
   // forward
   m_client->enter(x, y, seqNum, static_cast<KeyModifierMask>(mask), false);
 }
@@ -529,6 +536,10 @@ void ServerProxy::leave()
 
   // send last mouse motion
   flushCompressedMouse();
+
+  // Raw keys bypass KeyState, so fakeAllKeysUp() in Client::leave() cannot see
+  // them. Release them here or they stay down after the cursor has gone.
+  releaseRawScancodeButtons();
 
   // forward
   m_client->leave();
@@ -588,7 +599,10 @@ void ServerProxy::keyDown(uint16_t id, uint16_t mask, uint16_t button, const std
     setActiveServerLanguage(lang);
   }
 
-  if (rawScancodeEnabled() && m_client->rawKeyDown(button, static_cast<KeyModifierMask>(mask))) {
+  // Only a button the server marked as a canonical Set-1 scancode may be
+  // injected raw. Anything else is a platform key button of unknown meaning.
+  if (deskflow::scancode::isCanonical(button) && rawScancodeEnabled() &&
+      m_client->rawKeyDown(deskflow::scancode::stripCanonical(button), static_cast<KeyModifierMask>(mask))) {
     m_rawScancodeButtons.insert(button);
     return;
   }
@@ -622,7 +636,7 @@ void ServerProxy::keyRepeat()
   );
 
   if (m_rawScancodeButtons.contains(button)) {
-    m_client->rawKeyRepeat(button, static_cast<KeyModifierMask>(mask), count);
+    m_client->rawKeyRepeat(deskflow::scancode::stripCanonical(button), static_cast<KeyModifierMask>(mask), count);
     return;
   }
 
@@ -649,7 +663,7 @@ void ServerProxy::keyUp()
   LOG_VERBOSE("recv key up id=0x%08x, mask=0x%04x, button=0x%04x", id, mask, button);
 
   if (m_rawScancodeButtons.erase(button) != 0) {
-    m_client->rawKeyUp(button, static_cast<KeyModifierMask>(mask));
+    m_client->rawKeyUp(deskflow::scancode::stripCanonical(button), static_cast<KeyModifierMask>(mask));
     return;
   }
 
@@ -785,6 +799,8 @@ void ServerProxy::resetOptions()
   // parse
   LOG_VERBOSE("recv reset options");
 
+  releaseRawScancodeButtons();
+
   // forward
   m_client->resetOptions();
 
@@ -879,7 +895,7 @@ void ServerProxy::inputLanguageControl()
     return;
   }
 
-  if (Settings::value(Settings::Client::ImeSync).toBool()) {
+  if (Settings::value(Settings::Core::ImeSync).toBool()) {
     m_client->inputLanguageControl(static_cast<deskflow::InputLanguageAction>(action), target);
   }
   sendInputLanguageStatus(m_client->inputLanguageStatus());
@@ -902,11 +918,27 @@ void ServerProxy::sendInputLanguageStatus(const deskflow::InputLanguageStatus &s
   m_inputLanguageStatus = status;
   const int8_t category = static_cast<int8_t>(status.m_category);
   const int8_t composing = status.m_composing ? 1 : 0;
-  ProtocolUtil::writef(m_stream, kMsgCInputLangStatus, &status.m_sourceId, category, composing);
+
+  // A server below 1.9 cannot parse CILS, and an unknown message code costs it
+  // the rest of the stream, so keep the status local to the GUI there.
+  if (m_client->protocolMinorVersion() >= 9) {
+    ProtocolUtil::writef(m_stream, kMsgCInputLangStatus, &status.m_sourceId, category, composing);
+  } else {
+    LOG_VERBOSE("server protocol is 1.%d, not reporting input language status", m_client->protocolMinorVersion());
+  }
+
   ipcSendToClient(
       "inputLanguageStatus",
       QStringLiteral("local|%1|%2|%3").arg(QString::fromStdString(status.m_sourceId)).arg(category).arg(composing)
   );
+}
+
+void ServerProxy::releaseRawScancodeButtons()
+{
+  for (const auto button : m_rawScancodeButtons) {
+    m_client->rawKeyUp(deskflow::scancode::stripCanonical(button), 0);
+  }
+  m_rawScancodeButtons.clear();
 }
 
 bool ServerProxy::rawScancodeEnabled() const

@@ -41,13 +41,16 @@ public:
     inline static const auto YScrollScale = QStringLiteral("client/yScrollScale");
     inline static const auto XScrollScale = QStringLiteral("client/xScrollScale");
     inline static const auto LanguageSync = QStringLiteral("client/languageSync");
-    inline static const auto ImeSync = QStringLiteral("client/imeSync");
     inline static const auto CjkRawScancode = QStringLiteral("client/cjkRawScancode");
-    inline static const auto EnterScreenLang = QStringLiteral("client/enterScreenLang");
     inline static const auto ClipboardNormalizeNfc = QStringLiteral("client/clipboardNormalizeNFC");
     inline static const auto MacInterKeyDelayMicros = QStringLiteral("client/macInterKeyDelayMicros");
     inline static const auto RemoteHost = QStringLiteral("client/remoteHost");
     inline static const auto XdpRestoreToken = QStringLiteral("client/xdpRestoreToken");
+
+    // TODO: REMOVE In 2.0
+    inline static const auto ImeSyncLegacy = QStringLiteral("client/imeSync"); // Replaced By Core::ImeSync
+    inline static const auto EnterScreenLangLegacy =
+        QStringLiteral("client/enterScreenLang"); // Replaced By Core::EnterScreenLang
   };
   struct Core
   {
@@ -65,6 +68,11 @@ public:
     inline static const auto ScreenEnterCommand = QStringLiteral("core/enterCommand");
     inline static const auto EnableExitCommand = QStringLiteral("core/enableExitCommand");
     inline static const auto ScreenExitCommand = QStringLiteral("core/exitCommand");
+
+    // Read by both roles: the server decides whether to send IME commands, the
+    // client whether to obey them, so these cannot live under "client/".
+    inline static const auto ImeSync = QStringLiteral("core/imeSync");
+    inline static const auto EnterScreenLang = QStringLiteral("core/enterScreenLang");
 
     // TODO: REMOVE In 2.0
     inline static const auto ScreenName = QStringLiteral("core/screenName"); // Replaced By ComputerName
@@ -253,9 +261,7 @@ private:
     , Settings::Client::InvertYScroll
     , Settings::Client::InvertXScroll
     , Settings::Client::LanguageSync
-    , Settings::Client::ImeSync
     , Settings::Client::CjkRawScancode
-    , Settings::Client::EnterScreenLang
     , Settings::Client::ClipboardNormalizeNfc
     , Settings::Client::MacInterKeyDelayMicros
     , Settings::Client::RemoteHost
@@ -277,6 +283,8 @@ private:
     , Settings::Core::Display
     , Settings::Core::UseHooks
     , Settings::Core::Language
+    , Settings::Core::ImeSync
+    , Settings::Core::EnterScreenLang
     , Settings::Daemon::ConfigFile
     , Settings::Daemon::Elevate
     , Settings::Daemon::LogFile
@@ -350,8 +358,8 @@ private:
   // When checking the default values this list contains the ones that default to true.
   inline static const QStringList m_defaultTrueValues = {
       Settings::Core::UseHooks
+    , Settings::Core::ImeSync
     , Settings::Client::LanguageSync
-    , Settings::Client::ImeSync
     , Settings::Client::ClipboardNormalizeNfc
     , Settings::Gui::CloseToTray
     , Settings::Gui::CloseReminder
@@ -370,6 +378,8 @@ private:
   inline static const QMap<QString, QString> m_upgradedMap = {
     /*             OLD KEY                        NEW KEY          */
       {Core::ScreenName, Core::ComputerName}
+    , {Client::ImeSyncLegacy, Core::ImeSync}
+    , {Client::EnterScreenLangLegacy, Core::EnterScreenLang}
     , {InternalConfig::NumColumns, Server::GridWidth}
     , {InternalConfig::NumRows, Server::GridHeight}
     , {InternalConfig::Heatbeat, Server::Heartbeat}

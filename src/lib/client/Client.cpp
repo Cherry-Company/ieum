@@ -675,6 +675,9 @@ void Client::handleHello()
     );
   }
 
+  // the negotiated minor version decides which messages we may send back
+  m_serverProtocolMinor = helloBackMinor;
+
   LOG_DEBUG("saying hello back with version %s %d.%d", protocolName.c_str(), kProtocolMajorVersion, helloBackMinor);
 
   // dynamically build write format for hello back since `ProtocolUtil::writef`

@@ -690,13 +690,17 @@ void OSXKeyState::postKeyboardKey(
     CGKeyCode virtualKey, bool keyDown, bool repeat, std::optional<KeyModifierMask> modifierMask
 )
 {
-  std::lock_guard<std::mutex> lock(m_eventSourceMutex);
-  if (m_eventSource == nullptr) {
-    LOG_CRIT("unable to post keyboard event without a persistent event source");
-    return;
-  }
-  CGEventRef event = CGEventCreateKeyboardEvent(m_eventSource, virtualKey, keyDown);
-  if (event) {
+  {
+    std::lock_guard<std::mutex> lock(m_eventSourceMutex);
+    if (m_eventSource == nullptr) {
+      LOG_CRIT("unable to post keyboard event without a persistent event source");
+      return;
+    }
+    CGEventRef event = CGEventCreateKeyboardEvent(m_eventSource, virtualKey, keyDown);
+    if (event == nullptr) {
+      LOG_CRIT("unable to create keyboard event for keystroke");
+      return;
+    }
     CGEventSetFlags(event, modifierMask.has_value() ? flagsFromMask(*modifierMask) : getKeyboardEventFlags());
     CGEventSetIntegerValueField(event, kCGKeyboardEventKeyboardType, LMGetKbdType());
     CGEventSetIntegerValueField(event, kCGKeyboardEventAutorepeat, repeat ? 1 : 0);
@@ -705,13 +709,12 @@ void OSXKeyState::postKeyboardKey(
     CGEventSetTimestamp(event, m_lastEventTimestamp);
     CGEventPost(kCGHIDEventTap, event);
     CFRelease(event);
+  }
 
-    const auto delay = Settings::value(Settings::Client::MacInterKeyDelayMicros).toInt();
-    if (delay > 0) {
-      Arch::sleep(static_cast<double>(delay) / 1000000.0);
-    }
-  } else {
-    LOG_CRIT("unable to create keyboard event for keystroke");
+  // outside the lock: this paces keys, it must not serialize other posters
+  const auto delay = Settings::value(Settings::Client::MacInterKeyDelayMicros).toInt();
+  if (delay > 0) {
+    Arch::sleep(static_cast<double>(delay) / 1000000.0);
   }
 }
 

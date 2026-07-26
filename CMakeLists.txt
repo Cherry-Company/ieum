@@ -21,11 +21,21 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Fallback for when git can not be found
-set(DESKFLOW_VERSION_MAJOR 1)
-set(DESKFLOW_VERSION_MINOR 26)
-set(DESKFLOW_VERSION_PATCH 0)
-set(DESKFLOW_VERSION_TWEAK 0)
+# The VERSION file is where this project's version is written down, and it is
+# the fallback whenever git is unavailable (source tarballs) or the checkout has
+# no tags. A real tag still wins below, so a tagged build never depends on the
+# file being current; CI cross-checks the two on tag builds.
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" IEUM_VERSION_FILE)
+string(STRIP "${IEUM_VERSION_FILE}" IEUM_VERSION_FILE)
+if(IEUM_VERSION_FILE MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(-[0-9A-Za-z.]+)?$")
+  set(DESKFLOW_VERSION_MAJOR ${CMAKE_MATCH_1})
+  set(DESKFLOW_VERSION_MINOR ${CMAKE_MATCH_2})
+  set(DESKFLOW_VERSION_PATCH ${CMAKE_MATCH_3})
+  set(DESKFLOW_VERSION_TWEAK 0)
+else()
+  message(FATAL_ERROR "VERSION is not a semantic version: '${IEUM_VERSION_FILE}'")
+endif()
+unset(IEUM_VERSION_FILE)
 
 # Get the version from git if it's a git repository
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)

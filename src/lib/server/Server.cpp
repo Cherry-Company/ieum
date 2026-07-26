@@ -12,6 +12,7 @@
 #include "base/Log.h"
 #include "common/Settings.h"
 #include "deskflow/AppUtil.h"
+#include "deskflow/CanonicalScancode.h"
 #include "deskflow/DeskflowException.h"
 #include "deskflow/IPlatformScreen.h"
 #include "deskflow/OptionTypes.h"
@@ -483,8 +484,8 @@ void Server::switchScreen(BaseClientProxy *dst, int32_t x, int32_t y, bool forSc
     // enter new screen
     m_active->enter(x, y, m_seqNum, m_primaryClient->getToggleMask(), forScreensaver);
 
-    if (m_active->protocolMinorVersion() >= 9 && Settings::value(Settings::Client::ImeSync).toBool()) {
-      const auto enterPolicy = Settings::value(Settings::Client::EnterScreenLang).toString().toLower();
+    if (m_active->protocolMinorVersion() >= 9 && Settings::value(Settings::Core::ImeSync).toBool()) {
+      const auto enterPolicy = Settings::value(Settings::Core::EnterScreenLang).toString().toLower();
       if (enterPolicy == QStringLiteral("force-en")) {
         m_active->inputLanguageControl(deskflow::InputLanguageAction::Set, "en");
       } else if (enterPolicy == QStringLiteral("follow-server")) {
@@ -1596,7 +1597,7 @@ void Server::onKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyButto
 bool Server::isInputLanguageControl(const BaseClientProxy *client, KeyID id) const
 {
   return client != nullptr && !client->isPrimary() && client->protocolMinorVersion() >= 9 &&
-         Settings::value(Settings::Client::ImeSync).toBool() && (id == kKeyHangul || id == kKeyHanja);
+         Settings::value(Settings::Core::ImeSync).toBool() && (id == kKeyHangul || id == kKeyHanja);
 }
 
 KeyButton Server::buttonForClient(const BaseClientProxy *client, KeyButton button) const
@@ -1604,8 +1605,13 @@ KeyButton Server::buttonForClient(const BaseClientProxy *client, KeyButton butto
   if (client == nullptr || client->isPrimary() || client->protocolMinorVersion() < 9) {
     return button;
   }
-  const KeyButton canonical = m_screen->canonicalizeKeyButton(button);
-  return canonical;
+
+  // Only a primary that really produces Set-1 codes may mark them. Sending an
+  // unmarked platform button keeps the secondary on the translated key path,
+  // which is what X11 and libei primaries, and any key without a Set-1
+  // position, need.
+  const auto canonical = m_screen->canonicalKeyButton(button);
+  return canonical.has_value() ? deskflow::scancode::markCanonical(*canonical) : button;
 }
 
 void Server::sendKeyDown(
@@ -1661,9 +1667,9 @@ void Server::handlePrimaryInputLanguageChanged(const Event &event)
                                  .arg(status->m_composing ? 1 : 0)
   );
 
-  const auto enterPolicy = Settings::value(Settings::Client::EnterScreenLang).toString().toLower();
+  const auto enterPolicy = Settings::value(Settings::Core::EnterScreenLang).toString().toLower();
   if (m_active != nullptr && !m_active->isPrimary() && m_active->protocolMinorVersion() >= 9 &&
-      Settings::value(Settings::Client::ImeSync).toBool() && enterPolicy == QStringLiteral("follow-server")) {
+      Settings::value(Settings::Core::ImeSync).toBool() && enterPolicy == QStringLiteral("follow-server")) {
     m_active->inputLanguageControl(deskflow::InputLanguageAction::Set, status->isInputMethod() ? "ko" : "en");
   }
 }

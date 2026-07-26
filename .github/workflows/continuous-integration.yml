@@ -26,23 +26,66 @@ jobs:
   # Quality gate to allow PR merge, used in the branch protection rules.
   ci-passed:
     runs-on: ubuntu-latest
-    needs: [main-build, test-results, unix, flatpak]
+    needs: [main-build, unit-tests, test-results, unix, flatpak]
     if: always()
 
     steps:
       - name: Check all steps passed
         run: |
-          if [[ ${{needs.main-build.result}} == 'success' && ${{needs.test-results.result}} == 'success' && ${{needs.unix.result}} == 'success' && ${{needs.flatpak.result}} == 'success' ]]; then
+          if [[ ${{needs.main-build.result}} == 'success' && ${{needs.unit-tests.result}} == 'success' && ${{needs.test-results.result}} == 'success' && ${{needs.unix.result}} == 'success' && ${{needs.flatpak.result}} == 'success' ]]; then
             echo "✅ CI passed" > $GITHUB_STEP_SUMMARY
           else
             exit 1
           fi
 
+  # Builds the test targets and runs them. The packaging matrix configures with
+  # SKIP_BUILD_TESTS=ON, so without this job nothing under src/unittests is ever
+  # compiled or executed and the test summary has no rows to report.
+  unit-tests:
+    name: unit-tests
+    needs: lint-clang
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Install Git on Container
+        shell: bash
+        run: pacman -Syu --noconfirm git
+
+      # Fancy checkout gets all the tags so `git describe` works
+      - name: Fancy Checkout
+        uses: sithlord48/fancy-checkout@v2
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          like: "arch"
+
+      - name: Get version
+        uses: ./.github/actions/get-version
+
+      # SKIP_BUILD_TESTS only skips the post-build `run_tests` target; the test
+      # executables are still part of `all`. Keeping it on lets the run-tests
+      # action report every failure instead of the build aborting on the first.
+      - name: Configure
+        run: >
+          cmake -Bbuild -G Ninja -DCMAKE_BUILD_TYPE=Debug -DSKIP_BUILD_TESTS=ON
+          -DCMAKE_COMPILE_WARNING_AS_ERROR=ON -DPACKAGE_VERSION_LABEL="${{env.IEUM_PACKAGE_VERSION}}"
+
+      - name: Build
+        run: cmake --build build -j8
+
+      - name: Run tests
+        uses: ./.github/actions/run-tests
+        with:
+          job: unit-tests
+
   # Summary of test results, combined from test result artifacts.
   # Runs even if the tests fail to provide a summary of the failures.
   test-results:
-    needs: main-build
-    if: always() && needs.main-build.result != 'skipped'
+    needs: unit-tests
+    if: always() && needs.unit-tests.result != 'skipped'
 
     runs-on: ubuntu-slim
     timeout-minutes: 5

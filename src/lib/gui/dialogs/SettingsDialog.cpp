@@ -25,6 +25,24 @@
 
 using namespace deskflow::gui;
 
+namespace {
+
+//! Select the item carrying \p data, falling back to \p fallback.
+/*!
+findData() answers -1 for a value this build does not offer, and that would
+leave the combo blank and write the empty selection straight back on accept.
+*/
+void selectComboData(QComboBox *combo, const QString &data, const QString &fallback)
+{
+  auto index = combo->findData(data);
+  if (index < 0) {
+    index = combo->findData(fallback);
+  }
+  combo->setCurrentIndex(index < 0 ? 0 : index);
+}
+
+} // namespace
+
 SettingsDialog::SettingsDialog(QWidget *parent, const ServerConfig &serverConfig)
     : QDialog(parent),
       ui{std::make_unique<Ui::SettingsDialog>()},
@@ -95,6 +113,8 @@ void SettingsDialog::changeEvent(QEvent *e)
   if (e->type() == QEvent::LanguageChange) {
     ui->retranslateUi(this);
     updateText();
+  } else if (e->type() == QEvent::PaletteChange) {
+    applyIeumDialogStyle(*this);
   }
 }
 
@@ -266,9 +286,9 @@ void SettingsDialog::accept()
   Settings::setValue(Settings::Core::EnableExitCommand, ui->cbRunExitCommand->isChecked());
   Settings::setValue(Settings::Core::ScreenEnterCommand, ui->lineCommandEnter->text());
   Settings::setValue(Settings::Core::ScreenExitCommand, ui->lineCommandExit->text());
-  Settings::setValue(Settings::Client::ImeSync, ui->cbImeSync->isChecked());
+  Settings::setValue(Settings::Core::ImeSync, ui->cbImeSync->isChecked());
   Settings::setValue(Settings::Client::CjkRawScancode, ui->comboCjkRawScancode->currentData());
-  Settings::setValue(Settings::Client::EnterScreenLang, ui->comboEnterScreenLang->currentData());
+  Settings::setValue(Settings::Core::EnterScreenLang, ui->comboEnterScreenLang->currentData());
   Settings::setValue(Settings::Client::ClipboardNormalizeNfc, ui->cbClipboardNormalizeNfc->isChecked());
   Settings::setValue(Settings::Client::MacInterKeyDelayMicros, ui->spinMacInterKeyDelayMicros->value());
 
@@ -299,12 +319,14 @@ void SettingsDialog::loadFromConfig()
   ui->cbRunExitCommand->setChecked(Settings::value(Settings::Core::EnableExitCommand).toBool());
   ui->lineCommandEnter->setText(Settings::value(Settings::Core::ScreenEnterCommand).toString());
   ui->lineCommandExit->setText(Settings::value(Settings::Core::ScreenExitCommand).toString());
-  ui->cbImeSync->setChecked(Settings::value(Settings::Client::ImeSync).toBool());
-  ui->comboCjkRawScancode->setCurrentIndex(
-      ui->comboCjkRawScancode->findData(Settings::value(Settings::Client::CjkRawScancode).toString())
+  ui->cbImeSync->setChecked(Settings::value(Settings::Core::ImeSync).toBool());
+  selectComboData(
+      ui->comboCjkRawScancode, Settings::value(Settings::Client::CjkRawScancode).toString(),
+      Settings::defaultValue(Settings::Client::CjkRawScancode).toString()
   );
-  ui->comboEnterScreenLang->setCurrentIndex(
-      ui->comboEnterScreenLang->findData(Settings::value(Settings::Client::EnterScreenLang).toString())
+  selectComboData(
+      ui->comboEnterScreenLang, Settings::value(Settings::Core::EnterScreenLang).toString(),
+      Settings::defaultValue(Settings::Core::EnterScreenLang).toString()
   );
   ui->cbClipboardNormalizeNfc->setChecked(Settings::value(Settings::Client::ClipboardNormalizeNfc).toBool());
   ui->spinMacInterKeyDelayMicros->setValue(Settings::value(Settings::Client::MacInterKeyDelayMicros).toInt());
@@ -478,11 +500,11 @@ bool SettingsDialog::isModified() const
       (ui->cbRunExitCommand->isChecked() != Settings::value(Settings::Core::EnableExitCommand).toBool()) ||
       (ui->lineCommandEnter->text() != Settings::value(Settings::Core::ScreenEnterCommand).toString()) ||
       (ui->lineCommandExit->text() != Settings::value(Settings::Core::ScreenExitCommand).toString()) ||
-      (ui->cbImeSync->isChecked() != Settings::value(Settings::Client::ImeSync).toBool()) ||
+      (ui->cbImeSync->isChecked() != Settings::value(Settings::Core::ImeSync).toBool()) ||
       (ui->comboCjkRawScancode->currentData().toString() != Settings::value(Settings::Client::CjkRawScancode).toString()
       ) ||
-      (ui->comboEnterScreenLang->currentData().toString() !=
-       Settings::value(Settings::Client::EnterScreenLang).toString()) ||
+      (ui->comboEnterScreenLang->currentData().toString() != Settings::value(Settings::Core::EnterScreenLang).toString()
+      ) ||
       (ui->cbClipboardNormalizeNfc->isChecked() != Settings::value(Settings::Client::ClipboardNormalizeNfc).toBool()) ||
       (ui->spinMacInterKeyDelayMicros->value() != Settings::value(Settings::Client::MacInterKeyDelayMicros).toInt()) ||
       (I18N::nativeTo639Name(ui->comboLanguage->currentText()) != Settings::value(Settings::Core::Language).toString());
@@ -521,11 +543,11 @@ bool SettingsDialog::isDefault() const
       (ui->lineCommandExit->text() == Settings::defaultValue(Settings::Core::ScreenExitCommand).toString()) &&
       (ui->cbRunEnterCommand->isChecked() == Settings::defaultValue(Settings::Core::EnableEnterCommand).toBool()) &&
       (ui->cbRunExitCommand->isChecked() == Settings::defaultValue(Settings::Core::EnableExitCommand).toBool()) &&
-      (ui->cbImeSync->isChecked() == Settings::defaultValue(Settings::Client::ImeSync).toBool()) &&
+      (ui->cbImeSync->isChecked() == Settings::defaultValue(Settings::Core::ImeSync).toBool()) &&
       (ui->comboCjkRawScancode->currentData().toString() ==
        Settings::defaultValue(Settings::Client::CjkRawScancode).toString()) &&
       (ui->comboEnterScreenLang->currentData().toString() ==
-       Settings::defaultValue(Settings::Client::EnterScreenLang).toString()) &&
+       Settings::defaultValue(Settings::Core::EnterScreenLang).toString()) &&
       (ui->cbClipboardNormalizeNfc->isChecked() ==
        Settings::defaultValue(Settings::Client::ClipboardNormalizeNfc).toBool()) &&
       (ui->spinMacInterKeyDelayMicros->value() ==
@@ -551,13 +573,11 @@ void SettingsDialog::resetToDefault()
   ui->cbRunExitCommand->setChecked(Settings::defaultValue(Settings::Core::EnableExitCommand).toBool());
   ui->lineCommandEnter->setText(Settings::defaultValue(Settings::Core::ScreenEnterCommand).toString());
   ui->lineCommandExit->setText(Settings::defaultValue(Settings::Core::ScreenExitCommand).toString());
-  ui->cbImeSync->setChecked(Settings::defaultValue(Settings::Client::ImeSync).toBool());
-  ui->comboCjkRawScancode->setCurrentIndex(
-      ui->comboCjkRawScancode->findData(Settings::defaultValue(Settings::Client::CjkRawScancode).toString())
-  );
-  ui->comboEnterScreenLang->setCurrentIndex(
-      ui->comboEnterScreenLang->findData(Settings::defaultValue(Settings::Client::EnterScreenLang).toString())
-  );
+  ui->cbImeSync->setChecked(Settings::defaultValue(Settings::Core::ImeSync).toBool());
+  const auto defaultRawScancode = Settings::defaultValue(Settings::Client::CjkRawScancode).toString();
+  const auto defaultEnterLang = Settings::defaultValue(Settings::Core::EnterScreenLang).toString();
+  selectComboData(ui->comboCjkRawScancode, defaultRawScancode, defaultRawScancode);
+  selectComboData(ui->comboEnterScreenLang, defaultEnterLang, defaultEnterLang);
   ui->cbClipboardNormalizeNfc->setChecked(Settings::defaultValue(Settings::Client::ClipboardNormalizeNfc).toBool());
   ui->spinMacInterKeyDelayMicros->setValue(Settings::defaultValue(Settings::Client::MacInterKeyDelayMicros).toInt());
 

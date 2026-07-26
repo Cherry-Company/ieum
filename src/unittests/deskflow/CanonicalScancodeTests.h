@@ -14,4 +14,8 @@ private Q_SLOTS:
   void mapsKoreanTypingKeys();
   void roundTripsExtendedKeys();
   void rejectsImeCommandKeys();
+  void tableIsUnambiguous();
+  void canonicalFlagSurvivesTheWire();
+  void canonicalFlagIsFreeOfKeyStateMask();
+  void rejectsNonSet1Scancodes();
 };

@@ -14,9 +14,11 @@ not as a character key. The computer receiving input is the source of truth.
 3. Add a selectable Korean input source and an ASCII-capable Latin layout in
    macOS Keyboard settings.
 4. Keep **Synchronize Korean/English input state** enabled in
-   `Preferences > Advanced > Input language`.
+   `Preferences > Advanced > Input language`. This one setting is read by both
+   roles, so enable it on the computer sending input as well.
 5. Leave **CJK raw scan codes** on **Automatic**. This bypasses layout
-   translation only while the receiving computer reports an active IME.
+   translation only while the receiving computer reports an active IME *and*
+   the sending computer supplies canonical scan codes.
 
 ## Screen-entry policies
 
@@ -31,6 +33,18 @@ primary through `CILS`.
 
 ## Compatibility notes
 
+- Mixed connections negotiate down to the lower protocol version. Against a
+  peer below 1.9 neither side sends IME traffic at all: the primary skips
+  `DILC` and the secondary skips `CILS`, so the link behaves exactly like
+  stock Deskflow.
+- Raw scan codes require a primary that reports canonical PC Set-1 codes,
+  which today means Windows and macOS. On an X11 or libei primary the keys
+  stay on the translated path regardless of this setting, because evdev
+  keycodes are not Set-1 codes and injecting them as such would type the
+  wrong characters.
+- The `CILS` composition flag is reserved and always reports `0`. Neither
+  Windows nor macOS lets one process observe the preedit state of another,
+  so Ieum reports the input source only, not composition progress.
 - Secure Input fields may reject synthetic keys according to macOS policy;
   input-source control itself remains available.
 - The optional macOS inter-key delay is intended only for diagnosing apps that

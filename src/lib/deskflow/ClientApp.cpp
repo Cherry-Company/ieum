@@ -94,7 +94,7 @@ void ClientApp::parseArgs()
 const char *ClientApp::daemonName() const
 {
   if (deskflow::platform::isWindows())
-    return "Deskflow Client";
+    return "Ieum Client";
   return "deskflow-client";
 }
 

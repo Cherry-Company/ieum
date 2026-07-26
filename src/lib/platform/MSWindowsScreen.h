@@ -14,6 +14,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #define WIN32_LEAN_AND_MEAN
@@ -125,7 +126,7 @@ public:
   std::string getSecureInputApp() const override;
   void inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target) override;
   deskflow::InputLanguageStatus inputLanguageStatus() const override;
-  KeyButton canonicalizeKeyButton(KeyButton button) const override;
+  std::optional<KeyButton> canonicalKeyButton(KeyButton button) const override;
   bool fakeRawKey(KeyButton button, KeyModifierMask mask, bool press, bool repeat) override;
 
 protected:
@@ -295,6 +296,7 @@ private:
 
   // timer for periodically checking stuff that requires polling
   EventQueueTimer *m_fixTimer = nullptr;
+  EventQueueTimer *m_imeTimer = nullptr;
 
   // the keyboard layout to use when off primary screen
   HKL m_keyLayout = nullptr;

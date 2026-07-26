@@ -107,6 +107,7 @@ private:
   void handleInputLanguageChanged(const Event &event);
   void sendInputLanguageStatus(const deskflow::InputLanguageStatus &status);
   bool rawScancodeEnabled() const;
+  void releaseRawScancodeButtons();
 
 private:
   using MessageParser = ConnectionResult (ServerProxy::*)(const uint8_t *);

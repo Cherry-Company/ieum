@@ -1127,6 +1127,25 @@ extern const char *const kMsgDSecureInputNotification;
 extern const char *const kMsgDLanguageSynchronisation;
 
 /**
+ * @brief Canonical scancode flag on key button fields
+ *
+ * Set on the `button` parameter of @ref kMsgDKeyDown, @ref kMsgDKeyRepeat and
+ * @ref kMsgDKeyUp when the primary's key buttons really are PC Set-1 scancodes,
+ * which lets the secondary inject the key without character translation. A
+ * primary whose key buttons are not Set-1 codes (X11 and libei report
+ * evdev-derived keycodes), or a key with no Set-1 position, leaves the button
+ * unflagged and the secondary keeps translating it.
+ *
+ * Canonical codes need only the low 9 bits, the same width the secondary masks
+ * a server key handle down to, so the flag is invisible to peers that do not
+ * know it: they recover the identical key handle and simply never take the raw
+ * path. That makes the flag safe in both directions without a version bump.
+ *
+ * @see deskflow::scancode::kCanonicalFlag
+ * @since Protocol version 1.9
+ */
+
+/**
  * @brief IME/input-source control
  *
  * **Message Code**: `"DILC"`
@@ -1150,6 +1169,11 @@ extern const char *const kMsgDInputLangControl;
  * - `$1`: platform input-source identifier
  * - `$2`: category (`0` key layout, `1` input method, `2` unknown)
  * - `$3`: composition/preedit active flag
+ *
+ * @note `$3` is reserved and always `0` today. Neither Windows nor macOS
+ * exposes the composition state of another process's input context, so no
+ * secondary can currently fill it in. Readers must accept `1` so a future
+ * implementation does not need a protocol bump.
  *
  * @since Protocol version 1.9
  */
