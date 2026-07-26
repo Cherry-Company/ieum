@@ -1606,11 +1606,18 @@ KeyButton Server::buttonForClient(const BaseClientProxy *client, KeyButton butto
     return button;
   }
 
-  // Only a primary that really produces Set-1 codes may mark them. Sending an
-  // unmarked platform button keeps the secondary on the translated key path,
-  // which is what X11 and libei primaries, and any key without a Set-1
-  // position, need.
   const auto canonical = m_screen->canonicalKeyButton(button);
+
+  // Protocol 1.9 peers predate the marker and expect the legacy unmarked
+  // canonical value where one exists. Preserve that wire behavior so a new
+  // macOS primary does not regress when an alpha.4 secondary connects.
+  if (client->protocolMinorVersion() < kProtocolCanonicalScancodeMinorVersion) {
+    return canonical.value_or(button);
+  }
+
+  // From 1.10 onward, only a primary that really produces Set-1 codes marks
+  // them. An unmarked platform button keeps the secondary on the translated
+  // path, which X11/libei and keys without a Set-1 position require.
   return canonical.has_value() ? deskflow::scancode::markCanonical(*canonical) : button;
 }
 

@@ -53,6 +53,9 @@ public:
   bool onGrabClipboard(ClipboardID);
   void onClipboardChanged(ClipboardID, const IClipboard *);
 
+  //! Release raw keys while the platform screen is still enabled.
+  void releaseRawScancodeButtons();
+
   //@}
 
 protected:
@@ -107,7 +110,6 @@ private:
   void handleInputLanguageChanged(const Event &event);
   void sendInputLanguageStatus(const deskflow::InputLanguageStatus &status);
   bool rawScancodeEnabled() const;
-  void releaseRawScancodeButtons();
 
 private:
   using MessageParser = ConnectionResult (ServerProxy::*)(const uint8_t *);

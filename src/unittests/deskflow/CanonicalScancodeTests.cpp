@@ -73,10 +73,10 @@ void CanonicalScancodeTests::canonicalFlagSurvivesTheWire()
   QCOMPARE(stripCanonical(0x01e), KeyButton{0x01e});
 }
 
-void CanonicalScancodeTests::canonicalFlagIsFreeOfKeyStateMask()
+void CanonicalScancodeTests::canonicalFlagMustBeStrippedBeforeKeyState()
 {
-  // KeyState indexes m_serverKeys with (button & kButtonMask). The flag has to
-  // live above that mask, or marking a button would collide with another key.
+  // The flag intentionally sits outside KeyState's button table. Receivers
+  // must strip it before forwarding a key through the translated path.
   const auto buttonMask = static_cast<KeyButton>(IKeyState::s_numButtons - 1);
   QCOMPARE(deskflow::scancode::kCanonicalFlag & buttonMask, 0);
 
@@ -85,8 +85,9 @@ void CanonicalScancodeTests::canonicalFlagIsFreeOfKeyStateMask()
     if (!scancode.has_value()) {
       continue;
     }
-    // a peer that does not know the flag still recovers the same key handle
+    QVERIFY(deskflow::scancode::markCanonical(*scancode) >= IKeyState::s_numButtons);
     QCOMPARE(deskflow::scancode::markCanonical(*scancode) & buttonMask, *scancode);
+    QCOMPARE(deskflow::scancode::stripCanonical(deskflow::scancode::markCanonical(*scancode)), *scancode);
   }
 }
 

@@ -528,6 +528,7 @@ void Client::cleanupConnection()
 void Client::cleanupScreen()
 {
   if (m_server != nullptr) {
+    m_server->releaseRawScancodeButtons();
     if (m_ready) {
       m_screen->disable();
       m_ready = false;

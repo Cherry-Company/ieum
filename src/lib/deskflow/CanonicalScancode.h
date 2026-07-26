@@ -20,7 +20,8 @@ server key handle down to, so this bit is free on every platform. A primary sets
 it only when it can actually produce Set-1 codes, which makes the raw-scancode
 path opt-in per key: a secondary that sees an unmarked button falls back to the
 translated key path instead of reading a foreign platform key button as Set-1.
-Peers that predate the flag simply never see it set and never take the raw path.
+The primary sends the flag only to peers that negotiated protocol 1.10, so
+older peers never see it and never take the flagged raw path.
 */
 inline constexpr KeyButton kCanonicalFlag = 0x8000;
 

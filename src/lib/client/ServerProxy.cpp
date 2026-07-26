@@ -615,7 +615,7 @@ void ServerProxy::keyDown(uint16_t id, uint16_t mask, uint16_t button, const std
     LOG_VERBOSE("key down translated to id=0x%08x, mask=0x%04x", id2, mask2);
 
   // forward
-  m_client->keyDown(id2, mask2, button, lang);
+  m_client->keyDown(id2, mask2, canonicalButton, lang);
 }
 
 void ServerProxy::keyRepeat()
@@ -648,7 +648,7 @@ void ServerProxy::keyRepeat()
     LOG_VERBOSE("key repeat translated to id=0x%08x, mask=0x%04x", id2, mask2);
 
   // forward
-  m_client->keyRepeat(id2, mask2, count, button, lang);
+  m_client->keyRepeat(id2, mask2, count, deskflow::scancode::stripCanonical(button), lang);
 }
 
 void ServerProxy::keyUp()
@@ -675,7 +675,7 @@ void ServerProxy::keyUp()
     LOG_VERBOSE("key up translated to id=0x%08x, mask=0x%04x", id2, mask2);
 
   // forward
-  m_client->keyUp(id2, mask2, button);
+  m_client->keyUp(id2, mask2, deskflow::scancode::stripCanonical(button));
 }
 
 void ServerProxy::mouseDown()
@@ -920,12 +920,17 @@ void ServerProxy::sendInputLanguageStatus(const deskflow::InputLanguageStatus &s
   const int8_t category = static_cast<int8_t>(status.m_category);
   const int8_t composing = status.m_composing ? 1 : 0;
 
-  // A server below 1.9 cannot parse CILS, and an unknown message code costs it
-  // the rest of the stream, so keep the status local to the GUI there.
-  if (m_client->protocolMinorVersion() >= 9) {
+  // A server below 1.9 cannot parse CILS. A server still waiting for DINF
+  // accepts handshake messages only. In either case, an unexpected code costs
+  // it the rest of the stream, so keep the status local to the GUI.
+  const bool handshakeComplete = m_parser == &ServerProxy::parseMessage;
+  if (m_client->protocolMinorVersion() >= 9 && handshakeComplete) {
     ProtocolUtil::writef(m_stream, kMsgCInputLangStatus, &status.m_sourceId, category, composing);
   } else {
-    LOG_VERBOSE("server protocol is 1.%d, not reporting input language status", m_client->protocolMinorVersion());
+    LOG_VERBOSE(
+        "not reporting input language status: server protocol 1.%d, handshake complete=%d",
+        m_client->protocolMinorVersion(), handshakeComplete
+    );
   }
 
   ipcSendToClient(

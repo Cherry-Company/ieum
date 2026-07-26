@@ -543,13 +543,14 @@ from its own language indicator, and peers below protocol 1.9 continue to use
 the existing key and language synchronization messages. Version gating is
 symmetric: the primary withholds `DILC` from peers below 1.9, and the
 secondary withholds `CILS` from servers below 1.9, since an unknown message
-code costs the receiver the remainder of the stream.
+code costs the receiver the remainder of the stream. The secondary also holds
+unsolicited `CILS` updates until the initial handshake has completed.
 
 The composition flag is reserved and always `0`. No supported platform lets
 one process observe another's preedit state, so only the input source is
 reported. Readers must still accept `1`.
 
-### Canonical scancode flag
+### Canonical scancode flag (v1.10)
 
 Bit `0x8000` of the `button` field in `DKDN`, `DKRP` and `DKUP` marks the
 value as a canonical PC Set-1 scancode rather than a platform key button. A
@@ -557,7 +558,8 @@ primary sets it only for keys it can express as Set-1, which on an X11 or
 libei primary is no key at all, because evdev keycodes are not Set-1 codes.
 A secondary may take the raw injection path only for a flagged button.
 
-Set-1 codes fit in the low 9 bits, which is also the width a secondary masks
-a server key handle down to, so a peer that does not know the flag recovers
-the same key handle and simply keeps translating. Both directions therefore
-degrade to the pre-1.9 behavior with no version bump.
+This flag is negotiated in protocol 1.10. A 1.10 primary marks buttons only
+for a 1.10 secondary. When either peer supports at most 1.9, negotiation falls
+back to 1.9. A current 1.10 secondary treats those unmarked values through the
+translated path. An alpha.4 secondary retains its legacy raw behavior, so both
+ends should be upgraded before relying on safe cross-platform raw input.

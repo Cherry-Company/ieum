@@ -97,10 +97,9 @@ std::optional<deskflow::InputLanguageStatus> MSWindowsImeController::queryStatus
   std::ostringstream source;
   source << (imeOpen ? "windows.ime." : "windows.keylayout.") << std::hex << std::setw(4) << std::setfill('0')
          << language;
-  return {
+  return deskflow::InputLanguageStatus{
       source.str(), imeOpen ? deskflow::InputLanguageCategory::InputMethod : deskflow::InputLanguageCategory::KeyLayout,
-      false
-  };
+      false};
 }
 
 void MSWindowsImeController::poll()
@@ -124,10 +123,11 @@ std::optional<bool> MSWindowsImeController::openStatus() const
     return std::nullopt;
   }
   DWORD_PTR result = 0;
-  // No SMTO_BLOCK: this runs on the event loop, which must keep pumping. The
-  // timeout is short because a poll that stalls costs input latency.
-  if (SendMessageTimeout(ime, WM_IME_CONTROL, kImcGetOpenStatus, 0, SMTO_ABORTIFHUNG, kImeQueryTimeoutMs, &result) ==
-      0) {
+  // Block re-entrant nonqueued messages while the query is in flight. The
+  // timeout is short because this runs on the input event loop.
+  if (SendMessageTimeout(
+          ime, WM_IME_CONTROL, kImcGetOpenStatus, 0, SMTO_ABORTIFHUNG | SMTO_BLOCK, kImeQueryTimeoutMs, &result
+      ) == 0) {
     return std::nullopt;
   }
   return result != 0;
@@ -141,8 +141,8 @@ bool MSWindowsImeController::setOpenStatus(bool open) const
   }
   DWORD_PTR result = 0;
   return SendMessageTimeout(
-             ime, WM_IME_CONTROL, kImcSetOpenStatus, static_cast<LPARAM>(open), SMTO_ABORTIFHUNG, kImeQueryTimeoutMs,
-             &result
+             ime, WM_IME_CONTROL, kImcSetOpenStatus, static_cast<LPARAM>(open), SMTO_ABORTIFHUNG | SMTO_BLOCK,
+             kImeQueryTimeoutMs, &result
          ) != 0;
 }
 

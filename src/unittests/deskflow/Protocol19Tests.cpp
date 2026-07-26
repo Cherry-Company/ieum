@@ -112,6 +112,9 @@ void Protocol19Tests::inputLanguageStatusRoundTrip()
 
 void Protocol19Tests::canonicalScancodeFlagRoundTrip()
 {
+  QCOMPARE(kProtocolCanonicalScancodeMinorVersion, static_cast<int16_t>(10));
+  QVERIFY(kProtocolMinorVersion >= kProtocolCanonicalScancodeMinorVersion);
+
   MemoryStream stream;
   const uint16_t expectedId = 0x0061;
   const uint16_t expectedMask = 0;

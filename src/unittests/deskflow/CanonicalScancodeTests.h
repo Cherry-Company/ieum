@@ -16,6 +16,6 @@ private Q_SLOTS:
   void rejectsImeCommandKeys();
   void tableIsUnambiguous();
   void canonicalFlagSurvivesTheWire();
-  void canonicalFlagIsFreeOfKeyStateMask();
+  void canonicalFlagMustBeStrippedBeforeKeyState();
   void rejectsNonSet1Scancodes();
 };

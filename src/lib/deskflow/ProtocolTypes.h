@@ -45,7 +45,10 @@ static const int16_t kProtocolMajorVersion = 1;
  * @note When incrementing the minor version, the Deskflow application version should also increment
  * @since Protocol version 1.0
  */
-static const int16_t kProtocolMinorVersion = 9;
+static const int16_t kProtocolMinorVersion = 10;
+
+//! First minor version that negotiates the canonical-scancode button flag.
+static const int16_t kProtocolCanonicalScancodeMinorVersion = 10;
 
 /**
  * @brief Default TCP port for Deskflow connections
@@ -1136,13 +1139,12 @@ extern const char *const kMsgDLanguageSynchronisation;
  * evdev-derived keycodes), or a key with no Set-1 position, leaves the button
  * unflagged and the secondary keeps translating it.
  *
- * Canonical codes need only the low 9 bits, the same width the secondary masks
- * a server key handle down to, so the flag is invisible to peers that do not
- * know it: they recover the identical key handle and simply never take the raw
- * path. That makes the flag safe in both directions without a version bump.
+ * Canonical codes need only the low 9 bits. The primary sends the flag only
+ * after both peers negotiate protocol 1.10, because earlier Ieum clients used
+ * the complete button value as a raw Set-1 code.
  *
  * @see deskflow::scancode::kCanonicalFlag
- * @since Protocol version 1.9
+ * @since Protocol version 1.10
  */
 
 /**
