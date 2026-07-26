@@ -613,8 +613,9 @@ if ($LASTEXITCODE -ne 0) {
 $deskflowMsi = Get-Item -LiteralPath (Join-Path $workDirectory $deskflowPattern)
 $deskflowProductCode = Get-MsiProperty -Msi $deskflowMsi -Property 'ProductCode'
 $deskflowUpgradeCode = Get-MsiProperty -Msi $deskflowMsi -Property 'UpgradeCode'
-if ($deskflowUpgradeCode -ne $previousUpgradeCode) {
-  throw "Deskflow no longer uses the legacy UpgradeCode required for this regression test"
+$legacyDeskflowUpgradeCode = '{027D1C8A-E7A5-4754-BB93-B2D45BFDBDC8}'
+if ($deskflowUpgradeCode -ne $legacyDeskflowUpgradeCode) {
+  throw "Deskflow UpgradeCode '$deskflowUpgradeCode' no longer matches the historical collision identity"
 }
 if ($deskflowUpgradeCode -eq $currentUpgradeCode) {
   throw "Ieum still shares Deskflow's UpgradeCode"
