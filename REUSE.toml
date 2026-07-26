@@ -47,6 +47,7 @@ path = [
  , "deploy/mac/dmg-background.tiff"
  , "deploy/mac/ieum-volume.icns"
  , "deploy/linux/org.deskflow.deskflow.png"
+ , "deploy/windows/ieum-installer.ico"
  , "deploy/windows/wix-banner.png"
  , "deploy/windows/wix-dialog.png"
  , "src/apps/res/Ieum.icns"

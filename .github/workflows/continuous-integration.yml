@@ -345,7 +345,13 @@ jobs:
         run: |
           if [[ "${{matrix.target.like}}" != "arch" ]]; then
             if [ "$RUNNER_OS" != "macOS" ]; then
-              cmake --build build --config Release -j8 --target package
+              if ! cmake --build build --config Release -j8 --target package; then
+                if [ "$RUNNER_OS" = "Windows" ]; then
+                  find build/_CPack_Packages -type f -name wix.log \
+                    -print -exec cat {} \; 2>/dev/null || true
+                fi
+                exit 1
+              fi
             else
               cmake --build build --config Release -j8
               package_ok=false
