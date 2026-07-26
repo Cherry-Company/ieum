@@ -328,6 +328,17 @@ Do you want to connect to the server?
     </message>
 </context>
 <context>
+    <name>MacAccessibility</name>
+    <message>
+        <source>Ieum needs Accessibility access to share the keyboard and mouse.
+
+In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. If Ieum is not listed, use the add button to select /Applications/Ieum.app.
+
+After granting access, return here and choose Try Again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainWindow</name>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name can&apos;t have have spaces or special characters&lt;/p&gt;&lt;p&gt;Use Enter to save the name change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -1525,17 +1536,6 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
     <message>
         <source>A computer with this name already exists</source>
         <translation type="unfinished">Ya existe un ordenador con este nombre</translation>
-    </message>
-</context>
-<context>
-    <name>MacAccessibility</name>
-    <message>
-        <source>Ieum needs Accessibility access to share the keyboard and mouse.
-
-In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. If Ieum is not listed, use the add button to select /Applications/Ieum.app.
-
-After granting access, return here and choose Try Again.</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>
