@@ -37,7 +37,12 @@ set(CPACK_PACKAGE_EXECUTABLES "ieum" "Ieum")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CMAKE_PROJECT_PROPER_NAME}")
 
 # Wix Specific Values
-set(CPACK_WIX_UPGRADE_GUID "027D1C8A-E7A5-4754-BB93-B2D45BFDBDC8")
+# This GUID must remain Ieum-specific. Alpha releases through alpha.7
+# accidentally reused Deskflow's UpgradeCode, causing Deskflow installs to be
+# detected as newer Ieum versions.
+set(CPACK_WIX_UPGRADE_GUID "3FADE2A5-360A-43B9-90FC-D14C9F2006A2")
+set(IEUM_LEGACY_WIX_UPGRADE_GUID "027D1C8A-E7A5-4754-BB93-B2D45BFDBDC8")
+set(IEUM_LEGACY_WIX_VERSION_MAX "0.1.107")
 set(CPACK_WIX_PRODUCT_ICON "${MY_DIR}/ieum-installer.ico")
 set(CPACK_WIX_UI_BANNER "${MY_DIR}/wix-banner.png")
 set(CPACK_WIX_UI_DIALOG "${MY_DIR}/wix-dialog.png")

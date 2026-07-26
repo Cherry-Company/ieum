@@ -459,7 +459,7 @@ jobs:
             -BuildDirectory build `
             -ReleaseVersion $env:IEUM_PACKAGE_VERSION
 
-      - name: Test Windows upgrade from previous release
+      - name: Test Windows migration and Deskflow coexistence
         if: runner.os == 'Windows' && startsWith(github.ref, 'refs/tags/v')
         shell: pwsh
         env:

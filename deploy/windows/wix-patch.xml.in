@@ -26,6 +26,19 @@
   </CPackWiXFragment>
 
   <CPackWiXFragment Id="#PRODUCT">
+    <!--
+      Migrate only Ieum alpha packages that shipped with Deskflow's
+      UpgradeCode. Deskflow releases use 1.x versions, so the upper bound
+      prevents Ieum from detecting or removing Deskflow itself.
+    -->
+    <Upgrade Id="@IEUM_LEGACY_WIX_UPGRADE_GUID@">
+      <UpgradeVersion
+        Maximum="@IEUM_LEGACY_WIX_VERSION_MAX@"
+        IncludeMaximum="yes"
+        MigrateFeatures="yes"
+        Property="IEUM_LEGACY_UPGRADE_DETECTED" />
+    </Upgrade>
+
     <Property Id="VC_REDIST_INSTALLED">
       <RegistrySearch
         Id="FindVCRedist"

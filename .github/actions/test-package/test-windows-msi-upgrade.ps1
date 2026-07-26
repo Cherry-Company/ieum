@@ -14,21 +14,27 @@ param(
   [string] $CurrentTag,
 
   [Parameter(Mandatory = $true)]
-  [string] $Repository
+  [string] $Repository,
+
+  [string] $DeskflowTag = 'v1.26.0'
 )
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-$upgradeCode = '{027D1C8A-E7A5-4754-BB93-B2D45BFDBDC8}'
 $msiexec = Join-Path $env:SystemRoot 'System32\msiexec.exe'
 $workDirectory = Join-Path $env:RUNNER_TEMP 'ieum-msi-upgrade'
 New-Item -ItemType Directory -Force -Path $workDirectory | Out-Null
 
 function Get-RelatedProducts {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $UpgradeCode
+  )
+
   $instance = New-Object -ComObject WindowsInstaller.Installer
   try {
-    return @($instance.RelatedProducts($upgradeCode))
+    return @($instance.RelatedProducts($UpgradeCode))
   }
   finally {
     [void] [Runtime.InteropServices.Marshal]::ReleaseComObject($instance)
@@ -185,15 +191,20 @@ if ($LASTEXITCODE -ne 0) {
 $previousMsi = Get-Item -LiteralPath (Join-Path $workDirectory $previousPattern)
 $previousProductCode = Get-MsiProperty -Msi $previousMsi -Property 'ProductCode'
 $currentProductCode = Get-MsiProperty -Msi $currentMsi -Property 'ProductCode'
+$previousUpgradeCode = Get-MsiProperty -Msi $previousMsi -Property 'UpgradeCode'
+$currentUpgradeCode = Get-MsiProperty -Msi $currentMsi -Property 'UpgradeCode'
+$upgradeCodes = @($previousUpgradeCode, $currentUpgradeCode) | Sort-Object -Unique
 
 if ($currentProductCode -eq $previousProductCode) {
   throw 'The release reused the previous MSI ProductCode'
 }
 
 try {
-  $existingProducts = @(Get-RelatedProducts)
-  if ($existingProducts.Count -ne 0) {
-    throw "The CI runner already has a product registered with the Ieum UpgradeCode"
+  foreach ($upgradeCode in $upgradeCodes) {
+    $existingProducts = @(Get-RelatedProducts -UpgradeCode $upgradeCode)
+    if ($existingProducts.Count -ne 0) {
+      throw "The CI runner already has a product registered with UpgradeCode $upgradeCode"
+    }
   }
 
   Write-Host "Installing previous package $($previousMsi.Name)"
@@ -203,7 +214,7 @@ try {
     -Log (Join-Path $workDirectory 'previous-install.log')
 
   $previousState = Get-ProductState -ProductCode $previousProductCode
-  $previousProducts = @(Get-RelatedProducts)
+  $previousProducts = @(Get-RelatedProducts -UpgradeCode $previousUpgradeCode)
   if ($previousState -ne 5) {
     throw "Previous ProductCode state is $previousState, expected 5 (installed)"
   }
@@ -220,7 +231,7 @@ try {
 
   $previousState = Get-ProductState -ProductCode $previousProductCode
   $currentState = Get-ProductState -ProductCode $currentProductCode
-  $currentProducts = @(Get-RelatedProducts)
+  $currentProducts = @(Get-RelatedProducts -UpgradeCode $currentUpgradeCode)
   if ($previousState -ne -1) {
     throw "Upgrade left previous ProductCode $previousProductCode in state $previousState"
   }
@@ -229,6 +240,12 @@ try {
   }
   if ($currentProducts.Count -ne 1 -or $currentProducts[0] -ne $currentProductCode) {
     throw "Expected only $currentProductCode after upgrade; found $($currentProducts -join ', ')"
+  }
+  if ($previousUpgradeCode -ne $currentUpgradeCode) {
+    $legacyProducts = @(Get-RelatedProducts -UpgradeCode $previousUpgradeCode)
+    if ($legacyProducts.Count -ne 0) {
+      throw "Upgrade left products registered under legacy UpgradeCode $previousUpgradeCode"
+    }
   }
 
   $product = Get-InstalledProductInfo -ProductCode $currentProductCode
@@ -254,6 +271,7 @@ try {
     $product.Version,
     $currentProductCode
   )
+  Write-Host "  UpgradeCode: $previousUpgradeCode -> $currentUpgradeCode"
 }
 catch {
   Write-MsiLogs
@@ -263,6 +281,90 @@ finally {
   foreach ($productCode in @($currentProductCode, $previousProductCode)) {
     if ((Get-ProductState -ProductCode $productCode) -ne -1) {
       Write-Host "Removing test product $productCode"
+      Invoke-MsiExec `
+        -Operation '/x' `
+        -Target $productCode `
+        -Log (Join-Path $workDirectory "uninstall-$($productCode.Trim('{}')).log")
+    }
+  }
+}
+
+$deskflowVersion = $DeskflowTag.TrimStart('v')
+$deskflowPattern = "deskflow-$deskflowVersion-win-$Architecture.msi"
+Write-Host "Downloading $deskflowPattern for the coexistence test"
+& gh release download $DeskflowTag `
+  --repo 'deskflow/deskflow' `
+  --dir $workDirectory `
+  --clobber `
+  --pattern $deskflowPattern
+if ($LASTEXITCODE -ne 0) {
+  throw "Failed to download $deskflowPattern"
+}
+
+$deskflowMsi = Get-Item -LiteralPath (Join-Path $workDirectory $deskflowPattern)
+$deskflowProductCode = Get-MsiProperty -Msi $deskflowMsi -Property 'ProductCode'
+$deskflowUpgradeCode = Get-MsiProperty -Msi $deskflowMsi -Property 'UpgradeCode'
+if ($deskflowUpgradeCode -ne $previousUpgradeCode) {
+  throw "Deskflow no longer uses the legacy UpgradeCode required for this regression test"
+}
+if ($deskflowUpgradeCode -eq $currentUpgradeCode) {
+  throw "Ieum still shares Deskflow's UpgradeCode"
+}
+
+try {
+  Write-Host "Installing upstream package $($deskflowMsi.Name)"
+  Invoke-MsiExec `
+    -Operation '/i' `
+    -Target $deskflowMsi.FullName `
+    -Log (Join-Path $workDirectory 'deskflow-install.log')
+
+  if ((Get-ProductState -ProductCode $deskflowProductCode) -ne 5) {
+    throw "Deskflow did not reach installed state"
+  }
+
+  Write-Host "Installing Ieum alongside Deskflow"
+  Invoke-MsiExec `
+    -Operation '/i' `
+    -Target $currentMsi.FullName `
+    -Log (Join-Path $workDirectory 'ieum-coexist-install.log')
+
+  $deskflowState = Get-ProductState -ProductCode $deskflowProductCode
+  $currentState = Get-ProductState -ProductCode $currentProductCode
+  if ($deskflowState -ne 5 -or $currentState -ne 5) {
+    throw "Coexistence failed: Deskflow state=$deskflowState, Ieum state=$currentState"
+  }
+
+  $deskflowProducts = @(Get-RelatedProducts -UpgradeCode $deskflowUpgradeCode)
+  $ieumProducts = @(Get-RelatedProducts -UpgradeCode $currentUpgradeCode)
+  if ($deskflowProducts.Count -ne 1 -or $deskflowProducts[0] -ne $deskflowProductCode) {
+    throw "Ieum changed Deskflow's product registration"
+  }
+  if ($ieumProducts.Count -ne 1 -or $ieumProducts[0] -ne $currentProductCode) {
+    throw "Ieum was not registered under its independent UpgradeCode"
+  }
+
+  $deskflowProduct = Get-InstalledProductInfo -ProductCode $deskflowProductCode
+  $ieumProduct = Get-InstalledProductInfo -ProductCode $currentProductCode
+  if ($deskflowProduct.Name -ne 'Deskflow' -or $ieumProduct.Name -ne '이음 (Ieum)') {
+    throw "Unexpected installed names: '$($deskflowProduct.Name)', '$($ieumProduct.Name)'"
+  }
+
+  Write-Host (
+    "Coexistence passed: {0} {1} and {2} {3}" -f
+    $deskflowProduct.Name,
+    $deskflowProduct.Version,
+    $ieumProduct.Name,
+    $ieumProduct.Version
+  )
+}
+catch {
+  Write-MsiLogs
+  throw
+}
+finally {
+  foreach ($productCode in @($currentProductCode, $deskflowProductCode)) {
+    if ((Get-ProductState -ProductCode $productCode) -ne -1) {
+      Write-Host "Removing coexistence test product $productCode"
       Invoke-MsiExec `
         -Operation '/x' `
         -Target $productCode `

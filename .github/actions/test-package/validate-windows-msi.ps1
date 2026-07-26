@@ -13,7 +13,9 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-$upgradeCode = '{027D1C8A-E7A5-4754-BB93-B2D45BFDBDC8}'
+$upgradeCode = '{3FADE2A5-360A-43B9-90FC-D14C9F2006A2}'
+$legacyUpgradeCode = '{027D1C8A-E7A5-4754-BB93-B2D45BFDBDC8}'
+$legacyVersionMax = '0.1.107'
 
 function ConvertTo-WindowsInstallerVersion {
   param([string] $Version)
@@ -150,26 +152,41 @@ try {
 
       $upgradeRows = @(
         Get-MsiRows -Database $database -Query (
-          'SELECT `VersionMin`,`VersionMax`,`Attributes`,`ActionProperty` FROM `Upgrade`'
+          'SELECT `UpgradeCode`,`VersionMin`,`VersionMax`,`Attributes`,`ActionProperty` FROM `Upgrade`'
         )
       )
       $upgradeRow = @(
-        $upgradeRows | Where-Object { $_.Values[3] -eq 'WIX_UPGRADE_DETECTED' }
+        $upgradeRows | Where-Object { $_.Values[4] -eq 'WIX_UPGRADE_DETECTED' }
       )
       $downgradeRow = @(
-        $upgradeRows | Where-Object { $_.Values[3] -eq 'WIX_DOWNGRADE_DETECTED' }
+        $upgradeRows | Where-Object { $_.Values[4] -eq 'WIX_DOWNGRADE_DETECTED' }
       )
-      if ($upgradeRow.Count -ne 1 -or $downgradeRow.Count -ne 1) {
-        throw "$($msi.Name): expected one upgrade and one downgrade detection row"
+      $legacyUpgradeRow = @(
+        $upgradeRows | Where-Object { $_.Values[4] -eq 'IEUM_LEGACY_UPGRADE_DETECTED' }
+      )
+      if ($upgradeRow.Count -ne 1 -or $downgradeRow.Count -ne 1 -or $legacyUpgradeRow.Count -ne 1) {
+        throw "$($msi.Name): expected current upgrade, downgrade, and legacy migration rows"
       }
-      if ($upgradeRow[0].Values[1] -ne $properties.ProductVersion) {
+      if ($upgradeRow[0].Values[0] -ne $upgradeCode -or $downgradeRow[0].Values[0] -ne $upgradeCode) {
+        throw "$($msi.Name): current upgrade rows do not use the Ieum UpgradeCode"
+      }
+      if ($upgradeRow[0].Values[2] -ne $properties.ProductVersion) {
         throw "$($msi.Name): upgrade VersionMax does not match ProductVersion"
       }
-      if (([int] $upgradeRow[0].Values[2] -band 512) -eq 0) {
+      if (([int] $upgradeRow[0].Values[3] -band 512) -eq 0) {
         throw "$($msi.Name): same-version replacement is not enabled"
       }
-      if ($downgradeRow[0].Values[0] -ne $properties.ProductVersion) {
+      if ($downgradeRow[0].Values[1] -ne $properties.ProductVersion) {
         throw "$($msi.Name): downgrade VersionMin does not match ProductVersion"
+      }
+      if (
+        $legacyUpgradeRow[0].Values[0] -ne $legacyUpgradeCode -or
+        $legacyUpgradeRow[0].Values[1] -ne '' -or
+        $legacyUpgradeRow[0].Values[2] -ne $legacyVersionMax -or
+        ([int] $legacyUpgradeRow[0].Values[3] -band 512) -eq 0 -or
+        ([int] $legacyUpgradeRow[0].Values[3] -band 2) -ne 0
+      ) {
+        throw "$($msi.Name): legacy migration row can affect products outside Ieum alpha.2-alpha.7"
       }
 
       Write-Host (
