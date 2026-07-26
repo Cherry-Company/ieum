@@ -99,7 +99,8 @@ std::optional<deskflow::InputLanguageStatus> MSWindowsImeController::queryStatus
          << language;
   return deskflow::InputLanguageStatus{
       source.str(), imeOpen ? deskflow::InputLanguageCategory::InputMethod : deskflow::InputLanguageCategory::KeyLayout,
-      false};
+      false
+  };
 }
 
 void MSWindowsImeController::poll()
