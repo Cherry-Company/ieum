@@ -16,12 +16,33 @@ if(NOT EXISTS "${_ieum_core}")
 endif()
 
 message(STATUS "Deploying Qt dependencies into ${_ieum_app}")
+set(
+  _ieum_deploy_command
+  "@DEPLOYQT@"
+  "${_ieum_app}"
+  "-executable=${_ieum_core}"
+)
+
+# Qt 6.11 signs ad-hoc by default and supports -no-codesign. Qt 6.9 does
+# neither, and rejects that option. Detect the deployed tool's capability so
+# the Intel and Apple Silicon packages follow the same two-pass flow.
 execute_process(
-  COMMAND
-    "@DEPLOYQT@"
-    "${_ieum_app}"
-    "-executable=${_ieum_core}"
-    "-no-codesign"
+  COMMAND "@DEPLOYQT@" -h
+  OUTPUT_VARIABLE _ieum_deployqt_help_stdout
+  ERROR_VARIABLE _ieum_deployqt_help_stderr
+)
+string(
+  CONCAT
+  _ieum_deployqt_help
+  "${_ieum_deployqt_help_stdout}"
+  "${_ieum_deployqt_help_stderr}"
+)
+if(_ieum_deployqt_help MATCHES "-no-codesign")
+  list(APPEND _ieum_deploy_command "-no-codesign")
+endif()
+
+execute_process(
+  COMMAND ${_ieum_deploy_command}
   COMMAND_ECHO STDOUT
   COMMAND_ERROR_IS_FATAL ANY
 )
