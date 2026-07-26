@@ -15,12 +15,49 @@ if(NOT EXISTS "${_ieum_core}")
   message(FATAL_ERROR "Staged macOS core executable was not found: ${_ieum_core}")
 endif()
 
-message(STATUS "Deploying Qt and sealing ${_ieum_app}")
+message(STATUS "Deploying Qt dependencies into ${_ieum_app}")
 execute_process(
   COMMAND
     "@DEPLOYQT@"
     "${_ieum_app}"
     "-executable=${_ieum_core}"
+    "-no-codesign"
+  COMMAND_ECHO STDOUT
+  COMMAND_ERROR_IS_FATAL ANY
+)
+
+# macdeployqt uses -executable to rewrite an auxiliary executable's Qt load
+# paths, but it does not include that executable in its signing pass. Sign the
+# core after those rewrites so the outer app seal can include valid nested code.
+set(_ieum_signing_identity "@APPLE_CODESIGN_DISTRIBUTION@")
+set(_ieum_core_codesign /usr/bin/codesign --force)
+if(_ieum_signing_identity)
+  list(
+    APPEND
+    _ieum_core_codesign
+    --options
+    runtime
+    --timestamp
+    --sign
+    "${_ieum_signing_identity}"
+  )
+else()
+  list(APPEND _ieum_core_codesign --sign -)
+endif()
+list(APPEND _ieum_core_codesign "${_ieum_core}")
+
+message(STATUS "Signing auxiliary core executable ${_ieum_core}")
+execute_process(
+  COMMAND ${_ieum_core_codesign}
+  COMMAND_ECHO STDOUT
+  COMMAND_ERROR_IS_FATAL ANY
+)
+
+message(STATUS "Sealing ${_ieum_app}")
+execute_process(
+  COMMAND
+    "@DEPLOYQT@"
+    "${_ieum_app}"
     "@IEUM_MACDEPLOYQT_SIGN_ARGUMENT@"
   COMMAND_ECHO STDOUT
   COMMAND_ERROR_IS_FATAL ANY
