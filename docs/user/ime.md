@@ -3,20 +3,24 @@
 
 # Korean IME and Input Source Synchronization
 
-Ieum protocol 1.9 treats the Korean/English switch as an input-source command,
-not as a character key. The computer receiving input is the source of truth.
+Ieum's protocol 1.9 input-language extension treats the Korean/English switch
+as an input-source command, not as a character key. The computer receiving
+input is the source of truth.
 
 ## Recommended setup
 
-1. Run Ieum 1.9 on both computers. Mixed connections remain compatible, but
-   IME control is disabled for peers using protocol 1.8 or earlier.
+1. Run the current Ieum release on both computers. Mixed connections remain
+   compatible, but IME control is disabled for peers using protocol 1.8 or
+   earlier and canonical raw scan codes require protocol 1.10 on both peers.
 2. On macOS, grant Accessibility and Input Monitoring permission to Ieum.
 3. Add a selectable Korean input source and an ASCII-capable Latin layout in
    macOS Keyboard settings.
 4. Keep **Synchronize Korean/English input state** enabled in
-   `Preferences > Advanced > Input language`.
+   `Preferences > Advanced > Input language`. This one setting is read by both
+   roles, so enable it on the computer sending input as well.
 5. Leave **CJK raw scan codes** on **Automatic**. This bypasses layout
-   translation only while the receiving computer reports an active IME.
+   translation only while the receiving computer reports an active IME *and*
+   the sending computer supplies canonical scan codes.
 
 ## Screen-entry policies
 
@@ -31,6 +35,22 @@ primary through `CILS`.
 
 ## Compatibility notes
 
+- Mixed connections negotiate down to the lower protocol version. Against a
+  peer below 1.9 neither side sends IME traffic at all: the primary skips
+  `DILC` and the secondary skips `CILS`, so the link behaves exactly like
+  stock Deskflow.
+- Canonical raw scan codes require protocol 1.10 on both peers. A connection
+  with an Ieum alpha.4 peer negotiates protocol 1.9 and does not use the new
+  flagged path. Upgrade the receiving computer first: an alpha.4 receiver
+  retains its legacy raw behavior, including its Linux-primary limitation.
+- Raw scan codes require a primary that reports canonical PC Set-1 codes,
+  which today means Windows and macOS. On an X11 or libei primary the keys
+  stay on the translated path regardless of this setting, because evdev
+  keycodes are not Set-1 codes and injecting them as such would type the
+  wrong characters.
+- The `CILS` composition flag is reserved and always reports `0`. Neither
+  Windows nor macOS lets one process observe the preedit state of another,
+  so Ieum reports the input source only, not composition progress.
 - Secure Input fields may reject synthetic keys according to macOS policy;
   input-source control itself remains available.
 - The optional macOS inter-key delay is intended only for diagnosing apps that

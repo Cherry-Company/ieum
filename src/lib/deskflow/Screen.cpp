@@ -272,9 +272,9 @@ InputLanguageStatus Screen::inputLanguageStatus() const
   return m_screen->inputLanguageStatus();
 }
 
-KeyButton Screen::canonicalizeKeyButton(KeyButton button) const
+std::optional<KeyButton> Screen::canonicalKeyButton(KeyButton button) const
 {
-  return m_screen->canonicalizeKeyButton(button);
+  return m_screen->canonicalKeyButton(button);
 }
 
 void Screen::mouseDown(ButtonID button)

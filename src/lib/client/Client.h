@@ -151,6 +151,13 @@ public:
   bool rawKeyUp(KeyButton, KeyModifierMask);
   void inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target);
   deskflow::InputLanguageStatus inputLanguageStatus() const;
+
+  //! Protocol minor version agreed with the server, 0 until the hello is done.
+  int16_t protocolMinorVersion() const
+  {
+    return m_serverProtocolMinor;
+  }
+
   void mouseDown(ButtonID) override;
   void mouseUp(ButtonID) override;
   void mouseMove(int32_t xAbs, int32_t yAbs) override;
@@ -197,6 +204,7 @@ private:
   deskflow::IStream *m_stream = nullptr;
   EventQueueTimer *m_timer = nullptr;
   ServerProxy *m_server = nullptr;
+  int16_t m_serverProtocolMinor = 0;
   bool m_ready = false;
   bool m_active = false;
   bool m_suspended = false;

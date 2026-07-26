@@ -5,6 +5,7 @@
 
 #include "Protocol19Tests.h"
 
+#include "deskflow/CanonicalScancode.h"
 #include "deskflow/InputLanguageTypes.h"
 #include "deskflow/ProtocolTypes.h"
 #include "deskflow/ProtocolUtil.h"
@@ -107,6 +108,31 @@ void Protocol19Tests::inputLanguageStatusRoundTrip()
   QCOMPARE(decodedSource, source);
   QCOMPARE(category, static_cast<int8_t>(deskflow::InputLanguageCategory::InputMethod));
   QCOMPARE(composing, static_cast<int8_t>(1));
+}
+
+void Protocol19Tests::canonicalScancodeFlagRoundTrip()
+{
+  QCOMPARE(kProtocolCanonicalScancodeMinorVersion, static_cast<int16_t>(10));
+  QVERIFY(kProtocolMinorVersion >= kProtocolCanonicalScancodeMinorVersion);
+
+  MemoryStream stream;
+  const uint16_t expectedId = 0x0061;
+  const uint16_t expectedMask = 0;
+  const auto expectedButton = deskflow::scancode::markCanonical(0x11d);
+  ProtocolUtil::writef(
+      &stream, kMsgDKeyDown, static_cast<uint32_t>(expectedId), static_cast<uint32_t>(expectedMask),
+      static_cast<uint32_t>(expectedButton)
+  );
+
+  uint16_t id = 0;
+  uint16_t mask = 0;
+  uint16_t button = 0;
+  QVERIFY(ProtocolUtil::readf(&stream, kMsgDKeyDown, &id, &mask, &button));
+  QCOMPARE(id, expectedId);
+  QCOMPARE(mask, expectedMask);
+  QCOMPARE(button, expectedButton);
+  QVERIFY(deskflow::scancode::isCanonical(button));
+  QCOMPARE(deskflow::scancode::stripCanonical(button), KeyButton{0x11d});
 }
 
 QTEST_MAIN(Protocol19Tests)

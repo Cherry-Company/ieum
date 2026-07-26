@@ -216,7 +216,7 @@ QVariant Settings::defaultValue(const QString &key)
   if (key == Client::CjkRawScancode)
     return QStringLiteral("auto");
 
-  if (key == Client::EnterScreenLang)
+  if (key == Core::EnterScreenLang)
     return QStringLiteral("keep");
 
   if (key == Client::MacInterKeyDelayMicros)

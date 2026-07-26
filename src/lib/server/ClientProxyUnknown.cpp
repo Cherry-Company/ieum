@@ -16,6 +16,7 @@
 #include "io/IStream.h"
 #include "server/ClientProxy1_0.h"
 #include "server/ClientProxy1_1.h"
+#include "server/ClientProxy1_10.h"
 #include "server/ClientProxy1_2.h"
 #include "server/ClientProxy1_3.h"
 #include "server/ClientProxy1_4.h"
@@ -180,6 +181,10 @@ void ClientProxyUnknown::initProxy(const std::string &name, int major, int minor
 
     case 9:
       m_proxy = new ClientProxy1_9(name, m_stream, m_server, m_events);
+      break;
+
+    case 10:
+      m_proxy = new ClientProxy1_10(name, m_stream, m_server, m_events);
       break;
 
     default:

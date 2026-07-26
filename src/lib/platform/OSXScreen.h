@@ -21,6 +21,7 @@
 #include <bitset>
 #include <map>
 #include <memory>
+#include <optional>
 #include <thread>
 #include <vector>
 
@@ -96,7 +97,7 @@ public:
   std::string getSecureInputApp() const override;
   void inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target) override;
   deskflow::InputLanguageStatus inputLanguageStatus() const override;
-  KeyButton canonicalizeKeyButton(KeyButton button) const override;
+  std::optional<KeyButton> canonicalKeyButton(KeyButton button) const override;
   bool fakeRawKey(KeyButton button, KeyModifierMask mask, bool press, bool repeat) override;
 
   void waitForCarbonLoop() const;

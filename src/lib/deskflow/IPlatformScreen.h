@@ -16,6 +16,8 @@
 #include "deskflow/InputLanguageTypes.h"
 #include "deskflow/OptionTypes.h"
 
+#include <optional>
+
 class IClipboard;
 
 //! Screen interface
@@ -149,9 +151,15 @@ public:
   }
 
   //! Convert a platform KeyButton into a canonical PC Set-1 scancode.
-  virtual KeyButton canonicalizeKeyButton(KeyButton button) const
+  /*!
+  Returns nothing when this platform's key buttons are not Set-1 codes (X11 and
+  libei report evdev-derived keycodes) or when the key has no Set-1 position. The
+  caller must then send the platform button untouched, so the secondary keeps
+  using the translated key path for that key.
+  */
+  virtual std::optional<KeyButton> canonicalKeyButton(KeyButton) const
   {
-    return button;
+    return std::nullopt;
   }
 
   //! Inject one canonical Set-1 event without character/layout translation.

@@ -198,13 +198,17 @@ QStatusBar {
 
 inline void applyIeumDialogStyle(QWidget &dialog)
 {
-  const auto palette = dialog.palette();
+  // Same rules as applyIeumMainWindowStyle: read the application palette, not
+  // the widget's own (setStyleSheet rewrites that), and only assign when the
+  // sheet actually changed so a PaletteChange re-apply settles immediately.
+  const auto palette = QGuiApplication::palette();
   const auto windowColor = palette.color(QPalette::Window);
   const auto baseColor = palette.color(QPalette::Base);
   const auto textColor = palette.color(QPalette::WindowText);
   const auto border = blendedColor(windowColor, textColor, isDarkMode() ? 0.24 : 0.16);
 
-  dialog.setStyleSheet(QStringLiteral(R"(
+  const auto styleSheet =
+      QStringLiteral(R"(
 QDialog {
   background-color: %1;
 }
@@ -228,8 +232,10 @@ QScrollArea {
   border: 0px;
 }
 )")
-                           .arg(cssColor(windowColor), cssColor(baseColor, isDarkMode() ? 174 : 205), cssColor(border))
-  );
+          .arg(cssColor(windowColor), cssColor(baseColor, isDarkMode() ? 174 : 205), cssColor(border));
+
+  if (dialog.styleSheet() != styleSheet)
+    dialog.setStyleSheet(styleSheet);
 }
 } // namespace deskflow::gui
 

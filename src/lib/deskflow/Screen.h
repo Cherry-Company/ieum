@@ -14,6 +14,7 @@
 #include "deskflow/MouseTypes.h"
 #include "deskflow/OptionTypes.h"
 
+#include <optional>
 #include <string>
 
 class IClipboard;
@@ -137,7 +138,7 @@ public:
   void inputLanguageControl(InputLanguageAction action, const std::string &target);
   InputLanguageStatus inputLanguageStatus() const;
 
-  KeyButton canonicalizeKeyButton(KeyButton button) const;
+  std::optional<KeyButton> canonicalKeyButton(KeyButton button) const;
 
   //! Notify of mouse press
   /*!

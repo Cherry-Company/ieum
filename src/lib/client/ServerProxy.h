@@ -53,6 +53,9 @@ public:
   bool onGrabClipboard(ClipboardID);
   void onClipboardChanged(ClipboardID, const IClipboard *);
 
+  //! Release raw keys while the platform screen is still enabled.
+  void releaseRawScancodeButtons();
+
   //@}
 
 protected:

@@ -45,7 +45,10 @@ static const int16_t kProtocolMajorVersion = 1;
  * @note When incrementing the minor version, the Deskflow application version should also increment
  * @since Protocol version 1.0
  */
-static const int16_t kProtocolMinorVersion = 9;
+static const int16_t kProtocolMinorVersion = 10;
+
+//! First minor version that negotiates the canonical-scancode button flag.
+static const int16_t kProtocolCanonicalScancodeMinorVersion = 10;
 
 /**
  * @brief Default TCP port for Deskflow connections
@@ -1127,6 +1130,24 @@ extern const char *const kMsgDSecureInputNotification;
 extern const char *const kMsgDLanguageSynchronisation;
 
 /**
+ * @brief Canonical scancode flag on key button fields
+ *
+ * Set on the `button` parameter of @ref kMsgDKeyDown, @ref kMsgDKeyRepeat and
+ * @ref kMsgDKeyUp when the primary's key buttons really are PC Set-1 scancodes,
+ * which lets the secondary inject the key without character translation. A
+ * primary whose key buttons are not Set-1 codes (X11 and libei report
+ * evdev-derived keycodes), or a key with no Set-1 position, leaves the button
+ * unflagged and the secondary keeps translating it.
+ *
+ * Canonical codes need only the low 9 bits. The primary sends the flag only
+ * after both peers negotiate protocol 1.10, because earlier Ieum clients used
+ * the complete button value as a raw Set-1 code.
+ *
+ * @see deskflow::scancode::kCanonicalFlag
+ * @since Protocol version 1.10
+ */
+
+/**
  * @brief IME/input-source control
  *
  * **Message Code**: `"DILC"`
@@ -1150,6 +1171,11 @@ extern const char *const kMsgDInputLangControl;
  * - `$1`: platform input-source identifier
  * - `$2`: category (`0` key layout, `1` input method, `2` unknown)
  * - `$3`: composition/preedit active flag
+ *
+ * @note `$3` is reserved and always `0` today. Neither Windows nor macOS
+ * exposes the composition state of another process's input context, so no
+ * secondary can currently fill it in. Readers must accept `1` so a future
+ * implementation does not need a protocol bump.
  *
  * @since Protocol version 1.9
  */

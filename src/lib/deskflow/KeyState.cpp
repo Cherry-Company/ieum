@@ -898,8 +898,10 @@ bool KeyState::fakeKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyB
 
 bool KeyState::fakeKeyUp(KeyButton serverID)
 {
+  serverID &= kButtonMask;
+
   // if we haven't seen this button go down then ignore it
-  KeyButton localID = m_serverKeys[serverID & kButtonMask];
+  KeyButton localID = m_serverKeys[serverID];
   if (localID == 0) {
     return false;
   }

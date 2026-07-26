@@ -8,6 +8,15 @@ runs:
     - run: |
         if [[ "$GITHUB_REF" == *"tags/v"* ]]; then
           version="${GITHUB_REF_NAME#v}"
+
+          # The VERSION file feeds the CMake fallback and the readme download
+          # tables. A tag that disagrees with it means one of them is stale.
+          declared=$(tr -d '[:space:]' < VERSION)
+          if [[ "$declared" != "$version" ]]; then
+            echo "::error::VERSION file says '$declared' but the tag says '$version'; update VERSION before tagging"
+            exit 1
+          fi
+
           echo "IEUM_VERSION=$version" >> "$GITHUB_ENV"
           echo "IEUM_PACKAGE_VERSION=$version" >> "$GITHUB_ENV"
         else

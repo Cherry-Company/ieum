@@ -8,6 +8,7 @@
 
 #include "KeyStateTests.h"
 #include "base/EventQueue.h"
+#include "deskflow/CanonicalScancode.h"
 #include "deskflow/KeyMap.h"
 
 #include "MockEventQueue.h"
@@ -111,6 +112,25 @@ void KeyStateTests::fakeKeyUp_buttonNotDown_returnsFalse()
   MockKeyState keyState(eventQueue, m_keymap);
 
   QVERIFY(!keyState.fakeKeyUp(0));
+}
+
+void KeyStateTests::fakeKeyUp_highServerButton_clearsMaskedSlot()
+{
+  deskflow::KeyMap keyMap;
+  deskflow::KeyMap::KeyItem keyItem;
+  keyItem.m_id = 'a';
+  keyItem.m_group = 0;
+  keyItem.m_button = 1;
+  keyMap.addKeyEntry(keyItem);
+  keyMap.finish();
+
+  MockEventQueue eventQueue;
+  MockKeyState keyState(eventQueue, keyMap);
+  keyState.KeyState::fakeKeyDown('a', 0, 1, "en");
+
+  const auto markedButton = deskflow::scancode::markCanonical(1);
+  QVERIFY(keyState.KeyState::fakeKeyUp(markedButton));
+  QVERIFY(!keyState.KeyState::fakeKeyUp(1));
 }
 
 void KeyStateTests::isKeyDown_noKeysDown_returnsFalse()

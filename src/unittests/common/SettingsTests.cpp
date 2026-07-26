@@ -1,12 +1,14 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Chris Rizzitello <sithlord48@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2026 Ieum Developers
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
 #include "SettingsTests.h"
 
 #include <QFile>
+#include <QSettings>
 #include <QSignalSpy>
 
 void SettingsTests::initTestCase()
@@ -14,11 +16,30 @@ void SettingsTests::initTestCase()
   QFile oldSettings(m_settingsFile);
   if (oldSettings.exists())
     oldSettings.remove();
+
+  QSettings legacySettings(m_settingsFile, QSettings::IniFormat);
+  legacySettings.setValue(Settings::Client::ImeSyncLegacy, false);
+  legacySettings.setValue(Settings::Client::EnterScreenLangLegacy, QStringLiteral("follow-server"));
+  legacySettings.sync();
 }
 
 void SettingsTests::setSettingsFile()
 {
   Settings::setSettingsFile(m_settingsFile);
+}
+
+void SettingsTests::migratesImeSettingsToCore()
+{
+  QCOMPARE(Settings::value(Settings::Core::ImeSync).toBool(), false);
+  QCOMPARE(Settings::value(Settings::Core::EnterScreenLang).toString(), QStringLiteral("follow-server"));
+
+  Settings::save(false);
+  QSettings migratedSettings(m_settingsFile, QSettings::IniFormat);
+  QVERIFY(!migratedSettings.contains(Settings::Client::ImeSyncLegacy));
+  QVERIFY(!migratedSettings.contains(Settings::Client::EnterScreenLangLegacy));
+
+  Settings::setValue(Settings::Core::ImeSync, Settings::defaultValue(Settings::Core::ImeSync));
+  Settings::setValue(Settings::Core::EnterScreenLang, Settings::defaultValue(Settings::Core::EnterScreenLang));
 }
 
 void SettingsTests::setStateFile()
