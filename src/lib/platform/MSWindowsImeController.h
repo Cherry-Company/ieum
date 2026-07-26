@@ -11,6 +11,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+#include <optional>
+
 class IEventQueue;
 
 class MSWindowsImeController
@@ -24,7 +26,8 @@ public:
 
 private:
   HWND imeWindow() const;
-  bool openStatus() const;
+  std::optional<bool> openStatus() const;
+  std::optional<deskflow::InputLanguageStatus> queryStatus() const;
   bool setOpenStatus(bool open) const;
   bool sendImeKey(WORD virtualKey) const;
   void emitStatus(const deskflow::InputLanguageStatus &status);

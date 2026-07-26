@@ -30,9 +30,11 @@ constexpr UINT kImeQueryTimeoutMs = 20;
 
 MSWindowsImeController::MSWindowsImeController(IEventQueue *events, void *eventTarget)
     : m_events(events),
-      m_eventTarget(eventTarget),
-      m_lastStatus(status())
+      m_eventTarget(eventTarget)
 {
+  if (const auto current = queryStatus(); current.has_value()) {
+    m_lastStatus = *current;
+  }
 }
 
 void MSWindowsImeController::control(deskflow::InputLanguageAction action, const std::string &target)
@@ -45,9 +47,11 @@ void MSWindowsImeController::control(deskflow::InputLanguageAction action, const
   if (target == "hanja") {
     sendImeKey(VK_HANJA);
   } else if (action == deskflow::InputLanguageAction::Toggle) {
-    const bool wasOpen = openStatus();
     if (!sendImeKey(VK_HANGUL)) {
-      setOpenStatus(!wasOpen);
+      const auto wasOpen = openStatus();
+      if (!wasOpen.has_value() || !setOpenStatus(!*wasOpen)) {
+        LOG_WARN("failed to toggle Windows IME open state");
+      }
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
   } else if (target == "ko") {
@@ -68,6 +72,11 @@ bool MSWindowsImeController::hasImeOpenState(HKL layout)
 
 deskflow::InputLanguageStatus MSWindowsImeController::status() const
 {
+  return queryStatus().value_or(m_lastStatus);
+}
+
+std::optional<deskflow::InputLanguageStatus> MSWindowsImeController::queryStatus() const
+{
   const HWND foreground = GetForegroundWindow();
   DWORD threadId = foreground != nullptr ? GetWindowThreadProcessId(foreground, nullptr) : 0;
   const HKL layout = GetKeyboardLayout(threadId);
@@ -76,7 +85,14 @@ deskflow::InputLanguageStatus MSWindowsImeController::status() const
   // openStatus() is a cross-process send. Layouts that can never have an open
   // IME answer from the layout alone, which keeps the poll off that path
   // entirely for Latin keyboards.
-  const bool imeOpen = hasImeOpenState(layout) && openStatus();
+  bool imeOpen = false;
+  if (hasImeOpenState(layout)) {
+    const auto currentOpenStatus = openStatus();
+    if (!currentOpenStatus.has_value()) {
+      return std::nullopt;
+    }
+    imeOpen = *currentOpenStatus;
+  }
 
   std::ostringstream source;
   source << (imeOpen ? "windows.ime." : "windows.keylayout.") << std::hex << std::setw(4) << std::setfill('0')
@@ -89,9 +105,9 @@ deskflow::InputLanguageStatus MSWindowsImeController::status() const
 
 void MSWindowsImeController::poll()
 {
-  const auto current = status();
-  if (!(current == m_lastStatus)) {
-    emitStatus(current);
+  const auto current = queryStatus();
+  if (current.has_value() && !(*current == m_lastStatus)) {
+    emitStatus(*current);
   }
 }
 
@@ -101,18 +117,18 @@ HWND MSWindowsImeController::imeWindow() const
   return foreground == nullptr ? nullptr : ImmGetDefaultIMEWnd(foreground);
 }
 
-bool MSWindowsImeController::openStatus() const
+std::optional<bool> MSWindowsImeController::openStatus() const
 {
   const HWND ime = imeWindow();
   if (ime == nullptr) {
-    return false;
+    return std::nullopt;
   }
   DWORD_PTR result = 0;
   // No SMTO_BLOCK: this runs on the event loop, which must keep pumping. The
   // timeout is short because a poll that stalls costs input latency.
   if (SendMessageTimeout(ime, WM_IME_CONTROL, kImcGetOpenStatus, 0, SMTO_ABORTIFHUNG, kImeQueryTimeoutMs, &result) ==
       0) {
-    return false;
+    return std::nullopt;
   }
   return result != 0;
 }
