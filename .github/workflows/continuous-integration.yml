@@ -255,6 +255,69 @@ jobs:
           vcpkg-triplet: ${{matrix.target.vcpkg-triplet}}
           like: ${{ matrix.target.like }}
 
+      - name: Configure macOS signing
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_NOTARY_KEY_BASE64: ${{ secrets.MACOS_NOTARY_KEY_BASE64 }}
+          MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+          MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
+        run: |
+          echo "APPLE_CODESIGN_DISTRIBUTION=" >> "$GITHUB_ENV"
+          echo "IEUM_MACOS_NOTARIZE=0" >> "$GITHUB_ENV"
+
+          if [ -z "$MACOS_CERTIFICATE_P12_BASE64" ]; then
+            echo "::warning::Building an ad-hoc signed package; Developer ID credentials are not configured"
+            exit 0
+          fi
+          if [ -z "$MACOS_CERTIFICATE_PASSWORD" ]; then
+            echo "::error::MACOS_CERTIFICATE_PASSWORD is required with MACOS_CERTIFICATE_P12_BASE64"
+            exit 1
+          fi
+
+          certificate="$RUNNER_TEMP/ieum-developer-id.p12"
+          keychain="$RUNNER_TEMP/ieum-signing.keychain-db"
+          keychain_password="$(uuidgen)"
+          printf '%s' "$MACOS_CERTIFICATE_P12_BASE64" | base64 -D > "$certificate"
+          security create-keychain -p "$keychain_password" "$keychain"
+          security set-keychain-settings -lut 21600 "$keychain"
+          security unlock-keychain -p "$keychain_password" "$keychain"
+          security import "$certificate" \
+            -k "$keychain" \
+            -P "$MACOS_CERTIFICATE_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12
+          security set-key-partition-list \
+            -S apple-tool:,apple: \
+            -s \
+            -k "$keychain_password" \
+            "$keychain"
+          security list-keychains -d user -s "$keychain"
+
+          identity=$(
+            security find-identity -v -p codesigning "$keychain" |
+              sed -n 's/.*"\(Developer ID Application:[^"]*\)".*/\1/p' |
+              head -1
+          )
+          if [ -z "$identity" ]; then
+            echo "::error::The imported archive has no Developer ID Application identity"
+            exit 1
+          fi
+
+          echo "APPLE_CODESIGN_DISTRIBUTION=$identity" >> "$GITHUB_ENV"
+          echo "IEUM_MACOS_KEYCHAIN=$keychain" >> "$GITHUB_ENV"
+
+          if [ -n "$MACOS_NOTARY_KEY_BASE64" ] &&
+             [ -n "$MACOS_NOTARY_KEY_ID" ] &&
+             [ -n "$MACOS_NOTARY_ISSUER_ID" ]; then
+            echo "IEUM_MACOS_NOTARIZE=1" >> "$GITHUB_ENV"
+          else
+            echo "::warning::The app will be Developer ID signed but not notarized"
+          fi
+
       - name: Get version
         uses: ./.github/actions/get-version
 
@@ -264,7 +327,18 @@ jobs:
         run: echo "C:\Program Files\doxygen\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Configure
+        if: runner.os != 'macOS'
         run: ${{env.CMAKE_CONFIGURE}} ${{ matrix.target.config-args }} ${{ steps.get-deps.outputs.vcpkg-cmake-config }} -DPACKAGE_VERSION_LABEL="${{env.IEUM_PACKAGE_VERSION}}"
+
+      - name: Configure macOS
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          $CMAKE_CONFIGURE \
+            ${{ matrix.target.config-args }} \
+            ${{ steps.get-deps.outputs.vcpkg-cmake-config }} \
+            -DPACKAGE_VERSION_LABEL="${IEUM_PACKAGE_VERSION}" \
+            -DAPPLE_CODESIGN_DISTRIBUTION="${APPLE_CODESIGN_DISTRIBUTION}"
 
       - name: Build
         shell: bash
@@ -302,6 +376,39 @@ jobs:
             cd ..
           fi
 
+      - name: Notarize macOS package
+        if: runner.os == 'macOS' && env.IEUM_MACOS_NOTARIZE == '1'
+        shell: bash
+        env:
+          MACOS_NOTARY_KEY_BASE64: ${{ secrets.MACOS_NOTARY_KEY_BASE64 }}
+          MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+          MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}
+        run: |
+          shopt -s nullglob
+          dmgs=(build/Ieum-*.dmg)
+          if [ "${#dmgs[@]}" -ne 1 ]; then
+            echo "::error::Expected one macOS DMG, found ${#dmgs[@]}"
+            exit 1
+          fi
+
+          dmg="${dmgs[0]}"
+          notary_key="$RUNNER_TEMP/AuthKey_${MACOS_NOTARY_KEY_ID}.p8"
+          printf '%s' "$MACOS_NOTARY_KEY_BASE64" | base64 -D > "$notary_key"
+
+          codesign \
+            --force \
+            --timestamp \
+            --sign "$APPLE_CODESIGN_DISTRIBUTION" \
+            "$dmg"
+          xcrun notarytool submit "$dmg" \
+            --key "$notary_key" \
+            --key-id "$MACOS_NOTARY_KEY_ID" \
+            --issuer "$MACOS_NOTARY_ISSUER_ID" \
+            --wait
+          xcrun stapler staple "$dmg"
+          xcrun stapler validate "$dmg"
+          echo "IEUM_MACOS_NOTARIZED=1" >> "$GITHUB_ENV"
+
       - name: Check for unexpected repo changes
         shell: bash
         run: |
@@ -338,6 +445,31 @@ jobs:
             exit $cpackExitCode
           }
 
+      - name: Validate Windows installers
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          & .github/actions/test-package/validate-windows-msi.ps1 `
+            -BuildDirectory build `
+            -ReleaseVersion $env:IEUM_PACKAGE_VERSION
+
+      - name: Test Windows upgrade from previous release
+        if: runner.os == 'Windows' && startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $architecture = if ('${{ matrix.target.arch }}' -eq 'amd64') {
+            'x64'
+          } else {
+            'arm64'
+          }
+          & .github/actions/test-package/test-windows-msi-upgrade.ps1 `
+            -BuildDirectory build `
+            -Architecture $architecture `
+            -CurrentTag '${{ github.ref_name }}' `
+            -Repository '${{ github.repository }}'
+
       - name: Update Development Documentation
         if: matrix.target.like == 'arch' && github.ref == 'refs/heads/ieum/main'
         uses: peaceiris/actions-gh-pages@v4
@@ -351,6 +483,11 @@ jobs:
         with:
           name: package-${{ env.PACKAGE_PREFIX }}-${{ matrix.target.name }}
           path: ${{github.workspace}}/build/Ieum[-_]*.*
+
+      - name: Clean up macOS signing keychain
+        if: always() && runner.os == 'macOS' && env.IEUM_MACOS_KEYCHAIN != ''
+        shell: bash
+        run: security delete-keychain "$IEUM_MACOS_KEYCHAIN"
 
   # Technically, "unix" is a misnomer, but we use it here to mean "Unix-like BSD-derived".
   unix:

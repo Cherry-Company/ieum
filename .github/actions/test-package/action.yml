@@ -17,8 +17,16 @@ runs:
         if [ "$RUNNER_OS" == "macOS" ]; then
           dmg=$(ls build/Ieum-*.dmg | head -1)
           echo "Y" | hdiutil attach "$dmg" -nobrowse -mountpoint /tmp/deskflow-dmg
+          app=$(find /tmp/deskflow-dmg -maxdepth 2 -name "Ieum.app" -type d | head -1)
           core=$(find /tmp/deskflow-dmg -path "*/Contents/MacOS/deskflow-core" -type f | head -1)
+          test -n "$app"
           test -n "$core"
+          codesign --verify --deep --strict --verbose=2 "$app"
+          codesign --display --verbose=4 "$app" 2>&1
+          if [ "${IEUM_MACOS_NOTARIZED:-0}" = "1" ]; then
+            xcrun stapler validate "$dmg"
+            spctl --assess --type execute --verbose=4 "$app"
+          fi
           "$core" --version
           hdiutil detach /tmp/deskflow-dmg
 

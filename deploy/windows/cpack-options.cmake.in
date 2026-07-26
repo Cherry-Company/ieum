@@ -5,13 +5,93 @@ if(CPACK_GENERATOR MATCHES 7Z|ZIP)
   set(CPACK_PACKAGE_FILE_NAME ${CPACK_PACKAGE_FILE_NAME}-portable)
 endif()
 
-if(CPACK_GENERATOR MATCHES WIX AND CPACK_IEUM_INSTALLER_LOCALE STREQUAL "ko-KR")
-  set(CPACK_PACKAGE_NAME "이음 (Ieum)")
-  set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-ko-KR")
-  set(CPACK_PACKAGE_EXECUTABLES "ieum" "이음 (Ieum)")
-  set(CPACK_WIX_PROGRAM_MENU_FOLDER "이음 (Ieum)")
-  set(CPACK_WIX_PATCH_FILE "@CMAKE_CURRENT_BINARY_DIR@/wix-patch-ko-KR.xml")
-  # WixUI ships Korean resources, while the firewall extension only ships en-US.
-  # Keep Korean as the primary installer culture and fall back for extension-only strings.
-  set(CPACK_WIX_CULTURES "ko-KR;en-US")
+if(CPACK_GENERATOR MATCHES WIX)
+  # Windows Installer ignores a fourth ProductVersion field. Older Ieum alpha
+  # packages were all 0.1.0.0, so Windows could not order alpha.4 and alpha.5.
+  # Reserve 1000 build values per SemVer patch:
+  #   100-299 alpha, 400-599 beta, 700-899 rc, 999 stable.
+  set(_ieum_release_version "@CMAKE_PROJECT_RELEASE_VERSION@")
+  if(_ieum_release_version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)-alpha\\.([0-9]+)$")
+    set(_ieum_wix_major "${CMAKE_MATCH_1}")
+    set(_ieum_wix_minor "${CMAKE_MATCH_2}")
+    set(_ieum_wix_patch "${CMAKE_MATCH_3}")
+    set(_ieum_wix_sequence "${CMAKE_MATCH_4}")
+    if(_ieum_wix_sequence GREATER 199)
+      message(FATAL_ERROR "MSI alpha sequence exceeds 199: ${_ieum_release_version}")
+    endif()
+    math(EXPR _ieum_wix_build
+      "${_ieum_wix_patch} * 1000 + 100 + ${_ieum_wix_sequence}"
+    )
+  elseif(_ieum_release_version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)-beta\\.([0-9]+)$")
+    set(_ieum_wix_major "${CMAKE_MATCH_1}")
+    set(_ieum_wix_minor "${CMAKE_MATCH_2}")
+    set(_ieum_wix_patch "${CMAKE_MATCH_3}")
+    set(_ieum_wix_sequence "${CMAKE_MATCH_4}")
+    if(_ieum_wix_sequence GREATER 199)
+      message(FATAL_ERROR "MSI beta sequence exceeds 199: ${_ieum_release_version}")
+    endif()
+    math(EXPR _ieum_wix_build
+      "${_ieum_wix_patch} * 1000 + 400 + ${_ieum_wix_sequence}"
+    )
+  elseif(_ieum_release_version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)-rc\\.([0-9]+)$")
+    set(_ieum_wix_major "${CMAKE_MATCH_1}")
+    set(_ieum_wix_minor "${CMAKE_MATCH_2}")
+    set(_ieum_wix_patch "${CMAKE_MATCH_3}")
+    set(_ieum_wix_sequence "${CMAKE_MATCH_4}")
+    if(_ieum_wix_sequence GREATER 199)
+      message(FATAL_ERROR "MSI rc sequence exceeds 199: ${_ieum_release_version}")
+    endif()
+    math(EXPR _ieum_wix_build
+      "${_ieum_wix_patch} * 1000 + 700 + ${_ieum_wix_sequence}"
+    )
+  elseif(_ieum_release_version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
+    set(_ieum_wix_major "${CMAKE_MATCH_1}")
+    set(_ieum_wix_minor "${CMAKE_MATCH_2}")
+    set(_ieum_wix_patch "${CMAKE_MATCH_3}")
+    math(EXPR _ieum_wix_build "${_ieum_wix_patch} * 1000 + 999")
+  elseif(_ieum_release_version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
+    # Continuous CI builds are not releases, but keep them newer than the old
+    # 0.1.0.0 packages and valid as three-field MSI versions.
+    set(_ieum_wix_major "${CMAKE_MATCH_1}")
+    set(_ieum_wix_minor "${CMAKE_MATCH_2}")
+    set(_ieum_wix_patch "${CMAKE_MATCH_3}")
+    set(_ieum_wix_sequence "${CMAKE_MATCH_4}")
+    if(_ieum_wix_sequence GREATER 99)
+      set(_ieum_wix_sequence 99)
+    endif()
+    math(EXPR _ieum_wix_build
+      "${_ieum_wix_patch} * 1000 + ${_ieum_wix_sequence}"
+    )
+  else()
+    message(FATAL_ERROR
+      "Cannot map release version to Windows Installer ProductVersion: ${_ieum_release_version}"
+    )
+  endif()
+
+  if(_ieum_wix_major GREATER 255 OR _ieum_wix_minor GREATER 255 OR _ieum_wix_build GREATER 65535)
+    message(FATAL_ERROR "MSI ProductVersion is out of range: ${_ieum_release_version}")
+  endif()
+
+  set(CPACK_PACKAGE_VERSION
+    "${_ieum_wix_major}.${_ieum_wix_minor}.${_ieum_wix_build}"
+  )
+  message(STATUS
+    "Windows Installer ProductVersion: ${CPACK_PACKAGE_VERSION} (${_ieum_release_version})"
+  )
+
+  # Both localized identities contain both searchable project names.
+  set(CPACK_PACKAGE_NAME "Ieum (이음)")
+  set(CPACK_PACKAGE_EXECUTABLES "ieum" "Ieum (이음)")
+  set(CPACK_WIX_PROGRAM_MENU_FOLDER "Ieum (이음)")
+
+  if(CPACK_IEUM_INSTALLER_LOCALE STREQUAL "ko-KR")
+    set(CPACK_PACKAGE_NAME "이음 (Ieum)")
+    set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-ko-KR")
+    set(CPACK_PACKAGE_EXECUTABLES "ieum" "이음 (Ieum)")
+    set(CPACK_WIX_PROGRAM_MENU_FOLDER "이음 (Ieum)")
+    set(CPACK_WIX_PATCH_FILE "@CMAKE_CURRENT_BINARY_DIR@/wix-patch-ko-KR.xml")
+    # WixUI ships Korean resources, while the firewall extension only ships en-US.
+    # Keep Korean as the primary installer culture and fall back for extension-only strings.
+    set(CPACK_WIX_CULTURES "ko-KR;en-US")
+  endif()
 endif()

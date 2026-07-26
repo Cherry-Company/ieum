@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: (C) 2026 Ieum Developers
+# SPDX-License-Identifier: MIT
+
+set(_ieum_app
+  "${CPACK_TEMPORARY_INSTALL_DIRECTORY}/@CMAKE_PROJECT_PROPER_NAME@.app"
+)
+
+if(NOT IS_DIRECTORY "${_ieum_app}")
+  message(FATAL_ERROR "Staged macOS app bundle was not found: ${_ieum_app}")
+endif()
+
+message(STATUS "Deploying Qt and sealing ${_ieum_app}")
+execute_process(
+  COMMAND
+    "@DEPLOYQT@"
+    "${_ieum_app}"
+    "@IEUM_MACDEPLOYQT_SIGN_ARGUMENT@"
+  COMMAND_ECHO STDOUT
+  COMMAND_ERROR_IS_FATAL ANY
+)
+
+# A successful macdeployqt exit is not enough. Any file added after signing
+# breaks the outer bundle seal, which Gatekeeper reports as a damaged app.
+execute_process(
+  COMMAND
+    /usr/bin/codesign
+    --verify
+    --deep
+    --strict
+    --verbose=2
+    "${_ieum_app}"
+  COMMAND_ECHO STDOUT
+  COMMAND_ERROR_IS_FATAL ANY
+)

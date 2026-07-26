@@ -27,20 +27,27 @@ if (NOT "${WIX_APP}" STREQUAL "")
   list(APPEND CPACK_GENERATOR "WIX")
 endif()
 
-set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_PROPER_NAME}")
+set(CPACK_PACKAGE_NAME "Ieum (이음)")
 
 # Menu Entry
-set(CPACK_WIX_PROGRAM_MENU_FOLDER "${CMAKE_PROJECT_PROPER_NAME}")
-set(CPACK_PACKAGE_EXECUTABLES "ieum" "${CMAKE_PROJECT_PROPER_NAME}")
+set(CPACK_WIX_PROGRAM_MENU_FOLDER "Ieum (이음)")
+set(CPACK_PACKAGE_EXECUTABLES "ieum" "Ieum (이음)")
 
 # Default Install Path
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CMAKE_PROJECT_PROPER_NAME}")
 
 # Wix Specific Values
 set(CPACK_WIX_UPGRADE_GUID "027D1C8A-E7A5-4754-BB93-B2D45BFDBDC8")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/src/apps/res/ieum.ico")
 set(CPACK_WIX_UI_BANNER "${MY_DIR}/wix-banner.png")
 set(CPACK_WIX_UI_DIALOG "${MY_DIR}/wix-dialog.png")
 set(CPACK_WIX_CULTURES "en-US")
+set(CPACK_WIX_PROPERTY_ARPCOMMENTS
+  "Ieum release ${CMAKE_PROJECT_RELEASE_VERSION} - software KVM for Windows, macOS, and Linux"
+)
+set(CPACK_WIX_PROPERTY_ARPHELPLINK "https://github.com/victoriousian/ieum/issues")
+set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "https://github.com/victoriousian/ieum")
+set(CPACK_WIX_PROPERTY_ARPURLUPDATEINFO "https://github.com/victoriousian/ieum/releases")
 
 # Required Extra Extenstions
 list(APPEND CPACK_WIX_EXTENSIONS "WixToolset.Util.wixext" "WixToolset.Firewall.wixext")
