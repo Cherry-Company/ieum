@@ -10,6 +10,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QMessageBox>
+#include <QScopedValueRollback>
 #include <QTime>
 
 #if defined(Q_OS_WIN)
@@ -23,6 +24,8 @@ const auto kForceDebugMessages = QStringList{
     QStringLiteral("QSslSocket::connectToHostEncrypted: TLS initialization failed"),
     QStringLiteral("Retrying to obtain clipboard."), QStringLiteral("Unable to obtain clipboard.")
 };
+
+const auto kIgnoredMessagePrefixes = QStringList{QStringLiteral("QTextCursor::setPosition: Position")};
 
 QString printLine(FILE *out, const QString &type, const QString &message, const QString &fileLine = {})
 {
@@ -52,6 +55,18 @@ QString printLine(FILE *out, const QString &type, const QString &message, const 
 
 void Logger::handleMessage(const QtMsgType type, const QString &fileLine, const QString &message)
 {
+  static thread_local bool isHandlingMessage = false;
+  if (isHandlingMessage) {
+    return;
+  }
+  const QScopedValueRollback<bool> handlingMessage{isHandlingMessage, true};
+
+  for (const auto &prefix : kIgnoredMessagePrefixes) {
+    if (type == QtWarningMsg && message.startsWith(prefix) && message.endsWith(QStringLiteral("out of range"))) {
+      return;
+    }
+  }
+
   auto mutatedType = type;
   if (kForceDebugMessages.contains(message)) {
     mutatedType = QtDebugMsg;

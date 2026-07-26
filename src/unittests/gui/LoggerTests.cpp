@@ -55,4 +55,31 @@ void LoggerTests::noNewLine()
   QVERIFY(!newLineEmitted);
 }
 
+void LoggerTests::ignoredQtCursorWarning()
+{
+  QSignalSpy spy(Logger::instance(), &Logger::newLine);
+  QVERIFY(spy.isValid());
+
+  Logger::instance()->handleMessage(
+      QtWarningMsg, "qtextcursor.cpp", "QTextCursor::setPosition: Position '42' out of range"
+  );
+  QCOMPARE(spy.count(), 0);
+}
+
+void LoggerTests::recursiveMessage()
+{
+  auto logger = Logger::instance();
+  QSignalSpy spy(logger, &Logger::newLine);
+  QVERIFY(spy.isValid());
+
+  const auto connection = connect(logger, &Logger::newLine, logger, [logger]() {
+    logger->handleMessage(QtWarningMsg, "stub", "nested warning");
+  });
+  logger->handleMessage(QtInfoMsg, "stub", "outer message");
+  disconnect(connection);
+
+  QCOMPARE(spy.count(), 1);
+  QVERIFY(qvariant_cast<QString>(spy.takeFirst().at(0)).contains("outer message"));
+}
+
 QTEST_MAIN(LoggerTests)

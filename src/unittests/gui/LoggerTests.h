@@ -14,6 +14,8 @@ private Q_SLOTS:
   void initTestCase();
   void newLine();
   void noNewLine();
+  void ignoredQtCursorWarning();
+  void recursiveMessage();
 
 private:
   inline static const QString m_settingsPath = QStringLiteral("tmp/test");
