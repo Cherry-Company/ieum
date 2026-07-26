@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.6"><strong>Download Ieum</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.7"><strong>Download Ieum</strong></a>
   · <a href="#support-development"><strong>Support development</strong></a>
 </p>
 
@@ -28,7 +28,7 @@ Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers
 screen edge: it connects **Korean/English mode, IME composition sessions, physical key positions, and Unicode
 clipboard data** into one consistent input path across operating systems.
 
-> The current release is `v0.1.0-alpha.6`. Automated builds and unit tests pass, but the long-running physical
+> The current release is `v0.1.0-alpha.7`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
 
 ## Product identity and interface
@@ -121,27 +121,30 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[이음 (Ieum) v0.1.0-alpha.6 release](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.6)
+[이음 (Ieum) v0.1.0-alpha.7 release](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.7)
 
 | Operating system | Installer |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.6-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.6-macos-x86_64.dmg` |
-| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.6-win-x64.msi` |
-| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.6-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.6-win-arm64.msi` |
-| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.6-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.7-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.7-macos-x86_64.dmg` |
+| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.7-win-x64.msi` |
+| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.7-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.7-win-arm64.msi` |
+| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.7-win-arm64-ko-KR.msi` |
 
 Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
 `SHA256SUMS.txt`.
 
-The `alpha.5` Mac DMG modified the app bundle after signing and therefore had a broken code seal. Delete that
-version and download `alpha.6`. The final `alpha.6` app passes strict code-signature verification, but it is not
-yet signed with a Developer ID certificate or Apple-notarized. Move it to `/Applications`, try to open it once,
-then use **System Settings → Privacy & Security → Open Anyway** if macOS blocks it. Accessibility and Input
-Monitoring permissions are also required.
+The `alpha.5` Mac DMG had a broken code seal, and `alpha.6` exited before its asynchronous Accessibility request
+could finish. Delete both versions and use `alpha.7`. It uses an Ieum-specific bundle ID, stays alive while access
+is granted, and tells you to add `/Applications/Ieum.app` manually if Ieum is not listed.
 
-Windows `alpha.6` uses MSI version `0.1.106` so it can replace `alpha.4` and `alpha.5`. The global installer
+The final `alpha.7` app passes strict code-signature verification, but it is not yet signed with a Developer ID
+certificate or Apple-notarized. Move it to `/Applications`, try to open it once, then use **System Settings →
+Privacy & Security → Open Anyway** if macOS blocks it. Accessibility and Input Monitoring permissions are also
+required.
+
+Windows `alpha.7` uses MSI version `0.1.107` so it can replace `alpha.4` through `alpha.6`. The global installer
 appears as **Ieum** in Installed apps and the Start menu; the Korean installer appears as
 **이음 (Ieum)**. The installation directory is `C:\Program Files\Ieum`, the Windows service name is `Ieum`,
 and the Start menu includes an uninstall shortcut. Windows packages are not yet code-signed, so SmartScreen may
@@ -204,9 +207,10 @@ multiple Linux distributions, Flatpak, and FreeBSD.
 
 ## Lineage and license
 
-Ieum is developed from `deskflow/deskflow` at commit `39bf4fb`. Some internal binary names and the
-`org.deskflow.deskflow` identifier remain for protocol compatibility and existing macOS permission continuity.
-The user-facing product name, icon, installers, and releases are Ieum.
+Ieum is developed from `deskflow/deskflow` at commit `39bf4fb`. Some internal binary names remain for protocol
+and package compatibility. Linux and Flatpak retain the `org.deskflow.deskflow` app ID, while macOS uses the
+Ieum-specific `io.github.victoriousian.ieum` bundle ID to avoid permission collisions. The user-facing product
+name, icon, installers, and releases are Ieum.
 
 The project is distributed under `GPL-2.0-only WITH LicenseRef-OpenSSL-Exception`, preserving upstream copyright
 and license notices.

@@ -12,7 +12,9 @@ input is the source of truth.
 1. Run the current Ieum release on both computers. Mixed connections remain
    compatible, but IME control is disabled for peers using protocol 1.8 or
    earlier and canonical raw scan codes require protocol 1.10 on both peers.
-2. On macOS, grant Accessibility and Input Monitoring permission to Ieum.
+2. On macOS, grant Accessibility and Input Monitoring permission to Ieum. Keep the Ieum permission dialog open
+   while changing System Settings, then choose **Try Again**. If Ieum is not listed under Accessibility, use the
+   add button to select `/Applications/Ieum.app`.
 3. Add a selectable Korean input source and an ASCII-capable Latin layout in
    macOS Keyboard settings.
 4. Keep **Synchronize Korean/English input state** enabled in

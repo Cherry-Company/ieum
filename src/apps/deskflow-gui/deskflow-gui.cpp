@@ -167,22 +167,36 @@ int main(int argc, char *argv[])
 #if defined(Q_OS_MACOS)
 bool checkMacAssistiveDevices()
 {
-  // new in mavericks, applications are trusted individually
-  // with use of the accessibility api. this call will show a
-  // prompt which can show the security/privacy/accessibility
-  // tab, with a list of allowed applications. deskflow should
-  // show up there automatically, but will be unchecked.
-
   if (AXIsProcessTrusted()) {
     return true;
   }
 
-  const void *keys[] = {kAXTrustedCheckOptionPrompt};
-  const void *trueValue[] = {kCFBooleanTrue};
-  CFDictionaryRef options = CFDictionaryCreate(nullptr, keys, trueValue, 1, nullptr, nullptr);
+  const auto message = QCoreApplication::translate(
+      "MacAccessibility",
+      "Ieum needs Accessibility access to share the keyboard and mouse.\n\n"
+      "In System Settings, turn on Ieum under Privacy & Security > Accessibility. "
+      "If Ieum is not listed, use the add button to select /Applications/Ieum.app.\n\n"
+      "After granting access, return here and choose Try Again."
+  );
 
-  bool result = AXIsProcessTrustedWithOptions(options);
-  CFRelease(options);
-  return result;
+  while (!AXIsProcessTrusted()) {
+    const void *keys[] = {kAXTrustedCheckOptionPrompt};
+    const void *trueValue[] = {kCFBooleanTrue};
+    CFDictionaryRef options = CFDictionaryCreate(nullptr, keys, trueValue, 1, nullptr, nullptr);
+
+    // The system prompt is asynchronous. Keep this process alive while the
+    // user grants access so macOS can retain and display the app in TCC.
+    AXIsProcessTrustedWithOptions(options);
+    CFRelease(options);
+
+    QMessageBox dialog(QMessageBox::Warning, productDisplayName(), message, QMessageBox::Retry | QMessageBox::Cancel);
+    dialog.setDefaultButton(QMessageBox::Retry);
+    dialog.setEscapeButton(QMessageBox::Cancel);
+    if (dialog.exec() != QMessageBox::Retry) {
+      return false;
+    }
+  }
+
+  return true;
 }
 #endif

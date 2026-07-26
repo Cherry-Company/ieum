@@ -1528,4 +1528,19 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>一台同名的计算机已经存在</translation>
     </message>
 </context>
+<context>
+    <name>MacAccessibility</name>
+    <message>
+        <source>Ieum needs Accessibility access to share the keyboard and mouse.
+
+In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. If Ieum is not listed, use the add button to select /Applications/Ieum.app.
+
+After granting access, return here and choose Try Again.</source>
+        <translation>Ieum 需要“辅助功能”权限才能共享键盘和鼠标。
+
+请在“系统设置”的“隐私与安全性”&gt;“辅助功能”中开启 Ieum。如果列表中没有 Ieum，请点按添加按钮并选择 /Applications/Ieum.app。
+
+授权后请返回此处并选择“重试”。</translation>
+    </message>
+</context>
 </TS>

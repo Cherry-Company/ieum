@@ -21,8 +21,14 @@ runs:
           core=$(find /tmp/deskflow-dmg -path "*/Contents/MacOS/deskflow-core" -type f | head -1)
           test -n "$app"
           test -n "$core"
+          bundle_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$app/Contents/Info.plist")
+          test "$bundle_id" = "io.github.victoriousian.ieum"
+          grep -Fq '"CFBundleDisplayName" = "이음 (Ieum)";' \
+            "$app/Contents/Resources/ko.lproj/InfoPlist.strings"
           codesign --verify --deep --strict --verbose=2 "$app"
-          codesign --display --verbose=4 "$app" 2>&1
+          signature=$(codesign --display --verbose=4 "$app" 2>&1)
+          echo "$signature"
+          grep -Fq "Identifier=io.github.victoriousian.ieum" <<< "$signature"
           if [ "${IEUM_MACOS_NOTARIZED:-0}" = "1" ]; then
             xcrun stapler validate "$dmg"
             spctl --assess --type execute --verbose=4 "$app"

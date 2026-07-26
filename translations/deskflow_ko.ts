@@ -1528,4 +1528,19 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>동명의 컴퓨터가 이미 존재합니다</translation>
     </message>
 </context>
+<context>
+    <name>MacAccessibility</name>
+    <message>
+        <source>Ieum needs Accessibility access to share the keyboard and mouse.
+
+In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. If Ieum is not listed, use the add button to select /Applications/Ieum.app.
+
+After granting access, return here and choose Try Again.</source>
+        <translation>이음에서 키보드와 마우스를 공유하려면 손쉬운 사용 권한이 필요합니다.
+
+시스템 설정의 개인정보 보호 및 보안 &gt; 손쉬운 사용에서 이음을 켜세요. 목록에 이음이 없으면 추가 버튼을 눌러 /Applications/Ieum.app을 선택하세요.
+
+권한을 허용한 뒤 여기로 돌아와 다시 시도를 선택하세요.</translation>
+    </message>
+</context>
 </TS>

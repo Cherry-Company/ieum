@@ -9,5 +9,6 @@ released from [victoriousian/ieum](https://github.com/victoriousian/ieum).
 - [Build instructions](build.md)
 - [IME protocol and implementation](ime.md)
 
-Internal `deskflow` namespaces, core binary names, and reverse-DNS identifiers are retained where changing them
-would break protocol compatibility, packaging upgrades, or macOS permission continuity.
+Internal `deskflow` namespaces and core binary names are retained where changing them would break protocol or
+package compatibility. Linux retains the upstream app ID for Flatpak compatibility; macOS uses the independent
+`io.github.victoriousian.ieum` bundle ID so its TCC grants cannot collide with Deskflow.
