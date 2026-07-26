@@ -1527,4 +1527,15 @@ L&apos;abilitazione di questa impostazione disabiliterà l&apos;interfaccia graf
         <translation type="unfinished">Esiste già un computer con questo nome</translation>
     </message>
 </context>
+<context>
+    <name>MacAccessibility</name>
+    <message>
+        <source>Ieum needs Accessibility access to share the keyboard and mouse.
+
+In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. If Ieum is not listed, use the add button to select /Applications/Ieum.app.
+
+After granting access, return here and choose Try Again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>
