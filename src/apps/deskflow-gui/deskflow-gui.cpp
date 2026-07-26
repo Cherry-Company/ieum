@@ -172,11 +172,10 @@ bool checkMacAssistiveDevices()
   }
 
   const auto message = QCoreApplication::translate(
-      "MacAccessibility",
-      "Ieum needs Accessibility access to share the keyboard and mouse.\n\n"
-      "In System Settings, turn on Ieum under Privacy & Security > Accessibility. "
-      "If Ieum is not listed, use the add button to select /Applications/Ieum.app.\n\n"
-      "After granting access, return here and choose Try Again."
+      "MacAccessibility", "Ieum needs Accessibility access to share the keyboard and mouse.\n\n"
+                          "In System Settings, turn on Ieum under Privacy & Security > Accessibility. "
+                          "If Ieum is not listed, use the add button to select /Applications/Ieum.app.\n\n"
+                          "After granting access, return here and choose Try Again."
   );
 
   while (!AXIsProcessTrusted()) {
