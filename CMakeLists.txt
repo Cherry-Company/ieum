@@ -94,6 +94,11 @@ set(CMAKE_PROJECT_CONTACT "${CMAKE_PROJECT_PROPER_NAME} <https://github.com/vict
 set(IEUM_RUNTIME_ID "ieum")
 set(IEUM_CORE_TARGET "${IEUM_RUNTIME_ID}-core")
 set(IEUM_DAEMON_TARGET "${IEUM_RUNTIME_ID}-daemon")
+if(APPLE)
+  set(IEUM_GUI_TARGET "${CMAKE_PROJECT_PROPER_NAME}")
+else()
+  set(IEUM_GUI_TARGET "${IEUM_RUNTIME_ID}")
+endif()
 # Linux keeps the upstream app ID for Flatpak compatibility. macOS needs its
 # own identity so TCC never confuses Ieum with an existing Deskflow grant.
 set(CMAKE_PROJECT_REV_FQDN "org.deskflow.deskflow")

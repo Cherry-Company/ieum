@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.8"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.9"><strong>이음 다운로드</strong></a>
   · <a href="#후원"><strong>후원하기</strong></a>
 </p>
 
@@ -28,7 +28,7 @@
 KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
 원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
 
-> 현재 단계는 `v0.1.0-alpha.8`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 현재 단계는 `v0.1.0-alpha.9`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
 
 ## 언어별 제품 표기와 인터페이스
@@ -120,41 +120,51 @@ flowchart LR
 
 ## 다운로드
 
-[이음 (Ieum) v0.1.0-alpha.8 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.8)
+[이음 (Ieum) v0.1.0-alpha.9 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.9)
 
 | 운영체제 | 설치 파일 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.8-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.8-macos-x86_64.dmg` |
-| Intel/AMD 64비트 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.8-win-x64-ko-KR.msi` |
-| Intel/AMD 64비트 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.8-win-x64.msi` |
-| ARM64 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.8-win-arm64-ko-KR.msi` |
-| ARM64 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.8-win-arm64.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.9-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.9-macos-x86_64.dmg` |
+| Intel/AMD 64비트 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.9-win-x64-ko-KR.msi` |
+| Intel/AMD 64비트 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.9-win-x64.msi` |
+| ARM64 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.9-win-arm64-ko-KR.msi` |
+| ARM64 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.9-win-arm64.msi` |
 
 Windows용 `portable.7z`와 Linux 패키지도 릴리스에 포함됩니다. 모든 파일은 함께 제공되는
 `SHA256SUMS.txt`로 검증할 수 있습니다.
 
 `alpha.5`의 Mac DMG에는 깨진 코드 서명 봉인이 있었고, `alpha.6`은 비동기 접근성 권한 요청이
 끝나기 전에 앱이 종료되는 문제가 있었습니다. `alpha.7`에서는 macOS의 Qt 접근성 경고가 앱 로그로
-되먹임되어 `QTextCursor::setPosition` 메시지가 반복될 수 있었습니다. 이전 버전은 삭제하고
-`alpha.8`을 사용하세요. `alpha.8`은 이음 전용 번들 ID로 권한을 요청하며, 권한을 허용하는 동안 앱을
-실행 상태로 유지합니다.
+되먹임되어 `QTextCursor::setPosition` 메시지가 반복될 수 있었습니다. `alpha.8`의 권한·로그 수정은
+`alpha.9`에도 유지됩니다. 이전 버전은 삭제하고 `alpha.9`를 사용하세요. 이음 전용 번들 ID로 권한을
+요청하며, 권한을 허용하는 동안 앱을 실행 상태로 유지합니다.
 손쉬운 사용 목록에 이음이 자동으로 나타나지 않으면 추가 버튼으로 `/Applications/Ieum.app`을
 선택할 수 있습니다.
 
-`alpha.8`은 DMG 안의 최종 앱에 대해 엄격한 코드 서명 검증을 통과하지만, 아직 Developer ID 서명과
+`alpha.9`은 DMG 안의 최종 앱에 대해 엄격한 코드 서명 검증을 통과하지만, 아직 Developer ID 서명과
 Apple 공증은 적용되지 않았습니다. 앱을 `/Applications`로 옮기고 한 번 실행한 뒤 macOS가 차단하면
 **시스템 설정 → 개인정보 보호 및 보안 → 확인 없이 열기**에서 허용하세요. 접근성 및 입력 모니터링
 권한도 필요합니다.
 
 Windows `alpha.2`~`alpha.7`은 원본 Deskflow의 MSI `UpgradeCode`를 재사용해, Deskflow가 설치된
 PC에서 이음을 더 낮은 버전으로 오인하고 설치를 차단할 수 있었습니다. `alpha.8`은 이음 전용
-`UpgradeCode`와 MSI 버전 `0.1.108`을 사용합니다. 기존 이음 알파 설치만 자동 교체하고 Deskflow는
-그대로 유지하며, 두 프로그램을 함께 설치할 수 있습니다. 한국어 설치본은 설정의 설치된 앱과 시작 메뉴에
-**이음 (Ieum)**, 영문
-설치본은 **Ieum** 으로 표시됩니다. 설치 경로는 `C:\Program Files\Ieum`, 서비스 이름은
-`Ieum`입니다. 시작 메뉴에는 제거 바로 가기도 생성됩니다. 현재 Windows 패키지는 코드 서명 전이므로
-SmartScreen 경고가 표시될 수 있습니다.
+`UpgradeCode`로 설치 계보를 분리했지만, 실행 파일과 IPC 이름은 여전히 `deskflow-core`와
+`deskflow-daemon`을 사용했습니다. 그 결과 Deskflow가 실행 중이거나 이음의 서비스 코어와
+데스크톱 코어가 겹치면 GUI가 다른 코어에 연결되고 TLS 승인 단계가 시간 초과될 수 있었습니다.
+
+`alpha.9`은 MSI 버전 `0.1.109`와 `ieum-core.exe`, `ieum-daemon.exe`, 버전이 지정된
+`ieum-core-v1`/`ieum-daemon-v1` IPC를 사용합니다. 전역 소유권 잠금으로 중복 코어도 거부하며,
+기본 인증서를 `ieum.pem`으로 이관해 `/CN=Ieum` 인증서를 새로 생성합니다. CI는
+`alpha.8 → alpha.9` 실제 업그레이드, 서비스 IPC 응답, 중복 코어 거부, 실행 중인 Deskflow
+1.26.0과 이음 코어의 동시 생존을 x64와 ARM64에서 검사합니다. `alpha.8` 사용자는 기존 버전을
+수동 삭제하지 말고 `alpha.9` MSI를 바로 실행하면 됩니다. 인증서가 교체되므로 최초 연결에서는
+새 지문을 한 번 승인해야 할 수 있습니다.
+
+한국어 설치본은 설정의 설치된 앱과 시작 메뉴에 **이음 (Ieum)**, 영문 설치본은 **Ieum** 으로
+표시됩니다. 설치 경로는 `C:\Program Files\Ieum`, 서비스 이름은 `Ieum`입니다. 시작 메뉴에는 제거
+바로 가기도 생성됩니다. 현재 Windows 패키지는 코드 서명 전이므로 SmartScreen 경고가 표시될 수
+있습니다.
 
 ## 빠른 시작
 
@@ -216,9 +226,10 @@ FreeBSD 빌드를 검증합니다.
 
 ## 계보와 라이선스
 
-Ieum은 `deskflow/deskflow`의 `39bf4fb`에서 포크해 개발하고 있습니다. 프로토콜과 패키지 호환성을
-위해 일부 내부 바이너리명은 유지합니다. Linux/Flatpak은 `org.deskflow.deskflow` 앱 ID를 유지하지만,
-macOS는 권한 충돌을 막기 위해 이음 전용 `io.github.victoriousian.ieum` 번들 ID를 사용합니다.
+Ieum은 `deskflow/deskflow`의 `39bf4fb`에서 포크해 개발하고 있습니다. upstream 병합을 위해 일부
+소스 디렉터리명은 유지합니다. Linux/Flatpak은 `org.deskflow.deskflow` 앱 ID를 유지하지만, 실행
+바이너리와 로컬 IPC는 이음 전용 이름을 사용합니다. macOS는 권한 충돌을 막기 위해 이음 전용
+`io.github.victoriousian.ieum` 번들 ID를 사용합니다.
 사용자에게 표시되는 제품명, 앱 아이콘, 설치 프로그램과 릴리스는 Ieum으로 관리합니다.
 
 코드는 `GPL-2.0-only WITH LicenseRef-OpenSSL-Exception`에 따라 배포합니다. 원저작자 고지와 라이선스

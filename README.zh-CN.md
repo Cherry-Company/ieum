@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.8"><strong>下载 Ieum</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.9"><strong>下载 Ieum</strong></a>
   · <a href="#支持开发"><strong>支持开发</strong></a>
 </p>
 
@@ -28,7 +28,7 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 还试图把不同系统中的 **韩/英输入状态、输入法组合会话、物理按键位置和 Unicode 剪贴板**连接成
 一致的输入链路。
 
-> 当前版本为 `v0.1.0-alpha.8`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
+> 当前版本为 `v0.1.0-alpha.9`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
 
 ## 产品名称与界面
@@ -115,34 +115,44 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.8 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.8)
+[Ieum v0.1.0-alpha.9 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.9)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.8-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.8-macos-x86_64.dmg` |
-| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.8-win-x64.msi` |
-| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.8-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.8-win-arm64.msi` |
-| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.8-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.9-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.9-macos-x86_64.dmg` |
+| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.9-win-x64.msi` |
+| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.9-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.9-win-arm64.msi` |
+| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.9-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
 
 `alpha.5` 的 Mac DMG 代码签名封印已损坏，`alpha.6` 又会在异步“辅助功能”请求完成前退出。
 在 `alpha.7` 中，Qt 的 macOS 辅助功能警告可能被反复写回应用日志，持续显示
-`QTextCursor::setPosition`。请删除旧版本并使用 `alpha.8`。新版本使用 Ieum 专用的应用包标识，
-并会在授权期间保持运行；若列表中仍未显示 Ieum，可手动添加 `/Applications/Ieum.app`。
+`QTextCursor::setPosition`。`alpha.8` 的权限与日志修复继续保留在 `alpha.9` 中。请删除旧版本并
+使用 `alpha.9`。新版本使用 Ieum 专用的应用包标识，并会在授权期间保持运行；若列表中仍未显示
+Ieum，可手动添加 `/Applications/Ieum.app`。
 
-`alpha.8` 最终应用已通过严格的代码签名验证，但尚未使用 Developer ID 证书签名，也未经过 Apple
+`alpha.9` 最终应用已通过严格的代码签名验证，但尚未使用 Developer ID 证书签名，也未经过 Apple
 公证。请将应用移到 `/Applications` 并尝试打开一次；若 macOS 阻止运行，请前往
 **系统设置 → 隐私与安全性 → 仍要打开**。应用还需要“辅助功能”和“输入监控”权限。
 
 Windows `alpha.2` 至 `alpha.7` 错误复用了 Deskflow 的 MSI `UpgradeCode`，因此已安装 Deskflow
-的电脑可能会把 Ieum 误判为较旧版本并拒绝安装。`alpha.8` 使用 Ieum 专用的 `UpgradeCode` 和
-MSI 版本 `0.1.108`，只迁移旧 Ieum Alpha，保留 Deskflow，并允许两者共存。全局安装包在“已安装
-的应用”和开始菜单中显示为 **Ieum**，韩文安装包显示为 **이음 (Ieum)**。安装目录为
-`C:\Program Files\Ieum`，Windows 服务名为 `Ieum`，开始菜单中还会创建卸载快捷方式。Windows
-安装包尚未进行代码签名，因此 SmartScreen 仍可能显示警告。
+的电脑可能会把 Ieum 误判为较旧版本并拒绝安装。`alpha.8` 分离了安装程序身份，但运行时仍使用
+`deskflow-core` 与 `deskflow-daemon` 的可执行文件和 IPC 名称。Deskflow 正在运行时，或 Ieum 的
+服务核心与桌面核心重叠时，GUI 可能连接到错误的核心，并让 TLS 授权一直等待到超时。
+
+`alpha.9` 使用 MSI 版本 `0.1.109`、`ieum-core.exe`、`ieum-daemon.exe`，以及带版本的
+`ieum-core-v1`/`ieum-daemon-v1` IPC。全局所有权锁会拒绝重复核心；默认认证文件迁移到
+`ieum.pem`，从而重新生成 `/CN=Ieum` 证书。CI 会在 x64 与 ARM64 上执行真实的
+`alpha.8 → alpha.9` 升级，验证服务 IPC、重复核心拒绝，并确认 Deskflow 1.26.0 与 Ieum 核心可
+同时运行。现有 `alpha.8` 用户可直接运行 `alpha.9` MSI，无需手动卸载。证书更新后，首次连接时
+可能需要重新确认一次指纹。
+
+全局安装包在“已安装的应用”和开始菜单中显示为 **Ieum**，韩文安装包显示为 **이음 (Ieum)**。
+安装目录为 `C:\Program Files\Ieum`，Windows 服务名为 `Ieum`，开始菜单中还会创建卸载快捷方式。
+Windows 安装包尚未进行代码签名，因此 SmartScreen 仍可能显示警告。
 
 ## 快速开始
 
@@ -199,9 +209,9 @@ Silicon、多种 Linux 发行版、Flatpak 与 FreeBSD。
 
 ## 项目来源与许可证
 
-Ieum 基于 `deskflow/deskflow` 的 `39bf4fb` 提交开发。为保持协议与安装包兼容性，部分内部二进制
-名称仍然保留。Linux 与 Flatpak 继续使用 `org.deskflow.deskflow` 应用 ID；macOS 使用 Ieum 专用的
-`io.github.victoriousian.ieum` 应用包 ID，以避免权限记录冲突。面向用户的产品名称、图标、安装程序
-和发布版本均使用 Ieum。
+Ieum 基于 `deskflow/deskflow` 的 `39bf4fb` 提交开发。为便于审查上游合并，部分源代码目录名称
+仍然保留。Linux 与 Flatpak 继续使用 `org.deskflow.deskflow` 应用 ID，但运行时可执行文件与本地
+IPC 使用 Ieum 专用名称。macOS 使用 `io.github.victoriousian.ieum` 应用包 ID，以避免权限记录
+冲突。面向用户的产品名称、图标、安装程序和发布版本均使用 Ieum。
 
 项目按照 `GPL-2.0-only WITH LicenseRef-OpenSSL-Exception` 发布，并保留上游版权与许可证声明。

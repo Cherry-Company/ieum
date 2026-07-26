@@ -22,10 +22,15 @@
 #include <cstring>
 #include <fcntl.h>
 #include <sys/file.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #endif
 
 namespace deskflow::core::ipc {
+
+namespace {
+constexpr auto kMaxIpcMessageBytes = 64 * 1024;
+}
 
 IpcServer::IpcServer(QObject *parent, const QString &serverName, const QString &typeName)
     : QObject(parent),
@@ -182,6 +187,7 @@ void IpcServer::handleNewConnection()
 
   LOG_DEBUG("%s ipc server got new connection", m_typeName.constData());
   m_clients.insert(clientSocket);
+  m_receiveBuffers.insert(clientSocket, {});
 
   connect(clientSocket, &QLocalSocket::readyRead, this, &IpcServer::handleReadyRead);
   connect(clientSocket, &QLocalSocket::disconnected, this, &IpcServer::handleDisconnected);
@@ -193,25 +199,32 @@ void IpcServer::handleReadyRead()
   const auto clientSocket = qobject_cast<QLocalSocket *>(sender());
   LOG_VERBOSE("%s ipc server ready to read data", m_typeName.constData());
 
-  QByteArray data = clientSocket->readAll();
-  if (data.isEmpty()) {
+  auto &buffer = m_receiveBuffers[clientSocket];
+  buffer.append(clientSocket->readAll());
+  if (buffer.isEmpty()) {
     LOG_WARN("%s ipc server got empty message", m_typeName.constData());
     return;
   }
 
-  // we don't handle incomplete messages yet; each socket read must have delimiters.
-  if (!data.contains('\n')) {
-    LOG_WARN("%s ipc server got incomplete message: %s", m_typeName.constData(), data.constData());
+  if (buffer.size() > kMaxIpcMessageBytes) {
+    LOG_ERR("%s ipc server message exceeded %d bytes", m_typeName.constData(), kMaxIpcMessageBytes);
+    m_receiveBuffers.remove(clientSocket);
+    clientSocket->disconnectFromServer();
     return;
   }
 
-  // each message is delimited by a newline to keep the protocol super simple.
-  while (data.contains('\n')) {
-    const auto index = data.indexOf('\n');
-    QByteArray messageData = data.left(index);
-    data.remove(0, index + 1);
-    QString message = QString::fromUtf8(messageData);
-    processMessage(clientSocket, message);
+  qsizetype delimiter = -1;
+  while ((delimiter = buffer.indexOf('\n')) >= 0) {
+    auto messageData = buffer.left(delimiter);
+    buffer.remove(0, delimiter + 1);
+    if (messageData.endsWith('\r')) {
+      messageData.chop(1);
+    }
+    processMessage(clientSocket, QString::fromUtf8(messageData));
+  }
+
+  if (!buffer.isEmpty()) {
+    LOG_VERBOSE("%s ipc server buffered %d incomplete bytes", m_typeName.constData(), buffer.size());
   }
 }
 
@@ -220,6 +233,7 @@ void IpcServer::handleDisconnected()
   const auto clientSocket = qobject_cast<QLocalSocket *>(sender());
   LOG_DEBUG("%s ipc server client disconnected", m_typeName.constData());
   m_clients.remove(clientSocket);
+  m_receiveBuffers.remove(clientSocket);
   clientSocket->deleteLater();
 }
 
@@ -228,6 +242,7 @@ void IpcServer::handleErrorOccurred()
   const auto clientSocket = qobject_cast<QLocalSocket *>(sender());
   LOG_ERR("%s ipc server client error: %s", m_typeName.constData(), clientSocket->errorString().toUtf8().constData());
   m_clients.remove(clientSocket);
+  m_receiveBuffers.remove(clientSocket);
   clientSocket->deleteLater();
 }
 

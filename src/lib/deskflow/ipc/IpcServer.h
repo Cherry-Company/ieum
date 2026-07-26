@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <QByteArray>
+#include <QHash>
 #include <QObject>
 #include <QSet>
 
@@ -53,6 +55,7 @@ private:
 
   QLocalServer *m_server;
   QSet<QLocalSocket *> m_clients;
+  QHash<QLocalSocket *, QByteArray> m_receiveBuffers;
   QString m_serverName;
   QStringList m_pendingMessages;
   QByteArray m_typeName;

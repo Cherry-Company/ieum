@@ -9,10 +9,10 @@
 #include "common/VersionInfo.h"
 #include "deskflow/ipc/IpcServer.h"
 
+#include <QCoreApplication>
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QSignalSpy>
-#include <QUuid>
 
 using deskflow::core::ipc::IpcServer;
 
@@ -33,7 +33,8 @@ private:
 
 QString uniqueSocketName()
 {
-  return QStringLiteral("ieum-ipc-server-test-%1").arg(QUuid::createUuid().toString(QUuid::WithoutBraces));
+  // Keep the full path below macOS's short Unix-domain socket limit.
+  return QStringLiteral("ieum-ipc-test-%1").arg(QCoreApplication::applicationPid());
 }
 
 } // namespace
@@ -52,7 +53,13 @@ void IpcServerTests::refusesDuplicateWithoutDisruptingFirstServer()
 
   QSignalSpy readyReadSpy(&firstClient, &QLocalSocket::readyRead);
   const auto versionId = QStringLiteral("%1+%2").arg(kVersion, kVersionGitSha);
-  firstClient.write(QStringLiteral("hello=%1\n").arg(versionId).toUtf8());
+  const auto partialHello = QStringLiteral("hello=%1").arg(versionId).toUtf8();
+  QCOMPARE(firstClient.write(partialHello), partialHello.size());
+  firstClient.flush();
+  QTest::qWait(50);
+  QVERIFY(readyReadSpy.isEmpty());
+
+  QCOMPARE(firstClient.write("\r\n"), 2);
   firstClient.flush();
   QTRY_VERIFY_WITH_TIMEOUT(!readyReadSpy.isEmpty(), 1000);
   QVERIFY(firstClient.readAll().startsWith("hello="));

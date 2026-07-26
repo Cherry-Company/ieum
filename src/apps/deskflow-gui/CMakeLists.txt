@@ -2,11 +2,7 @@
 # SPDX-FileCopyrightText: (C) 2024 Symless Ltd
 # SPDX-License-Identifier: MIT
 
-if(APPLE)
-  set(target ${CMAKE_PROJECT_PROPER_NAME})
-else()
-  set(target ieum)
-endif()
+set(target ${IEUM_GUI_TARGET})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
