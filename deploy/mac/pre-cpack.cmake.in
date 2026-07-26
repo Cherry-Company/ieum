@@ -5,7 +5,7 @@ set(_ieum_app
   "${CPACK_TEMPORARY_INSTALL_DIRECTORY}/@CMAKE_PROJECT_PROPER_NAME@.app"
 )
 set(_ieum_core
-  "${_ieum_app}/Contents/MacOS/@CMAKE_PROJECT_NAME@-core"
+  "${_ieum_app}/Contents/MacOS/@IEUM_CORE_TARGET@"
 )
 
 if(NOT IS_DIRECTORY "${_ieum_app}")

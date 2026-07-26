@@ -50,17 +50,18 @@ if(CPACK_GENERATOR MATCHES WIX)
     set(_ieum_wix_patch "${CMAKE_MATCH_3}")
     math(EXPR _ieum_wix_build "${_ieum_wix_patch} * 1000 + 999")
   elseif(_ieum_release_version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
-    # Continuous CI builds are not releases, but keep them newer than the old
-    # 0.1.0.0 packages and valid as three-field MSI versions.
+    # Continuous CI builds must upgrade every prerelease in the same SemVer
+    # patch line so branch CI can exercise the real installer migration. Keep
+    # them below the stable slot (999) and above the highest RC slot (899).
     set(_ieum_wix_major "${CMAKE_MATCH_1}")
     set(_ieum_wix_minor "${CMAKE_MATCH_2}")
     set(_ieum_wix_patch "${CMAKE_MATCH_3}")
     set(_ieum_wix_sequence "${CMAKE_MATCH_4}")
-    if(_ieum_wix_sequence GREATER 99)
-      set(_ieum_wix_sequence 99)
+    if(_ieum_wix_sequence GREATER 98)
+      set(_ieum_wix_sequence 98)
     endif()
     math(EXPR _ieum_wix_build
-      "${_ieum_wix_patch} * 1000 + ${_ieum_wix_sequence}"
+      "${_ieum_wix_patch} * 1000 + 900 + ${_ieum_wix_sequence}"
     )
   else()
     message(FATAL_ERROR

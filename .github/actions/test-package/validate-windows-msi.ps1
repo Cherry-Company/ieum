@@ -140,14 +140,41 @@ try {
         throw "$($msi.Name): the post-install launch does not force the main window to show"
       }
 
+      $installedFiles = @(
+        Get-MsiRows -Database $database -Query 'SELECT `FileName` FROM `File`' |
+          ForEach-Object {
+            ($_.Values[0] -split '\|')[-1].ToLowerInvariant()
+          }
+      )
+      foreach ($runtimeFile in @('ieum.exe', 'ieum-core.exe', 'ieum-daemon.exe')) {
+        if ($runtimeFile -notin $installedFiles) {
+          throw "$($msi.Name): missing Ieum runtime file '$runtimeFile'"
+        }
+      }
+      foreach ($deskflowFile in @('deskflow.exe', 'deskflow-core.exe', 'deskflow-daemon.exe')) {
+        if ($deskflowFile -in $installedFiles) {
+          throw "$($msi.Name): package still installs Deskflow-owned runtime file '$deskflowFile'"
+        }
+      }
+
+      $services = @(
+        Get-MsiRows -Database $database -Query 'SELECT `Name`,`StartType`,`Component_` FROM `ServiceInstall`'
+      )
+      if ($services.Count -ne 1 -or $services[0].Values[0] -ne 'Ieum' -or $services[0].Values[1] -ne '2') {
+        throw "$($msi.Name): expected one auto-start Ieum service"
+      }
+
       if ($properties.ProductVersion -notmatch '^\d+\.\d+\.\d+$') {
         throw "$($msi.Name): ProductVersion must have three numeric fields, got '$($properties.ProductVersion)'"
       }
       if ($null -ne $expectedVersion -and $properties.ProductVersion -ne $expectedVersion) {
         throw "$($msi.Name): ProductVersion '$($properties.ProductVersion)' != '$expectedVersion'"
       }
-      if ($ReleaseVersion -eq 'continuous' -and [int] ($properties.ProductVersion -split '\.')[2] -le 0) {
-        throw "$($msi.Name): continuous ProductVersion must be newer than legacy 0.1.0.0 packages"
+      if ($ReleaseVersion -eq 'continuous') {
+        $continuousBuild = [int] ($properties.ProductVersion -split '\.')[2]
+        if ($continuousBuild -lt 900 -or $continuousBuild -gt 998) {
+          throw "$($msi.Name): continuous ProductVersion must use build slot 900-998"
+        }
       }
 
       $upgradeRows = @(

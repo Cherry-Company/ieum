@@ -22,7 +22,7 @@ public:
   explicit IpcServer(QObject *parent, const QString &serverName, const QString &typeName);
   ~IpcServer() override;
 
-  void listen();
+  bool listen();
   void broadcastCommand(const QString &command, const QString &args = "");
 
 Q_SIGNALS:
@@ -42,6 +42,8 @@ protected:
   void writeToClientSocket(QLocalSocket *&clientSocket, const QString &message) const;
 
 private:
+  bool acquireOwnership();
+  void releaseOwnership();
   void processMessage(QLocalSocket *clientSocket, const QString &message);
   virtual void processCommand(QLocalSocket *clientSocket, const QString &command, const QStringList &parts) = 0;
   void handleNewConnection();
@@ -54,6 +56,11 @@ private:
   QString m_serverName;
   QStringList m_pendingMessages;
   QByteArray m_typeName;
+#ifdef Q_OS_WIN
+  void *m_ownershipMutex{nullptr};
+#elif defined(Q_OS_UNIX)
+  int m_ownershipFd{-1};
+#endif
 };
 
 } // namespace deskflow::core::ipc

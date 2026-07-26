@@ -26,6 +26,8 @@
 #include <QCoreApplication>
 #include <QThread>
 
+#include <stdexcept>
+
 using namespace deskflow::core;
 
 void handleError(const char *message = "Unrecognized error.");
@@ -92,7 +94,9 @@ int main(int argc, char **argv)
 #endif
 
     const auto ipcServer = new ipc::DaemonIpcServer(&app, qPrintable(DaemonApp::logFilename())); // NOSONAR - Qt managed
-    ipcServer->listen();
+    if (!ipcServer->listen()) {
+      throw std::runtime_error("failed to start Ieum daemon IPC server");
+    }
     daemon.connectIpcServer(ipcServer);
 
     QThread daemonThread;

@@ -14,12 +14,19 @@
 
 namespace deskflow::gui::ipc {
 
-IpcClient::IpcClient(QObject *parent, const QString &socketName, const QString &typeName)
+IpcClient::IpcClient(
+    QObject *parent, const QString &socketName, const QString &typeName, const int retryLimit, const int retryDelayMs
+)
     : QObject(parent),
       m_socket{new QLocalSocket(this)},
       m_socketName(socketName), // NOSONAR - Qt memory
+      m_retryLimit(retryLimit),
+      m_retryDelayMs(retryDelayMs),
       m_typeName(typeName)
 {
+  m_retryTimer.setSingleShot(true);
+  connect(&m_retryTimer, &QTimer::timeout, this, &IpcClient::attemptConnection);
+  connect(m_socket, &QLocalSocket::connected, this, &IpcClient::handleConnected);
   connect(m_socket, &QLocalSocket::disconnected, this, &IpcClient::handleDisconnected);
   connect(m_socket, &QLocalSocket::errorOccurred, this, &IpcClient::handleErrorOccurred);
   connect(m_socket, &QLocalSocket::readyRead, this, &IpcClient::handleReadyRead);
@@ -44,14 +51,15 @@ void IpcClient::connectToServer()
   }
 
   m_retryCount = 0;
+  m_retryTimer.stop();
   attemptConnection();
 }
 
 void IpcClient::attemptConnection()
 {
-  if (const int retryLimit = 3; m_retryCount >= retryLimit) {
+  if (m_retryCount >= m_retryLimit) {
     qWarning().noquote() << QStringLiteral("%1 ipc client failed to connect after %2 attempts")
-                                .arg(m_typeName, QString::number(retryLimit));
+                                .arg(m_typeName, QString::number(m_retryLimit));
     m_state = State::Unconnected;
     Q_EMIT connectionFailed();
     return;
@@ -66,38 +74,27 @@ void IpcClient::attemptConnection()
 
   m_state = State::Connecting;
   m_retryCount++;
-
-  connect(
-      m_socket, &QLocalSocket::connected, this,
-      [this] {
-        const auto versionId = QStringLiteral("%1+%2").arg(kVersion, kVersionGitSha);
-        m_socket->write(QStringLiteral("hello=%1\n").arg(versionId).toUtf8());
-        qDebug().noquote() << QStringLiteral("%1 ipc client sent hello with version: %2").arg(m_typeName, versionId);
-      },
-      Qt::SingleShotConnection
-  );
-
-  connect(
-      m_socket, &QLocalSocket::errorOccurred, this,
-      [this] {
-        qWarning().noquote(
-        ) << QStringLiteral("%1 ipc client failed to connect: %2").arg(m_typeName, m_socket->errorString());
-        m_socket->disconnectFromServer();
-        m_state = State::Unconnected;
-        QTimer::singleShot(0, this, &IpcClient::attemptConnection);
-      },
-      Qt::SingleShotConnection
-  );
-
   m_socket->connectToServer(m_socketName);
 }
 
 void IpcClient::disconnectFromServer()
 {
+  m_retryTimer.stop();
   m_state = State::Disconnecting;
   qDebug().noquote() << QStringLiteral("%1 ipc client disconnecting from server").arg(m_typeName);
-  m_socket->disconnectFromServer();
+  m_socket->abort();
   m_state = State::Unconnected;
+}
+
+void IpcClient::handleConnected()
+{
+  if (m_state != State::Connecting) {
+    return;
+  }
+
+  const auto versionId = QStringLiteral("%1+%2").arg(kVersion, kVersionGitSha);
+  m_socket->write(QStringLiteral("hello=%1\n").arg(versionId).toUtf8());
+  qDebug().noquote() << QStringLiteral("%1 ipc client sent hello with version: %2").arg(m_typeName, versionId);
 }
 
 void IpcClient::handleDisconnected()
@@ -118,6 +115,11 @@ void IpcClient::handleDisconnected()
 void IpcClient::handleErrorOccurred()
 {
   if (m_state == State::Connecting) {
+    qWarning().noquote(
+    ) << QStringLiteral("%1 ipc client failed to connect: %2").arg(m_typeName, m_socket->errorString());
+    m_socket->abort();
+    m_state = State::Unconnected;
+    m_retryTimer.start(m_retryDelayMs);
     return;
   }
 

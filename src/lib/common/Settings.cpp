@@ -100,6 +100,31 @@ void Settings::upgradeSettings()
       !LogLevel::logLevelOptions().contains(logValue, Qt::CaseInsensitive))
     m_settings->setValue(Settings::Log::Level, defaultValue(Settings::Log::Level));
 
+  QString settingsDirectory;
+#ifdef Q_OS_WIN
+  settingsDirectory =
+      QFile(portableSettingsFile()).exists() ? QFileInfo(m_settings->fileName()).absolutePath() : SystemDir;
+#else
+  settingsDirectory = QFileInfo(m_settings->fileName()).absolutePath();
+#endif
+
+  const auto tlsDirectory = QStringLiteral("%1/tls").arg(settingsDirectory);
+  const auto certificate = m_settings->value(Settings::Security::Certificate).toString();
+  const auto legacyCertificate = QStringLiteral("%1/%2.pem").arg(tlsDirectory, kLegacyAppId);
+#ifdef Q_OS_WIN
+  const auto pathCaseSensitivity = Qt::CaseInsensitive;
+#else
+  const auto pathCaseSensitivity = Qt::CaseSensitive;
+#endif
+  if (!certificate.isEmpty() &&
+      QFileInfo(certificate)
+              .absoluteFilePath()
+              .compare(QFileInfo(legacyCertificate).absoluteFilePath(), pathCaseSensitivity) == 0) {
+    const auto ieumCertificate = QStringLiteral("%1/%2.pem").arg(tlsDirectory, kRuntimeId);
+    qInfo().noquote() << "migrating legacy TLS certificate path to:" << ieumCertificate;
+    m_settings->setValue(Settings::Security::Certificate, ieumCertificate);
+  }
+
   for (const auto [oldKey, newKey] : m_upgradedMap.asKeyValueRange()) {
     if (m_settings->contains(newKey) || !m_settings->contains(oldKey))
       continue;
@@ -176,13 +201,13 @@ QVariant Settings::defaultValue(const QString &key)
     return true;
 
   if (key == Security::Certificate)
-    return QStringLiteral("%1/%2.pem").arg(Settings::tlsDir(), kAppId);
+    return QStringLiteral("%1/%2.pem").arg(Settings::tlsDir(), kRuntimeId);
 
   if (key == Security::KeySize)
     return 2048;
 
   if (key == Log::File)
-    return QStringLiteral("%1/%2.log").arg(QDir::homePath(), kAppId);
+    return QStringLiteral("%1/%2.log").arg(QDir::homePath(), kRuntimeId);
 
   if (key == Log::Level)
     return QVariant::fromValue(LogLevel::Level::Info).toString();
@@ -194,7 +219,7 @@ QVariant Settings::defaultValue(const QString &key)
     return kUrlUpdateCheck;
 
   if (key == Server::ExternalConfigFile)
-    return QStringLiteral("%1/%2-server.conf").arg(Settings::settingsPath(), kAppId);
+    return QStringLiteral("%1/%2-server.conf").arg(Settings::settingsPath(), kRuntimeId);
 
   if (key == Core::Port)
     return 24800;
@@ -208,7 +233,7 @@ QVariant Settings::defaultValue(const QString &key)
   }
 
   if (key == Daemon::LogFile)
-    return QStringLiteral("%1/%2-daemon.log").arg(Settings::settingsPath(), kAppId);
+    return QStringLiteral("%1/%2-daemon.log").arg(Settings::settingsPath(), kRuntimeId);
 
   if (key == Client::YScrollScale || key == Client::XScrollScale)
     return 1.0;

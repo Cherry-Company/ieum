@@ -9,8 +9,21 @@
 #include "base/Log.h"
 #include "common/VersionInfo.h"
 
+#include <QDir>
+#include <QFile>
 #include <QLocalServer>
 #include <QLocalSocket>
+
+#ifdef Q_OS_WIN
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#elif defined(Q_OS_UNIX)
+#include <cerrno>
+#include <cstring>
+#include <fcntl.h>
+#include <sys/file.h>
+#include <unistd.h>
+#endif
 
 namespace deskflow::core::ipc {
 
@@ -26,20 +39,137 @@ IpcServer::IpcServer(QObject *parent, const QString &serverName, const QString &
 IpcServer::~IpcServer()
 {
   m_server->close();
+  releaseOwnership();
 }
 
-void IpcServer::listen()
+bool IpcServer::acquireOwnership()
 {
+#ifdef Q_OS_WIN
+  if (m_ownershipMutex != nullptr) {
+    return true;
+  }
+
+  const auto mutexName = QStringLiteral("Global\\%1-owner").arg(m_serverName);
+  const auto mutex = CreateMutexW(nullptr, FALSE, reinterpret_cast<LPCWSTR>(mutexName.utf16()));
+  if (mutex == nullptr) {
+    const auto error = GetLastError();
+    if (error == ERROR_ACCESS_DENIED) {
+      LOG_ERR("%s ipc endpoint is owned by another Windows session", m_typeName.constData());
+    } else {
+      LOG_ERR("%s ipc ownership mutex failed with Windows error: %lu", m_typeName.constData(), error);
+    }
+    return false;
+  }
+
+  if (GetLastError() == ERROR_ALREADY_EXISTS) {
+    CloseHandle(mutex);
+    LOG_ERR("%s ipc endpoint is already owned by another process", m_typeName.constData());
+    return false;
+  }
+
+  m_ownershipMutex = mutex;
+#elif defined(Q_OS_UNIX)
+  if (m_ownershipFd >= 0) {
+    return true;
+  }
+
+  auto lockName = m_serverName;
+  lockName.replace('/', '_');
+  lockName.replace('\\', '_');
+  const auto lockPath = QDir::temp().filePath(QStringLiteral(".%1.owner.lock").arg(lockName));
+  const auto nativeLockPath = QFile::encodeName(lockPath);
+  const auto fd = ::open(nativeLockPath.constData(), O_CREAT | O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR);
+  if (fd < 0) {
+    LOG_ERR("%s ipc ownership file failed to open: %s", m_typeName.constData(), std::strerror(errno));
+    return false;
+  }
+
+  if (::flock(fd, LOCK_EX | LOCK_NB) != 0) {
+    const auto error = errno;
+    ::close(fd);
+    if (error == EWOULDBLOCK || error == EAGAIN) {
+      LOG_ERR("%s ipc endpoint is already owned by another process", m_typeName.constData());
+    } else {
+      LOG_ERR("%s ipc ownership lock failed: %s", m_typeName.constData(), std::strerror(error));
+    }
+    return false;
+  }
+
+  m_ownershipFd = fd;
+#endif
+  return true;
+}
+
+void IpcServer::releaseOwnership()
+{
+#ifdef Q_OS_WIN
+  if (m_ownershipMutex != nullptr) {
+    CloseHandle(static_cast<HANDLE>(m_ownershipMutex));
+    m_ownershipMutex = nullptr;
+  }
+#elif defined(Q_OS_UNIX)
+  if (m_ownershipFd >= 0) {
+    ::flock(m_ownershipFd, LOCK_UN);
+    ::close(m_ownershipFd);
+    m_ownershipFd = -1;
+  }
+#endif
+}
+
+bool IpcServer::listen()
+{
+  if (!acquireOwnership()) {
+    return false;
+  }
+
   // IPC server normally runs as system, but GUI runs as regular user, so we need to allow world access.
   m_server->setSocketOptions(QLocalServer::WorldAccessOption);
 
   connect(m_server, &QLocalServer::newConnection, this, &IpcServer::handleNewConnection);
-  QLocalServer::removeServer(m_serverName);
   if (m_server->listen(m_serverName)) {
     LOG_DEBUG("%s ipc server listening on: %s", m_typeName.constData(), m_serverName.toUtf8().constData());
-  } else {
-    LOG_ERR("%s ipc server failed to listen on: %s", m_typeName.constData(), m_serverName.toUtf8().constData());
+    return true;
   }
+
+  LOG_WARN(
+      "%s ipc server initial listen failed on %s: %s", m_typeName.constData(), m_serverName.toUtf8().constData(),
+      m_server->errorString().toUtf8().constData()
+  );
+
+  // Unix socket files can survive a crash. Remove one only after proving that
+  // no live server accepts connections; never unlink an active peer.
+  QLocalSocket probe;
+  probe.connectToServer(m_serverName);
+  if (probe.state() == QLocalSocket::ConnectedState || probe.waitForConnected(250)) {
+    LOG_ERR(
+        "%s ipc name is already owned by a running process: %s", m_typeName.constData(),
+        m_serverName.toUtf8().constData()
+    );
+    releaseOwnership();
+    return false;
+  }
+
+  const auto probeError = probe.error();
+  if (probeError != QLocalSocket::ServerNotFoundError && probeError != QLocalSocket::ConnectionRefusedError) {
+    LOG_ERR(
+        "%s ipc server failed to listen on %s: %s", m_typeName.constData(), m_serverName.toUtf8().constData(),
+        m_server->errorString().toUtf8().constData()
+    );
+    releaseOwnership();
+    return false;
+  }
+
+  if (!QLocalServer::removeServer(m_serverName) || !m_server->listen(m_serverName)) {
+    LOG_ERR(
+        "%s ipc server failed to recover stale endpoint %s: %s", m_typeName.constData(),
+        m_serverName.toUtf8().constData(), m_server->errorString().toUtf8().constData()
+    );
+    releaseOwnership();
+    return false;
+  }
+
+  LOG_INFO("%s ipc server recovered stale endpoint: %s", m_typeName.constData(), m_serverName.toUtf8().constData());
+  return true;
 }
 
 void IpcServer::handleNewConnection()

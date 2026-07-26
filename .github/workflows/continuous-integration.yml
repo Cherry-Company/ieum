@@ -460,7 +460,7 @@ jobs:
             -ReleaseVersion $env:IEUM_PACKAGE_VERSION
 
       - name: Test Windows migration and Deskflow coexistence
-        if: runner.os == 'Windows' && startsWith(github.ref, 'refs/tags/v')
+        if: runner.os == 'Windows'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
@@ -474,6 +474,7 @@ jobs:
             -BuildDirectory build `
             -Architecture $architecture `
             -CurrentTag '${{ github.ref_name }}' `
+            -CurrentPackageVersion $env:IEUM_PACKAGE_VERSION `
             -Repository '${{ github.repository }}'
 
       - name: Update Development Documentation

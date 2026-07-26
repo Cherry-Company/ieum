@@ -17,6 +17,7 @@ private Q_SLOTS:
   // Test are run in order top to bottom
   void setSettingsFile();
   void migratesImeSettingsToCore();
+  void migratesLegacyCertificatePath();
   void setStateFile();
   void settingsFile();
   void settingsPath();

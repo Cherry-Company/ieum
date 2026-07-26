@@ -14,6 +14,9 @@ param(
   [string] $CurrentTag,
 
   [Parameter(Mandatory = $true)]
+  [string] $CurrentPackageVersion,
+
+  [Parameter(Mandatory = $true)]
   [string] $Repository,
 
   [string] $DeskflowTag = 'v1.26.0'
@@ -169,13 +172,310 @@ function Invoke-MsiExec {
   }
 }
 
-$previousTag = (& git describe --tags --abbrev=0 "$CurrentTag^").Trim()
+function Wait-ServiceRunning {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $Name,
+
+    [int] $TimeoutSeconds = 15
+  )
+
+  $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
+  $service = $null
+  do {
+    $service = Get-Service -Name $Name -ErrorAction SilentlyContinue
+    if ($null -ne $service -and $service.Status -eq 'Running') {
+      return
+    }
+    Start-Sleep -Milliseconds 250
+  } while ([DateTime]::UtcNow -lt $deadline)
+
+  $state = if ($null -eq $service) { 'missing' } else { $service.Status }
+  throw "Service '$Name' did not reach Running state (state: $state)"
+}
+
+function Test-NamedPipe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $Name,
+
+    [int] $TimeoutMilliseconds = 250
+  )
+
+  $pipe = [System.IO.Pipes.NamedPipeClientStream]::new(
+    '.',
+    $Name,
+    [System.IO.Pipes.PipeDirection]::InOut,
+    [System.IO.Pipes.PipeOptions]::None
+  )
+  try {
+    $pipe.Connect($TimeoutMilliseconds)
+    return $pipe.IsConnected
+  }
+  catch [TimeoutException] {
+    return $false
+  }
+  catch [System.IO.IOException] {
+    return $false
+  }
+  finally {
+    $pipe.Dispose()
+  }
+}
+
+function Wait-NamedPipe {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $Name,
+
+    [int] $TimeoutSeconds = 15
+  )
+
+  $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
+  do {
+    if (Test-NamedPipe -Name $Name) {
+      return
+    }
+    Start-Sleep -Milliseconds 250
+  } while ([DateTime]::UtcNow -lt $deadline)
+
+  throw "Named pipe '$Name' was not reachable within $TimeoutSeconds seconds"
+}
+
+function Read-IpcLine {
+  param(
+    [Parameter(Mandatory = $true)]
+    [System.IO.StreamReader] $Reader,
+
+    [Parameter(Mandatory = $true)]
+    [string] $Name
+  )
+
+  $readTask = $Reader.ReadLineAsync()
+  if (-not $readTask.Wait(5000)) {
+    throw "Timed out waiting for a reply from named pipe '$Name'"
+  }
+  return $readTask.Result
+}
+
+function Invoke-IpcCommands {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $Name,
+
+    [Parameter(Mandatory = $true)]
+    [string[]] $Messages
+  )
+
+  $pipe = [System.IO.Pipes.NamedPipeClientStream]::new(
+    '.',
+    $Name,
+    [System.IO.Pipes.PipeDirection]::InOut,
+    [System.IO.Pipes.PipeOptions]::None
+  )
+  $reader = $null
+  $writer = $null
+  try {
+    $pipe.Connect(5000)
+    $encoding = [System.Text.UTF8Encoding]::new($false)
+    $reader = [System.IO.StreamReader]::new($pipe, $encoding, $false, 1024, $true)
+    $writer = [System.IO.StreamWriter]::new($pipe, $encoding, 1024, $true)
+    $writer.AutoFlush = $true
+
+    $writer.WriteLine('hello=ieum-runtime-coexistence-test')
+    $hello = Read-IpcLine -Reader $reader -Name $Name
+    if ($hello -notlike 'hello=*' -and $hello -notlike 'versionMismatch=*') {
+      throw "Named pipe '$Name' returned an invalid handshake: '$hello'"
+    }
+
+    foreach ($message in $Messages) {
+      $writer.WriteLine($message)
+      $reply = Read-IpcLine -Reader $reader -Name $Name
+      if ($reply -ne 'ok') {
+        throw "Named pipe '$Name' returned '$reply' for '$message'"
+      }
+    }
+  }
+  finally {
+    if ($null -ne $writer) {
+      $writer.Dispose()
+    }
+    if ($null -ne $reader) {
+      $reader.Dispose()
+    }
+    $pipe.Dispose()
+  }
+}
+
+function New-ClientSettings {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $Path,
+
+    [Parameter(Mandatory = $true)]
+    [string] $ComputerName
+  )
+
+  @"
+[core]
+computerName=$ComputerName
+coreMode=1
+port=24800
+
+[client]
+remoteHost=127.0.0.1
+
+[security]
+tlsEnabled=false
+checkPeerFingerprints=false
+"@ | Set-Content -LiteralPath $Path -Encoding utf8NoBOM
+}
+
+function Start-ClientCore {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $Executable,
+
+    [Parameter(Mandatory = $true)]
+    [string] $SettingsFile
+  )
+
+  $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
+  $startInfo.FileName = $Executable
+  $startInfo.UseShellExecute = $false
+  $startInfo.CreateNoWindow = $true
+  [void] $startInfo.ArgumentList.Add('client')
+  [void] $startInfo.ArgumentList.Add('--settings')
+  [void] $startInfo.ArgumentList.Add($SettingsFile)
+  return [System.Diagnostics.Process]::Start($startInfo)
+}
+
+function Wait-ProcessName {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $Name,
+
+    [int] $TimeoutSeconds = 15
+  )
+
+  $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
+  $process = $null
+  do {
+    $process = Get-Process -Name $Name -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($null -ne $process) {
+      return $process
+    }
+    Start-Sleep -Milliseconds 250
+  } while ([DateTime]::UtcNow -lt $deadline)
+
+  throw "Process '$Name' did not start within $TimeoutSeconds seconds"
+}
+
+function Wait-ProcessExit {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $Name,
+
+    [int] $TimeoutSeconds = 15
+  )
+
+  $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
+  do {
+    if ($null -eq (Get-Process -Name $Name -ErrorAction SilentlyContinue)) {
+      return
+    }
+    Start-Sleep -Milliseconds 250
+  } while ([DateTime]::UtcNow -lt $deadline)
+
+  throw "Process '$Name' did not stop within $TimeoutSeconds seconds"
+}
+
+function Assert-IeumServiceRuntime {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $InstallLocation,
+
+    [Parameter(Mandatory = $true)]
+    [string] $SettingsFile,
+
+    [string] $CoexistingPipeName = ''
+  )
+
+  $daemon = Join-Path $InstallLocation 'ieum-daemon.exe'
+  $core = Join-Path $InstallLocation 'ieum-core.exe'
+  foreach ($path in @($daemon, $core)) {
+    if (-not (Test-Path -LiteralPath $path)) {
+      throw "Ieum runtime executable was not found: $path"
+    }
+  }
+  foreach ($legacyName in @('deskflow-daemon.exe', 'deskflow-core.exe')) {
+    $legacyPath = Join-Path $InstallLocation $legacyName
+    if (Test-Path -LiteralPath $legacyPath) {
+      throw "Ieum still installed Deskflow-owned runtime name: $legacyPath"
+    }
+  }
+
+  Wait-ServiceRunning -Name 'Ieum'
+  $service = Get-CimInstance Win32_Service -Filter "Name='Ieum'"
+  if ($service.PathName -notlike '*ieum-daemon.exe*') {
+    throw "Ieum service points to the wrong binary: $($service.PathName)"
+  }
+  Wait-NamedPipe -Name 'ieum-daemon-v1'
+
+  $ipcSettingsPath = $SettingsFile.Replace('\', '/')
+  Invoke-IpcCommands -Name 'ieum-daemon-v1' -Messages @(
+    "configFile=$ipcSettingsPath",
+    'start'
+  )
+  $primaryCore = Wait-ProcessName -Name 'ieum-core'
+  Wait-NamedPipe -Name 'ieum-core-v1'
+  if (-not [string]::IsNullOrWhiteSpace($CoexistingPipeName)) {
+    Wait-NamedPipe -Name $CoexistingPipeName
+  }
+
+  $duplicateCore = Start-ClientCore -Executable $core -SettingsFile $SettingsFile
+  try {
+    if (-not $duplicateCore.WaitForExit(5000)) {
+      throw 'A duplicate Ieum core was able to keep running'
+    }
+    if ($duplicateCore.ExitCode -eq 0) {
+      throw 'A duplicate Ieum core exited successfully instead of reporting an ownership conflict'
+    }
+  }
+  finally {
+    if (-not $duplicateCore.HasExited) {
+      $duplicateCore.Kill($true)
+    }
+    $duplicateCore.Dispose()
+  }
+
+  $primaryCore.Refresh()
+  if ($primaryCore.HasExited) {
+    throw 'The primary Ieum service core exited while rejecting a duplicate'
+  }
+  Wait-NamedPipe -Name 'ieum-core-v1'
+  if (-not [string]::IsNullOrWhiteSpace($CoexistingPipeName)) {
+    Wait-NamedPipe -Name $CoexistingPipeName
+  }
+
+  Invoke-IpcCommands -Name 'ieum-daemon-v1' -Messages @('stop')
+  Wait-ProcessExit -Name 'ieum-core'
+  $primaryCore.Dispose()
+}
+
+$previousRevision = if ($CurrentTag -like 'v*') {
+  "$CurrentTag^"
+}
+else {
+  'HEAD'
+}
+$previousTag = (& git describe --tags --abbrev=0 $previousRevision).Trim()
 if ([string]::IsNullOrWhiteSpace($previousTag)) {
   throw "Could not determine the release before $CurrentTag"
 }
 
 $currentMsi = Get-Item -LiteralPath (
-  Join-Path $BuildDirectory "Ieum-$($CurrentTag.TrimStart('v'))-win-$Architecture-ko-KR.msi"
+  Join-Path $BuildDirectory "Ieum-$CurrentPackageVersion-win-$Architecture-ko-KR.msi"
 )
 $previousPattern = "Ieum-$($previousTag.TrimStart('v'))-win-$Architecture-ko-KR.msi"
 
@@ -191,12 +491,17 @@ if ($LASTEXITCODE -ne 0) {
 $previousMsi = Get-Item -LiteralPath (Join-Path $workDirectory $previousPattern)
 $previousProductCode = Get-MsiProperty -Msi $previousMsi -Property 'ProductCode'
 $currentProductCode = Get-MsiProperty -Msi $currentMsi -Property 'ProductCode'
+$previousProductVersion = [version] (Get-MsiProperty -Msi $previousMsi -Property 'ProductVersion')
+$currentProductVersion = [version] (Get-MsiProperty -Msi $currentMsi -Property 'ProductVersion')
 $previousUpgradeCode = Get-MsiProperty -Msi $previousMsi -Property 'UpgradeCode'
 $currentUpgradeCode = Get-MsiProperty -Msi $currentMsi -Property 'UpgradeCode'
 $upgradeCodes = @($previousUpgradeCode, $currentUpgradeCode) | Sort-Object -Unique
 
 if ($currentProductCode -eq $previousProductCode) {
   throw 'The release reused the previous MSI ProductCode'
+}
+if ($currentProductVersion -le $previousProductVersion) {
+  throw "Current MSI version $currentProductVersion is not newer than $previousProductVersion"
 }
 
 try {
@@ -256,7 +561,7 @@ try {
     throw 'Windows Installer did not register InstallLocation'
   }
 
-  $core = Join-Path $product.InstallLocation 'deskflow-core.exe'
+  $core = Join-Path $product.InstallLocation 'ieum-core.exe'
   if (-not (Test-Path -LiteralPath $core)) {
     throw "Installed core executable was not found: $core"
   }
@@ -265,8 +570,12 @@ try {
     throw "Installed core executable failed with exit code $LASTEXITCODE"
   }
 
+  $runtimeSettings = Join-Path $workDirectory 'ieum-upgrade-runtime.conf'
+  New-ClientSettings -Path $runtimeSettings -ComputerName 'ieum-upgrade-ci'
+  Assert-IeumServiceRuntime -InstallLocation $product.InstallLocation -SettingsFile $runtimeSettings
+
   Write-Host (
-    "Upgrade passed: {0} {1}, ProductCode={2}" -f
+    "Upgrade and service runtime passed: {0} {1}, ProductCode={2}" -f
     $product.Name,
     $product.Version,
     $currentProductCode
@@ -311,6 +620,7 @@ if ($deskflowUpgradeCode -eq $currentUpgradeCode) {
   throw "Ieum still shares Deskflow's UpgradeCode"
 }
 
+$deskflowCoreProcess = $null
 try {
   Write-Host "Installing upstream package $($deskflowMsi.Name)"
   Invoke-MsiExec `
@@ -321,6 +631,19 @@ try {
   if ((Get-ProductState -ProductCode $deskflowProductCode) -ne 5) {
     throw "Deskflow did not reach installed state"
   }
+
+  $deskflowProduct = Get-InstalledProductInfo -ProductCode $deskflowProductCode
+  Wait-ServiceRunning -Name 'Deskflow'
+  Wait-NamedPipe -Name 'deskflow-daemon'
+
+  $deskflowCore = Join-Path $deskflowProduct.InstallLocation 'deskflow-core.exe'
+  if (-not (Test-Path -LiteralPath $deskflowCore)) {
+    throw "Deskflow core executable was not found: $deskflowCore"
+  }
+  $deskflowSettings = Join-Path $workDirectory 'deskflow-coexist-runtime.conf'
+  New-ClientSettings -Path $deskflowSettings -ComputerName 'deskflow-coexist-ci'
+  $deskflowCoreProcess = Start-ClientCore -Executable $deskflowCore -SettingsFile $deskflowSettings
+  Wait-NamedPipe -Name 'deskflow-core'
 
   Write-Host "Installing Ieum alongside Deskflow"
   Invoke-MsiExec `
@@ -343,14 +666,34 @@ try {
     throw "Ieum was not registered under its independent UpgradeCode"
   }
 
-  $deskflowProduct = Get-InstalledProductInfo -ProductCode $deskflowProductCode
   $ieumProduct = Get-InstalledProductInfo -ProductCode $currentProductCode
   if ($deskflowProduct.Name -ne 'Deskflow' -or $ieumProduct.Name -ne '이음 (Ieum)') {
     throw "Unexpected installed names: '$($deskflowProduct.Name)', '$($ieumProduct.Name)'"
   }
 
+  $deskflowCoreProcess.Refresh()
+  if ($deskflowCoreProcess.HasExited) {
+    throw "Installing Ieum terminated the running Deskflow core"
+  }
+  Wait-NamedPipe -Name 'deskflow-daemon'
+  Wait-NamedPipe -Name 'deskflow-core'
+
+  $ieumSettings = Join-Path $workDirectory 'ieum-coexist-runtime.conf'
+  New-ClientSettings -Path $ieumSettings -ComputerName 'ieum-coexist-ci'
+  Assert-IeumServiceRuntime `
+    -InstallLocation $ieumProduct.InstallLocation `
+    -SettingsFile $ieumSettings `
+    -CoexistingPipeName 'deskflow-core'
+
+  $deskflowCoreProcess.Refresh()
+  if ($deskflowCoreProcess.HasExited) {
+    throw "Starting the Ieum service core terminated the running Deskflow core"
+  }
+  Wait-NamedPipe -Name 'deskflow-daemon'
+  Wait-NamedPipe -Name 'deskflow-core'
+
   Write-Host (
-    "Coexistence passed: {0} {1} and {2} {3}" -f
+    "Install and runtime coexistence passed: {0} {1} and {2} {3}" -f
     $deskflowProduct.Name,
     $deskflowProduct.Version,
     $ieumProduct.Name,
@@ -362,6 +705,22 @@ catch {
   throw
 }
 finally {
+  if ($null -ne $deskflowCoreProcess) {
+    $deskflowCoreProcess.Refresh()
+    if (-not $deskflowCoreProcess.HasExited) {
+      try {
+        Invoke-IpcCommands -Name 'deskflow-core' -Messages @('stop')
+        if (-not $deskflowCoreProcess.WaitForExit(5000)) {
+          $deskflowCoreProcess.Kill($true)
+        }
+      }
+      catch {
+        $deskflowCoreProcess.Kill($true)
+      }
+    }
+    $deskflowCoreProcess.Dispose()
+  }
+
   foreach ($productCode in @($currentProductCode, $deskflowProductCode)) {
     if ((Get-ProductState -ProductCode $productCode) -ne -1) {
       Write-Host "Removing coexistence test product $productCode"

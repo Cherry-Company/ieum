@@ -20,6 +20,7 @@ void SettingsTests::initTestCase()
   QSettings legacySettings(m_settingsFile, QSettings::IniFormat);
   legacySettings.setValue(Settings::Client::ImeSyncLegacy, false);
   legacySettings.setValue(Settings::Client::EnterScreenLangLegacy, QStringLiteral("follow-server"));
+  legacySettings.setValue(Settings::Security::Certificate, QStringLiteral("%1/deskflow.pem").arg(m_expectedTlsDir));
   legacySettings.sync();
 }
 
@@ -40,6 +41,13 @@ void SettingsTests::migratesImeSettingsToCore()
 
   Settings::setValue(Settings::Core::ImeSync, Settings::defaultValue(Settings::Core::ImeSync));
   Settings::setValue(Settings::Core::EnterScreenLang, Settings::defaultValue(Settings::Core::EnterScreenLang));
+}
+
+void SettingsTests::migratesLegacyCertificatePath()
+{
+  const auto certificate = Settings::value(Settings::Security::Certificate).toString();
+  QCOMPARE(certificate, Settings::defaultValue(Settings::Security::Certificate).toString());
+  QVERIFY(certificate.endsWith(QStringLiteral("/ieum.pem")));
 }
 
 void SettingsTests::setStateFile()

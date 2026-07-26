@@ -1,0 +1,21 @@
+/*
+ * Ieum -- IME-native keyboard and mouse sharing utility
+ * SPDX-FileCopyrightText: (C) 2026 Ieum Developers
+ * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
+ */
+
+#pragma once
+
+#include "base/Log.h"
+
+#include <QTest>
+
+class IpcServerTests : public QObject
+{
+  Q_OBJECT
+private Q_SLOTS:
+  void refusesDuplicateWithoutDisruptingFirstServer();
+
+private:
+  Log m_log;
+};

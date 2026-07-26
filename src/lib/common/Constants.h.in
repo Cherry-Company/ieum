@@ -9,9 +9,11 @@
 
 const auto kAppName = "@CMAKE_PROJECT_PROPER_NAME@";
 const auto kAppId = "@CMAKE_PROJECT_NAME@";
+const auto kRuntimeId = "@IEUM_RUNTIME_ID@";
+const auto kLegacyAppId = "@CMAKE_PROJECT_NAME@";
 const auto kAppDescription = "@CMAKE_PROJECT_DESCRIPTION@";
-const auto kDaemonBinName = "@CMAKE_PROJECT_NAME@-daemon";
-const auto kDaemonIpcName = "@CMAKE_PROJECT_NAME@-daemon";
+const auto kDaemonBinName = "@IEUM_DAEMON_TARGET@";
+const auto kDaemonIpcName = "@IEUM_RUNTIME_ID@-daemon-v1";
 const auto kRevFqdnName = "@CMAKE_PROJECT_REV_FQDN@";
 
 const auto kCopyright = //
@@ -21,7 +23,8 @@ const auto kCopyright = //
     "Copyright (C) 2002-2009 Chris Schoeneman";
 
 const auto kCoreBinName = "@CORE_BINARY@";
-const auto kCoreIpcName = "@CMAKE_PROJECT_NAME@-core";
+const auto kCoreIpcName = "@IEUM_RUNTIME_ID@-core-v1";
+const auto kGuiIpcName = "@IEUM_RUNTIME_ID@-gui-v1";
 
 const auto kServerGridHeight = 3;
 const auto kServerGridWidth = 5;
@@ -35,5 +38,6 @@ const auto kWindowsRuntimeMinor = @REQUIRED_MSVC_RUNTIME_MINOR@;
 
 constexpr auto kCloseEventName = L"Global\\@CMAKE_PROJECT_PROPER_NAME@Close";
 constexpr auto kSendSasEventName = L"Global\\@CMAKE_PROJECT_PROPER_NAME@SendSAS";
+constexpr auto kCoreBinNameWindows = L"@CORE_BINARY@";
 
 #endif

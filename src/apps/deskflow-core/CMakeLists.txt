@@ -3,10 +3,10 @@
 # SPDX-FileCopyrightText: (C) 2009 - 2012 Nick Bolton
 # SPDX-License-Identifier: MIT
 
-set(target ${CMAKE_PROJECT_NAME}-core)
+set(target ${IEUM_CORE_TARGET})
 
 add_executable(${target}
-  "${target}.cpp"
+  deskflow-core.cpp
   CoreArgs.h
   CoreArgParser.h
   CoreArgParser.cpp
@@ -19,7 +19,7 @@ if(WIN32)
   configure_file(${CMAKE_SOURCE_DIR}/src/apps/res/windows.rc.in ${target}.rc)
 
   target_sources(${target} PRIVATE
-    ${target}.exe.manifest
+    deskflow-core.exe.manifest
     ${CMAKE_SOURCE_DIR}/src/apps/res/ieum.ico
     ${CMAKE_CURRENT_BINARY_DIR}/${target}.rc
   )

@@ -12,7 +12,7 @@
 
 namespace deskflow::gui::ipc {
 
-DaemonIpcClient::DaemonIpcClient(QObject *parent) : IpcClient(parent, kDaemonIpcName, QStringLiteral("daemon"))
+DaemonIpcClient::DaemonIpcClient(QObject *parent) : IpcClient(parent, kDaemonIpcName, QStringLiteral("daemon"), 8, 250)
 {
 }
 

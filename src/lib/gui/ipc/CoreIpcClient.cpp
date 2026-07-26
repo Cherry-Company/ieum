@@ -15,7 +15,7 @@
 
 namespace deskflow::gui::ipc {
 
-CoreIpcClient::CoreIpcClient(QObject *parent) : IpcClient(parent, kCoreIpcName, QStringLiteral("core"))
+CoreIpcClient::CoreIpcClient(QObject *parent) : IpcClient(parent, kCoreIpcName, QStringLiteral("core"), 20, 250)
 {
   // do nothing
 }

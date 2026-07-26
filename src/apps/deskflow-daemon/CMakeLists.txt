@@ -5,7 +5,7 @@
 
 # Daemon is only needed on Windows for elevating processes to deal with UAC.
 if(WIN32)
-  set(target ${CMAKE_PROJECT_NAME}-daemon)
+  set(target ${IEUM_DAEMON_TARGET})
 
   # Generate rc file
   set(EXE_DESCRIPTION "${CMAKE_PROJECT_PROPER_NAME} Daemon for handling secure desktops (UAC prompts, login screen, etc)")
@@ -14,7 +14,7 @@ if(WIN32)
 
   add_executable(
     ${target} WIN32
-    ${target}.cpp
+    deskflow-daemon.cpp
     DaemonApp.cpp
     DaemonApp.h
     ${CMAKE_CURRENT_BINARY_DIR}/${target}.rc)

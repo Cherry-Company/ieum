@@ -7,6 +7,7 @@
 #pragma once
 
 #include <QObject>
+#include <QTimer>
 
 class QLocalSocket;
 
@@ -26,7 +27,9 @@ class IpcClient : public QObject
   };
 
 public:
-  explicit IpcClient(QObject *parent, const QString &socketName, const QString &typeName);
+  explicit IpcClient(
+      QObject *parent, const QString &socketName, const QString &typeName, int retryLimit, int retryDelayMs
+  );
   void connectToServer();
   void disconnectFromServer();
 
@@ -42,6 +45,7 @@ Q_SIGNALS:
   void versionMismatch();
 
 private Q_SLOTS:
+  void handleConnected();
   void handleDisconnected();
   void handleErrorOccurred();
   void handleReadyRead();
@@ -64,6 +68,9 @@ private:
   QString m_socketName;
   QByteArray m_readBuffer;
   int m_retryCount{0};
+  int m_retryLimit;
+  int m_retryDelayMs;
+  QTimer m_retryTimer;
   QString m_typeName;
 };
 

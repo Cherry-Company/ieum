@@ -18,7 +18,7 @@ runs:
           dmg=$(ls build/Ieum-*.dmg | head -1)
           echo "Y" | hdiutil attach "$dmg" -nobrowse -mountpoint /tmp/deskflow-dmg
           app=$(find /tmp/deskflow-dmg -maxdepth 2 -name "Ieum.app" -type d | head -1)
-          core=$(find /tmp/deskflow-dmg -path "*/Contents/MacOS/deskflow-core" -type f | head -1)
+          core=$(find /tmp/deskflow-dmg -path "*/Contents/MacOS/ieum-core" -type f | head -1)
           test -n "$app"
           test -n "$core"
           bundle_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$app/Contents/Info.plist")
@@ -38,7 +38,7 @@ runs:
 
         elif [ "$RUNNER_OS" == "Windows" ]; then
           7z x build/Ieum-*-portable.7z -otmp/ieum-pkg
-          exe=$(find tmp/ieum-pkg -name "deskflow-core.exe" -type f | head -1)
+          exe=$(find tmp/ieum-pkg -name "ieum-core.exe" -type f | head -1)
           exe_dir=$(dirname "$exe")
           pkg_root=$(dirname "$exe_dir")
           export PATH="$exe_dir:$pkg_root:$pkg_root/lib:$PATH"
@@ -57,7 +57,7 @@ runs:
             echo "Unknown like: ${{inputs.like}}"
             exit 1
           fi
-          QT_QPA_PLATFORM=minimal deskflow-core --version
+          QT_QPA_PLATFORM=minimal ieum-core --version
 
         else
           echo "Unknown OS: $RUNNER_OS"

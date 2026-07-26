@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 
   if (parser.isSet(helpOption)) {
     QTextStream(stdout) << kHeader << QStringLiteral("  %1\n\n").arg(kAppDescription)
-                        << parser.helpText().replace(QApplication::applicationFilePath(), kAppId);
+                        << parser.helpText().replace(QApplication::applicationFilePath(), kRuntimeId);
     return s_exitSuccess;
   }
 
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
     return s_exitSuccess;
   }
 
-  const auto shmId = QStringLiteral("%1-gui").arg(kAppId);
+  const auto shmId = QString::fromLatin1(kGuiIpcName);
   // Create a shared memory segment with a unique key
   // This is to prevent a new instance from running if one is already running
   QSharedMemory sharedMemory(shmId);

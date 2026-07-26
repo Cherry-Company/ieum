@@ -1,5 +1,5 @@
 <CPackWiXPatch>
-  <CPackWiXFragment Id="CM_CP_deskflow_daemon.exe">
+  <CPackWiXFragment Id="CM_CP_ieum_daemon.exe">
     <ServiceInstall
       Id="ServiceInstall"
       Name="Ieum"
@@ -17,12 +17,11 @@
       />
     </ServiceInstall>
     <ServiceControl Id="ServiceControl" Name="Ieum" Remove="uninstall" Start="install" Stop="both"/>
-    <RemoveFile Id="RmOldLog" On="install" Name="deskflow-daemon.log"/>
   </CPackWiXFragment>
 
-  <CPackWiXFragment Id="CM_CP_deskflow_core.exe">
-    <firewall:FirewallException Id="ServerFirewallException" Name="@WIX_SERVER_FIREWALL_NAME@" Program="[INSTALL_ROOT]deskflow-core.exe" Scope="any"/>
-    <firewall:FirewallException Id="ClientFirewallException" Name="@WIX_CLIENT_FIREWALL_NAME@" Program="[INSTALL_ROOT]deskflow-core.exe" Scope="any"/>
+  <CPackWiXFragment Id="CM_CP_ieum_core.exe">
+    <firewall:FirewallException Id="ServerFirewallException" Name="@WIX_SERVER_FIREWALL_NAME@" Program="[INSTALL_ROOT]ieum-core.exe" Scope="any"/>
+    <firewall:FirewallException Id="ClientFirewallException" Name="@WIX_CLIENT_FIREWALL_NAME@" Program="[INSTALL_ROOT]ieum-core.exe" Scope="any"/>
   </CPackWiXFragment>
 
   <CPackWiXFragment Id="#PRODUCT">
@@ -51,11 +50,8 @@
     <Binary Id="CustomDLL" SourceFile="@CMAKE_CURRENT_BINARY_DIR@/wix-custom.dll" />
 
     <!--
-      Close any running Ieum processes before file replacement so the
-      installer does not have to schedule files for replace-on-reboot.
-      Legacy names (deskflow-server.exe, deskflow-client.exe) are still
-      listed so upgrades from pre-1.24 installs (separate server/client
-      binaries) also complete without prompting for a reboot.
+      Only target Ieum-owned process names. Closing Deskflow processes here
+      would break the runtime coexistence this package promises.
     -->
     <util:CloseApplication
       Id="CloseIeumGui"
@@ -64,26 +60,8 @@
       RebootPrompt="no"
       TerminateProcess="10" />
     <util:CloseApplication
-      Id="CloseLegacyDeskflowGui"
-      Target="deskflow.exe"
-      CloseMessage="yes"
-      RebootPrompt="no"
-      TerminateProcess="10" />
-    <util:CloseApplication
-      Id="CloseDeskflowCore"
-      Target="deskflow-core.exe"
-      CloseMessage="yes"
-      RebootPrompt="no"
-      TerminateProcess="10" />
-    <util:CloseApplication
-      Id="CloseDeskflowServer"
-      Target="deskflow-server.exe"
-      CloseMessage="yes"
-      RebootPrompt="no"
-      TerminateProcess="10" />
-    <util:CloseApplication
-      Id="CloseDeskflowClient"
-      Target="deskflow-client.exe"
+      Id="CloseIeumCore"
+      Target="ieum-core.exe"
       CloseMessage="yes"
       RebootPrompt="no"
       TerminateProcess="10" />

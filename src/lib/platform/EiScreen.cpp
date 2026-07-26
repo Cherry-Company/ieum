@@ -128,7 +128,7 @@ void EiScreen::initEi()
   ei_set_user_data(m_ei, this);
   ei_log_set_priority(m_ei, EI_LOG_PRIORITY_DEBUG);
   ei_log_set_handler(m_ei, handleEiLogEvent);
-  std::string configName = kAppId;
+  std::string configName = kRuntimeId;
   ei_configure_name(m_ei, configName.append(" client").c_str());
 
   // install the platform event queue
