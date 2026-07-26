@@ -350,6 +350,27 @@ function Start-ClientCore {
   return [System.Diagnostics.Process]::Start($startInfo)
 }
 
+function Assert-ProcessRemainsRunning {
+  param(
+    [Parameter(Mandatory = $true)]
+    [System.Diagnostics.Process] $Target,
+
+    [Parameter(Mandatory = $true)]
+    [string] $Description,
+
+    [int] $ObservationMilliseconds = 2000
+  )
+
+  $deadline = [DateTime]::UtcNow.AddMilliseconds($ObservationMilliseconds)
+  do {
+    $Target.Refresh()
+    if ($Target.HasExited) {
+      throw "$Description exited unexpectedly with code $($Target.ExitCode)"
+    }
+    Start-Sleep -Milliseconds 250
+  } while ([DateTime]::UtcNow -lt $deadline)
+}
+
 function Wait-ProcessName {
   param(
     [Parameter(Mandatory = $true)]
@@ -644,7 +665,9 @@ try {
   $deskflowSettings = Join-Path $workDirectory 'deskflow-coexist-runtime.conf'
   New-ClientSettings -Path $deskflowSettings -ComputerName 'deskflow-coexist-ci'
   $deskflowCoreProcess = Start-ClientCore -Executable $deskflowCore -SettingsFile $deskflowSettings
-  Wait-NamedPipe -Name 'deskflow-core'
+  # Deskflow 1.26 exposes daemon IPC but predates core IPC. Process liveness
+  # proves that Ieum's renamed executable and shared-memory identity coexist.
+  Assert-ProcessRemainsRunning -Target $deskflowCoreProcess -Description 'Deskflow core during startup'
 
   Write-Host "Installing Ieum alongside Deskflow"
   Invoke-MsiExec `
@@ -672,26 +695,24 @@ try {
     throw "Unexpected installed names: '$($deskflowProduct.Name)', '$($ieumProduct.Name)'"
   }
 
-  $deskflowCoreProcess.Refresh()
-  if ($deskflowCoreProcess.HasExited) {
-    throw "Installing Ieum terminated the running Deskflow core"
-  }
+  Assert-ProcessRemainsRunning `
+    -Target $deskflowCoreProcess `
+    -Description 'Deskflow core after installing Ieum' `
+    -ObservationMilliseconds 1000
   Wait-NamedPipe -Name 'deskflow-daemon'
-  Wait-NamedPipe -Name 'deskflow-core'
 
   $ieumSettings = Join-Path $workDirectory 'ieum-coexist-runtime.conf'
   New-ClientSettings -Path $ieumSettings -ComputerName 'ieum-coexist-ci'
   Assert-IeumServiceRuntime `
     -InstallLocation $ieumProduct.InstallLocation `
     -SettingsFile $ieumSettings `
-    -CoexistingPipeName 'deskflow-core'
+    -CoexistingPipeName 'deskflow-daemon'
 
-  $deskflowCoreProcess.Refresh()
-  if ($deskflowCoreProcess.HasExited) {
-    throw "Starting the Ieum service core terminated the running Deskflow core"
-  }
+  Assert-ProcessRemainsRunning `
+    -Target $deskflowCoreProcess `
+    -Description 'Deskflow core after starting the Ieum service core' `
+    -ObservationMilliseconds 1000
   Wait-NamedPipe -Name 'deskflow-daemon'
-  Wait-NamedPipe -Name 'deskflow-core'
 
   Write-Host (
     "Install and runtime coexistence passed: {0} {1} and {2} {3}" -f
@@ -709,15 +730,8 @@ finally {
   if ($null -ne $deskflowCoreProcess) {
     $deskflowCoreProcess.Refresh()
     if (-not $deskflowCoreProcess.HasExited) {
-      try {
-        Invoke-IpcCommands -Name 'deskflow-core' -Messages @('stop')
-        if (-not $deskflowCoreProcess.WaitForExit(5000)) {
-          $deskflowCoreProcess.Kill($true)
-        }
-      }
-      catch {
-        $deskflowCoreProcess.Kill($true)
-      }
+      $deskflowCoreProcess.Kill($true)
+      [void] $deskflowCoreProcess.WaitForExit(5000)
     }
     $deskflowCoreProcess.Dispose()
   }
