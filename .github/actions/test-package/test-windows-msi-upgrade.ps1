@@ -138,8 +138,23 @@ function Invoke-MsiExec {
     [string] $Log
   )
 
-  & $msiexec $Operation $Target /qn /norestart /l*v $Log
-  $exitCode = $LASTEXITCODE
+  $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
+  $startInfo.FileName = $msiexec
+  $startInfo.UseShellExecute = $false
+  $startInfo.CreateNoWindow = $true
+  foreach ($argument in @($Operation, $Target, '/qn', '/norestart', '/l*v', $Log)) {
+    [void] $startInfo.ArgumentList.Add($argument)
+  }
+
+  $process = [System.Diagnostics.Process]::Start($startInfo)
+  try {
+    $process.WaitForExit()
+    $exitCode = $process.ExitCode
+  }
+  finally {
+    $process.Dispose()
+  }
+
   if ($exitCode -notin @(0, 3010)) {
     Write-Host "::group::Windows Installer log: $Log"
     Get-Content -LiteralPath $Log -ErrorAction SilentlyContinue
