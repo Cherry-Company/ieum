@@ -60,22 +60,52 @@ Example cmake configuration:
  3. If you want to use the system Qt again, you must delete the `vcpkg.json` generated in the project root and the `build` folder and reconfigure the project from scratch.
 
 
-### macOS codesign
+### macOS code signing
 
-The code signing option `APPLE_CODESIGN_DEV` is only for local development and not intended for distributed bundles. 
+The code signing option `APPLE_CODESIGN_DEV` is only for local development and is not intended for distributed
+bundles.
 
-Signing for local development and signing for the distribution bundle must be different because of development entitlements which are unlikely to be safe for use in production. It is impractical (i.e. very slow and cumbersome) to use the distribution bundle for local development. When developing locally, the app bundle is partial and does not contain dependencies and uses external libs, e.g. installed with Homebrew; the entitlements allow those external libs to be loaded which is not allowed by default.
+Signing for local development and signing for the distribution bundle must be different because the development
+entitlements are not appropriate for production. A local app bundle may use external libraries installed by
+Homebrew, while a distribution bundle must contain and seal all of its dependencies.
 
-For development codesign:
+For development signing:
 
 1. Install Xcode
 2. Go to Settings -> Accounts
 3. Add your account (requires a free Apple Developer ID)
 4. Manage certificates -> Add -> Apple Development
 5. To get your ID, run: `security find-identity -v -p codesigning login.keychain-db`
-6. Pass the ID to CMake, e.g. `-DAPPLE_CODESIGN_DEV=Apple Development: bob@exmaple.com (KLGSJHLFXY)`
+6. Pass the ID to CMake, e.g. `-DAPPLE_CODESIGN_DEV="Apple Development: name@example.com (KLGSJHLFXY)"`
 7. Configure and build
-8. To verify, run: `codesign -d -r- build/bin/Ieum.app`
+8. Verify with `codesign --verify --deep --strict --verbose=2 build/bin/Ieum.app`
+
+For direct distribution outside the Mac App Store, an active Apple Developer Program membership and a
+`Developer ID Application` certificate are required. Configure a local package build with:
+
+```sh
+cmake -S . -B build \
+  -DAPPLE_CODESIGN_DISTRIBUTION="Developer ID Application: Example (TEAMID)"
+cmake --build build --target package
+```
+
+CPack deploys dependencies and signs only after every installed file has reached the staged app bundle. Do not add
+files to `Ieum.app` after that step; doing so invalidates its resource seal and macOS reports that the app is
+damaged.
+
+The release workflow imports the certificate into an ephemeral keychain, signs the app with Hardened Runtime,
+submits the DMG with `notarytool`, and staples the accepted ticket. Configure these repository secrets:
+
+| Secret | Value |
+| --- | --- |
+| `MACOS_CERTIFICATE_P12_BASE64` | Base64-encoded Developer ID Application `.p12` archive |
+| `MACOS_CERTIFICATE_PASSWORD` | Password used when exporting the `.p12` archive |
+| `MACOS_NOTARY_KEY_BASE64` | Base64-encoded App Store Connect Notary API `.p8` key |
+| `MACOS_NOTARY_KEY_ID` | App Store Connect API key ID |
+| `MACOS_NOTARY_ISSUER_ID` | App Store Connect API issuer ID |
+
+Without these secrets, CI creates an internally consistent ad-hoc signed DMG and verifies its code seal, but
+Gatekeeper cannot trust it as an identified and notarized release.
 
 ## Build
 
@@ -99,7 +129,7 @@ After configuring you should be able to run make to build all targets.
  
  Ieum can generate several package types depending on the system.
  
- Archive-based packages should work on all platforms. On Linux deb and rpm info is set up, Flatpaks can be generated from the included file in deploy/linux and a `PKGBUILD` for Arch linux is generated in the build folder. On macos a dmg file will be created and signed. For windows WiX can be used to create an installer.
+ Archive-based packages should work on all platforms. On Linux deb and rpm info is set up, Flatpaks can be generated from the included file in deploy/linux and a `PKGBUILD` for Arch linux is generated in the build folder. On macOS a DMG is created with either ad-hoc or configured Developer ID signing. For Windows, WiX can be used to create an installer.
  
 [Qt]:https://www.qt.io
 [doxygen]:http://www.stack.nl/~dimitri/doxygen/

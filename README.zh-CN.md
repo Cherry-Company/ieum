@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.5"><strong>下载 Ieum</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.6"><strong>下载 Ieum</strong></a>
   · <a href="#支持开发"><strong>支持开发</strong></a>
 </p>
 
@@ -28,7 +28,7 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 还试图把不同系统中的 **韩/英输入状态、输入法组合会话、物理按键位置和 Unicode 剪贴板**连接成
 一致的输入链路。
 
-> 当前版本为 `v0.1.0-alpha.5`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
+> 当前版本为 `v0.1.0-alpha.6`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
 
 ## 产品名称与界面
@@ -115,27 +115,28 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.5 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.5)
+[Ieum v0.1.0-alpha.6 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.6)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.5-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.5-macos-x86_64.dmg` |
-| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.5-win-x64.msi` |
-| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.5-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.5-win-arm64.msi` |
-| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.5-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.6-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.6-macos-x86_64.dmg` |
+| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.6-win-x64.msi` |
+| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.6-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.6-win-arm64.msi` |
+| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.6-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
 
-当前 Alpha 安装包尚未进行代码签名或 Apple 公证。在 macOS 上，请将应用移到 `/Applications`，
-允许“辅助功能”和“输入监控”权限；如果 Gatekeeper 将其隔离，可执行：
+`alpha.5` 的 Mac DMG 在签名后又修改了应用包，因此代码签名封印已损坏。请删除该版本并下载
+`alpha.6`。`alpha.6` 最终应用已通过严格的代码签名验证，但尚未使用 Developer ID 证书签名，
+也未经过 Apple 公证。请将应用移到 `/Applications` 并尝试打开一次；若 macOS 阻止运行，请前往
+**系统设置 → 隐私与安全性 → 仍要打开**。应用还需要“辅助功能”和“输入监控”权限。
 
-```sh
-xattr -dr com.apple.quarantine /Applications/Ieum.app
-```
-
-Windows SmartScreen 也可能显示警告。
+Windows `alpha.6` 使用 MSI 版本 `0.1.106`，可以替换 `alpha.4` 和 `alpha.5`。全局安装包在“已安装
+的应用”和开始菜单中显示为 **Ieum**，韩文安装包显示为 **이음 (Ieum)**。安装目录为
+`C:\Program Files\Ieum`，Windows 服务名为 `Ieum`，开始菜单中还会创建卸载快捷方式。Windows
+安装包尚未进行代码签名，因此 SmartScreen 仍可能显示警告。
 
 ## 快速开始
 

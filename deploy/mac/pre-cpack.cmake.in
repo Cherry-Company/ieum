@@ -4,9 +4,15 @@
 set(_ieum_app
   "${CPACK_TEMPORARY_INSTALL_DIRECTORY}/@CMAKE_PROJECT_PROPER_NAME@.app"
 )
+set(_ieum_core
+  "${_ieum_app}/Contents/MacOS/@CMAKE_PROJECT_NAME@-core"
+)
 
 if(NOT IS_DIRECTORY "${_ieum_app}")
   message(FATAL_ERROR "Staged macOS app bundle was not found: ${_ieum_app}")
+endif()
+if(NOT EXISTS "${_ieum_core}")
+  message(FATAL_ERROR "Staged macOS core executable was not found: ${_ieum_core}")
 endif()
 
 message(STATUS "Deploying Qt and sealing ${_ieum_app}")
@@ -14,6 +20,7 @@ execute_process(
   COMMAND
     "@DEPLOYQT@"
     "${_ieum_app}"
+    "-executable=${_ieum_core}"
     "@IEUM_MACDEPLOYQT_SIGN_ARGUMENT@"
   COMMAND_ECHO STDOUT
   COMMAND_ERROR_IS_FATAL ANY

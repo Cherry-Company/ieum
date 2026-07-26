@@ -79,10 +79,11 @@ if(CPACK_GENERATOR MATCHES WIX)
     "Windows Installer ProductVersion: ${CPACK_PACKAGE_VERSION} (${_ieum_release_version})"
   )
 
-  # Both localized identities contain both searchable project names.
-  set(CPACK_PACKAGE_NAME "Ieum (이음)")
-  set(CPACK_PACKAGE_EXECUTABLES "ieum" "Ieum (이음)")
-  set(CPACK_WIX_PROGRAM_MENU_FOLDER "Ieum (이음)")
+  # Keep the global package ASCII-only for the en-US MSI database code page.
+  # The Korean package exposes both names and uses the ko-KR code page.
+  set(CPACK_PACKAGE_NAME "Ieum")
+  set(CPACK_PACKAGE_EXECUTABLES "ieum" "Ieum")
+  set(CPACK_WIX_PROGRAM_MENU_FOLDER "Ieum")
 
   if(CPACK_IEUM_INSTALLER_LOCALE STREQUAL "ko-KR")
     set(CPACK_PACKAGE_NAME "이음 (Ieum)")

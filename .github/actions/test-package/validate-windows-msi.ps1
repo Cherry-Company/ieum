@@ -111,7 +111,7 @@ try {
         '이음 (Ieum)'
       }
       else {
-        'Ieum (이음)'
+        'Ieum'
       }
 
       if ($properties.ProductName -ne $expectedName) {
@@ -127,6 +127,15 @@ try {
         if ([string]::IsNullOrWhiteSpace($properties[$property])) {
           throw "$($msi.Name): missing Add/Remove Programs property $property"
         }
+      }
+
+      $runIeumRows = @(
+        Get-MsiRows -Database $database -Query (
+          "SELECT ``Action``,``Target`` FROM ``CustomAction`` WHERE ``Action`` = 'RunIeum'"
+        )
+      )
+      if ($runIeumRows.Count -ne 1 -or $runIeumRows[0].Values[1] -notmatch '(?:^|\s)--show(?:\s|$)') {
+        throw "$($msi.Name): the post-install launch does not force the main window to show"
       }
 
       if ($properties.ProductVersion -notmatch '^\d+\.\d+\.\d+$') {

@@ -96,7 +96,7 @@
 
     <CustomAction
       Id="RunIeum"
-      ExeCommand="[INSTALL_ROOT]ieum.exe"
+      ExeCommand="[INSTALL_ROOT]ieum.exe --show"
       Directory="INSTALL_ROOT"
       Execute="immediate"
       Impersonate="yes"

@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.5"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.6"><strong>이음 다운로드</strong></a>
   · <a href="#후원"><strong>후원하기</strong></a>
 </p>
 
@@ -28,7 +28,7 @@
 KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
 원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
 
-> 현재 단계는 `v0.1.0-alpha.5`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 현재 단계는 `v0.1.0-alpha.6`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
 
 ## 언어별 제품 표기와 인터페이스
@@ -120,28 +120,31 @@ flowchart LR
 
 ## 다운로드
 
-[이음 (Ieum) v0.1.0-alpha.5 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.5)
+[이음 (Ieum) v0.1.0-alpha.6 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.6)
 
 | 운영체제 | 설치 파일 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.5-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.5-macos-x86_64.dmg` |
-| Intel/AMD 64비트 Windows | `Ieum-0.1.0-alpha.5-win-x64.msi` |
-| Intel/AMD 64비트 Windows 한국어 설치 화면 | `Ieum-0.1.0-alpha.5-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.5-win-arm64.msi` |
-| ARM64 Windows 한국어 설치 화면 | `Ieum-0.1.0-alpha.5-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.6-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.6-macos-x86_64.dmg` |
+| Intel/AMD 64비트 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.6-win-x64-ko-KR.msi` |
+| Intel/AMD 64비트 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.6-win-x64.msi` |
+| ARM64 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.6-win-arm64-ko-KR.msi` |
+| ARM64 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.6-win-arm64.msi` |
 
 Windows용 `portable.7z`와 Linux 패키지도 릴리스에 포함됩니다. 모든 파일은 함께 제공되는
 `SHA256SUMS.txt`로 검증할 수 있습니다.
 
-현재 알파 패키지는 서명되거나 Apple에 공증되지 않았습니다. macOS에서는 앱을 `/Applications`로
-옮긴 뒤 필요하면 다음 명령을 실행하고, 시스템 설정에서 접근성 및 입력 모니터링 권한을 허용하세요.
+`alpha.5`의 Mac DMG는 패키징 후 앱 번들이 변경되어 코드 서명 봉인이 깨지는 문제가 있었습니다.
+해당 버전은 삭제하고 `alpha.6`을 새로 받으세요. `alpha.6`은 DMG 안의 최종 앱에 대해 엄격한 코드
+서명 검증을 통과하지만, 아직 Developer ID 서명과 Apple 공증은 적용되지 않았습니다. 앱을
+`/Applications`로 옮기고 한 번 실행한 뒤 macOS가 차단하면 **시스템 설정 → 개인정보 보호 및 보안 →
+확인 없이 열기**에서 허용하세요. 실행 후 접근성 및 입력 모니터링 권한도 허용해야 합니다.
 
-```sh
-xattr -dr com.apple.quarantine /Applications/Ieum.app
-```
-
-Windows에서는 SmartScreen 경고가 표시될 수 있습니다.
+Windows `alpha.6` MSI는 기존 `alpha.4`/`alpha.5` 설치를 교체할 수 있도록 실제 MSI 버전을
+`0.1.106`으로 올렸습니다. 한국어 설치본은 설정의 설치된 앱과 시작 메뉴에 **이음 (Ieum)**, 영문
+설치본은 **Ieum** 으로 표시됩니다. 설치 경로는 `C:\Program Files\Ieum`, 서비스 이름은
+`Ieum`입니다. 시작 메뉴에는 제거 바로 가기도 생성됩니다. 현재 Windows 패키지는 코드 서명 전이므로
+SmartScreen 경고가 표시될 수 있습니다.
 
 ## 빠른 시작
 
