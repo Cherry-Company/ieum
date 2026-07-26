@@ -601,8 +601,9 @@ void ServerProxy::keyDown(uint16_t id, uint16_t mask, uint16_t button, const std
 
   // Only a button the server marked as a canonical Set-1 scancode may be
   // injected raw. Anything else is a platform key button of unknown meaning.
-  if (deskflow::scancode::isCanonical(button) && rawScancodeEnabled() &&
-      m_client->rawKeyDown(deskflow::scancode::stripCanonical(button), static_cast<KeyModifierMask>(mask))) {
+  const auto canonicalButton = deskflow::scancode::stripCanonical(button);
+  if (deskflow::scancode::isCanonical(button) && deskflow::scancode::isSet1Scancode(canonicalButton) &&
+      rawScancodeEnabled() && m_client->rawKeyDown(canonicalButton, static_cast<KeyModifierMask>(mask))) {
     m_rawScancodeButtons.insert(button);
     return;
   }

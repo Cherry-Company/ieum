@@ -1,6 +1,7 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
  * SPDX-FileCopyrightText: (C) 2025 Chris Rizzitello <sithlord48@gmail.com>
+ * SPDX-FileCopyrightText: (C) 2026 Ieum Developers
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
@@ -15,6 +16,7 @@ private Q_SLOTS:
   void initTestCase();
   // Test are run in order top to bottom
   void setSettingsFile();
+  void migratesImeSettingsToCore();
   void setStateFile();
   void settingsFile();
   void settingsPath();

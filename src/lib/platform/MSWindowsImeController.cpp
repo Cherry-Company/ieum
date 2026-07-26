@@ -61,16 +61,9 @@ void MSWindowsImeController::control(deskflow::InputLanguageAction action, const
   emitStatus(status());
 }
 
-bool MSWindowsImeController::hasImeOpenState(LANGID language)
+bool MSWindowsImeController::hasImeOpenState(HKL layout)
 {
-  switch (PRIMARYLANGID(language)) {
-  case LANG_KOREAN:
-  case LANG_JAPANESE:
-  case LANG_CHINESE:
-    return true;
-  default:
-    return false;
-  }
+  return ImmIsIME(layout) != FALSE;
 }
 
 deskflow::InputLanguageStatus MSWindowsImeController::status() const
@@ -83,7 +76,7 @@ deskflow::InputLanguageStatus MSWindowsImeController::status() const
   // openStatus() is a cross-process send. Layouts that can never have an open
   // IME answer from the layout alone, which keeps the poll off that path
   // entirely for Latin keyboards.
-  const bool imeOpen = hasImeOpenState(language) && openStatus();
+  const bool imeOpen = hasImeOpenState(layout) && openStatus();
 
   std::ostringstream source;
   source << (imeOpen ? "windows.ime." : "windows.keylayout.") << std::hex << std::setw(4) << std::setfill('0')

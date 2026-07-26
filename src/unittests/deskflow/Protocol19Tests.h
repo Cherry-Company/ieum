@@ -16,6 +16,7 @@ class Protocol19Tests : public QObject
 private Q_SLOTS:
   void inputLanguageControlRoundTrip();
   void inputLanguageStatusRoundTrip();
+  void canonicalScancodeFlagRoundTrip();
 
 private:
   Log m_log;

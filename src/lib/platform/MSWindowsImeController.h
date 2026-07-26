@@ -29,8 +29,8 @@ private:
   bool sendImeKey(WORD virtualKey) const;
   void emitStatus(const deskflow::InputLanguageStatus &status);
 
-  //! True for the primary languages that actually carry an IME open state.
-  static bool hasImeOpenState(LANGID language);
+  //! True when the active keyboard layout is backed by a Windows IME.
+  static bool hasImeOpenState(HKL layout);
 
   IEventQueue *m_events;
   void *m_eventTarget;
