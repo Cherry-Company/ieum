@@ -76,7 +76,7 @@ $previousMsi = Get-Item -LiteralPath (Join-Path $workDirectory $previousPattern)
 
 $installer = New-Object -ComObject WindowsInstaller.Installer
 try {
-  $existingProducts = Get-RelatedProducts -Installer $installer
+  $existingProducts = @(Get-RelatedProducts -Installer $installer)
   if ($existingProducts.Count -ne 0) {
     throw "The CI runner already has a product registered with the Ieum UpgradeCode"
   }
@@ -88,7 +88,7 @@ try {
       -Target $previousMsi.FullName `
       -Log (Join-Path $workDirectory 'previous-install.log')
 
-    $previousProducts = Get-RelatedProducts -Installer $installer
+    $previousProducts = @(Get-RelatedProducts -Installer $installer)
     if ($previousProducts.Count -ne 1) {
       throw "Expected one Ieum product after installing $previousTag, found $($previousProducts.Count)"
     }
@@ -101,7 +101,7 @@ try {
       -Target $currentMsi.FullName `
       -Log (Join-Path $workDirectory 'current-install.log')
 
-    $currentProducts = Get-RelatedProducts -Installer $installer
+    $currentProducts = @(Get-RelatedProducts -Installer $installer)
     if ($currentProducts.Count -ne 1) {
       throw "Expected exactly one Ieum registration after upgrade, found $($currentProducts.Count)"
     }
@@ -138,7 +138,7 @@ try {
     )
   }
   finally {
-    foreach ($productCode in Get-RelatedProducts -Installer $installer) {
+    foreach ($productCode in @(Get-RelatedProducts -Installer $installer)) {
       Write-Host "Removing test product $productCode"
       Invoke-MsiExec `
         -Operation '/x' `
@@ -150,4 +150,3 @@ try {
 finally {
   [void] [Runtime.InteropServices.Marshal]::ReleaseComObject($installer)
 }
-
