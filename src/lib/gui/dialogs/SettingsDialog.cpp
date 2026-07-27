@@ -481,8 +481,7 @@ bool SettingsDialog::isModified() const
   bool modified =
       (ui->sbPort->value() != Settings::value(Settings::Core::Port).toInt()) ||
       (ui->comboInterface->currentData().toString() != Settings::value(Settings::Core::Interface).toString()) ||
-      (ui->cbPreferPhysicalNetwork->isChecked() !=
-       Settings::value(Settings::Core::PreferPhysicalNetwork).toBool()) ||
+      (ui->cbPreferPhysicalNetwork->isChecked() != Settings::value(Settings::Core::PreferPhysicalNetwork).toBool()) ||
       (ui->comboLogLevel->currentData() != Settings::logLevelText()) ||
       (ui->groupLogToFile->isChecked() != Settings::value(Settings::Log::ToFile).toBool()) ||
       (ui->lineLogFilename->text() != Settings::value(Settings::Log::File).toString()) ||
@@ -568,9 +567,7 @@ void SettingsDialog::resetToDefault()
   ui->groupLogToFile->setChecked(Settings::defaultValue(Settings::Log::ToFile).toBool());
   ui->lineLogFilename->setText(Settings::defaultValue(Settings::Log::File).toString());
   ui->cbPreventSleep->setChecked(Settings::defaultValue(Settings::Core::PreventSleep).toBool());
-  ui->cbPreferPhysicalNetwork->setChecked(
-      Settings::defaultValue(Settings::Core::PreferPhysicalNetwork).toBool()
-  );
+  ui->cbPreferPhysicalNetwork->setChecked(Settings::defaultValue(Settings::Core::PreferPhysicalNetwork).toBool());
   ui->cbElevateDaemon->setChecked(Settings::defaultValue(Settings::Daemon::Elevate).toBool());
   ui->cbAutoUpdate->setChecked(Settings::defaultValue(Settings::Gui::AutoUpdateCheck).toBool());
   ui->cbGuiDebug->setChecked(Settings::defaultValue(Settings::Log::GuiDebug).toBool());

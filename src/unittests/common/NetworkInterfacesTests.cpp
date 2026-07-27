@@ -46,8 +46,7 @@ void NetworkInterfacesTests::ignoresUnavailableAndLocalAddresses()
 {
   const QList<InterfaceAddress> addresses = {
       candidate(
-          QStringLiteral("Ethernet"), QStringLiteral("10.0.0.2"), QNetworkInterface::Ethernet,
-          QNetworkInterface::IsUp
+          QStringLiteral("Ethernet"), QStringLiteral("10.0.0.2"), QNetworkInterface::Ethernet, QNetworkInterface::IsUp
       ),
       candidate(QStringLiteral("Ethernet"), QStringLiteral("169.254.1.2")),
       candidate(
@@ -63,8 +62,7 @@ void NetworkInterfacesTests::ignoresUnavailableAndLocalAddresses()
 void NetworkInterfacesTests::resolvesAutomaticServerBinding()
 {
   QCOMPARE(
-      NetworkInterfaces::resolveServerBindAddress(QStringLiteral("192.168.1.10"), true),
-      QStringLiteral("192.168.1.10")
+      NetworkInterfaces::resolveServerBindAddress(QStringLiteral("192.168.1.10"), true), QStringLiteral("192.168.1.10")
   );
   QVERIFY(NetworkInterfaces::resolveServerBindAddress(QString(), false).isEmpty());
 }

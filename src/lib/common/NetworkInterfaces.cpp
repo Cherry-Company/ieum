@@ -43,9 +43,9 @@ bool isUsable(const InterfaceAddress &candidate)
 {
   const auto protocol = candidate.address.protocol();
   return (candidate.flags & QNetworkInterface::IsUp) && (candidate.flags & QNetworkInterface::IsRunning) &&
-         !(candidate.flags & QNetworkInterface::IsLoopBack) && protocol != QAbstractSocket::UnknownNetworkLayerProtocol &&
-         !candidate.address.isNull() && !candidate.address.isLoopback() && !candidate.address.isLinkLocal() &&
-         !candidate.address.isMulticast();
+         !(candidate.flags & QNetworkInterface::IsLoopBack) &&
+         protocol != QAbstractSocket::UnknownNetworkLayerProtocol && !candidate.address.isNull() &&
+         !candidate.address.isLoopback() && !candidate.address.isLinkLocal() && !candidate.address.isMulticast();
 }
 
 auto addressSortKey(const RankedAddress &candidate)
@@ -53,10 +53,9 @@ auto addressSortKey(const RankedAddress &candidate)
   const auto protocolRank = candidate.address.protocol() == QAbstractSocket::IPv4Protocol ? 0 : 1;
   const auto virtualRank = candidate.isVirtual ? 1 : 0;
   const auto privateRank = candidate.address.isPrivateUse() ? 0 : 1;
-  const auto addressText =
-      candidate.address.protocol() == QAbstractSocket::IPv4Protocol
-          ? QStringLiteral("%1").arg(candidate.address.toIPv4Address(), 10, 10, QLatin1Char('0'))
-          : candidate.address.toString();
+  const auto addressText = candidate.address.protocol() == QAbstractSocket::IPv4Protocol
+                               ? QStringLiteral("%1").arg(candidate.address.toIPv4Address(), 10, 10, QLatin1Char('0'))
+                               : candidate.address.toString();
   return std::tuple(protocolRank, virtualRank, privateRank, candidate.interfaceRank, addressText);
 }
 
@@ -85,9 +84,7 @@ QList<InterfaceAddress> NetworkInterfaces::localAddresses()
   QList<InterfaceAddress> result;
   for (const auto &interface : QNetworkInterface::allInterfaces()) {
     for (const auto &entry : interface.addressEntries()) {
-      result.append(
-          {interface.name(), interface.humanReadableName(), interface.type(), interface.flags(), entry.ip()}
-      );
+      result.append({interface.name(), interface.humanReadableName(), interface.type(), interface.flags(), entry.ip()});
     }
   }
   return result;

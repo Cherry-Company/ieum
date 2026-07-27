@@ -1270,8 +1270,7 @@ void MainWindow::updateIpLabel(const QStringList &addresses)
   const bool fixedIP = !Settings::value(Settings::Core::Interface).toString().isEmpty();
   const bool singleBoundIP = fixedIP || (serverStarted && m_serverStartIPs.size() == 1);
 
-  if ((!fixedIP && addresses.isEmpty() && !serverStarted) ||
-      (serverStarted && m_serverStartSuggestedIP.isEmpty())) {
+  if ((!fixedIP && addresses.isEmpty() && !serverStarted) || (serverStarted && m_serverStartSuggestedIP.isEmpty())) {
     ui->lblIpAddresses->setText(colorText.arg(palette().linkVisited().color().name(), tr("No IP Detected")));
     ui->lblIpAddresses->setToolTip(tr("Unable to detect an IP address. Check your network connection is active."));
     return;
@@ -1289,8 +1288,7 @@ void MainWindow::updateIpLabel(const QStringList &addresses)
   }
 
   bool IPValid = true;
-  if ((filterIpList && m_serverStartSuggestedIP != m_currentIpAddress) ||
-      !ipList.contains(m_serverStartSuggestedIP)) {
+  if ((filterIpList && m_serverStartSuggestedIP != m_currentIpAddress) || !ipList.contains(m_serverStartSuggestedIP)) {
     IPValid = !ipList.isEmpty();
   }
 
