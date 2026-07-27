@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.11"><strong>下载 Ieum</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.12"><strong>下载 Ieum</strong></a>
   · <a href="#支持开发"><strong>支持开发</strong></a>
 </p>
 
@@ -28,7 +28,7 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 还试图把不同系统中的 **韩/英输入状态、输入法组合会话、物理按键位置和 Unicode 剪贴板**连接成
 一致的输入链路。
 
-> 当前版本为 `v0.1.0-alpha.11`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
+> 当前版本为 `v0.1.0-alpha.12`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
 
 ## 产品名称与界面
@@ -115,16 +115,16 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.11 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.11)
+[Ieum v0.1.0-alpha.12 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.12)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.11-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.11-macos-x86_64.dmg` |
-| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.11-win-x64.msi` |
-| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.11-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.11-win-arm64.msi` |
-| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.11-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.12-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.12-macos-x86_64.dmg` |
+| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.12-win-x64.msi` |
+| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.12-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.12-win-arm64.msi` |
+| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.12-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
 
@@ -133,13 +133,19 @@ flowchart LR
 全部接口，以保留连接能力。在高级设置中关闭**优先使用物理网络**即可恢复旧行为。此选项只限制
 Ieum 的监听范围，不会隐藏或绕过 Genian NAC 针对操作系统中虚拟适配器或默认路由的策略警告。
 
+`alpha.12` 中，只需启用**设置 → 网络 → Tailscale 快速连接**，Ieum 就会检查 Tailscale 的运行与
+登录状态，并自动应用本机的 Tailscale 地址和默认 TCP 端口 `24800`。客户端会用 Tailnet 桌面设备
+列表替代手动 IP 输入：只有一台在线电脑时会预先选中，多台电脑时只需选择一个名称。Tailscale
+不可用时，Ieum 不会回退到监听所有接口，而是中止启动。此功能不会修改 Tailscale 配置或访问规则，
+因此 Tailnet 策略和主机防火墙仍需允许连接服务端 TCP `24800`。
+
 `alpha.5` 的 Mac DMG 代码签名封印已损坏，`alpha.6` 又会在异步“辅助功能”请求完成前退出。
 在 `alpha.7` 中，Qt 的 macOS 辅助功能警告可能被反复写回应用日志，持续显示
-`QTextCursor::setPosition`。这些权限与日志修复继续保留在 `alpha.11` 中。如果已启用的旧版 Ieum
+`QTextCursor::setPosition`。这些权限与日志修复继续保留在 `alpha.12` 中。如果已启用的旧版 Ieum
 条目仍然存在，但 macOS 不信任当前应用，`alpha.10` 会提供**重置旧授权**。确认后，它只会删除
 Ieum 的“辅助功能”记录，并重新注册当前的 `/Applications/Ieum.app`，无需手动点按减号和加号。
 
-`alpha.11` 最终应用已通过严格的代码签名验证，但尚未使用 Developer ID 证书签名，也未经过 Apple
+`alpha.12` 最终应用已通过严格的代码签名验证，但尚未使用 Developer ID 证书签名，也未经过 Apple
 公证。请将应用移到 `/Applications` 并尝试打开一次；若 macOS 阻止运行，请前往
 **系统设置 → 隐私与安全性 → 仍要打开**。应用还需要“辅助功能”和“输入监控”权限。临时签名会让
 每个构建具有不同的代码身份，因此后续更新仍可能需要**重置旧授权**并再次批准。要自动继承权限，
@@ -153,8 +159,9 @@ Windows `alpha.2` 至 `alpha.7` 错误复用了 Deskflow 的 MSI `UpgradeCode`�
 从 `alpha.9` 开始，Ieum 使用 MSI 版本 `0.1.109`、`ieum-core.exe`、`ieum-daemon.exe`，以及带版本的
 `ieum-core-v1`/`ieum-daemon-v1` IPC。全局所有权锁会拒绝重复核心；默认认证文件迁移到
 `ieum.pem`，从而重新生成 `/CN=Ieum` 证书。CI 会在 x64 与 ARM64 上执行真实的
-`alpha.9 → alpha.11` 升级，验证服务 IPC、重复核心拒绝，并确认 Deskflow 1.26.0 与 Ieum 核心可
-同时运行。现有 `alpha.8` 至 `alpha.10` 用户可直接运行 `alpha.11` MSI，无需手动卸载。证书更新后，
+`alpha.9 → alpha.12` 升级，验证服务 IPC、重复核心拒绝，并确认 Deskflow 1.26.0 与 Ieum 核心可
+同时运行。现有 `alpha.8` 至 `alpha.10` 用户可直接运行 `alpha.12` MSI，无需手动卸载；`alpha.11`
+也可直接升级。证书更新后，
 首次连接时可能需要重新确认一次指纹。
 
 全局安装包在“已安装的应用”和开始菜单中显示为 **Ieum**，韩文安装包显示为 **이음 (Ieum)**。
@@ -165,8 +172,10 @@ Windows 安装包尚未进行代码签名，因此 SmartScreen 仍可能显示�
 
 1. 在所有需要控制的电脑上安装 Ieum。
 2. 在连接物理键盘和鼠标的电脑上选择 `Server`。
-3. 在其他电脑上选择 `Client`，并输入服务端地址。
-4. 在服务端排列各屏幕位置，然后启动 Ieum。
+3. 在同一局域网中，在其他电脑上选择 `Client` 并输入服务端地址。
+4. 使用 Tailscale 时，在两台电脑上启用**设置 → 网络 → Tailscale 快速连接**，然后在客户端按
+   名称选择服务端电脑。
+5. 在服务端排列各屏幕位置，然后启动 Ieum。
 
 输入法行为和各平台权限请参阅 [IME 使用说明](docs/user/ime.md)。
 

@@ -34,6 +34,15 @@ Windows will save to the install dir if settings are loaded from there. If not, 
 
 When using settings from the install dir, the service mode will not be available.
 
+## Tailscale quick connect
+
+Enable **Preferences → Network → Tailscale quick connect** on both computers. Ieum detects the local
+Tailscale address, uses TCP port `24800`, and lists Tailnet desktop computers by name in client mode. The
+original interface, port, and remote-host settings are restored when the preset is disabled.
+
+Ieum does not sign in to Tailscale or change Tailnet access rules. If Tailscale is stopped, signed out, or has
+no usable address, Ieum blocks startup instead of falling back to an all-interface listener.
+
 ## Valid GUI Keys
 
 The GUI config file contains several sections.
@@ -76,6 +85,7 @@ This section contains general options it will begin with `[core]`
 | display       |  int              | The XWindow display to use [default: autodetected] |
 | interface     | IP Address        | Specific IP to use for network communication. Empty selects an address automatically |
 | preferPhysicalNetwork | `true` or `false` | In automatic mode, bind the server to a physical Ethernet or Wi-Fi address instead of VPN and virtual adapters when possible [default: true] |
+| useTailscale  | `true` or `false` | Apply the Tailscale quick-connect preset and bind to its active local address [default: false] |
 | lastVersion   | M.m.p.t           | The version last run used for checking for updates |
 | port          | port #            | Port to use when connecting [default: 24800 |
 | preventSleep  | `true` or `false` | Prevent sleep when Ieum is active [default: false] |

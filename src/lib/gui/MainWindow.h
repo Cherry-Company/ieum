@@ -141,6 +141,10 @@ private:
   void daemonIpcClientConnectionFailed();
   void toggleCanRunCore(bool enableButtons);
   void remoteHostChanged(const QString &newRemoteHost);
+  void refreshTailscalePeers();
+  void tailscalePeerSelected(int index);
+  void updateTailscaleControls(bool refreshPeers = false);
+  bool prepareTailscale();
   void updateIpLabel(const QStringList &addresses);
   void updateTimeoutDelay(int newDelay);
 
@@ -169,6 +173,7 @@ private:
   bool m_secureSocket = false;
   bool m_saveOnExit = true;
   bool m_clientErrorVisible = false;
+  bool m_tailscaleReady = false;
   ServerConfig m_serverConfig;
   deskflow::gui::CoreProcess m_coreProcess;
   QSet<QString> m_ignoredClients;

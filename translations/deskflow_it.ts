@@ -702,6 +702,87 @@ Client</source>
         <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma-separated list.&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select the server computer from your Tailscale network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a Tailscale device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Tailscale devices</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale was not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale is not running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sign in to Tailscale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read Tailscale status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 (%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 (%2, offline)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1
+%2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No desktop devices found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale IP or MagicDNS name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Install and start Tailscale before using Tailscale quick connect.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Tailscale, then try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sign in to Tailscale, then try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ieum could not read a usable Tailscale address. Refresh Tailscale and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale is not ready</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select the Ieum server computer, then start again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter a Tailscale address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter the Ieum server&apos;s Tailscale IP or MagicDNS name, then start again.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -1465,6 +1546,57 @@ L&apos;abilitazione di questa impostazione disabiliterà l&apos;interfaccia graf
     </message>
     <message>
         <source>Follow this computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale quick connect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Checking Tailscale...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Tailscale status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Turn on to check Tailscale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <source>Ready | This device: %1 | %n online computer(s)</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Tailscale has no usable address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale was not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale is not running</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sign in to Tailscale</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read Tailscale status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale is not ready</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Tailscale and sign in, then refresh its status before saving this setting.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

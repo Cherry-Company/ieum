@@ -2,6 +2,16 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
+    <name>SettingsDialog</name>
+    <message numerus="yes">
+        <source>Ready | This device: %1 | %n online computer(s)</source>
+        <translation>
+            <numerusform>Ready | This device: %1 | 1 online computer</numerusform>
+            <numerusform>Ready | This device: %1 | %n online computers</numerusform>
+        </translation>
+    </message>
+</context>
+<context>
     <name>StatusBar</name>
     <message numerus="yes">
         <source>%1 is connected, with %n client(s): %2</source>

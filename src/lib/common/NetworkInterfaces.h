@@ -28,11 +28,15 @@ class NetworkInterfaces
 public:
   static bool isVirtualInterfaceName(const QString &interfaceName);
   static bool isVirtualInterface(const InterfaceAddress &interfaceAddress);
+  static bool isTailscaleAddress(const QHostAddress &address);
+  static bool isTailscaleInterface(const InterfaceAddress &interfaceAddress);
 
   static QList<InterfaceAddress> localAddresses();
   static QStringList orderedAddresses(const QList<InterfaceAddress> &addresses, bool includeVirtual = true);
   static QStringList validAddresses();
   static QStringList physicalAddresses();
+  static QStringList tailscaleAddresses();
+  static QStringList tailscaleAddresses(const QList<InterfaceAddress> &addresses);
   static QString preferredPhysicalAddress();
   static QString preferredPhysicalAddress(const QList<InterfaceAddress> &addresses);
 

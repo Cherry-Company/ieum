@@ -457,6 +457,55 @@ Client</string>
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QComboBox" name="comboTailscalePeer">
+               <property name="visible">
+                <bool>false</bool>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>170</width>
+                 <height>36</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Select the server computer from your Tailscale network.</string>
+               </property>
+               <item>
+                <property name="text">
+                 <string>Select a Tailscale device</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="btnRefreshTailscalePeers">
+               <property name="visible">
+                <bool>false</bool>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>36</width>
+                 <height>36</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>36</width>
+                 <height>36</height>
+                </size>
+               </property>
+               <property name="toolTip">
+                <string>Refresh Tailscale devices</string>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset theme="QIcon::ThemeIcon::ViewRefresh"/>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>

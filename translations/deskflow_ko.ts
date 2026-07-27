@@ -725,6 +725,88 @@ Additionally, check you are able to %1 the server config file: %2</source>
 %3</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select the server computer from your Tailscale network.</source>
+        <translation>Tailscale 네트워크에서 서버 컴퓨터를 선택하세요.</translation>
+    </message>
+    <message>
+        <source>Select a Tailscale device</source>
+        <translation>Tailscale 기기 선택</translation>
+    </message>
+    <message>
+        <source>Refresh Tailscale devices</source>
+        <translation>Tailscale 기기 새로 고침</translation>
+    </message>
+    <message>
+        <source>Tailscale was not found</source>
+        <translation>Tailscale을 찾을 수 없음</translation>
+    </message>
+    <message>
+        <source>Tailscale is not running</source>
+        <translation>Tailscale이 실행 중이 아님</translation>
+    </message>
+    <message>
+        <source>Sign in to Tailscale</source>
+        <translation>Tailscale에 로그인하세요</translation>
+    </message>
+    <message>
+        <source>Could not read Tailscale status</source>
+        <translation>Tailscale 상태를 읽을 수 없음</translation>
+    </message>
+    <message>
+        <source>No desktop devices found</source>
+        <translation>데스크톱 기기를 찾지 못함</translation>
+    </message>
+    <message>
+        <source>%1 (%2, offline)</source>
+        <translation>%1 (%2, 오프라인)</translation>
+    </message>
+    <message>
+        <source>Install and start Tailscale before using Tailscale quick connect.</source>
+        <translation>Tailscale 간편 연결을 사용하려면 Tailscale을 설치하고 실행하세요.</translation>
+    </message>
+    <message>
+        <source>Start Tailscale, then try again.</source>
+        <translation>Tailscale을 실행한 뒤 다시 시도하세요.</translation>
+    </message>
+    <message>
+        <source>Sign in to Tailscale, then try again.</source>
+        <translation>Tailscale에 로그인한 뒤 다시 시도하세요.</translation>
+    </message>
+    <message>
+        <source>Ieum could not read a usable Tailscale address. Refresh Tailscale and try again.</source>
+        <translation>이음이 사용 가능한 Tailscale 주소를 읽지 못했습니다. Tailscale을 새로 고친 뒤 다시 시도하세요.</translation>
+    </message>
+    <message>
+        <source>Tailscale is not ready</source>
+        <translation>Tailscale이 준비되지 않음</translation>
+    </message>
+    <message>
+        <source>Select the Ieum server computer, then start again.</source>
+        <translation>이음 서버 컴퓨터를 선택한 뒤 다시 시작하세요.</translation>
+    </message>
+    <message>
+        <source>Tailscale IP or MagicDNS name</source>
+        <translation>Tailscale IP 또는 MagicDNS 이름</translation>
+    </message>
+    <message>
+        <source>Enter a Tailscale address</source>
+        <translation>Tailscale 주소 입력</translation>
+    </message>
+    <message>
+        <source>Enter the Ieum server&apos;s Tailscale IP or MagicDNS name, then start again.</source>
+        <translation>이음 서버의 Tailscale IP 또는 MagicDNS 이름을 입력한 뒤 다시 시작하세요.</translation>
+    </message>
+    <message>
+        <source>%1 (%2)</source>
+        <translation>%1 (%2)</translation>
+    </message>
+    <message>
+        <source>%1
+%2</source>
+        <translation>%1
+%2</translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -1489,6 +1571,56 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Follow this computer</source>
         <translation>이 컴퓨터 상태 따르기</translation>
+    </message>
+    <message>
+        <source>Tailscale quick connect</source>
+        <translation>Tailscale 간편 연결</translation>
+    </message>
+    <message>
+        <source>Checking Tailscale...</source>
+        <translation>Tailscale 확인 중...</translation>
+    </message>
+    <message>
+        <source>Turn on to check Tailscale</source>
+        <translation>켜면 Tailscale 상태를 확인합니다</translation>
+    </message>
+    <message>
+        <source>Refresh Tailscale status</source>
+        <translation>Tailscale 상태 새로 고침</translation>
+    </message>
+    <message numerus="yes">
+        <source>Ready | This device: %1 | %n online computer(s)</source>
+        <translation>
+            <numerusform>준비됨 | 이 기기: %1 | 온라인 컴퓨터 %n대</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Tailscale has no usable address</source>
+        <translation>Tailscale에 사용 가능한 주소가 없음</translation>
+    </message>
+    <message>
+        <source>Tailscale was not found</source>
+        <translation>Tailscale을 찾을 수 없음</translation>
+    </message>
+    <message>
+        <source>Tailscale is not running</source>
+        <translation>Tailscale이 실행 중이 아님</translation>
+    </message>
+    <message>
+        <source>Sign in to Tailscale</source>
+        <translation>Tailscale에 로그인하세요</translation>
+    </message>
+    <message>
+        <source>Could not read Tailscale status</source>
+        <translation>Tailscale 상태를 읽을 수 없음</translation>
+    </message>
+    <message>
+        <source>Tailscale is not ready</source>
+        <translation>Tailscale이 준비되지 않음</translation>
+    </message>
+    <message>
+        <source>Start Tailscale and sign in, then refresh its status before saving this setting.</source>
+        <translation>Tailscale을 실행하고 로그인한 뒤 상태를 새로 고쳐 이 설정을 저장하세요.</translation>
     </message>
 </context>
 <context>

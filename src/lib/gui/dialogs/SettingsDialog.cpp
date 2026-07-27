@@ -153,6 +153,8 @@ void SettingsDialog::initConnections() const
   connect(ui->comboInterface, &QComboBox::currentIndexChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->comboInterface, &QComboBox::currentIndexChanged, this, &SettingsDialog::updateControls);
   connect(ui->cbPreferPhysicalNetwork, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->groupTailscale, &QGroupBox::toggled, this, &SettingsDialog::tailscaleToggled);
+  connect(ui->btnRefreshTailscale, &QPushButton::clicked, this, &SettingsDialog::updateTailscaleStatus);
   connect(ui->comboTlsKeyLength, &QComboBox::currentIndexChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->comboLanguage, &QComboBox::currentIndexChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->rbAutoHide, &QRadioButton::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
@@ -177,6 +179,90 @@ void SettingsDialog::initConnections() const
   connect(ui->comboEnterScreenLang, &QComboBox::currentIndexChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->cbClipboardNormalizeNfc, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->spinMacInterKeyDelayMicros, &QSpinBox::valueChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
+}
+
+void SettingsDialog::tailscaleToggled(bool enabled)
+{
+  if (m_loadingConfig) {
+    return;
+  }
+
+  if (enabled) {
+    if (!m_previousNetworkCaptured) {
+      m_previousInterface = ui->comboInterface->currentData().toString();
+      m_previousPreferPhysical = ui->cbPreferPhysicalNetwork->isChecked();
+      m_previousPort = ui->sbPort->value();
+      m_previousNetworkCaptured = true;
+    }
+    updateTailscaleStatus();
+    if (m_tailscaleStatus.isReady()) {
+      applyTailscalePreset();
+    }
+  } else if (m_previousNetworkCaptured) {
+    if (!m_previousInterface.isEmpty() && ui->comboInterface->findData(m_previousInterface) < 0) {
+      ui->comboInterface->addItem(m_previousInterface, m_previousInterface);
+    }
+    const auto interfaceIndex = m_previousInterface.isEmpty() ? 0 : ui->comboInterface->findData(m_previousInterface);
+    ui->comboInterface->setCurrentIndex(interfaceIndex < 0 ? 0 : interfaceIndex);
+    ui->cbPreferPhysicalNetwork->setChecked(m_previousPreferPhysical);
+    ui->sbPort->setValue(m_previousPort);
+  }
+
+  updateControls();
+  setButtonBoxEnabledButtons();
+}
+
+void SettingsDialog::updateTailscaleStatus()
+{
+  m_tailscaleStatus = deskflow::network::TailscaleIntegration::query();
+  m_tailscaleStatusChecked = true;
+  ui->lblTailscaleStatus->setText(tailscaleStatusText());
+  ui->lblTailscaleStatus->setToolTip(m_tailscaleStatus.error);
+
+  if (ui->groupTailscale->isChecked() && m_tailscaleStatus.isReady()) {
+    applyTailscalePreset();
+  }
+}
+
+void SettingsDialog::applyTailscalePreset()
+{
+  const auto address = m_tailscaleStatus.preferredLocalAddress();
+  if (address.isEmpty()) {
+    return;
+  }
+
+  if (ui->comboInterface->findData(address) < 0) {
+    ui->comboInterface->addItem(address, address);
+  }
+  ui->comboInterface->setCurrentIndex(ui->comboInterface->findData(address));
+  ui->cbPreferPhysicalNetwork->setChecked(false);
+  ui->sbPort->setValue(Settings::defaultValue(Settings::Core::Port).toInt());
+}
+
+QString SettingsDialog::tailscaleStatusText() const
+{
+  if (!m_tailscaleStatusChecked) {
+    return tr("Turn on to check Tailscale");
+  }
+
+  using deskflow::network::TailscaleState;
+  switch (m_tailscaleStatus.state) {
+  case TailscaleState::Running:
+    if (m_tailscaleStatus.isReady()) {
+      return tr("Ready | This device: %1 | %n online computer(s)", "", m_tailscaleStatus.onlineDesktopPeers().size())
+          .arg(m_tailscaleStatus.preferredLocalAddress());
+    }
+    return tr("Tailscale has no usable address");
+  case TailscaleState::NotInstalled:
+    return tr("Tailscale was not found");
+  case TailscaleState::Stopped:
+    return tr("Tailscale is not running");
+  case TailscaleState::NeedsLogin:
+    return tr("Sign in to Tailscale");
+  case TailscaleState::Error:
+    return tr("Could not read Tailscale status");
+  }
+  return tr("Could not read Tailscale status");
 }
 
 void SettingsDialog::regenCertificates()
@@ -262,13 +348,38 @@ void SettingsDialog::updateText()
   ui->comboEnterScreenLang->setItemText(0, tr("Keep remote state"));
   ui->comboEnterScreenLang->setItemText(1, tr("Force English"));
   ui->comboEnterScreenLang->setItemText(2, tr("Follow this computer"));
+  ui->lblTailscaleStatus->setText(tailscaleStatusText());
 }
 
 void SettingsDialog::accept()
 {
+  if (ui->groupTailscale->isChecked()) {
+    updateTailscaleStatus();
+    if (!m_tailscaleStatus.isReady()) {
+      QMessageBox::warning(
+          this, tr("Tailscale is not ready"),
+          tr("Start Tailscale and sign in, then refresh its status before saving this setting.")
+      );
+      return;
+    }
+    applyTailscalePreset();
+  }
+
+  const auto tailscaleWasEnabled = Settings::value(Settings::Core::UseTailscale).toBool();
+  if (!tailscaleWasEnabled && ui->groupTailscale->isChecked()) {
+    Settings::setValue(Settings::Core::TailscalePreviousInterface, m_previousInterface);
+    Settings::setValue(Settings::Core::TailscalePreviousPreferPhysical, m_previousPreferPhysical);
+    Settings::setValue(Settings::Core::TailscalePreviousPort, m_previousPort);
+    Settings::setValue(Settings::Client::TailscalePreviousRemoteHost, Settings::value(Settings::Client::RemoteHost));
+    Settings::setValue(Settings::Client::RemoteHost);
+  } else if (tailscaleWasEnabled && !ui->groupTailscale->isChecked()) {
+    Settings::setValue(Settings::Client::RemoteHost, Settings::value(Settings::Client::TailscalePreviousRemoteHost));
+  }
+
   Settings::setValue(Settings::Core::Port, ui->sbPort->value());
   Settings::setValue(Settings::Core::Interface, ui->comboInterface->currentData());
   Settings::setValue(Settings::Core::PreferPhysicalNetwork, ui->cbPreferPhysicalNetwork->isChecked());
+  Settings::setValue(Settings::Core::UseTailscale, ui->groupTailscale->isChecked());
   Settings::setValue(Settings::Log::Level, ui->comboLogLevel->currentData());
   Settings::setValue(Settings::Log::ToFile, ui->groupLogToFile->isChecked());
   Settings::setValue(Settings::Log::File, ui->lineLogFilename->text());
@@ -307,6 +418,7 @@ void SettingsDialog::accept()
 
 void SettingsDialog::loadFromConfig()
 {
+  m_loadingConfig = true;
   ui->sbPort->setValue(Settings::value(Settings::Core::Port).toInt());
   ui->comboLogLevel->setCurrentIndex(
       ui->comboLogLevel->findData(Settings::logLevelText(), Qt::UserRole, Qt::MatchFixedString)
@@ -315,6 +427,19 @@ void SettingsDialog::loadFromConfig()
   ui->lineLogFilename->setText(Settings::value(Settings::Log::File).toString());
   ui->cbPreventSleep->setChecked(Settings::value(Settings::Core::PreventSleep).toBool());
   ui->cbPreferPhysicalNetwork->setChecked(Settings::value(Settings::Core::PreferPhysicalNetwork).toBool());
+  const auto tailscaleEnabled = Settings::value(Settings::Core::UseTailscale).toBool();
+  ui->groupTailscale->setChecked(tailscaleEnabled);
+  if (tailscaleEnabled) {
+    m_previousInterface = Settings::value(Settings::Core::TailscalePreviousInterface).toString();
+    m_previousPreferPhysical = Settings::value(Settings::Core::TailscalePreviousPreferPhysical).toBool();
+    m_previousPort = Settings::value(Settings::Core::TailscalePreviousPort).toInt();
+    m_previousNetworkCaptured = true;
+  } else {
+    m_previousInterface = Settings::value(Settings::Core::Interface).toString();
+    m_previousPreferPhysical = Settings::value(Settings::Core::PreferPhysicalNetwork).toBool();
+    m_previousPort = Settings::value(Settings::Core::Port).toInt();
+    m_previousNetworkCaptured = false;
+  }
   ui->cbElevateDaemon->setChecked(Settings::value(Settings::Daemon::Elevate).toBool());
   ui->cbAutoUpdate->setChecked(Settings::value(Settings::Gui::AutoUpdateCheck).toBool());
   ui->cbGuiDebug->setChecked(Settings::value(Settings::Log::GuiDebug).toBool());
@@ -362,6 +487,14 @@ void SettingsDialog::loadFromConfig()
   const auto interfaceIndex = configuredInterface.isEmpty() ? 0 : ui->comboInterface->findData(configuredInterface);
   ui->comboInterface->setCurrentIndex(interfaceIndex < 0 ? 0 : interfaceIndex);
 
+  m_loadingConfig = false;
+  if (tailscaleEnabled) {
+    updateTailscaleStatus();
+  } else {
+    m_tailscaleStatusChecked = false;
+    ui->lblTailscaleStatus->setText(tailscaleStatusText());
+    ui->lblTailscaleStatus->setToolTip(QString());
+  }
   qDebug() << "load from config done";
 
   updateControls();
@@ -426,12 +559,15 @@ void SettingsDialog::updateControls()
   const bool writable = Settings::isWritable();
   const bool serviceChecked = ui->groupService->isChecked();
   const bool logToFile = ui->groupLogToFile->isChecked();
+  const bool tailscaleEnabled = ui->groupTailscale->isChecked();
 
   ui->buttonBox->button(QDialogButtonBox::Save)->setEnabled(writable);
 
-  ui->sbPort->setEnabled(writable);
-  ui->comboInterface->setEnabled(writable);
-  ui->cbPreferPhysicalNetwork->setEnabled(writable && ui->comboInterface->currentIndex() == 0);
+  ui->groupTailscale->setEnabled(writable);
+  ui->btnRefreshTailscale->setEnabled(writable);
+  ui->sbPort->setEnabled(writable && !tailscaleEnabled);
+  ui->comboInterface->setEnabled(writable && !tailscaleEnabled);
+  ui->cbPreferPhysicalNetwork->setEnabled(writable && !tailscaleEnabled && ui->comboInterface->currentIndex() == 0);
   ui->comboLogLevel->setEnabled(writable);
   ui->groupLogToFile->setEnabled(writable);
   ui->rbAutoHide->setEnabled(writable);
@@ -482,6 +618,7 @@ bool SettingsDialog::isModified() const
       (ui->sbPort->value() != Settings::value(Settings::Core::Port).toInt()) ||
       (ui->comboInterface->currentData().toString() != Settings::value(Settings::Core::Interface).toString()) ||
       (ui->cbPreferPhysicalNetwork->isChecked() != Settings::value(Settings::Core::PreferPhysicalNetwork).toBool()) ||
+      (ui->groupTailscale->isChecked() != Settings::value(Settings::Core::UseTailscale).toBool()) ||
       (ui->comboLogLevel->currentData() != Settings::logLevelText()) ||
       (ui->groupLogToFile->isChecked() != Settings::value(Settings::Log::ToFile).toBool()) ||
       (ui->lineLogFilename->text() != Settings::value(Settings::Log::File).toString()) ||
@@ -537,6 +674,7 @@ bool SettingsDialog::isDefault() const
       (ui->comboInterface->currentIndex() == 0) &&
       (ui->cbPreferPhysicalNetwork->isChecked() ==
        Settings::defaultValue(Settings::Core::PreferPhysicalNetwork).toBool()) &&
+      (ui->groupTailscale->isChecked() == Settings::defaultValue(Settings::Core::UseTailscale).toBool()) &&
       (ui->lineTlsCertPath->text() == Settings::defaultValue(Settings::Security::Certificate).toString()) &&
       (ui->comboTlsKeyLength->currentText() == Settings::defaultValue(Settings::Security::KeySize).toString()) &&
       (ui->groupSecurity->isChecked() == Settings::defaultValue(Settings::Security::TlsEnabled).toBool()) &&
@@ -560,6 +698,7 @@ bool SettingsDialog::isDefault() const
 
 void SettingsDialog::resetToDefault()
 {
+  m_loadingConfig = true;
   ui->sbPort->setValue(Settings::defaultValue(Settings::Core::Port).toInt());
   ui->comboLogLevel->setCurrentIndex(
       static_cast<int>(LogLevel::fromOption(Settings::defaultValue(Settings::Log::Level).toString()))
@@ -568,6 +707,7 @@ void SettingsDialog::resetToDefault()
   ui->lineLogFilename->setText(Settings::defaultValue(Settings::Log::File).toString());
   ui->cbPreventSleep->setChecked(Settings::defaultValue(Settings::Core::PreventSleep).toBool());
   ui->cbPreferPhysicalNetwork->setChecked(Settings::defaultValue(Settings::Core::PreferPhysicalNetwork).toBool());
+  ui->groupTailscale->setChecked(Settings::defaultValue(Settings::Core::UseTailscale).toBool());
   ui->cbElevateDaemon->setChecked(Settings::defaultValue(Settings::Daemon::Elevate).toBool());
   ui->cbAutoUpdate->setChecked(Settings::defaultValue(Settings::Gui::AutoUpdateCheck).toBool());
   ui->cbGuiDebug->setChecked(Settings::defaultValue(Settings::Log::GuiDebug).toBool());
@@ -607,6 +747,14 @@ void SettingsDialog::resetToDefault()
 
   ui->comboInterface->setCurrentIndex(0);
 
+  m_previousInterface.clear();
+  m_previousPreferPhysical = Settings::defaultValue(Settings::Core::PreferPhysicalNetwork).toBool();
+  m_previousPort = Settings::defaultValue(Settings::Core::Port).toInt();
+  m_previousNetworkCaptured = false;
+  m_loadingConfig = false;
+  m_tailscaleStatusChecked = false;
+  ui->lblTailscaleStatus->setText(tailscaleStatusText());
+  ui->lblTailscaleStatus->setToolTip(QString());
   qDebug() << "reset to default values";
   updateControls();
   setButtonBoxEnabledButtons();

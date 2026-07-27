@@ -22,6 +22,8 @@ add_library(common STATIC
   PlatformInfo.h
   Settings.h
   Settings.cpp
+  TailscaleIntegration.cpp
+  TailscaleIntegration.h
   QSettingsProxy.cpp
   QSettingsProxy.h
   UrlConstants.h

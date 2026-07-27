@@ -723,7 +723,7 @@ void Client::handleResume()
 
 void Client::bindNetworkInterface(IDataSocket *socket) const
 {
-  const auto address = Settings::value(Settings::Core::Interface).toString();
+  const auto address = Settings::interfaceAddress();
   if (address.isEmpty())
     return;
 

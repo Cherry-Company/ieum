@@ -45,6 +45,7 @@ public:
     inline static const auto ClipboardNormalizeNfc = QStringLiteral("client/clipboardNormalizeNFC");
     inline static const auto MacInterKeyDelayMicros = QStringLiteral("client/macInterKeyDelayMicros");
     inline static const auto RemoteHost = QStringLiteral("client/remoteHost");
+    inline static const auto TailscalePreviousRemoteHost = QStringLiteral("client/tailscalePreviousRemoteHost");
     inline static const auto XdpRestoreToken = QStringLiteral("client/xdpRestoreToken");
 
     // TODO: REMOVE In 2.0
@@ -57,6 +58,11 @@ public:
     inline static const auto CoreMode = QStringLiteral("core/coreMode");
     inline static const auto Interface = QStringLiteral("core/interface");
     inline static const auto PreferPhysicalNetwork = QStringLiteral("core/preferPhysicalNetwork");
+    inline static const auto UseTailscale = QStringLiteral("core/useTailscale");
+    inline static const auto TailscalePreviousInterface = QStringLiteral("core/tailscalePreviousInterface");
+    inline static const auto TailscalePreviousPreferPhysical =
+        QStringLiteral("core/tailscalePreviousPreferPhysicalNetwork");
+    inline static const auto TailscalePreviousPort = QStringLiteral("core/tailscalePreviousPort");
     inline static const auto LastVersion = QStringLiteral("core/lastVersion");
     inline static const auto Port = QStringLiteral("core/port");
     inline static const auto PreventSleep = QStringLiteral("core/preventSleep");
@@ -202,6 +208,7 @@ public:
   static QString tlsTrustedServersDb();
   static QString tlsTrustedClientsDb();
   static QString logLevelText();
+  static QString interfaceAddress();
   static QString serverBindAddress();
   static QSettingsProxy &proxy();
   static NetworkProtocol networkProtocol();
@@ -267,12 +274,17 @@ private:
     , Settings::Client::ClipboardNormalizeNfc
     , Settings::Client::MacInterKeyDelayMicros
     , Settings::Client::RemoteHost
+    , Settings::Client::TailscalePreviousRemoteHost
     , Settings::Client::YScrollScale
     , Settings::Client::XScrollScale
     , Settings::Client::XdpRestoreToken
     , Settings::Core::CoreMode
     , Settings::Core::Interface
     , Settings::Core::PreferPhysicalNetwork
+    , Settings::Core::UseTailscale
+    , Settings::Core::TailscalePreviousInterface
+    , Settings::Core::TailscalePreviousPreferPhysical
+    , Settings::Core::TailscalePreviousPort
     , Settings::Core::LastVersion
     , Settings::Core::Port
     , Settings::Core::PreventSleep
@@ -342,6 +354,7 @@ private:
     , Settings::Gui::ShowVersionInTitle
     , Settings::Gui::IgnoreMissingKeyboardLayouts
     , Settings::Core::PreventSleep
+    , Settings::Core::UseTailscale
     , Settings::Core::EnableEnterCommand
     , Settings::Core::EnableExitCommand
     , Settings::Client::DynamicConnectionRetry
@@ -362,6 +375,7 @@ private:
   inline static const QStringList m_defaultTrueValues = {
       Settings::Core::UseHooks
     , Settings::Core::PreferPhysicalNetwork
+    , Settings::Core::TailscalePreviousPreferPhysical
     , Settings::Core::ImeSync
     , Settings::Client::LanguageSync
     , Settings::Client::ClipboardNormalizeNfc

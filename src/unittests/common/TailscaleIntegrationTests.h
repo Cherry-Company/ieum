@@ -8,13 +8,13 @@
 
 #include <QTest>
 
-class NetworkInterfacesTests : public QObject
+class TailscaleIntegrationTests : public QObject
 {
   Q_OBJECT
 
 private Q_SLOTS:
-  void ordersPhysicalNetworksBeforeVirtualNetworks();
-  void ignoresUnavailableAndLocalAddresses();
-  void detectsTailscaleAddresses();
-  void resolvesAutomaticServerBinding();
+  void parsesRunningStatus();
+  void parsesLoginState();
+  void parsesMachineAuthorizationState();
+  void rejectsMalformedStatus();
 };

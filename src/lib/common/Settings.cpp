@@ -225,6 +225,9 @@ QVariant Settings::defaultValue(const QString &key)
   if (key == Core::Port)
     return 24800;
 
+  if (key == Core::TailscalePreviousPort)
+    return 24800;
+
   if (key == Core::ProcessMode) {
 #ifdef Q_OS_WIN
     if (!Settings::isPortableMode())
@@ -350,10 +353,33 @@ QString Settings::logLevelText()
   return Settings::value(Log::Level).toString();
 }
 
+QString Settings::interfaceAddress()
+{
+  if (!value(Core::UseTailscale).toBool()) {
+    return value(Core::Interface).toString();
+  }
+
+  const auto configuredAddress = value(Core::Interface).toString();
+  const auto tailscaleAddresses = deskflow::network::NetworkInterfaces::tailscaleAddresses();
+  if (tailscaleAddresses.contains(configuredAddress)) {
+    return configuredAddress;
+  }
+  if (!tailscaleAddresses.isEmpty()) {
+    return tailscaleAddresses.first();
+  }
+  if (!configuredAddress.isEmpty()) {
+    return configuredAddress;
+  }
+
+  // A malformed preset must never turn an unavailable Tailscale adapter into
+  // an all-interface listener.
+  return QStringLiteral("127.0.0.1");
+}
+
 QString Settings::serverBindAddress()
 {
   return deskflow::network::NetworkInterfaces::resolveServerBindAddress(
-      value(Core::Interface).toString(), value(Core::PreferPhysicalNetwork).toBool()
+      interfaceAddress(), value(Core::PreferPhysicalNetwork).toBool()
   );
 }
 

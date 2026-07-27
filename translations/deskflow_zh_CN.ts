@@ -723,6 +723,88 @@ Client</source>
         <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma-separated list.&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Select the server computer from your Tailscale network.</source>
+        <translation>从 Tailscale 网络中选择服务端电脑。</translation>
+    </message>
+    <message>
+        <source>Select a Tailscale device</source>
+        <translation>选择 Tailscale 设备</translation>
+    </message>
+    <message>
+        <source>Refresh Tailscale devices</source>
+        <translation>刷新 Tailscale 设备</translation>
+    </message>
+    <message>
+        <source>Tailscale was not found</source>
+        <translation>未找到 Tailscale</translation>
+    </message>
+    <message>
+        <source>Tailscale is not running</source>
+        <translation>Tailscale 未运行</translation>
+    </message>
+    <message>
+        <source>Sign in to Tailscale</source>
+        <translation>请登录 Tailscale</translation>
+    </message>
+    <message>
+        <source>Could not read Tailscale status</source>
+        <translation>无法读取 Tailscale 状态</translation>
+    </message>
+    <message>
+        <source>No desktop devices found</source>
+        <translation>未找到桌面设备</translation>
+    </message>
+    <message>
+        <source>%1 (%2, offline)</source>
+        <translation>%1（%2，离线）</translation>
+    </message>
+    <message>
+        <source>Install and start Tailscale before using Tailscale quick connect.</source>
+        <translation>使用 Tailscale 快速连接前，请先安装并启动 Tailscale。</translation>
+    </message>
+    <message>
+        <source>Start Tailscale, then try again.</source>
+        <translation>请启动 Tailscale 后重试。</translation>
+    </message>
+    <message>
+        <source>Sign in to Tailscale, then try again.</source>
+        <translation>请登录 Tailscale 后重试。</translation>
+    </message>
+    <message>
+        <source>Ieum could not read a usable Tailscale address. Refresh Tailscale and try again.</source>
+        <translation>Ieum 无法读取可用的 Tailscale 地址。请刷新 Tailscale 后重试。</translation>
+    </message>
+    <message>
+        <source>Tailscale is not ready</source>
+        <translation>Tailscale 尚未就绪</translation>
+    </message>
+    <message>
+        <source>Select the Ieum server computer, then start again.</source>
+        <translation>请选择 Ieum 服务端电脑，然后重新启动。</translation>
+    </message>
+    <message>
+        <source>Tailscale IP or MagicDNS name</source>
+        <translation>Tailscale IP 或 MagicDNS 名称</translation>
+    </message>
+    <message>
+        <source>Enter a Tailscale address</source>
+        <translation>输入 Tailscale 地址</translation>
+    </message>
+    <message>
+        <source>Enter the Ieum server&apos;s Tailscale IP or MagicDNS name, then start again.</source>
+        <translation>请输入 Ieum 服务端的 Tailscale IP 或 MagicDNS 名称，然后重新启动。</translation>
+    </message>
+    <message>
+        <source>%1 (%2)</source>
+        <translation>%1（%2）</translation>
+    </message>
+    <message>
+        <source>%1
+%2</source>
+        <translation>%1
+%2</translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -1489,6 +1571,56 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Follow this computer</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale quick connect</source>
+        <translation>Tailscale 快速连接</translation>
+    </message>
+    <message>
+        <source>Checking Tailscale...</source>
+        <translation>正在检查 Tailscale...</translation>
+    </message>
+    <message>
+        <source>Turn on to check Tailscale</source>
+        <translation>启用后检查 Tailscale 状态</translation>
+    </message>
+    <message>
+        <source>Refresh Tailscale status</source>
+        <translation>刷新 Tailscale 状态</translation>
+    </message>
+    <message numerus="yes">
+        <source>Ready | This device: %1 | %n online computer(s)</source>
+        <translation>
+            <numerusform>已就绪 | 本机：%1 | %n 台在线电脑</numerusform>
+        </translation>
+    </message>
+    <message>
+        <source>Tailscale has no usable address</source>
+        <translation>Tailscale 没有可用地址</translation>
+    </message>
+    <message>
+        <source>Tailscale was not found</source>
+        <translation>未找到 Tailscale</translation>
+    </message>
+    <message>
+        <source>Tailscale is not running</source>
+        <translation>Tailscale 未运行</translation>
+    </message>
+    <message>
+        <source>Sign in to Tailscale</source>
+        <translation>请登录 Tailscale</translation>
+    </message>
+    <message>
+        <source>Could not read Tailscale status</source>
+        <translation>无法读取 Tailscale 状态</translation>
+    </message>
+    <message>
+        <source>Tailscale is not ready</source>
+        <translation>Tailscale 尚未就绪</translation>
+    </message>
+    <message>
+        <source>Start Tailscale and sign in, then refresh its status before saving this setting.</source>
+        <translation>请启动并登录 Tailscale，然后刷新状态再保存此设置。</translation>
     </message>
 </context>
 <context>

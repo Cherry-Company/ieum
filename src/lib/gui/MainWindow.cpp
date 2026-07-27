@@ -22,6 +22,7 @@
 
 #include "common/PlatformInfo.h"
 #include "common/Settings.h"
+#include "common/TailscaleIntegration.h"
 #include "common/UrlConstants.h"
 #include "common/VersionInfo.h"
 #include "gui/Messages.h"
@@ -34,6 +35,7 @@
 
 #include <QCheckBox>
 #include <QCloseEvent>
+#include <QComboBox>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QLocalServer>
@@ -48,6 +50,7 @@
 #include <QRegularExpressionValidator>
 #include <QScreen>
 #include <QScrollBar>
+#include <QSignalBlocker>
 
 #include <memory>
 
@@ -292,6 +295,8 @@ void MainWindow::connectSlots()
 
   connect(ui->lineHostname, &QLineEdit::returnPressed, ui->btnRestartCore, &QPushButton::click);
   connect(ui->lineHostname, &QLineEdit::textChanged, this, &MainWindow::remoteHostChanged);
+  connect(ui->comboTailscalePeer, &QComboBox::activated, this, &MainWindow::tailscalePeerSelected);
+  connect(ui->btnRefreshTailscalePeers, &QPushButton::clicked, this, &MainWindow::refreshTailscalePeers);
 
   connect(ui->btnSaveServerConfig, &QPushButton::clicked, this, &MainWindow::saveServerConfig);
   connect(ui->btnConfigureServer, &QPushButton::clicked, this, [this] { showConfigureServer(""); });
@@ -421,6 +426,10 @@ void MainWindow::coreProcessError(CoreProcess::Error error)
 
 void MainWindow::startCore()
 {
+  if (!prepareTailscale()) {
+    return;
+  }
+
   if (m_coreProcess.mode() == CoreMode::Server) {
     const auto bindAddress = Settings::serverBindAddress();
     m_serverStartIPs = bindAddress.isEmpty() ? NetworkMonitor::validAddresses() : QStringList{bindAddress};
@@ -500,13 +509,16 @@ void MainWindow::openSettings()
     applyConfig();
 
     if (m_coreProcess.isStarted()) {
-      m_coreProcess.restart();
+      resetCore();
     }
   }
 }
 
 void MainWindow::resetCore()
 {
+  if (!prepareTailscale()) {
+    return;
+  }
   m_coreProcess.restart();
 }
 
@@ -566,6 +578,8 @@ void MainWindow::updateModeControls()
   } else {
     m_networkMonitor->stopMonitoring();
   }
+
+  updateTailscaleControls();
 
   if (isServer || isClient)
     updateModeControlLabels();
@@ -727,8 +741,7 @@ void MainWindow::applyConfig()
     setWindowTitle(productDisplayName());
   }
 
-  if (const auto host = Settings::value(Settings::Client::RemoteHost).toString(); !host.isEmpty())
-    ui->lineHostname->setText(host);
+  ui->lineHostname->setText(Settings::value(Settings::Client::RemoteHost).toString());
 
   updateFingerprintButton();
   setTrayIcon();
@@ -738,6 +751,7 @@ void MainWindow::applyConfig()
     m_serverStartSuggestedIP = ip;
   }
 
+  updateTailscaleControls(true);
   coreModeToggled(true);
 }
 
@@ -1050,6 +1064,7 @@ void MainWindow::changeEvent(QEvent *e)
     updateStatus();
     serverClientsChanged({});
     updateText();
+    updateTailscaleControls(true);
   }
 }
 
@@ -1241,21 +1256,189 @@ void MainWindow::daemonIpcClientConnectionFailed()
 void MainWindow::toggleCanRunCore(bool enableButtons)
 {
   const bool isStarted = m_coreProcess.isStarted();
-  ui->btnToggleCore->setEnabled(enableButtons);
+  ui->btnToggleCore->setEnabled(enableButtons || isStarted);
   ui->btnRestartCore->setEnabled(enableButtons && isStarted);
   m_actionStartCore->setEnabled(enableButtons);
-  m_actionStopCore->setEnabled(enableButtons && isStarted);
+  m_actionStopCore->setEnabled(isStarted);
 }
 
 void MainWindow::remoteHostChanged(const QString &newRemoteHost)
 {
   m_coreProcess.setAddress(newRemoteHost);
-  toggleCanRunCore(!newRemoteHost.isEmpty() && ui->rbModeClient->isChecked());
+  toggleCanRunCore(canRunCore());
   if (newRemoteHost.isEmpty()) {
     Settings::setValue(Settings::Client::RemoteHost);
   } else {
     Settings::setValue(Settings::Client::RemoteHost, newRemoteHost);
   }
+}
+
+void MainWindow::refreshTailscalePeers()
+{
+  if (!Settings::value(Settings::Core::UseTailscale).toBool()) {
+    return;
+  }
+
+  const auto status = deskflow::network::TailscaleIntegration::query();
+  m_tailscaleReady = status.isReady();
+  const auto currentHost = ui->lineHostname->text().trimmed();
+  int matchingIndex = -1;
+  int soleOnlineIndex = -1;
+  int onlineCount = 0;
+
+  {
+    const QSignalBlocker blocker(ui->comboTailscalePeer);
+    ui->comboTailscalePeer->clear();
+    ui->comboTailscalePeer->addItem(tr("Select a Tailscale device"), QString());
+
+    if (!status.isReady()) {
+      using deskflow::network::TailscaleState;
+      QString statusText;
+      switch (status.state) {
+      case TailscaleState::NotInstalled:
+        statusText = tr("Tailscale was not found");
+        break;
+      case TailscaleState::Stopped:
+        statusText = tr("Tailscale is not running");
+        break;
+      case TailscaleState::NeedsLogin:
+        statusText = tr("Sign in to Tailscale");
+        break;
+      case TailscaleState::Running:
+      case TailscaleState::Error:
+        statusText = tr("Could not read Tailscale status");
+        break;
+      }
+      ui->comboTailscalePeer->setItemText(0, statusText);
+      ui->comboTailscalePeer->setEnabled(false);
+      ui->lineHostname->setVisible(false);
+      ui->lineHostname->setPlaceholderText(QString());
+      ui->comboTailscalePeer->setVisible(true);
+      toggleCanRunCore(canRunCore());
+      return;
+    }
+
+    for (const auto &peer : status.peers) {
+      if (!peer.isDesktop() || peer.preferredAddress().isEmpty()) {
+        continue;
+      }
+
+      const auto label =
+          peer.online ? tr("%1 (%2)").arg(peer.name, peer.os) : tr("%1 (%2, offline)").arg(peer.name, peer.os);
+      ui->comboTailscalePeer->addItem(label, peer.preferredAddress());
+      const auto index = ui->comboTailscalePeer->count() - 1;
+      ui->comboTailscalePeer->setItemData(
+          index, tr("%1\n%2").arg(peer.dnsName, peer.preferredAddress()), Qt::ToolTipRole
+      );
+
+      if (peer.online) {
+        ++onlineCount;
+        soleOnlineIndex = index;
+      }
+      if (currentHost.compare(peer.preferredAddress(), Qt::CaseInsensitive) == 0 ||
+          currentHost.compare(peer.dnsName, Qt::CaseInsensitive) == 0) {
+        matchingIndex = index;
+      }
+    }
+
+    if (ui->comboTailscalePeer->count() == 1) {
+      ui->comboTailscalePeer->setItemText(0, tr("No desktop devices found"));
+      ui->comboTailscalePeer->setEnabled(false);
+      ui->comboTailscalePeer->setVisible(false);
+      ui->lineHostname->setVisible(true);
+      ui->lineHostname->setPlaceholderText(tr("Tailscale IP or MagicDNS name"));
+    } else {
+      ui->comboTailscalePeer->setEnabled(true);
+      ui->comboTailscalePeer->setVisible(true);
+      ui->lineHostname->setVisible(false);
+      ui->lineHostname->setPlaceholderText(QString());
+      ui->comboTailscalePeer->setCurrentIndex(
+          matchingIndex >= 0 ? matchingIndex : (onlineCount == 1 ? soleOnlineIndex : 0)
+      );
+    }
+  }
+
+  if (ui->comboTailscalePeer->currentIndex() > 0 && ui->comboTailscalePeer->currentData().toString() != currentHost) {
+    tailscalePeerSelected(ui->comboTailscalePeer->currentIndex());
+  }
+  toggleCanRunCore(canRunCore());
+}
+
+void MainWindow::tailscalePeerSelected(int index)
+{
+  const auto address = ui->comboTailscalePeer->itemData(index).toString();
+  ui->lineHostname->setText(address);
+  toggleCanRunCore(canRunCore());
+}
+
+void MainWindow::updateTailscaleControls(bool refreshPeers)
+{
+  const bool tailscaleEnabled = Settings::value(Settings::Core::UseTailscale).toBool();
+  const bool showPeerPicker = tailscaleEnabled && m_coreProcess.mode() == CoreMode::Client;
+
+  if (!showPeerPicker) {
+    m_tailscaleReady = false;
+    ui->lineHostname->setPlaceholderText(QString());
+  }
+  ui->lineHostname->setVisible(!showPeerPicker);
+  ui->comboTailscalePeer->setVisible(showPeerPicker);
+  ui->btnRefreshTailscalePeers->setVisible(showPeerPicker);
+
+  if (showPeerPicker && (refreshPeers || ui->comboTailscalePeer->count() <= 1)) {
+    refreshTailscalePeers();
+  }
+}
+
+bool MainWindow::prepareTailscale()
+{
+  if (!Settings::value(Settings::Core::UseTailscale).toBool()) {
+    return true;
+  }
+
+  const auto status = deskflow::network::TailscaleIntegration::query();
+  m_tailscaleReady = status.isReady();
+  if (!status.isReady()) {
+    QString message;
+    using deskflow::network::TailscaleState;
+    switch (status.state) {
+    case TailscaleState::NotInstalled:
+      message = tr("Install and start Tailscale before using Tailscale quick connect.");
+      break;
+    case TailscaleState::Stopped:
+      message = tr("Start Tailscale, then try again.");
+      break;
+    case TailscaleState::NeedsLogin:
+      message = tr("Sign in to Tailscale, then try again.");
+      break;
+    case TailscaleState::Running:
+    case TailscaleState::Error:
+      message = tr("Ieum could not read a usable Tailscale address. Refresh Tailscale and try again.");
+      break;
+    }
+    QMessageBox::warning(this, tr("Tailscale is not ready"), message);
+    return false;
+  }
+
+  Settings::setValue(Settings::Core::Interface, status.preferredLocalAddress());
+  Settings::setValue(Settings::Core::PreferPhysicalNetwork, false);
+
+  if (m_coreProcess.mode() == CoreMode::Client && ui->comboTailscalePeer->currentData().toString().isEmpty()) {
+    refreshTailscalePeers();
+    if (ui->comboTailscalePeer->isEnabled() && ui->comboTailscalePeer->currentData().toString().isEmpty()) {
+      QMessageBox::information(
+          this, tr("Select a Tailscale device"), tr("Select the Ieum server computer, then start again.")
+      );
+      return false;
+    }
+    if (!ui->comboTailscalePeer->isEnabled() && ui->lineHostname->text().trimmed().isEmpty()) {
+      QMessageBox::information(
+          this, tr("Enter a Tailscale address"),
+          tr("Enter the Ieum server's Tailscale IP or MagicDNS name, then start again.")
+      );
+      return false;
+    }
+  }
+  return true;
 }
 
 void MainWindow::updateIpLabel(const QStringList &addresses)
@@ -1320,5 +1503,11 @@ bool MainWindow::canRunCore() const
   const auto mode = m_coreProcess.mode();
   const bool isServer = mode == Settings::CoreMode::Server;
   const bool isClient = mode == Settings::CoreMode::Client;
+  if (isClient && Settings::value(Settings::Core::UseTailscale).toBool()) {
+    const bool peerSelected =
+        ui->comboTailscalePeer->isEnabled() && !ui->comboTailscalePeer->currentData().toString().isEmpty();
+    const bool manualAddress = !ui->comboTailscalePeer->isEnabled() && !ui->lineHostname->text().trimmed().isEmpty();
+    return m_tailscaleReady && (peerSelected || manualAddress);
+  }
   return ((isServer || isClient) && (isClient && !ui->lineHostname->text().isEmpty()) || isServer);
 }

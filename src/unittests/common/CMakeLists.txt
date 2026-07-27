@@ -28,3 +28,10 @@ create_test(
   SOURCE NetworkInterfacesTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/common"
 )
+
+create_test(
+  NAME TailscaleIntegrationTests
+  DEPENDS common
+  SOURCE TailscaleIntegrationTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/common"
+)

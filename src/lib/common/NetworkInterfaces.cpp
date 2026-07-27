@@ -11,6 +11,7 @@
 #include <QSet>
 
 #include <algorithm>
+#include <iterator>
 #include <tuple>
 #include <utility>
 
@@ -79,6 +80,25 @@ bool NetworkInterfaces::isVirtualInterface(const InterfaceAddress &interfaceAddr
          isVirtualInterfaceName(interfaceAddress.systemName) || isVirtualInterfaceName(interfaceAddress.displayName);
 }
 
+bool NetworkInterfaces::isTailscaleAddress(const QHostAddress &address)
+{
+  if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+    constexpr quint32 kTailscaleCgnatNetwork = 0x64400000;
+    constexpr quint32 kTailscaleCgnatMask = 0xffc00000;
+    return (address.toIPv4Address() & kTailscaleCgnatMask) == kTailscaleCgnatNetwork;
+  }
+
+  return address.protocol() == QAbstractSocket::IPv6Protocol &&
+         address.toString().startsWith(QStringLiteral("fd7a:115c:a1e0:"), Qt::CaseInsensitive);
+}
+
+bool NetworkInterfaces::isTailscaleInterface(const InterfaceAddress &interfaceAddress)
+{
+  const auto names = QStringLiteral("%1 %2").arg(interfaceAddress.systemName, interfaceAddress.displayName);
+  return names.contains(QStringLiteral("tailscale"), Qt::CaseInsensitive) ||
+         (isVirtualInterface(interfaceAddress) && isTailscaleAddress(interfaceAddress.address));
+}
+
 QList<InterfaceAddress> NetworkInterfaces::localAddresses()
 {
   QList<InterfaceAddress> result;
@@ -130,6 +150,20 @@ QStringList NetworkInterfaces::validAddresses()
 QStringList NetworkInterfaces::physicalAddresses()
 {
   return orderedAddresses(localAddresses(), false);
+}
+
+QStringList NetworkInterfaces::tailscaleAddresses()
+{
+  return tailscaleAddresses(localAddresses());
+}
+
+QStringList NetworkInterfaces::tailscaleAddresses(const QList<InterfaceAddress> &addresses)
+{
+  QList<InterfaceAddress> tailscale;
+  std::ranges::copy_if(addresses, std::back_inserter(tailscale), [](const auto &candidate) {
+    return isUsable(candidate) && NetworkInterfaces::isTailscaleInterface(candidate);
+  });
+  return orderedAddresses(tailscale);
 }
 
 QString NetworkInterfaces::preferredPhysicalAddress()

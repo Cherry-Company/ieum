@@ -59,6 +59,32 @@ void NetworkInterfacesTests::ignoresUnavailableAndLocalAddresses()
   QVERIFY(NetworkInterfaces::preferredPhysicalAddress(addresses).isEmpty());
 }
 
+void NetworkInterfacesTests::detectsTailscaleAddresses()
+{
+  const QList<InterfaceAddress> addresses = {
+      candidate(
+          QStringLiteral("Tailscale"), QStringLiteral("100.68.129.102"), QNetworkInterface::Unknown,
+          QNetworkInterface::IsUp | QNetworkInterface::IsRunning | QNetworkInterface::IsPointToPoint
+      ),
+      candidate(
+          QStringLiteral("utun7"), QStringLiteral("fd7a:115c:a1e0::1b32:8166"), QNetworkInterface::Unknown,
+          QNetworkInterface::IsUp | QNetworkInterface::IsRunning | QNetworkInterface::IsPointToPoint
+      ),
+      candidate(
+          QStringLiteral("Other VPN"), QStringLiteral("10.8.0.2"), QNetworkInterface::Unknown,
+          QNetworkInterface::IsUp | QNetworkInterface::IsRunning | QNetworkInterface::IsPointToPoint
+      ),
+      candidate(QStringLiteral("Ethernet"), QStringLiteral("100.64.0.5")),
+  };
+
+  QCOMPARE(
+      NetworkInterfaces::tailscaleAddresses(addresses),
+      QStringList({QStringLiteral("100.68.129.102"), QStringLiteral("fd7a:115c:a1e0::1b32:8166")})
+  );
+  QVERIFY(NetworkInterfaces::isTailscaleAddress(QHostAddress(QStringLiteral("100.127.255.254"))));
+  QVERIFY(!NetworkInterfaces::isTailscaleAddress(QHostAddress(QStringLiteral("100.128.0.1"))));
+}
+
 void NetworkInterfacesTests::resolvesAutomaticServerBinding()
 {
   QCOMPARE(

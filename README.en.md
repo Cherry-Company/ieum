@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.11"><strong>Download Ieum</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.12"><strong>Download Ieum</strong></a>
   · <a href="#support-development"><strong>Support development</strong></a>
 </p>
 
@@ -28,7 +28,7 @@ Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers
 screen edge: it connects **Korean/English mode, IME composition sessions, physical key positions, and Unicode
 clipboard data** into one consistent input path across operating systems.
 
-> The current release is `v0.1.0-alpha.11`. Automated builds and unit tests pass, but the long-running physical
+> The current release is `v0.1.0-alpha.12`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
 
 ## Product identity and interface
@@ -121,16 +121,16 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[이음 (Ieum) v0.1.0-alpha.11 release](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.11)
+[이음 (Ieum) v0.1.0-alpha.12 release](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.12)
 
 | Operating system | Installer |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.11-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.11-macos-x86_64.dmg` |
-| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.11-win-x64.msi` |
-| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.11-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.11-win-arm64.msi` |
-| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.11-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.12-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.12-macos-x86_64.dmg` |
+| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.12-win-x64.msi` |
+| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.12-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.12-win-arm64.msi` |
+| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.12-win-arm64-ko-KR.msi` |
 
 Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
 `SHA256SUMS.txt`.
@@ -142,14 +142,21 @@ can be restored by disabling **Prefer physical networks** in Advanced settings. 
 scope; it does not hide or bypass Genian NAC policy warnings about virtual adapters or default routes that
 remain configured in the operating system.
 
+In `alpha.12`, enabling **Preferences → Network → Tailscale quick connect** automatically checks the Tailscale
+session and applies this device's Tailscale address and the default TCP port `24800`. In client mode, a Tailnet
+desktop-device list replaces manual IP entry; a sole online computer is preselected, while multiple computers
+require one name selection. Ieum fails closed instead of listening on every interface when Tailscale is
+unavailable. It does not modify Tailscale configuration or access rules, so the Tailnet policy and host firewall
+must permit TCP `24800` to the server.
+
 The `alpha.5` Mac DMG had a broken code seal, and `alpha.6` exited before its asynchronous Accessibility request
 could finish. In `alpha.7`, a Qt macOS Accessibility warning could feed back into the app log and repeatedly print
-`QTextCursor::setPosition`. Those permission and logging fixes remain in `alpha.11`. If an enabled entry from an
+`QTextCursor::setPosition`. Those permission and logging fixes remain in `alpha.12`. If an enabled entry from an
 older Ieum release remains but macOS does not trust the current app, `alpha.10` offers **Reset Previous Approval**.
 After confirmation, it removes only Ieum's Accessibility record and registers the current
 `/Applications/Ieum.app` again, avoiding the manual minus/add workflow.
 
-The final `alpha.11` app passes strict code-signature verification, but it is not yet signed with a Developer ID
+The final `alpha.12` app passes strict code-signature verification, but it is not yet signed with a Developer ID
 certificate or Apple-notarized. Move it to `/Applications`, try to open it once, then use **System Settings →
 Privacy & Security → Open Anyway** if macOS blocks it. Accessibility and Input Monitoring permissions are also
 required. Because ad-hoc signing gives each build a different code identity, a later update may require
@@ -165,9 +172,10 @@ until timeout.
 Since `alpha.9`, Ieum uses MSI version `0.1.109`, `ieum-core.exe`, `ieum-daemon.exe`, and versioned
 `ieum-core-v1`/`ieum-daemon-v1` IPC endpoints. A global ownership lock rejects duplicate cores, and the default
 certificate migrates to `ieum.pem` so a fresh `/CN=Ieum` certificate is generated. CI performs a real
-`alpha.9 → alpha.11` upgrade, validates the service IPC and duplicate-core rejection, and keeps Deskflow 1.26.0
+`alpha.9 → alpha.12` upgrade, validates the service IPC and duplicate-core rejection, and keeps Deskflow 1.26.0
 and Ieum cores running simultaneously on x64 and ARM64. Existing `alpha.8` through `alpha.10` users can run the
-`alpha.11` MSI directly without manually uninstalling. The first connection may request fingerprint approval
+`alpha.12` MSI directly without manually uninstalling; `alpha.11` upgrades in place as well. The first connection
+may request fingerprint approval
 once because the certificate is replaced.
 
 The global installer appears as **Ieum** in Installed apps and the Start menu; the Korean installer appears as
@@ -179,8 +187,10 @@ show a warning.
 
 1. Install Ieum on every computer you want to control.
 2. Select `Server` on the computer with the physical keyboard and mouse.
-3. Select `Client` on the other computers and enter the server address.
-4. Arrange the screens on the server, then start Ieum.
+3. On the same LAN, select `Client` on the other computers and enter the server address.
+4. For Tailscale, enable **Preferences → Network → Tailscale quick connect** on both computers and select the
+   server computer by name on the client.
+5. Arrange the screens on the server, then start Ieum.
 
 See the [IME guide](docs/user/ime.md) for input behavior and platform permissions.
 

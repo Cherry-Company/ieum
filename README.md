@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.11"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.12"><strong>이음 다운로드</strong></a>
   · <a href="#후원"><strong>후원하기</strong></a>
 </p>
 
@@ -28,7 +28,7 @@
 KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
 원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
 
-> 현재 단계는 `v0.1.0-alpha.11`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 현재 단계는 `v0.1.0-alpha.12`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
 
 ## 언어별 제품 표기와 인터페이스
@@ -120,16 +120,16 @@ flowchart LR
 
 ## 다운로드
 
-[이음 (Ieum) v0.1.0-alpha.11 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.11)
+[이음 (Ieum) v0.1.0-alpha.12 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.12)
 
 | 운영체제 | 설치 파일 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.11-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.11-macos-x86_64.dmg` |
-| Intel/AMD 64비트 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.11-win-x64-ko-KR.msi` |
-| Intel/AMD 64비트 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.11-win-x64.msi` |
-| ARM64 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.11-win-arm64-ko-KR.msi` |
-| ARM64 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.11-win-arm64.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.12-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.12-macos-x86_64.dmg` |
+| Intel/AMD 64비트 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.12-win-x64-ko-KR.msi` |
+| Intel/AMD 64비트 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.12-win-x64.msi` |
+| ARM64 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.12-win-arm64-ko-KR.msi` |
+| ARM64 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.12-win-arm64.msi` |
 
 Windows용 `portable.7z`와 Linux 패키지도 릴리스에 포함됩니다. 모든 파일은 함께 제공되는
 `SHA256SUMS.txt`로 검증할 수 있습니다.
@@ -141,14 +141,21 @@ Tailscale, ZeroTier, VMware, Hyper-V/WSL 같은 가상 어댑터까지 기본으
 제한하며, 운영체제에 남아 있는 가상 어댑터나 기본 경로에 대한 Genian NAC 정책 경고를 숨기거나
 우회하지는 않습니다.
 
+`alpha.12`에서는 **설정 → 네트워크 → Tailscale 간편 연결**을 켜는 것만으로 Tailscale 실행·로그인
+상태, 이 기기의 전용 주소와 기본 포트 `24800`을 자동 적용합니다. 클라이언트 화면은 IP 입력란 대신
+Tailnet의 데스크톱 기기 이름을 표시하며, 온라인 PC가 하나면 미리 선택하고 여러 대면 사용자가 이름
+하나만 고르면 됩니다. Tailscale이 준비되지 않았을 때 전체 인터페이스로 폴백하지 않고 시작을
+중단합니다. 이 기능은 Tailscale 설정이나 ACL을 변경하지 않으므로 Tailnet 정책과 호스트 방화벽에서
+서버의 TCP `24800` 연결이 허용되어 있어야 합니다.
+
 `alpha.5`의 Mac DMG에는 깨진 코드 서명 봉인이 있었고, `alpha.6`은 비동기 접근성 권한 요청이
 끝나기 전에 앱이 종료되는 문제가 있었습니다. `alpha.7`에서는 macOS의 Qt 접근성 경고가 앱 로그로
-되먹임되어 `QTextCursor::setPosition` 메시지가 반복될 수 있었습니다. 이 수정들은 `alpha.11`에도
+되먹임되어 `QTextCursor::setPosition` 메시지가 반복될 수 있었습니다. 이 수정들은 `alpha.12`에도
 유지됩니다. `alpha.10`은 켜져 있는 구버전 이음 항목이 남았는데 현재 앱이 승인되지 않는 경우
 **이전 승인 초기화**를 제공합니다. 확인하면 이음의 손쉬운 사용 기록만 제거하고 현재
 `/Applications/Ieum.app`을 macOS에 다시 등록하므로, 수동으로 `-`와 `+`를 누를 필요가 없습니다.
 
-`alpha.11`은 DMG 안의 최종 앱에 대해 엄격한 코드 서명 검증을 통과하지만, 아직 Developer ID 서명과
+`alpha.12`는 DMG 안의 최종 앱에 대해 엄격한 코드 서명 검증을 통과하지만, 아직 Developer ID 서명과
 Apple 공증은 적용되지 않았습니다. 앱을 `/Applications`로 옮기고 한 번 실행한 뒤 macOS가 차단하면
 **시스템 설정 → 개인정보 보호 및 보안 → 확인 없이 열기**에서 허용하세요. 접근성 및 입력 모니터링
 권한도 필요합니다. 임시(ad-hoc) 서명은 빌드마다 코드 정체성이 달라지므로 이후 업데이트에서도
@@ -164,9 +171,10 @@ PC에서 이음을 더 낮은 버전으로 오인하고 설치를 차단할 수 
 `alpha.9`부터 MSI 버전 `0.1.109`와 `ieum-core.exe`, `ieum-daemon.exe`, 버전이 지정된
 `ieum-core-v1`/`ieum-daemon-v1` IPC를 사용합니다. 전역 소유권 잠금으로 중복 코어도 거부하며,
 기본 인증서를 `ieum.pem`으로 이관해 `/CN=Ieum` 인증서를 새로 생성합니다. CI는
-`alpha.9 → alpha.11` 실제 업그레이드, 서비스 IPC 응답, 중복 코어 거부, 실행 중인 Deskflow
+`alpha.9 → alpha.12` 실제 업그레이드, 서비스 IPC 응답, 중복 코어 거부, 실행 중인 Deskflow
 1.26.0과 이음 코어의 동시 생존을 x64와 ARM64에서 검사합니다. `alpha.8`~`alpha.10` 사용자는
-기존 버전을 수동 삭제하지 말고 `alpha.11` MSI를 바로 실행하면 됩니다. 인증서가 교체되므로 최초
+기존 버전을 수동 삭제하지 말고 `alpha.12` MSI를 바로 실행하면 됩니다. `alpha.11`도 MSI를 바로
+실행해 업그레이드할 수 있습니다. 인증서가 교체되므로 최초
 연결에서는 새 지문을 한 번 승인해야 할 수 있습니다.
 
 한국어 설치본은 설정의 설치된 앱과 시작 메뉴에 **이음 (Ieum)**, 영문 설치본은 **Ieum** 으로
@@ -178,8 +186,10 @@ PC에서 이음을 더 낮은 버전으로 오인하고 설치를 차단할 수 
 
 1. 제어할 컴퓨터 모두에 Ieum을 설치합니다.
 2. 키보드와 마우스가 연결된 컴퓨터에서 `Server`를 선택합니다.
-3. 나머지 컴퓨터에서 `Client`를 선택하고 서버 주소를 입력합니다.
-4. 서버 화면 배치에서 각 컴퓨터의 위치를 지정한 뒤 시작합니다.
+3. 같은 네트워크에서는 나머지 컴퓨터의 `Client`에 서버 주소를 입력합니다.
+4. Tailscale을 쓸 때는 양쪽의 **설정 → 네트워크 → Tailscale 간편 연결**을 켜고 클라이언트에서
+   서버 컴퓨터 이름을 고릅니다.
+5. 서버 화면 배치에서 각 컴퓨터의 위치를 지정한 뒤 시작합니다.
 
 IME 동작과 운영체제별 권한은 [IME 사용 안내](docs/user/ime.md)를 확인하세요.
 

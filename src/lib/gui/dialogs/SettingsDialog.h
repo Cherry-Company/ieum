@@ -9,6 +9,7 @@
 #pragma once
 #include <QDialog>
 
+#include "common/TailscaleIntegration.h"
 #include "gui/config/ServerConfig.h"
 
 namespace Ui {
@@ -43,6 +44,10 @@ private:
   void updateTlsControlsEnabled();
   void showReadOnlyMessage();
   void updateText();
+  void tailscaleToggled(bool enabled);
+  void updateTailscaleStatus();
+  void applyTailscalePreset();
+  QString tailscaleStatusText() const;
 
   /// @brief Load all settings.
   void loadFromConfig();
@@ -84,4 +89,11 @@ private:
 
   std::unique_ptr<Ui::SettingsDialog> ui;
   const ServerConfig &m_serverConfig;
+  deskflow::network::TailscaleStatus m_tailscaleStatus;
+  QString m_previousInterface;
+  bool m_previousPreferPhysical = true;
+  int m_previousPort = 24800;
+  bool m_previousNetworkCaptured = false;
+  bool m_loadingConfig = false;
+  bool m_tailscaleStatusChecked = false;
 };
