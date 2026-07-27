@@ -335,11 +335,65 @@ Do you want to connect to the server?
 In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. If Ieum is not listed, use the add button to select /Applications/Ieum.app.
 
 After granting access, return here and choose Try Again.</source>
-        <translation>이음에서 키보드와 마우스를 공유하려면 손쉬운 사용 권한이 필요합니다.
+        <translation type="vanished">이음에서 키보드와 마우스를 공유하려면 손쉬운 사용 권한이 필요합니다.
 
 시스템 설정의 개인정보 보호 및 보안 &gt; 손쉬운 사용에서 이음을 켜세요. 목록에 이음이 없으면 추가 버튼을 눌러 /Applications/Ieum.app을 선택하세요.
 
 권한을 허용한 뒤 여기로 돌아와 다시 시도를 선택하세요.</translation>
+    </message>
+    <message>
+        <source>The macOS permission reset timed out.</source>
+        <translation>macOS 권한 초기화 시간이 초과되었습니다.</translation>
+    </message>
+    <message>
+        <source>tccutil exited with code %1.</source>
+        <translation>tccutil이 코드 %1로 종료되었습니다.</translation>
+    </message>
+    <message>
+        <source>Ieum needs Accessibility access to share the keyboard and mouse.
+
+In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. After granting access, return here and choose Check Again.</source>
+        <translation>이음에서 키보드와 마우스를 공유하려면 손쉬운 사용 권한이 필요합니다.
+
+시스템 설정의 개인정보 보호 및 보안 &gt; 손쉬운 사용에서 이음을 켜세요. 권한을 허용한 뒤 여기로 돌아와 다시 확인을 선택하세요.</translation>
+    </message>
+    <message>
+        <source>
+
+This alpha build has a temporary code identity. If an older enabled Ieum entry remains but this version is still not trusted, choose Reset Previous Approval. Ieum will clear only its own Accessibility record and ask macOS to register the current /Applications/Ieum.app.</source>
+        <translation>
+
+이 Alpha 빌드는 임시 코드 정체성을 사용합니다. 켜져 있는 구버전 이음 항목이 남았는데 이 버전이 아직 승인되지 않았다면 이전 승인 초기화를 선택하세요. 이음은 자신의 손쉬운 사용 기록만 지우고 macOS에 현재 /Applications/Ieum.app을 다시 등록하도록 요청합니다.</translation>
+    </message>
+    <message>
+        <source>
+
+If an older enabled Ieum entry remains but this version is still not trusted, choose Reset Previous Approval to register the current /Applications/Ieum.app.</source>
+        <translation>
+
+켜져 있는 구버전 이음 항목이 남았는데 이 버전이 아직 승인되지 않았다면 이전 승인 초기화를 선택해 현재 /Applications/Ieum.app을 다시 등록하세요.</translation>
+    </message>
+    <message>
+        <source>Check Again</source>
+        <translation>다시 확인</translation>
+    </message>
+    <message>
+        <source>Reset Previous Approval</source>
+        <translation>이전 승인 초기화</translation>
+    </message>
+    <message>
+        <source>Reset Ieum&apos;s previous Accessibility approval?
+
+macOS will remove only Ieum&apos;s Accessibility record. No other app permissions are changed. You must approve the current Ieum app again.</source>
+        <translation>이음의 이전 손쉬운 사용 승인을 초기화할까요?
+
+macOS는 이음의 손쉬운 사용 기록만 제거합니다. 다른 앱의 권한은 변경되지 않습니다. 현재 이음 앱을 다시 승인해야 합니다.</translation>
+    </message>
+    <message>
+        <source>Could not reset Ieum&apos;s Accessibility approval:
+%1</source>
+        <translation>이음의 손쉬운 사용 승인을 초기화하지 못했습니다:
+%1</translation>
     </message>
 </context>
 <context>

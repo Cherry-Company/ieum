@@ -330,11 +330,48 @@ Vuoi connetterti al server?
 <context>
     <name>MacAccessibility</name>
     <message>
+        <source>The macOS permission reset timed out.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>tccutil exited with code %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Ieum needs Accessibility access to share the keyboard and mouse.
 
-In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. If Ieum is not listed, use the add button to select /Applications/Ieum.app.
+In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. After granting access, return here and choose Check Again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
 
-After granting access, return here and choose Try Again.</source>
+This alpha build has a temporary code identity. If an older enabled Ieum entry remains but this version is still not trusted, choose Reset Previous Approval. Ieum will clear only its own Accessibility record and ask macOS to register the current /Applications/Ieum.app.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>
+
+If an older enabled Ieum entry remains but this version is still not trusted, choose Reset Previous Approval to register the current /Applications/Ieum.app.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Check Again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset Previous Approval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset Ieum&apos;s previous Accessibility approval?
+
+macOS will remove only Ieum&apos;s Accessibility record. No other app permissions are changed. You must approve the current Ieum app again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not reset Ieum&apos;s Accessibility approval:
+%1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

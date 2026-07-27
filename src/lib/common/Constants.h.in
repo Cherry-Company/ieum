@@ -15,6 +15,7 @@ const auto kAppDescription = "@CMAKE_PROJECT_DESCRIPTION@";
 const auto kDaemonBinName = "@IEUM_DAEMON_TARGET@";
 const auto kDaemonIpcName = "@IEUM_RUNTIME_ID@-daemon-v1";
 const auto kRevFqdnName = "@CMAKE_PROJECT_REV_FQDN@";
+const auto kMacBundleId = "@CMAKE_PROJECT_MACOS_BUNDLE_ID@";
 
 const auto kCopyright = //
     "Copyright @CMAKE_PROJECT_COPYRIGHT@\n"

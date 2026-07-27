@@ -14,7 +14,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.9"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.10"><strong>이음 다운로드</strong></a>
   · <a href="#후원"><strong>후원하기</strong></a>
 </p>
 
@@ -28,7 +28,7 @@
 KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
 원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
 
-> 현재 단계는 `v0.1.0-alpha.9`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 현재 단계는 `v0.1.0-alpha.10`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
 
 ## 언어별 제품 표기와 인터페이스
@@ -120,32 +120,33 @@ flowchart LR
 
 ## 다운로드
 
-[이음 (Ieum) v0.1.0-alpha.9 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.9)
+[이음 (Ieum) v0.1.0-alpha.10 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.10)
 
 | 운영체제 | 설치 파일 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.9-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.9-macos-x86_64.dmg` |
-| Intel/AMD 64비트 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.9-win-x64-ko-KR.msi` |
-| Intel/AMD 64비트 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.9-win-x64.msi` |
-| ARM64 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.9-win-arm64-ko-KR.msi` |
-| ARM64 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.9-win-arm64.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.10-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.10-macos-x86_64.dmg` |
+| Intel/AMD 64비트 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.10-win-x64-ko-KR.msi` |
+| Intel/AMD 64비트 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.10-win-x64.msi` |
+| ARM64 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.10-win-arm64-ko-KR.msi` |
+| ARM64 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.10-win-arm64.msi` |
 
 Windows용 `portable.7z`와 Linux 패키지도 릴리스에 포함됩니다. 모든 파일은 함께 제공되는
 `SHA256SUMS.txt`로 검증할 수 있습니다.
 
 `alpha.5`의 Mac DMG에는 깨진 코드 서명 봉인이 있었고, `alpha.6`은 비동기 접근성 권한 요청이
 끝나기 전에 앱이 종료되는 문제가 있었습니다. `alpha.7`에서는 macOS의 Qt 접근성 경고가 앱 로그로
-되먹임되어 `QTextCursor::setPosition` 메시지가 반복될 수 있었습니다. `alpha.8`의 권한·로그 수정은
-`alpha.9`에도 유지됩니다. 이전 버전은 삭제하고 `alpha.9`를 사용하세요. 이음 전용 번들 ID로 권한을
-요청하며, 권한을 허용하는 동안 앱을 실행 상태로 유지합니다.
-손쉬운 사용 목록에 이음이 자동으로 나타나지 않으면 추가 버튼으로 `/Applications/Ieum.app`을
-선택할 수 있습니다.
+되먹임되어 `QTextCursor::setPosition` 메시지가 반복될 수 있었습니다. 이 수정들은 `alpha.10`에도
+유지됩니다. `alpha.10`은 켜져 있는 구버전 이음 항목이 남았는데 현재 앱이 승인되지 않는 경우
+**이전 승인 초기화**를 제공합니다. 확인하면 이음의 손쉬운 사용 기록만 제거하고 현재
+`/Applications/Ieum.app`을 macOS에 다시 등록하므로, 수동으로 `-`와 `+`를 누를 필요가 없습니다.
 
-`alpha.9`은 DMG 안의 최종 앱에 대해 엄격한 코드 서명 검증을 통과하지만, 아직 Developer ID 서명과
+`alpha.10`은 DMG 안의 최종 앱에 대해 엄격한 코드 서명 검증을 통과하지만, 아직 Developer ID 서명과
 Apple 공증은 적용되지 않았습니다. 앱을 `/Applications`로 옮기고 한 번 실행한 뒤 macOS가 차단하면
 **시스템 설정 → 개인정보 보호 및 보안 → 확인 없이 열기**에서 허용하세요. 접근성 및 입력 모니터링
-권한도 필요합니다.
+권한도 필요합니다. 임시(ad-hoc) 서명은 빌드마다 코드 정체성이 달라지므로 이후 업데이트에서도
+**이전 승인 초기화**와 재승인이 필요할 수 있습니다. 권한을 자동 승계하려면 안정적인 Developer ID
+Application 서명과 Apple 공증이 필요합니다.
 
 Windows `alpha.2`~`alpha.7`은 원본 Deskflow의 MSI `UpgradeCode`를 재사용해, Deskflow가 설치된
 PC에서 이음을 더 낮은 버전으로 오인하고 설치를 차단할 수 있었습니다. `alpha.8`은 이음 전용
@@ -153,13 +154,13 @@ PC에서 이음을 더 낮은 버전으로 오인하고 설치를 차단할 수 
 `deskflow-daemon`을 사용했습니다. 그 결과 Deskflow가 실행 중이거나 이음의 서비스 코어와
 데스크톱 코어가 겹치면 GUI가 다른 코어에 연결되고 TLS 승인 단계가 시간 초과될 수 있었습니다.
 
-`alpha.9`은 MSI 버전 `0.1.109`와 `ieum-core.exe`, `ieum-daemon.exe`, 버전이 지정된
+`alpha.9`부터 MSI 버전 `0.1.109`와 `ieum-core.exe`, `ieum-daemon.exe`, 버전이 지정된
 `ieum-core-v1`/`ieum-daemon-v1` IPC를 사용합니다. 전역 소유권 잠금으로 중복 코어도 거부하며,
 기본 인증서를 `ieum.pem`으로 이관해 `/CN=Ieum` 인증서를 새로 생성합니다. CI는
-`alpha.8 → alpha.9` 실제 업그레이드, 서비스 IPC 응답, 중복 코어 거부, 실행 중인 Deskflow
-1.26.0과 이음 코어의 동시 생존을 x64와 ARM64에서 검사합니다. `alpha.8` 사용자는 기존 버전을
-수동 삭제하지 말고 `alpha.9` MSI를 바로 실행하면 됩니다. 인증서가 교체되므로 최초 연결에서는
-새 지문을 한 번 승인해야 할 수 있습니다.
+`alpha.9 → alpha.10` 실제 업그레이드, 서비스 IPC 응답, 중복 코어 거부, 실행 중인 Deskflow
+1.26.0과 이음 코어의 동시 생존을 x64와 ARM64에서 검사합니다. `alpha.8` 또는 `alpha.9` 사용자는
+기존 버전을 수동 삭제하지 말고 `alpha.10` MSI를 바로 실행하면 됩니다. 인증서가 교체되므로 최초
+연결에서는 새 지문을 한 번 승인해야 할 수 있습니다.
 
 한국어 설치본은 설정의 설치된 앱과 시작 메뉴에 **이음 (Ieum)**, 영문 설치본은 **Ieum** 으로
 표시됩니다. 설치 경로는 `C:\Program Files\Ieum`, 서비스 이름은 `Ieum`입니다. 시작 메뉴에는 제거

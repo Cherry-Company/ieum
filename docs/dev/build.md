@@ -105,7 +105,13 @@ submits the DMG with `notarytool`, and staples the accepted ticket. Configure th
 | `MACOS_NOTARY_ISSUER_ID` | App Store Connect API issuer ID |
 
 Without these secrets, CI creates an internally consistent ad-hoc signed DMG and verifies its code seal, but
-Gatekeeper cannot trust it as an identified and notarized release.
+Gatekeeper cannot trust it as an identified and notarized release. macOS TCC also anchors an ad-hoc app's
+Accessibility identity to a code-directory hash, which changes when the executable changes. An ad-hoc update may
+therefore leave the old enabled entry in System Settings without trusting the new app. Ieum's permission dialog
+offers **Reset Previous Approval** as a recovery path; it resets only
+`Accessibility io.github.victoriousian.ieum` before requesting access for the current app. This is not a
+replacement for distribution signing. A stable `Developer ID Application` designated requirement is what lets
+macOS safely carry the authorization across ordinary updates.
 
 ## Build
 

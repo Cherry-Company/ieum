@@ -22,6 +22,8 @@
 #include <QCommandLineParser>
 #include <QLocalSocket>
 #include <QMessageBox>
+#include <QProcess>
+#include <QPushButton>
 #include <QSharedMemory>
 
 #if defined(Q_OS_MACOS)
@@ -41,6 +43,49 @@ using namespace deskflow::gui;
 
 #if defined(Q_OS_MACOS)
 bool checkMacAssistiveDevices();
+
+namespace {
+
+bool requestMacAccessibility()
+{
+  const void *keys[] = {kAXTrustedCheckOptionPrompt};
+  const void *trueValue[] = {kCFBooleanTrue};
+  const auto options = CFDictionaryCreate(nullptr, keys, trueValue, 1, nullptr, nullptr);
+  const auto trusted = AXIsProcessTrustedWithOptions(options);
+  CFRelease(options);
+  return trusted;
+}
+
+bool resetMacAccessibility(QString &error)
+{
+  QProcess process;
+  process.start(
+      QStringLiteral("/usr/bin/tccutil"),
+      {QStringLiteral("reset"), QStringLiteral("Accessibility"), QString::fromLatin1(kMacBundleId)}
+  );
+
+  if (!process.waitForStarted(3000)) {
+    error = process.errorString();
+    return false;
+  }
+  if (!process.waitForFinished(10000)) {
+    process.kill();
+    process.waitForFinished();
+    error = QCoreApplication::translate("MacAccessibility", "The macOS permission reset timed out.");
+    return false;
+  }
+  if (process.exitStatus() != QProcess::NormalExit || process.exitCode() != 0) {
+    error = QString::fromUtf8(process.readAllStandardError()).trimmed();
+    if (error.isEmpty()) {
+      error = QCoreApplication::translate("MacAccessibility", "tccutil exited with code %1.").arg(process.exitCode());
+    }
+    return false;
+  }
+
+  return true;
+}
+
+} // namespace
 #endif
 
 const static auto kHeader = QStringLiteral("%1: %2\n").arg(kAppName, kDisplayVersion);
@@ -171,29 +216,70 @@ bool checkMacAssistiveDevices()
     return true;
   }
 
-  const auto message = QCoreApplication::translate(
+  auto message = QCoreApplication::translate(
       "MacAccessibility", "Ieum needs Accessibility access to share the keyboard and mouse.\n\n"
                           "In System Settings, turn on Ieum under Privacy & Security > Accessibility. "
-                          "If Ieum is not listed, use the add button to select /Applications/Ieum.app.\n\n"
-                          "After granting access, return here and choose Try Again."
+                          "After granting access, return here and choose Check Again."
   );
 
+#if !defined(IEUM_MACOS_STABLE_CODE_IDENTITY)
+  message += QCoreApplication::translate(
+      "MacAccessibility",
+      "\n\nThis alpha build has a temporary code identity. If an older enabled Ieum entry remains but this version is "
+      "still not trusted, choose Reset Previous Approval. Ieum will clear only its own Accessibility record and ask "
+      "macOS to register the current /Applications/Ieum.app."
+  );
+#else
+  message += QCoreApplication::translate(
+      "MacAccessibility",
+      "\n\nIf an older enabled Ieum entry remains but this version is still not trusted, choose Reset Previous "
+      "Approval to register the current /Applications/Ieum.app."
+  );
+#endif
+
   while (!AXIsProcessTrusted()) {
-    const void *keys[] = {kAXTrustedCheckOptionPrompt};
-    const void *trueValue[] = {kCFBooleanTrue};
-    CFDictionaryRef options = CFDictionaryCreate(nullptr, keys, trueValue, 1, nullptr, nullptr);
+    requestMacAccessibility();
 
-    // The system prompt is asynchronous. Keep this process alive while the
-    // user grants access so macOS can retain and display the app in TCC.
-    AXIsProcessTrustedWithOptions(options);
-    CFRelease(options);
+    QMessageBox dialog(QMessageBox::Warning, productDisplayName(), message, QMessageBox::NoButton);
+    auto *checkButton =
+        dialog.addButton(QCoreApplication::translate("MacAccessibility", "Check Again"), QMessageBox::AcceptRole);
+    auto *resetButton = dialog.addButton(
+        QCoreApplication::translate("MacAccessibility", "Reset Previous Approval"), QMessageBox::ActionRole
+    );
+    auto *cancelButton = dialog.addButton(QMessageBox::Cancel);
+    dialog.setDefaultButton(checkButton);
+    dialog.setEscapeButton(cancelButton);
+    dialog.exec();
 
-    QMessageBox dialog(QMessageBox::Warning, productDisplayName(), message, QMessageBox::Retry | QMessageBox::Cancel);
-    dialog.setDefaultButton(QMessageBox::Retry);
-    dialog.setEscapeButton(QMessageBox::Cancel);
-    if (dialog.exec() != QMessageBox::Retry) {
+    if (dialog.clickedButton() == cancelButton || dialog.clickedButton() == nullptr) {
       return false;
     }
+    if (dialog.clickedButton() != resetButton) {
+      continue;
+    }
+
+    const auto confirmation = QCoreApplication::translate(
+        "MacAccessibility", "Reset Ieum's previous Accessibility approval?\n\n"
+                            "macOS will remove only Ieum's Accessibility record. No other app permissions are changed. "
+                            "You must approve the current Ieum app again."
+    );
+    if (QMessageBox::question(
+            nullptr, productDisplayName(), confirmation, QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel
+        ) != QMessageBox::Yes) {
+      continue;
+    }
+
+    QString error;
+    if (!resetMacAccessibility(error)) {
+      QMessageBox::critical(
+          nullptr, productDisplayName(),
+          QCoreApplication::translate("MacAccessibility", "Could not reset Ieum's Accessibility approval:\n%1")
+              .arg(error)
+      );
+      continue;
+    }
+
+    requestMacAccessibility();
   }
 
   return true;

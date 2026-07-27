@@ -335,11 +335,65 @@ Do you want to connect to the server?
 In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. If Ieum is not listed, use the add button to select /Applications/Ieum.app.
 
 After granting access, return here and choose Try Again.</source>
-        <translation>Ieum 需要“辅助功能”权限才能共享键盘和鼠标。
+        <translation type="vanished">Ieum 需要“辅助功能”权限才能共享键盘和鼠标。
 
 请在“系统设置”的“隐私与安全性”&gt;“辅助功能”中开启 Ieum。如果列表中没有 Ieum，请点按添加按钮并选择 /Applications/Ieum.app。
 
 授权后请返回此处并选择“重试”。</translation>
+    </message>
+    <message>
+        <source>The macOS permission reset timed out.</source>
+        <translation>macOS 权限重置超时。</translation>
+    </message>
+    <message>
+        <source>tccutil exited with code %1.</source>
+        <translation>tccutil 以代码 %1 退出。</translation>
+    </message>
+    <message>
+        <source>Ieum needs Accessibility access to share the keyboard and mouse.
+
+In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. After granting access, return here and choose Check Again.</source>
+        <translation>Ieum 需要“辅助功能”权限才能共享键盘和鼠标。
+
+请在“系统设置”的“隐私与安全性”&gt;“辅助功能”中开启 Ieum。授权后请返回此处并选择“再次检查”。</translation>
+    </message>
+    <message>
+        <source>
+
+This alpha build has a temporary code identity. If an older enabled Ieum entry remains but this version is still not trusted, choose Reset Previous Approval. Ieum will clear only its own Accessibility record and ask macOS to register the current /Applications/Ieum.app.</source>
+        <translation>
+
+此 Alpha 构建使用临时代码身份。如果已启用的旧版 Ieum 条目仍然存在，但此版本仍未获信任，请选择“重置旧授权”。Ieum 只会清除自己的“辅助功能”记录，并请求 macOS 注册当前的 /Applications/Ieum.app。</translation>
+    </message>
+    <message>
+        <source>
+
+If an older enabled Ieum entry remains but this version is still not trusted, choose Reset Previous Approval to register the current /Applications/Ieum.app.</source>
+        <translation>
+
+如果已启用的旧版 Ieum 条目仍然存在，但此版本仍未获信任，请选择“重置旧授权”，以注册当前的 /Applications/Ieum.app。</translation>
+    </message>
+    <message>
+        <source>Check Again</source>
+        <translation>再次检查</translation>
+    </message>
+    <message>
+        <source>Reset Previous Approval</source>
+        <translation>重置旧授权</translation>
+    </message>
+    <message>
+        <source>Reset Ieum&apos;s previous Accessibility approval?
+
+macOS will remove only Ieum&apos;s Accessibility record. No other app permissions are changed. You must approve the current Ieum app again.</source>
+        <translation>要重置 Ieum 以前的“辅助功能”授权吗？
+
+macOS 只会删除 Ieum 的“辅助功能”记录，不会更改其他应用的权限。您必须再次批准当前的 Ieum 应用。</translation>
+    </message>
+    <message>
+        <source>Could not reset Ieum&apos;s Accessibility approval:
+%1</source>
+        <translation>无法重置 Ieum 的“辅助功能”授权：
+%1</translation>
     </message>
 </context>
 <context>

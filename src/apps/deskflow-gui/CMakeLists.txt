@@ -95,6 +95,9 @@ elseif(APPLE)
       INSTALL_RPATH "@loader_path/../Libraries;@loader_path/../Frameworks"
       MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_BINARY_DIR}/deskflow.plist"
     )
+    if(APPLE_CODESIGN_DISTRIBUTION OR APPLE_CODESIGN_DEV)
+      target_compile_definitions(${target} PRIVATE IEUM_MACOS_STABLE_CODE_IDENTITY)
+    endif()
     if (APPLE_CODESIGN_DEV)
       configure_mac_codesign(${target})
     endif()

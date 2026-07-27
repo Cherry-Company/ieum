@@ -29,6 +29,14 @@ runs:
           signature=$(codesign --display --verbose=4 "$app" 2>&1)
           echo "$signature"
           grep -Fq "Identifier=io.github.victoriousian.ieum" <<< "$signature"
+          if [ -n "${APPLE_CODESIGN_DISTRIBUTION:-}" ]; then
+            grep -Fq "Authority=Developer ID Application:" <<< "$signature"
+            requirements=$(codesign --display -r- "$app" 2>&1)
+            echo "$requirements"
+            grep -Fq "anchor apple generic" <<< "$requirements"
+          else
+            grep -Fq "Signature=adhoc" <<< "$signature"
+          fi
           if [ "${IEUM_MACOS_NOTARIZED:-0}" = "1" ]; then
             xcrun stapler validate "$dmg"
             spctl --assess --type execute --verbose=4 "$app"

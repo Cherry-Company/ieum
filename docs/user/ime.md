@@ -13,8 +13,14 @@ input is the source of truth.
    compatible, but IME control is disabled for peers using protocol 1.8 or
    earlier and canonical raw scan codes require protocol 1.10 on both peers.
 2. On macOS, grant Accessibility and Input Monitoring permission to Ieum. Keep the Ieum permission dialog open
-   while changing System Settings, then choose **Try Again**. If Ieum is not listed under Accessibility, use the
-   add button to select `/Applications/Ieum.app`.
+   while changing System Settings, then choose **Check Again**. If an enabled entry from an older Ieum release
+   remains but the current app is not trusted, choose **Reset Previous Approval**. After confirmation, Ieum runs
+   `tccutil reset Accessibility io.github.victoriousian.ieum`, which removes only Ieum's Accessibility record,
+   and asks macOS to register the current `/Applications/Ieum.app` again. Approve the current app in System
+   Settings when prompted.
+
+   The alpha DMGs are ad-hoc signed, so their code identity changes between builds and this reset may be needed
+   after another update. Automatic permission inheritance requires a stable Developer ID Application signature.
 3. Add a selectable Korean input source and an ASCII-capable Latin layout in
    macOS Keyboard settings.
 4. Keep **Synchronize Korean/English input state** enabled in
