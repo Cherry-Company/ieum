@@ -421,9 +421,9 @@ void MainWindow::coreProcessError(CoreProcess::Error error)
 
 void MainWindow::startCore()
 {
-  // Save current IP state when server starts
-  if (m_coreProcess.mode() == CoreMode::Server && Settings::value(Settings::Core::Interface).toString().isEmpty()) {
-    m_serverStartIPs = NetworkMonitor::validAddresses();
+  if (m_coreProcess.mode() == CoreMode::Server) {
+    const auto bindAddress = Settings::serverBindAddress();
+    m_serverStartIPs = bindAddress.isEmpty() ? NetworkMonitor::validAddresses() : QStringList{bindAddress};
     m_serverStartSuggestedIP = m_serverStartIPs.isEmpty() ? "" : m_serverStartIPs.first();
   }
 
@@ -1268,22 +1268,29 @@ void MainWindow::updateIpLabel(const QStringList &addresses)
   static const auto colorText = QStringLiteral(R"(<span style="color:%1;">%2</span>)");
   const bool serverStarted = m_coreProcess.isStarted();
   const bool fixedIP = !Settings::value(Settings::Core::Interface).toString().isEmpty();
+  const bool singleBoundIP = fixedIP || (serverStarted && m_serverStartIPs.size() == 1);
 
-  if (!fixedIP && addresses.isEmpty() && !serverStarted || (serverStarted && m_serverStartSuggestedIP.isEmpty())) {
+  if ((!fixedIP && addresses.isEmpty() && !serverStarted) ||
+      (serverStarted && m_serverStartSuggestedIP.isEmpty())) {
     ui->lblIpAddresses->setText(colorText.arg(palette().linkVisited().color().name(), tr("No IP Detected")));
     ui->lblIpAddresses->setToolTip(tr("Unable to detect an IP address. Check your network connection is active."));
     return;
   }
 
-  QString labelText = fixedIP ? tr("Using IP: ") : tr("Suggested IP: ");
+  QString labelText = singleBoundIP ? tr("Using IP: ") : tr("Suggested IP: ");
   QString toolTipText = tr("<p>If connecting via the hostname fails, try %1</p>");
 
   const bool filterIpList = (serverStarted || fixedIP);
-  const QRegularExpression ipListFilter(filterIpList ? QStringLiteral("(%1)").arg(m_serverStartIPs.join("|")) : "");
-  const QStringList ipList = addresses.filter(ipListFilter);
+  QStringList ipList;
+  for (const auto &address : addresses) {
+    if (!filterIpList || m_serverStartIPs.contains(address)) {
+      ipList.append(address);
+    }
+  }
 
   bool IPValid = true;
-  if (filterIpList && (m_serverStartSuggestedIP != m_currentIpAddress) || !ipList.contains(m_serverStartSuggestedIP)) {
+  if ((filterIpList && m_serverStartSuggestedIP != m_currentIpAddress) ||
+      !ipList.contains(m_serverStartSuggestedIP)) {
     IPValid = !ipList.isEmpty();
   }
 
@@ -1295,7 +1302,7 @@ void MainWindow::updateIpLabel(const QStringList &addresses)
     toolTipText.append(tr("\nA bound IP is now invalid, you may need to restart the server."));
   }
 
-  if (ipList.count() < 2 || fixedIP) {
+  if (ipList.count() < 2 || singleBoundIP) {
     toolTipText = toolTipText.arg(tr("the suggested IP."));
   } else {
     toolTipText = toolTipText.arg(tr("one of the following IPs:<br/>%1").arg(ipList.join("<br/>")));

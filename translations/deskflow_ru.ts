@@ -1354,6 +1354,14 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>Автоматически</translation>
     </message>
     <message>
+        <source>Prefer physical networks</source>
+        <translation>Предпочитать физические сети</translation>
+    </message>
+    <message>
+        <source>When Automatic is selected, avoid VPN and virtual adapters when a physical network is available.</source>
+        <translation>В автоматическом режиме не использовать VPN и виртуальные адаптеры, если доступна физическая сеть.</translation>
+    </message>
+    <message>
         <source>Include version in the window title</source>
         <translation type="unfinished">Включить номер версии в заголовок окна</translation>
     </message>

@@ -1379,6 +1379,14 @@ Enabling this setting will disable the server config GUI.</source>
         <translation type="unfinished">自动的</translation>
     </message>
     <message>
+        <source>Prefer physical networks</source>
+        <translation>优先使用物理网络</translation>
+    </message>
+    <message>
+        <source>When Automatic is selected, avoid VPN and virtual adapters when a physical network is available.</source>
+        <translation>选择“自动”时，如果物理网络可用，则避开 VPN 和虚拟适配器。</translation>
+    </message>
+    <message>
         <source>Include version in the window title</source>
         <translation type="unfinished">在窗口标题中包含版本信息</translation>
     </message>

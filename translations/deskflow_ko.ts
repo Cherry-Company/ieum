@@ -1379,6 +1379,14 @@ Enabling this setting will disable the server config GUI.</source>
         <translation type="unfinished">자동</translation>
     </message>
     <message>
+        <source>Prefer physical networks</source>
+        <translation>물리 네트워크 우선</translation>
+    </message>
+    <message>
+        <source>When Automatic is selected, avoid VPN and virtual adapters when a physical network is available.</source>
+        <translation>자동을 선택하면 물리 네트워크가 있을 때 VPN 및 가상 어댑터를 피합니다.</translation>
+    </message>
+    <message>
         <source>Include version in the window title</source>
         <translation type="unfinished">창 제목에 버전 정보 포함</translation>
     </message>

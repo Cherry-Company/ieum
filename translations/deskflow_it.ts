@@ -1356,6 +1356,14 @@ L&apos;abilitazione di questa impostazione disabiliterà l&apos;interfaccia graf
         <translation type="unfinished">Automatica</translation>
     </message>
     <message>
+        <source>Prefer physical networks</source>
+        <translation>Preferisci le reti fisiche</translation>
+    </message>
+    <message>
+        <source>When Automatic is selected, avoid VPN and virtual adapters when a physical network is available.</source>
+        <translation>Con Automatica, evita VPN e schede virtuali quando è disponibile una rete fisica.</translation>
+    </message>
+    <message>
         <source>Include version in the window title</source>
         <translation type="unfinished">Includi la versione nel titolo della finestra</translation>
     </message>

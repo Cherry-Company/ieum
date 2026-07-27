@@ -1356,6 +1356,14 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
         <translation type="unfinished">Automática</translation>
     </message>
     <message>
+        <source>Prefer physical networks</source>
+        <translation>Preferir redes físicas</translation>
+    </message>
+    <message>
+        <source>When Automatic is selected, avoid VPN and virtual adapters when a physical network is available.</source>
+        <translation>Al seleccionar Automático, se evitan las VPN y los adaptadores virtuales cuando hay una red física disponible.</translation>
+    </message>
+    <message>
         <source>Include version in the window title</source>
         <translation type="unfinished">Incluir la versión en el título de la ventana</translation>
     </message>

@@ -74,7 +74,8 @@ This section contains general options it will begin with `[core]`
 |:--------------|:-----------:|:-----------|
 | coreMode      | `0` or `1` or `2` | The mode to start in 0: None, 1: Client, 2: Server [default: 0]|
 | display       |  int              | The XWindow display to use [default: autodetected] |
-| interface     | IP Address        | Preferred IP to use for network communication. By default the server board casts on any available address |
+| interface     | IP Address        | Specific IP to use for network communication. Empty selects an address automatically |
+| preferPhysicalNetwork | `true` or `false` | In automatic mode, bind the server to a physical Ethernet or Wi-Fi address instead of VPN and virtual adapters when possible [default: true] |
 | lastVersion   | M.m.p.t           | The version last run used for checking for updates |
 | port          | port #            | Port to use when connecting [default: 24800 |
 | preventSleep  | `true` or `false` | Prevent sleep when Ieum is active [default: false] |

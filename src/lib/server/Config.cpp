@@ -471,7 +471,7 @@ void Config::readSectionOptions(ConfigReadContext &s)
   addOption("", kOptionClipboardSharing, Settings::value(Settings::Server::EnableClipboard).toBool());
   addOption("", kOptionClipboardSharingSize, Settings::value(Settings::Server::ClipboardSize).toUInt() * 1024);
 
-  if (const auto address = Settings::value(Settings::Core::Interface).toString(); !address.isEmpty()) {
+  if (const auto address = Settings::serverBindAddress(); !address.isEmpty()) {
     m_deskflowAddress = NetworkAddress(address.toStdString(), Settings::value(Settings::Core::Port).toInt());
   } else {
     m_deskflowAddress = NetworkAddress(Settings::value(Settings::Core::Port).toInt());

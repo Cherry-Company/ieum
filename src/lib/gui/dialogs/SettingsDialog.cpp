@@ -151,6 +151,8 @@ void SettingsDialog::initConnections() const
   connect(ui->sbPort, &QSpinBox::valueChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->comboLogLevel, &QComboBox::currentIndexChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->comboInterface, &QComboBox::currentIndexChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->comboInterface, &QComboBox::currentIndexChanged, this, &SettingsDialog::updateControls);
+  connect(ui->cbPreferPhysicalNetwork, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->comboTlsKeyLength, &QComboBox::currentIndexChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->comboLanguage, &QComboBox::currentIndexChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->rbAutoHide, &QRadioButton::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
@@ -266,6 +268,7 @@ void SettingsDialog::accept()
 {
   Settings::setValue(Settings::Core::Port, ui->sbPort->value());
   Settings::setValue(Settings::Core::Interface, ui->comboInterface->currentData());
+  Settings::setValue(Settings::Core::PreferPhysicalNetwork, ui->cbPreferPhysicalNetwork->isChecked());
   Settings::setValue(Settings::Log::Level, ui->comboLogLevel->currentData());
   Settings::setValue(Settings::Log::ToFile, ui->groupLogToFile->isChecked());
   Settings::setValue(Settings::Log::File, ui->lineLogFilename->text());
@@ -311,6 +314,7 @@ void SettingsDialog::loadFromConfig()
   ui->groupLogToFile->setChecked(Settings::value(Settings::Log::ToFile).toBool());
   ui->lineLogFilename->setText(Settings::value(Settings::Log::File).toString());
   ui->cbPreventSleep->setChecked(Settings::value(Settings::Core::PreventSleep).toBool());
+  ui->cbPreferPhysicalNetwork->setChecked(Settings::value(Settings::Core::PreferPhysicalNetwork).toBool());
   ui->cbElevateDaemon->setChecked(Settings::value(Settings::Daemon::Elevate).toBool());
   ui->cbAutoUpdate->setChecked(Settings::value(Settings::Gui::AutoUpdateCheck).toBool());
   ui->cbGuiDebug->setChecked(Settings::value(Settings::Log::GuiDebug).toBool());
@@ -354,13 +358,9 @@ void SettingsDialog::loadFromConfig()
       Settings::value(Settings::Log::Level).toInt() > static_cast<int>(LogLevel::Level::Info)
   );
 
-  ui->comboInterface->setCurrentText(Settings::value(Settings::Core::Interface).toString());
-  if (ui->comboInterface->currentIndex() <= 0) {
-    ui->comboInterface->setCurrentIndex(0);
-    m_interfaceSetOnLoad = false;
-  } else {
-    m_interfaceSetOnLoad = true;
-  }
+  const auto configuredInterface = Settings::value(Settings::Core::Interface).toString();
+  const auto interfaceIndex = configuredInterface.isEmpty() ? 0 : ui->comboInterface->findData(configuredInterface);
+  ui->comboInterface->setCurrentIndex(interfaceIndex < 0 ? 0 : interfaceIndex);
 
   qDebug() << "load from config done";
 
@@ -431,6 +431,7 @@ void SettingsDialog::updateControls()
 
   ui->sbPort->setEnabled(writable);
   ui->comboInterface->setEnabled(writable);
+  ui->cbPreferPhysicalNetwork->setEnabled(writable && ui->comboInterface->currentIndex() == 0);
   ui->comboLogLevel->setEnabled(writable);
   ui->groupLogToFile->setEnabled(writable);
   ui->rbAutoHide->setEnabled(writable);
@@ -476,10 +477,12 @@ void SettingsDialog::logLevelChanged()
 bool SettingsDialog::isModified() const
 {
   const auto processMode = Settings::value(Settings::Core::ProcessMode).value<Settings::ProcessMode>();
-  const bool ignoreInterface = !m_interfaceSetOnLoad && (ui->comboInterface->currentIndex() == 0);
 
   bool modified =
       (ui->sbPort->value() != Settings::value(Settings::Core::Port).toInt()) ||
+      (ui->comboInterface->currentData().toString() != Settings::value(Settings::Core::Interface).toString()) ||
+      (ui->cbPreferPhysicalNetwork->isChecked() !=
+       Settings::value(Settings::Core::PreferPhysicalNetwork).toBool()) ||
       (ui->comboLogLevel->currentData() != Settings::logLevelText()) ||
       (ui->groupLogToFile->isChecked() != Settings::value(Settings::Log::ToFile).toBool()) ||
       (ui->lineLogFilename->text() != Settings::value(Settings::Log::File).toString()) ||
@@ -509,8 +512,6 @@ bool SettingsDialog::isModified() const
       (ui->spinMacInterKeyDelayMicros->value() != Settings::value(Settings::Client::MacInterKeyDelayMicros).toInt()) ||
       (I18N::nativeTo639Name(ui->comboLanguage->currentText()) != Settings::value(Settings::Core::Language).toString());
 
-  if (!ignoreInterface)
-    modified = modified || ui->comboInterface->currentText() != Settings::value(Settings::Core::Interface).toString();
   return modified;
 }
 
@@ -535,6 +536,8 @@ bool SettingsDialog::isDefault() const
       (ui->rbIconMono->isChecked() == Settings::defaultValue(Settings::Gui::SymbolicTrayIcon).toBool()) &&
       (ui->groupService->isChecked() == (processMode == Settings::ProcessMode::Service)) &&
       (ui->comboInterface->currentIndex() == 0) &&
+      (ui->cbPreferPhysicalNetwork->isChecked() ==
+       Settings::defaultValue(Settings::Core::PreferPhysicalNetwork).toBool()) &&
       (ui->lineTlsCertPath->text() == Settings::defaultValue(Settings::Security::Certificate).toString()) &&
       (ui->comboTlsKeyLength->currentText() == Settings::defaultValue(Settings::Security::KeySize).toString()) &&
       (ui->groupSecurity->isChecked() == Settings::defaultValue(Settings::Security::TlsEnabled).toBool()) &&
@@ -565,6 +568,9 @@ void SettingsDialog::resetToDefault()
   ui->groupLogToFile->setChecked(Settings::defaultValue(Settings::Log::ToFile).toBool());
   ui->lineLogFilename->setText(Settings::defaultValue(Settings::Log::File).toString());
   ui->cbPreventSleep->setChecked(Settings::defaultValue(Settings::Core::PreventSleep).toBool());
+  ui->cbPreferPhysicalNetwork->setChecked(
+      Settings::defaultValue(Settings::Core::PreferPhysicalNetwork).toBool()
+  );
   ui->cbElevateDaemon->setChecked(Settings::defaultValue(Settings::Daemon::Elevate).toBool());
   ui->cbAutoUpdate->setChecked(Settings::defaultValue(Settings::Gui::AutoUpdateCheck).toBool());
   ui->cbGuiDebug->setChecked(Settings::defaultValue(Settings::Log::GuiDebug).toBool());

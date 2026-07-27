@@ -63,9 +63,13 @@ ServerApp::ServerApp(IEventQueue *events, const QString &processName) : App(even
 
 void ServerApp::parseArgs()
 {
-  if (const auto address = Settings::value(Settings::Core::Interface).toString(); !address.isEmpty()) {
+  if (const auto address = Settings::serverBindAddress(); !address.isEmpty()) {
+    if (Settings::value(Settings::Core::Interface).toString().isEmpty()) {
+      LOG_INFO("automatic physical network binding: %s", qPrintable(address));
+    }
     *m_deskflowAddress = NetworkAddress(address.toStdString(), Settings::value(Settings::Core::Port).toInt());
   } else {
+    LOG_INFO("binding to all available network interfaces");
     *m_deskflowAddress = NetworkAddress(Settings::value(Settings::Core::Port).toInt());
   }
 

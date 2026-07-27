@@ -1358,6 +1358,14 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>自動</translation>
     </message>
     <message>
+        <source>Prefer physical networks</source>
+        <translation>物理ネットワークを優先</translation>
+    </message>
+    <message>
+        <source>When Automatic is selected, avoid VPN and virtual adapters when a physical network is available.</source>
+        <translation>「自動」の場合、物理ネットワークが利用可能であれば VPN と仮想アダプターを避けます。</translation>
+    </message>
+    <message>
         <source>Include version in the window title</source>
         <translation>ウィンドウタイトルにバージョン情報を含める</translation>
     </message>

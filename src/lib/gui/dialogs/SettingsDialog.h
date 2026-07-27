@@ -82,7 +82,6 @@ private:
    */
   void setButtonBoxEnabledButtons() const;
 
-  bool m_interfaceSetOnLoad = false;
   std::unique_ptr<Ui::SettingsDialog> ui;
   const ServerConfig &m_serverConfig;
 };

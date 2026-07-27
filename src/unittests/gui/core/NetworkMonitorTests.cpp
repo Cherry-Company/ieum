@@ -27,6 +27,12 @@ void NetworkMonitorTests::testVirtualInterface()
   QVERIFY(NetworkMonitor::isVirtualInterface(QStringLiteral("llw0")));
   QVERIFY(NetworkMonitor::isVirtualInterface(QStringLiteral("anpi5")));
   QVERIFY(NetworkMonitor::isVirtualInterface(QStringLiteral("tap1")));
+  QVERIFY(NetworkMonitor::isVirtualInterface(QStringLiteral("Tailscale")));
+  QVERIFY(NetworkMonitor::isVirtualInterface(QStringLiteral("ZeroTier One")));
+  QVERIFY(NetworkMonitor::isVirtualInterface(QStringLiteral("VMware Network Adapter VMnet1")));
+  QVERIFY(NetworkMonitor::isVirtualInterface(QStringLiteral("vEthernet (WSL)")));
+  QVERIFY(NetworkMonitor::isVirtualInterface(QStringLiteral("WireGuard Tunnel")));
+  QVERIFY(NetworkMonitor::isVirtualInterface(QStringLiteral("Hyper-V Virtual Ethernet Adapter")));
 
   QVERIFY(!NetworkMonitor::isVirtualInterface(QStringLiteral("eth0")));
   QVERIFY(!NetworkMonitor::isVirtualInterface(QStringLiteral("enp0s0f")));

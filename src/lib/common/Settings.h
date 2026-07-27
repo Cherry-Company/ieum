@@ -56,6 +56,7 @@ public:
   {
     inline static const auto CoreMode = QStringLiteral("core/coreMode");
     inline static const auto Interface = QStringLiteral("core/interface");
+    inline static const auto PreferPhysicalNetwork = QStringLiteral("core/preferPhysicalNetwork");
     inline static const auto LastVersion = QStringLiteral("core/lastVersion");
     inline static const auto Port = QStringLiteral("core/port");
     inline static const auto PreventSleep = QStringLiteral("core/preventSleep");
@@ -201,6 +202,7 @@ public:
   static QString tlsTrustedServersDb();
   static QString tlsTrustedClientsDb();
   static QString logLevelText();
+  static QString serverBindAddress();
   static QSettingsProxy &proxy();
   static NetworkProtocol networkProtocol();
   static void save(bool emitSaving = true);
@@ -270,6 +272,7 @@ private:
     , Settings::Client::XdpRestoreToken
     , Settings::Core::CoreMode
     , Settings::Core::Interface
+    , Settings::Core::PreferPhysicalNetwork
     , Settings::Core::LastVersion
     , Settings::Core::Port
     , Settings::Core::PreventSleep
@@ -358,6 +361,7 @@ private:
   // When checking the default values this list contains the ones that default to true.
   inline static const QStringList m_defaultTrueValues = {
       Settings::Core::UseHooks
+    , Settings::Core::PreferPhysicalNetwork
     , Settings::Core::ImeSync
     , Settings::Client::LanguageSync
     , Settings::Client::ClipboardNormalizeNfc

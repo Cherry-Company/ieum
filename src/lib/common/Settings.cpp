@@ -7,6 +7,7 @@
 #include "Settings.h"
 
 #include "LogLevel.h"
+#include "NetworkInterfaces.h"
 #include "NetworkProtocol.h"
 #include "UrlConstants.h"
 
@@ -347,6 +348,13 @@ QString Settings::tlsTrustedClientsDb()
 QString Settings::logLevelText()
 {
   return Settings::value(Log::Level).toString();
+}
+
+QString Settings::serverBindAddress()
+{
+  return deskflow::network::NetworkInterfaces::resolveServerBindAddress(
+      value(Core::Interface).toString(), value(Core::PreferPhysicalNetwork).toBool()
+  );
 }
 
 void Settings::setValue(const QString &key, const QVariant &value)

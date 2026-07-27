@@ -16,6 +16,8 @@ add_library(common STATIC
   I18N.h
   I18N.cpp
   LogLevel.h
+  NetworkInterfaces.cpp
+  NetworkInterfaces.h
   NetworkProtocol.h
   PlatformInfo.h
   Settings.h
@@ -27,7 +29,7 @@ add_library(common STATIC
   ${CMAKE_CURRENT_BINARY_DIR}/VersionInfo.h
 )
 
-target_link_libraries(common PUBLIC Qt6::Core)
+target_link_libraries(common PUBLIC Qt6::Core Qt6::Network)
 
 target_include_directories(common
   PUBLIC
