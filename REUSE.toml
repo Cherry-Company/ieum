@@ -44,6 +44,7 @@ SPDX-License-Identifier = "GPL-2.0-only"
 [[annotations]]
 path = [
    "artwork/*.png"
+ , "artwork/screenshots/*.png"
  , "deploy/mac/dmg-background.tiff"
  , "deploy/mac/ieum-volume.icns"
  , "deploy/linux/org.deskflow.deskflow.png"

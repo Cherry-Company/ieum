@@ -15,6 +15,7 @@
 
 <p align="center">
   <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.12"><strong>이음 다운로드</strong></a>
+  · <a href="#설치와-첫-연결"><strong>설치 가이드</strong></a>
   · <a href="#후원"><strong>후원하기</strong></a>
 </p>
 
@@ -30,6 +31,252 @@ KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제�
 
 > 현재 단계는 `v0.1.0-alpha.12`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
+
+## 설치와 첫 연결
+
+처음 설치한다면 아래 순서대로 진행하세요.
+
+1. [내 기기에 맞는 설치 파일](#1-설치-파일-고르기)을 고릅니다.
+2. Windows에서만 [Visual C++ 런타임](#의존성은-어디까지-자동으로-설치되나요)을 먼저 확인합니다.
+3. [Windows](#windows-설치), [macOS](#macos-설치), [Linux](#linux-설치) 절차에 따라 설치합니다.
+4. 같은 공유기 안에서는 [로컬 네트워크로 연결](#같은-공유기에서-연결)하고, 떨어진 장소에서는
+   [Tailscale 간편 연결](#tailscale로-연결)을 사용합니다.
+5. 막히면 바로 [대표 문제 해결표](#설치와-연결이-막힐-때)를 확인합니다.
+
+### 1. 설치 파일 고르기
+
+최신 테스트 릴리스는
+**[이음 (Ieum) v0.1.0-alpha.12](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.12)**입니다.
+한국어 사용자는 아래 직링크를 사용하면 릴리스 자산 목록에서 파일명을 찾을 필요가 없습니다.
+
+| 기기 | 권장 다운로드 |
+| --- | --- |
+| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.12/Ieum-0.1.0-alpha.12-win-x64-ko-KR.msi) |
+| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.12/Ieum-0.1.0-alpha.12-win-arm64-ko-KR.msi) |
+| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.12/Ieum-0.1.0-alpha.12-macos-arm64.dmg) |
+| Intel Mac | [macOS Intel DMG](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.12/Ieum-0.1.0-alpha.12-macos-x86_64.dmg) |
+| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.12) |
+| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.12) |
+
+아키텍처를 모르겠다면 다음 위치에서 확인합니다.
+
+- **Windows:** 설정 → 시스템 → 정보 → 시스템 종류. `x64 기반 프로세서`는 x64, `ARM 기반
+  프로세서`는 ARM64입니다.
+- **macOS:** Apple 메뉴 → 이 Mac에 관하여. 칩이 `Apple M...`이면 Apple Silicon, 프로세서가
+  `Intel`이면 Intel입니다.
+- **Linux:** 터미널의 `uname -m` 결과가 `x86_64`면 x86_64, `aarch64` 또는 `arm64`면
+  aarch64입니다.
+
+### 의존성은 어디까지 자동으로 설치되나요?
+
+| 환경 | 사용자가 준비할 것 | 패키지에 포함되거나 자동 처리되는 것 |
+| --- | --- | --- |
+| Windows | **Microsoft Visual C++ v14 런타임**이 없는 PC에서만 사전 설치 | Qt 6, OpenSSL, 앱 서비스와 Windows 방화벽 프로그램 예외 |
+| macOS | 별도 런타임 없음. 최초 실행 뒤 시스템 권한만 승인 | Qt 6, OpenSSL과 앱 프레임워크 |
+| Linux Flatpak | [Flatpak 설치](https://flatpak.org/setup/) | KDE/Qt 런타임은 Flatpak이 함께 내려받음 |
+| Linux DEB/RPM/Arch | 배포판에 맞는 파일과 패키지 관리자 | 필요한 공유 라이브러리는 `apt`, `dnf`, `zypper`, `pacman`이 해결 |
+| Tailscale | 원격 연결을 쓸 때만 [Tailscale](https://tailscale.com/download)을 양쪽에 설치·로그인 | 같은 공유기 안의 기본 연결에는 전혀 필요 없음 |
+
+Windows MSI는 필요한 Visual C++ 런타임 버전을 검사하지만 현재는 런타임 설치기를 안에 묶지
+않습니다. 설치 체인, 재부팅 처리, x64/ARM64와 코드 서명까지 검증하지 않은 자동 설치보다 공식
+설치 링크를 먼저 제공하는 쪽을 택했습니다.
+
+- [Visual C++ v14 x64 설치](https://aka.ms/vc14/vc_redist.x64.exe)
+- [Visual C++ v14 ARM64 설치](https://aka.ms/vc14/vc_redist.arm64.exe)
+- [Microsoft 공식 버전·지원 안내](https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist)
+
+이미 최신 런타임이 설치되어 있으면 다시 설치할 필요가 없습니다. MSI가 런타임 오류를 표시할 때만
+위 파일을 설치하고 이음 설치를 다시 시작하세요.
+
+### Windows 설치
+
+지원 대상은 Windows 10/11 x64와 ARM64입니다.
+
+1. 위 표에서 PC 아키텍처에 맞는 `*-ko-KR.msi`를 받습니다.
+2. 처음 설치하는 PC에서 런타임 오류가 예상되면 위의 Visual C++ 설치 파일을 먼저 실행합니다.
+3. 내려받은 MSI를 두 번 누릅니다. 현재 알파 패키지는 코드 서명 전이므로 게시자가 확인되지
+   않았다는 SmartScreen 경고가 나올 수 있습니다. [해시를 먼저 확인](#다운로드-파일-검증)한 뒤
+   **추가 정보 → 실행**으로 진행하세요.
+4. 설치 마법사에서 **다음 → 설치**를 누르고 UAC 질문에 동의합니다. 이 단계에서
+   `C:\Program Files\Ieum`, **Ieum** 백그라운드 서비스와 이음 코어의 Windows 방화벽 예외가
+   등록됩니다.
+5. 마지막 화면에서 **완료 후 이음 (Ieum) 실행**을 켠 채 마칩니다. 시작 메뉴 검색 결과와
+   **설정 → 앱 → 설치된 앱**에는 한국어 설치본이 **이음 (Ieum)** 으로 표시됩니다.
+
+설치 후 아래 화면이 열리면 정상입니다. 문서용 화면의 컴퓨터 이름과 IP는 예시 값으로
+비식별 처리했습니다.
+
+<p align="center">
+  <img src="artwork/screenshots/windows-main-ko.png" alt="이음 alpha.12 Windows 메인 화면" width="660">
+</p>
+
+창을 닫아도 기본 설정에서는 알림 영역에서 계속 실행됩니다. 다시 열 때는 알림 영역의 이음 아이콘을
+두 번 누르거나 시작 메뉴에서 **이음 (Ieum)** 을 실행하세요. 창이 계속 보이지 않으면 다음 명령으로
+강제로 표시할 수 있습니다.
+
+```powershell
+& 'C:\Program Files\Ieum\ieum.exe' --show
+```
+
+### macOS 설치
+
+Apple Silicon 패키지는 macOS 14 이상, Intel 패키지는 macOS 12 이상을 대상으로 빌드합니다.
+
+1. 칩 종류에 맞는 DMG를 내려받아 엽니다.
+2. DMG 창의 `Ieum.app`을 **Applications** 폴더로 끌어 놓습니다. DMG 안에서 바로 실행하지
+   마세요.
+3. Finder → 응용 프로그램에서 **Ieum**을 한 번 엽니다.
+4. 현재 알파 DMG는 Developer ID 서명과 Apple 공증 전입니다. “개발자를 확인할 수 없음” 또는
+   “Apple에서 악성 소프트웨어를 확인할 수 없음”이 나오면 먼저
+   [해시를 확인](#다운로드-파일-검증)하고 **시스템 설정 → 개인정보 보호 및 보안 → 확인 없이
+   열기(Open Anyway) → 열기**를 선택합니다.
+   [Apple의 공식 절차](https://support.apple.com/102445)도 함께 확인할 수 있습니다.
+5. 이음의 권한 안내창을 열어 둔 상태에서 **시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용**의
+   이음을 켠 뒤 앱으로 돌아와 **다시 확인**을 누릅니다.
+6. 서버로 쓸 Mac에서는 이음을 한 번 시작해 **입력 모니터링** 요청을 발생시킨 뒤
+   **개인정보 보호 및 보안 → 입력 모니터링**에서도 이음을 켭니다. 변경 뒤 앱 재실행을 요구하면
+   재실행합니다.
+
+업데이트 뒤 켜진 구버전 항목만 남고 현재 앱이 승인되지 않으면 이음 권한 안내창에서
+**이전 승인 초기화**를 선택하세요. 이 기능은 이음의 **손쉬운 사용** 기록만 초기화하고 현재
+`/Applications/Ieum.app`을 다시 등록합니다. 입력 모니터링 목록이 갱신되지 않는 경우에는 그
+목록의 구버전 이음을 제거한 다음 `+`로 현재 앱을 한 번 추가해야 할 수 있습니다.
+
+> “손상되어 열 수 없음”은 단순 미공증 경고와 다릅니다. `alpha.12` 파일의 SHA-256이 다르면
+> 실행하지 말고 삭제 후 다시 받으세요. 해시가 일치하는데도 같은 문구가 나오면 macOS 버전과
+> 메시지 전체를 포함해 [버그를 제보](https://github.com/victoriousian/ieum/issues/new?template=bug_report.yml)해
+> 주세요. 보안 속성을 강제로 지우는 터미널 명령은 권장하지 않습니다.
+
+Apple이 안내하는 권한 위치는
+[손쉬운 사용](https://support.apple.com/guide/mac-help/allow-accessibility-apps-to-access-your-mac-mh43185/mac)과
+[입력 모니터링](https://support.apple.com/guide/mac-help/control-access-to-input-monitoring-on-mac-mchl4cedafb6/mac)에서
+확인할 수 있습니다.
+
+### Linux 설치
+
+Linux 패키지는 아직 실험적입니다. 처음이라면 배포판 차이를 가장 적게 타는 Flatpak을 권장합니다.
+
+```sh
+# x86_64 예시
+flatpak install --user ./Ieum-0.1.0-alpha.12-linux-x86_64.flatpak
+flatpak run org.deskflow.deskflow
+```
+
+Flatpak 앱 ID는 업스트림 호환성을 위해 아직 `org.deskflow.deskflow`를 사용하지만 표시 이름과
+실행 프로그램은 이음입니다. 첫 실행에서 Wayland의 입력 캡처·원격 데스크톱 포털이 나타나면 사용할
+화면과 입력 권한을 승인하세요. 호스트의 Tailscale 실행 파일이 Flatpak 샌드박스에서 보이지 않을 수
+있으므로 **Tailscale 간편 연결은 네이티브 DEB/RPM/Arch 패키지에서 사용하는 것을 권장**합니다.
+
+배포판 전용 패키지는 내려받은 폴더에서 다음처럼 설치합니다. 패키지 관리자가 의존성을 함께
+설치하도록 파일을 풀어 복사하지 말고 아래 명령을 사용하세요.
+
+```sh
+# Debian / Ubuntu
+sudo apt install ./Ieum-*.deb
+
+# Fedora
+sudo dnf install ./Ieum-*.rpm
+
+# openSUSE
+sudo zypper install ./Ieum-*.rpm
+
+# Arch Linux
+sudo pacman -U ./Ieum-*.pkg.tar.zst
+```
+
+### 같은 공유기에서 연결
+
+1. 키보드와 마우스가 실제로 연결된 컴퓨터에서 **이 키보드와 마우스 공유 / 서버**를 고릅니다.
+2. **서버 설정**을 열어 원격 컴퓨터를 실제 책상 배치와 같은 방향으로 놓습니다. 각 화면 이름은
+   원격 컴퓨터의 **이 기기** 이름과 정확히 같아야 합니다.
+3. 나머지 컴퓨터에서 **공유된 키보드와 마우스 사용 / 클라이언트**를 고르고, 서버 메인 화면의
+   **사용 중인 IP**를 입력합니다.
+4. 양쪽에서 **시작**을 누릅니다. 최초 연결의 TLS 지문 창은 양쪽에 표시된 SHA-256 지문이 같은지
+   확인한 뒤 승인합니다.
+5. 서버 마우스를 화면 배치에서 정한 가장자리로 밀어 원격 화면으로 넘어가는지 확인합니다.
+
+기본 포트는 TCP `24800`입니다. Windows MSI는 이음 코어의 방화벽 프로그램 예외를 설치합니다.
+macOS나 Linux 방화벽을 별도로 사용한다면 서버 컴퓨터에서 이 포트의 수신을 허용해야 합니다.
+한/영 상태 동기화와 CJK 원시 스캔코드 설정은 [IME 사용 안내](docs/user/ime.md)를 확인하세요.
+
+### Tailscale로 연결
+
+같은 공유기가 아니거나 공유기 설정을 건드리기 어렵다면 Tailscale을 선택할 수 있습니다.
+Tailscale은 선택 사항이며 이음이 계정, ACL 또는 VPN 설정을 대신 변경하지 않습니다.
+
+1. [Tailscale 공식 설치 안내](https://tailscale.com/docs/install)에 따라 두 컴퓨터에 설치하고
+   같은 Tailnet으로 로그인합니다.
+2. 양쪽 이음에서 **편집 → 환경설정 → 네트워크 → Tailscale 간편 연결**을 켭니다.
+3. 새로고침 뒤 서버는 자신의 Tailscale 주소를 자동 적용합니다. 클라이언트는 IP를 입력하는 대신
+   온라인 컴퓨터 이름을 고릅니다.
+4. Tailnet ACL과 각 컴퓨터 방화벽에서 서버의 TCP `24800` 연결이 허용되는지 확인합니다.
+
+<p align="center">
+  <img src="artwork/screenshots/windows-network-settings-ko.png" alt="이음 alpha.12 네트워크와 Tailscale 간편 연결 설정" width="424">
+</p>
+
+Tailscale이 꺼져 있거나 로그아웃된 경우 이음은 안전하지 않은 전체 인터페이스로 조용히 폴백하지
+않고 시작을 중단합니다. 같은 공유기 연결로 돌아가려면 이 옵션을 끄고 **네트워크 IP: 자동**과
+**물리 네트워크 우선**을 사용하세요.
+
+### 업데이트와 제거
+
+- **Windows 업데이트:** `alpha.8`부터 `alpha.11`까지는 앱과 서비스를 수동 삭제하지 말고
+  `alpha.12` MSI를 바로 실행해 업그레이드합니다. 인증서가 바뀐 설치에서는 최초 연결 지문을 다시
+  승인할 수 있습니다.
+- **macOS 업데이트:** 이음을 완전히 종료하고 새 `Ieum.app`을 Applications의 기존 앱 위에
+  복사합니다. 알파 빌드는 임시 서명이라 손쉬운 사용 재승인이 필요할 수 있습니다.
+- **Linux 업데이트:** 같은 종류의 새 패키지를 위 설치 명령으로 다시 설치합니다.
+- **Windows 제거:** 설정 → 앱 → 설치된 앱에서 **이음 (Ieum)** 또는 **Ieum**을 검색하거나,
+  시작 메뉴의 이음 폴더에서 제거 바로 가기를 실행합니다. 설치 폴더만 수동 삭제하면 Windows
+  Installer 등록과 서비스가 남으므로 그렇게 제거하지 마세요.
+
+초기 `alpha.2`부터 `alpha.7`은 Deskflow의 MSI 계보를 잘못 공유했습니다. 해당 버전이 “더 최신
+버전이 설치됨”을 표시하면 설치된 앱에서 **Deskflow**도 확인하세요. 목록에 아무것도 없는데 설치가
+계속 차단되면 Microsoft의
+[설치·제거 차단 문제 해결 절차](https://support.microsoft.com/windows/deployment/install-upgrade/fix-problems-that-block-programs-from-being-installed-or-removed)를
+사용한 뒤 새 MSI를 실행하세요.
+
+### 설치와 연결이 막힐 때
+
+| 증상 | 확인할 것 |
+| --- | --- |
+| MSI가 Visual C++ 런타임을 요구함 | 위의 Microsoft 공식 x64/ARM64 런타임을 설치한 뒤 MSI를 다시 실행 |
+| “더 최신 버전이 설치됨”으로 MSI가 종료됨 | 설치된 앱에서 `이음 (Ieum)`, `Ieum`, 초기 알파의 `Deskflow` 순서로 확인하고 위 Microsoft 복구 절차 사용 |
+| 설치 후 창이 안 보임 | 알림 영역 아이콘을 두 번 누르거나 `ieum.exe --show` 실행. 작업 관리자에서 서비스부터 강제 종료하지 않기 |
+| `could not contact existing core`, `QLocalSocket` 오류 | 두 컴퓨터 모두 `alpha.12`인지 확인하고 PC를 한 번 재시작. Windows 서비스 관리에서 서비스 이름은 `Ieum` |
+| 클라이언트가 `Timed out` | 서버가 시작 상태인지, 주소와 TCP `24800`, OS 방화벽과 Tailnet ACL이 맞는지 확인 |
+| Mac에서 개발자를 확인할 수 없음 | 해시 확인 후 시스템 설정의 **개인정보 보호 및 보안 → 확인 없이 열기** 사용 |
+| Mac에서 “손상됨” | 해시가 다르면 삭제·재다운로드. 해시가 같으면 우회 명령 대신 오류 전문과 macOS 버전으로 제보 |
+| Mac 권한 목록에 현재 앱이 없음 | 앱을 Applications로 옮긴 뒤 **이전 승인 초기화 → 다시 확인**. 입력 모니터링만 남으면 현재 앱을 목록에 다시 추가 |
+| `QTextCursor::setPosition: Position out of range`가 반복됨 | 이 문제를 걸러내는 수정이 `alpha.12`에 포함됨. 버전 정보와 로그를 복사해 재현 절차와 함께 제보 |
+| NAC가 Ad Hoc 네트워크·잘못된 게이트웨이를 경고함 | **물리 네트워크 우선**을 유지. 이음은 VPN/가상 어댑터를 삭제하거나 보안 제품 경고를 우회하지 않으므로 조직 네트워크 정책도 확인 |
+
+버그 제보 전 **도움말 → 이음 정보 → 버전 정보 복사**와 메인 화면의 관련 로그를 준비하면 운영체제,
+Qt 버전과 정확한 오류를 함께 전달할 수 있습니다.
+[버그 제보 양식 열기](https://github.com/victoriousian/ieum/issues/new?template=bug_report.yml)
+
+### 다운로드 파일 검증
+
+릴리스의
+[`SHA256SUMS.txt`](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.12/SHA256SUMS.txt)와
+계산 결과가 정확히 같은지 비교합니다. 파일명이 다르면 명령의 파일명만 바꾸세요.
+
+```powershell
+# Windows PowerShell
+Get-FileHash '.\Ieum-0.1.0-alpha.12-win-x64-ko-KR.msi' -Algorithm SHA256
+```
+
+```sh
+# macOS
+shasum -a 256 ./Ieum-0.1.0-alpha.12-macos-arm64.dmg
+
+# Linux
+sha256sum ./Ieum-0.1.0-alpha.12-linux-x86_64.flatpak
+```
+
+현재 Windows 패키지는 코드 서명 전이고 macOS 패키지는 임시(ad-hoc) 서명으로 무결성 봉인만
+검사하며 Apple 공증 전입니다. 공식 서명 전까지는 GitHub 릴리스 출처와 SHA-256을 함께 확인하세요.
 
 ## 언어별 제품 표기와 인터페이스
 
@@ -117,81 +364,6 @@ flowchart LR
 
 실기 수용 기준은 한/영 전환 20회 상태 불일치 0건, 앱별 10분 입력에서 자소 분리 0건, 입력 지연
 증가 p95 2ms 미만입니다. 현재 릴리스는 이 결과를 달성했다고 미리 주장하지 않습니다.
-
-## 다운로드
-
-[이음 (Ieum) v0.1.0-alpha.12 릴리스](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.12)
-
-| 운영체제 | 설치 파일 |
-| --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.12-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.12-macos-x86_64.dmg` |
-| Intel/AMD 64비트 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.12-win-x64-ko-KR.msi` |
-| Intel/AMD 64비트 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.12-win-x64.msi` |
-| ARM64 Windows 한국어 설치 화면 (권장) | `Ieum-0.1.0-alpha.12-win-arm64-ko-KR.msi` |
-| ARM64 Windows 영문 설치 화면 | `Ieum-0.1.0-alpha.12-win-arm64.msi` |
-
-Windows용 `portable.7z`와 Linux 패키지도 릴리스에 포함됩니다. 모든 파일은 함께 제공되는
-`SHA256SUMS.txt`로 검증할 수 있습니다.
-
-`alpha.11`부터 `네트워크 IP: 자동`은 활성 물리 Ethernet/Wi-Fi 주소를 우선 선택합니다. 이음 서버가
-Tailscale, ZeroTier, VMware, Hyper-V/WSL 같은 가상 어댑터까지 기본으로 수신하지 않도록 하며,
-물리망이 없을 때는 연결성을 위해 기존의 전체 인터페이스 바인딩으로 폴백합니다. 고급 설정의
-**물리 네트워크 우선**을 끄면 이전 동작을 사용할 수 있습니다. 이 설정은 이음의 수신 범위만
-제한하며, 운영체제에 남아 있는 가상 어댑터나 기본 경로에 대한 Genian NAC 정책 경고를 숨기거나
-우회하지는 않습니다.
-
-`alpha.12`에서는 **설정 → 네트워크 → Tailscale 간편 연결**을 켜는 것만으로 Tailscale 실행·로그인
-상태, 이 기기의 전용 주소와 기본 포트 `24800`을 자동 적용합니다. 클라이언트 화면은 IP 입력란 대신
-Tailnet의 데스크톱 기기 이름을 표시하며, 온라인 PC가 하나면 미리 선택하고 여러 대면 사용자가 이름
-하나만 고르면 됩니다. Tailscale이 준비되지 않았을 때 전체 인터페이스로 폴백하지 않고 시작을
-중단합니다. 이 기능은 Tailscale 설정이나 ACL을 변경하지 않으므로 Tailnet 정책과 호스트 방화벽에서
-서버의 TCP `24800` 연결이 허용되어 있어야 합니다.
-
-`alpha.5`의 Mac DMG에는 깨진 코드 서명 봉인이 있었고, `alpha.6`은 비동기 접근성 권한 요청이
-끝나기 전에 앱이 종료되는 문제가 있었습니다. `alpha.7`에서는 macOS의 Qt 접근성 경고가 앱 로그로
-되먹임되어 `QTextCursor::setPosition` 메시지가 반복될 수 있었습니다. 이 수정들은 `alpha.12`에도
-유지됩니다. `alpha.10`은 켜져 있는 구버전 이음 항목이 남았는데 현재 앱이 승인되지 않는 경우
-**이전 승인 초기화**를 제공합니다. 확인하면 이음의 손쉬운 사용 기록만 제거하고 현재
-`/Applications/Ieum.app`을 macOS에 다시 등록하므로, 수동으로 `-`와 `+`를 누를 필요가 없습니다.
-
-`alpha.12`는 DMG 안의 최종 앱에 대해 엄격한 코드 서명 검증을 통과하지만, 아직 Developer ID 서명과
-Apple 공증은 적용되지 않았습니다. 앱을 `/Applications`로 옮기고 한 번 실행한 뒤 macOS가 차단하면
-**시스템 설정 → 개인정보 보호 및 보안 → 확인 없이 열기**에서 허용하세요. 접근성 및 입력 모니터링
-권한도 필요합니다. 임시(ad-hoc) 서명은 빌드마다 코드 정체성이 달라지므로 이후 업데이트에서도
-**이전 승인 초기화**와 재승인이 필요할 수 있습니다. 권한을 자동 승계하려면 안정적인 Developer ID
-Application 서명과 Apple 공증이 필요합니다.
-
-Windows `alpha.2`~`alpha.7`은 원본 Deskflow의 MSI `UpgradeCode`를 재사용해, Deskflow가 설치된
-PC에서 이음을 더 낮은 버전으로 오인하고 설치를 차단할 수 있었습니다. `alpha.8`은 이음 전용
-`UpgradeCode`로 설치 계보를 분리했지만, 실행 파일과 IPC 이름은 여전히 `deskflow-core`와
-`deskflow-daemon`을 사용했습니다. 그 결과 Deskflow가 실행 중이거나 이음의 서비스 코어와
-데스크톱 코어가 겹치면 GUI가 다른 코어에 연결되고 TLS 승인 단계가 시간 초과될 수 있었습니다.
-
-`alpha.9`부터 MSI 버전 `0.1.109`와 `ieum-core.exe`, `ieum-daemon.exe`, 버전이 지정된
-`ieum-core-v1`/`ieum-daemon-v1` IPC를 사용합니다. 전역 소유권 잠금으로 중복 코어도 거부하며,
-기본 인증서를 `ieum.pem`으로 이관해 `/CN=Ieum` 인증서를 새로 생성합니다. CI는
-`alpha.9 → alpha.12` 실제 업그레이드, 서비스 IPC 응답, 중복 코어 거부, 실행 중인 Deskflow
-1.26.0과 이음 코어의 동시 생존을 x64와 ARM64에서 검사합니다. `alpha.8`~`alpha.10` 사용자는
-기존 버전을 수동 삭제하지 말고 `alpha.12` MSI를 바로 실행하면 됩니다. `alpha.11`도 MSI를 바로
-실행해 업그레이드할 수 있습니다. 인증서가 교체되므로 최초
-연결에서는 새 지문을 한 번 승인해야 할 수 있습니다.
-
-한국어 설치본은 설정의 설치된 앱과 시작 메뉴에 **이음 (Ieum)**, 영문 설치본은 **Ieum** 으로
-표시됩니다. 설치 경로는 `C:\Program Files\Ieum`, 서비스 이름은 `Ieum`입니다. 시작 메뉴에는 제거
-바로 가기도 생성됩니다. 현재 Windows 패키지는 코드 서명 전이므로 SmartScreen 경고가 표시될 수
-있습니다.
-
-## 빠른 시작
-
-1. 제어할 컴퓨터 모두에 Ieum을 설치합니다.
-2. 키보드와 마우스가 연결된 컴퓨터에서 `Server`를 선택합니다.
-3. 같은 네트워크에서는 나머지 컴퓨터의 `Client`에 서버 주소를 입력합니다.
-4. Tailscale을 쓸 때는 양쪽의 **설정 → 네트워크 → Tailscale 간편 연결**을 켜고 클라이언트에서
-   서버 컴퓨터 이름을 고릅니다.
-5. 서버 화면 배치에서 각 컴퓨터의 위치를 지정한 뒤 시작합니다.
-
-IME 동작과 운영체제별 권한은 [IME 사용 안내](docs/user/ime.md)를 확인하세요.
 
 ## 오픈소스와 유료 제품 방향
 
