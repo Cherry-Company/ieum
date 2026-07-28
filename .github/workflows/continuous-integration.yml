@@ -223,6 +223,16 @@ jobs:
         run: |
           if [ "${{matrix.target.like}}" == "debian" ]; then
             export DEBIAN_FRONTEND=noninteractive
+            if [ "$(dpkg --print-architecture)" = "amd64" ] &&
+              grep -qs '^ID=ubuntu$' /etc/os-release; then
+              # GitHub's westus Azure runners can intermittently stall on the
+              # generic Ubuntu archive. Keep x64 Ubuntu on the local Azure mirror.
+              find /etc/apt -maxdepth 2 -type f \
+                \( -name sources.list -o -name '*.sources' \) \
+                -exec sed -i \
+                  -e 's|archive.ubuntu.com|azure.archive.ubuntu.com|g' \
+                  -e 's|security.ubuntu.com|azure.archive.ubuntu.com|g' {} +
+            fi
             apt_options=(
               -o Acquire::ForceIPv4=true
               -o Acquire::Retries=5
