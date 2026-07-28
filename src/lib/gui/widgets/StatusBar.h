@@ -1,5 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
+ * SPDX-FileCopyrightText: (C) 2026 Cherry Inc.
  * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -30,6 +31,8 @@ public:
   void setSecurityIcon(bool encrypted);
   void setSecurityLevel(const QString &securityLevel);
   void setBtnFingerprintVisible(bool visible);
+  void setInputLanguageStatus(const QString &label, const QString &description);
+  void clearInputLanguageStatus();
   void updateFound(const QString &version);
 
 Q_SIGNALS:
@@ -45,6 +48,7 @@ private:
   QPushButton *m_btnFingerprint = nullptr;
   QLabel *m_lblSecurityIcon = nullptr;
   QLabel *m_lblStatus = nullptr;
+  QLabel *m_lblInputLanguage = nullptr;
   QPushButton *m_btnUpdate = nullptr;
   bool m_encrypted = false;
   QString m_securityLevel;

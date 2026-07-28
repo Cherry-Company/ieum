@@ -1,5 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
+ * SPDX-FileCopyrightText: (C) 2026 Cherry Inc.
  * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2004 Chris Schoeneman
@@ -19,6 +20,7 @@
 #include "mt/Lock.h"
 #include "mt/Thread.h"
 #include "platform/MSWindowsHook.h"
+#include "platform/MSWindowsMouseInput.h"
 #include "platform/MSWindowsScreen.h"
 
 #include <malloc.h>
@@ -452,14 +454,15 @@ LRESULT CALLBACK MSWindowsDesks::secondaryDeskProc(HWND hwnd, UINT msg, WPARAM w
 
 void MSWindowsDesks::deskMouseMove(int32_t x, int32_t y) const
 {
-  // when using absolute positioning with mouse_event(),
-  // the normalized device coordinates range over only
-  // the primary screen.
-  int32_t w = GetSystemMetrics(SM_CXSCREEN);
-  int32_t h = GetSystemMetrics(SM_CYSCREEN);
+  const int32_t xOrigin = GetSystemMetrics(SM_XVIRTUALSCREEN);
+  const int32_t yOrigin = GetSystemMetrics(SM_YVIRTUALSCREEN);
+  const int32_t width = std::max<int32_t>(GetSystemMetrics(SM_CXVIRTUALSCREEN), 1);
+  const int32_t height = std::max<int32_t>(GetSystemMetrics(SM_CYVIRTUALSCREEN), 1);
+
   send_mouse_input(
-      MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE, (DWORD)((65535.0f * x) / (w - 1) + 0.5f),
-      (DWORD)((65535.0f * y) / (h - 1) + 0.5f), 0
+      MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_VIRTUALDESK,
+      deskflow::win32::normalizeAbsoluteMouseCoordinate(x, xOrigin, width),
+      deskflow::win32::normalizeAbsoluteMouseCoordinate(y, yOrigin, height), 0
   );
 }
 

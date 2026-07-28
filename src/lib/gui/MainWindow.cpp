@@ -1,5 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
+ * SPDX-FileCopyrightText: (C) 2026 Cherry Inc.
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2024 - 2026 Chris Rizzitello <sithord48@gmail.com>
  * SPDX-FileCopyrightText: (C) 2012 - 2024 Synergy App Ltd
@@ -84,6 +85,7 @@ MainWindow::MainWindow()
       m_actionStartCore{new QAction(this)},
       m_actionRestartCore{new QAction(this)},
       m_actionStopCore{new QAction(this)},
+      m_actionInputLanguageStatus{new QAction(this)},
       m_networkMonitor{new NetworkMonitor(this)},
       m_networkRecoveryTimer{new QTimer(this)}
 {
@@ -128,6 +130,10 @@ MainWindow::MainWindow()
 
   m_actionStopCore->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::ProcessStop));
   m_actionStopCore->setMenuRole(QAction::NoRole);
+
+  m_actionInputLanguageStatus->setIcon(QIcon::fromTheme(QStringLiteral("input-keyboard")));
+  m_actionInputLanguageStatus->setEnabled(false);
+  m_actionInputLanguageStatus->setVisible(false);
 
   m_actionReportBug->setIcon(QIcon::fromTheme(QStringLiteral("tools-report-bug")));
   m_actionReportBug->setMenuRole(QAction::NoRole);
@@ -413,14 +419,52 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 void MainWindow::handleInputLanguageStatus(const QString &client, const QString &sourceId, int category, bool composing)
 {
   Q_UNUSED(composing)
-  const auto inputLabel = category == 1 ? QString::fromUtf8("\xed\x95\x9c") : QStringLiteral("A");
+  if (m_inputLanguageClient == client && m_inputLanguageSourceId == sourceId && m_inputLanguageCategory == category) {
+    return;
+  }
+
+  m_inputLanguageClient = client;
+  m_inputLanguageSourceId = sourceId;
+  m_inputLanguageCategory = category;
+  updateInputLanguagePresentation();
+}
+
+void MainWindow::updateInputLanguagePresentation()
+{
+  if (m_inputLanguageCategory < 0) {
+    return;
+  }
+
+  QString inputLabel;
+  if (m_inputLanguageCategory == 1) {
+    inputLabel = QString::fromUtf8("\xed\x95\x9c");
+  } else if (m_inputLanguageCategory == 0) {
+    inputLabel = QStringLiteral("A");
+  } else {
+    inputLabel = QStringLiteral("?");
+  }
+
+  const auto client = m_inputLanguageClient;
+  const auto sourceId = m_inputLanguageSourceId;
   const auto peerLabel = client == QStringLiteral("local") ? tr("This computer") : client;
   const auto status = tr("Input: %1 - %2").arg(inputLabel, peerLabel);
+  const auto description = sourceId.isEmpty() ? status : QStringLiteral("%1\n%2").arg(status, sourceId);
 
-  m_trayIcon->setToolTip(tr("%1\n%2\n%3").arg(productDisplayName(), status, sourceId));
-  if (m_trayIcon->isVisible()) {
-    m_trayIcon->showMessage(productDisplayName(), status, QSystemTrayIcon::NoIcon, 300);
-  }
+  m_statusBar->setInputLanguageStatus(inputLabel, description);
+  m_actionInputLanguageStatus->setText(status);
+  m_actionInputLanguageStatus->setToolTip(description);
+  m_actionInputLanguageStatus->setVisible(true);
+  m_trayIcon->setToolTip(QStringLiteral("%1\n%2").arg(productDisplayName(), description));
+}
+
+void MainWindow::clearInputLanguagePresentation()
+{
+  m_inputLanguageClient.clear();
+  m_inputLanguageSourceId.clear();
+  m_inputLanguageCategory = -1;
+  m_statusBar->clearInputLanguageStatus();
+  m_actionInputLanguageStatus->setVisible(false);
+  m_trayIcon->setToolTip(productDisplayName());
 }
 
 void MainWindow::coreProcessError(CoreProcess::Error error)
@@ -744,6 +788,8 @@ void MainWindow::createMenuBar()
 void MainWindow::setupTrayIcon()
 {
   auto trayMenu = new QMenu(this);
+  trayMenu->addAction(m_actionInputLanguageStatus);
+  trayMenu->addSeparator();
   trayMenu->addActions(
       {m_actionStartCore, m_actionRestartCore, m_actionStopCore, m_actionMinimize, m_actionRestore, m_actionTrayQuit}
   );
@@ -1017,6 +1063,7 @@ void MainWindow::coreProcessStateChanged(ProcessState state)
   if (state == Stopped) {
     m_networkRecoveryTimer->stop();
     m_serverNetworkUnavailable = false;
+    clearInputLanguagePresentation();
   }
 
   if (state == Started || state == Starting || state == RetryPending) {
@@ -1143,6 +1190,8 @@ void MainWindow::updateText()
   m_actionStopCore->setText(tr("S&top"));
   //: %1 will be the replaced with the appname
   m_actionAbout->setText(tr("About %1...").arg(productDisplayName()));
+
+  updateInputLanguagePresentation();
 
   //: start / restart core shortcut
   m_actionStartCore->setShortcut(QKeySequence(tr("Ctrl+S")));

@@ -1,5 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
+ * SPDX-FileCopyrightText: (C) 2026 Cherry Inc.
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
@@ -24,6 +25,13 @@
 #include "io/IStream.h"
 
 #include <cstring>
+
+namespace {
+// Keep a network burst from monopolizing the core event loop. Mouse motion is
+// still coalesced within each slice, so a delayed packet cannot collapse an
+// arbitrarily long movement into one visible cursor jump.
+constexpr uint32_t kMaxMessagesPerDispatch = 32;
+} // namespace
 
 //
 // ServerProxy
@@ -88,10 +96,13 @@ void ServerProxy::setKeepAliveRate(double rate)
 
 void ServerProxy::handleData()
 {
-  // handle messages until there are no more.  first read message code.
+  // Handle a bounded slice. The stream only raises its ready event when the
+  // input buffer transitions from empty, so queue another turn when data
+  // remains after this slice.
   uint8_t code[4];
   uint32_t n = m_stream->read(code, 4);
-  while (n != 0) {
+  uint32_t messageCount = 0;
+  while (n != 0 && messageCount < kMaxMessagesPerDispatch) {
     // verify we got an entire code
     if (n != 4) {
       LOG_ERR("incomplete message from server: %d bytes", n);
@@ -125,11 +136,19 @@ void ServerProxy::handleData()
       return;
     }
 
+    ++messageCount;
+
     // next message
-    n = m_stream->read(code, 4);
+    if (messageCount < kMaxMessagesPerDispatch) {
+      n = m_stream->read(code, 4);
+    }
   }
 
   flushCompressedMouse();
+
+  if (m_stream->isReady()) {
+    m_events->addEvent(Event(EventTypes::StreamInputReady, m_stream->getEventTarget()));
+  }
 }
 
 ServerProxy::ConnectionResult ServerProxy::parseHandshakeMessage(const uint8_t *code)

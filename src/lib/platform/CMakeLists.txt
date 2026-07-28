@@ -46,6 +46,7 @@ if(WIN32)
     MSWindowsHook.h
     MSWindowsImeController.cpp
     MSWindowsImeController.h
+    MSWindowsMouseInput.h
     MSWindowsKeyState.cpp
     MSWindowsKeyState.h
     MSWindowsPowerManager.cpp

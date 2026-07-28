@@ -1,5 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
+ * SPDX-FileCopyrightText: (C) 2026 Cherry Inc.
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2024 - 2026 Chris Rizzitello <sithord48@gmail.com>
  * SPDX-FileCopyrightText: (C) 2012 - 2024 Synergy App Ltd
@@ -123,6 +124,8 @@ private:
   void handlePeerFingerprint(const QString &fingerprint);
   void handleMissingKeyboardLayouts(const QString &layouts);
   void handleInputLanguageStatus(const QString &client, const QString &sourceId, int category, bool composing);
+  void updateInputLanguagePresentation();
+  void clearInputLanguagePresentation();
   void closeEvent(QCloseEvent *event) override;
   void secureSocket(bool secureSocket);
   void connectSlots();
@@ -210,6 +213,11 @@ private:
   QAction *m_actionStartCore = nullptr;
   QAction *m_actionRestartCore = nullptr;
   QAction *m_actionStopCore = nullptr;
+  QAction *m_actionInputLanguageStatus = nullptr;
+
+  QString m_inputLanguageClient;
+  QString m_inputLanguageSourceId;
+  int m_inputLanguageCategory = -1;
 
   // Network monitoring
   NetworkMonitor *m_networkMonitor = nullptr;

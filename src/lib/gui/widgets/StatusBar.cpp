@@ -1,5 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
+ * SPDX-FileCopyrightText: (C) 2026 Cherry Inc.
  * SPDX-FileCopyrightText: (C) 2025 - 2026 Deskflow Developers
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
@@ -19,6 +20,7 @@ StatusBar::StatusBar(QWidget *parent)
       m_btnFingerprint{new QPushButton(this)},
       m_lblSecurityIcon{new QLabel(this)},
       m_lblStatus{new QLabel(this)},
+      m_lblInputLanguage{new QLabel(this)},
       m_btnUpdate{new QPushButton(this)},
       m_retryTimer{new QTimer(this)}
 {
@@ -41,13 +43,19 @@ StatusBar::StatusBar(QWidget *parent)
   m_lblStatus->setText(tr("%1 is not running").arg(deskflow::gui::productDisplayName()));
   insertPermanentWidget(2, m_lblStatus, 1);
 
+  m_lblInputLanguage->setObjectName(QStringLiteral("lblInputLanguage"));
+  m_lblInputLanguage->setAlignment(Qt::AlignCenter);
+  m_lblInputLanguage->setFixedSize(QSize(fontMetrics().horizontalAdvance(QString::fromUtf8("한")) + 16, btnHeight));
+  m_lblInputLanguage->setVisible(false);
+  insertPermanentWidget(3, m_lblInputLanguage);
+
   m_btnUpdate->setVisible(false);
   m_btnUpdate->setFlat(true);
   m_btnUpdate->setLayoutDirection(Qt::RightToLeft);
   m_btnUpdate->setIcon(QIcon::fromTheme(QStringLiteral("software-updates-release")));
   m_btnUpdate->setFixedHeight(btnHeight);
   m_btnUpdate->setIconSize(iconSize);
-  insertPermanentWidget(3, m_btnUpdate);
+  insertPermanentWidget(4, m_btnUpdate);
   connect(m_btnUpdate, &QPushButton::clicked, this, &StatusBar::requestUpdateVersion);
 
   m_retryTimer->setInterval(1000);
@@ -166,6 +174,22 @@ bool StatusBar::securityIconVisible() const
 void StatusBar::setBtnFingerprintVisible(bool visible)
 {
   m_btnFingerprint->setVisible(visible);
+}
+
+void StatusBar::setInputLanguageStatus(const QString &label, const QString &description)
+{
+  m_lblInputLanguage->setText(label);
+  m_lblInputLanguage->setToolTip(description);
+  m_lblInputLanguage->setAccessibleName(description);
+  m_lblInputLanguage->setVisible(true);
+}
+
+void StatusBar::clearInputLanguageStatus()
+{
+  m_lblInputLanguage->clear();
+  m_lblInputLanguage->setToolTip(QString{});
+  m_lblInputLanguage->setAccessibleName(QString{});
+  m_lblInputLanguage->setVisible(false);
 }
 
 void StatusBar::updateFound(const QString &version)

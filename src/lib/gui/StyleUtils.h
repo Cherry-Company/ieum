@@ -178,6 +178,11 @@ QStatusBar {
   background-color: %2;
   border-top: 1px solid %5;
 }
+QLabel#lblInputLanguage {
+  color: %8;
+  font-weight: 600;
+  border-left: 1px solid %5;
+}
 )")
                               .arg(cssColor(windowColor))
                               .arg(cssColor(baseColor, isDarkMode() ? 174 : 205))
