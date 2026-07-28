@@ -35,6 +35,24 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 > 当前版本为 `v0.1.0-alpha.15`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
 
+## 帮助 Ieum 完成正式发行
+
+赞助将用于明确的发行工作：**Windows 正式代码签名、Apple Developer ID 签名与公证、Windows
+ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
+
+**[通过 GitHub Sponsors 赞助 Ieum](https://github.com/sponsors/victoriousian)**
+
+| 每月档位 | 公开承诺 |
+| --- | --- |
+| **$3 Ieum Backer** | 支持持续开发并接收简明的赞助者动态 |
+| **$10 Ieum Sustainer** | 包含 Backer 内容、月度开发报告，以及可选的赞助者姓名展示 |
+| **$30 Ieum Quality Sponsor** | 包含 Sustainer 内容，并优先分析可复现的问题；不承诺修复或 SLA |
+| **$100 Ieum Organization Sponsor** | 包含 Quality Sponsor 内容，以及可选的组织名称/标志展示和季度技术进展报告；商业支持另行提供 |
+
+仍可选择自定义金额进行单次赞助。无论是否赞助，本地 KVM、韩语/CJK 输入同步和剪贴板核心都将保持
+开放。每个版本都会公开[赞助资金分配金额和完成的工作](docs/release/sponsorship-impact.md)。
+`alpha.15` 分配的赞助资金为 **USD 0**。
+
 ## Alpha.15 自动启动与连接恢复
 
 - 关闭 macOS 窗口时不再改变应用激活策略；Ieum 的菜单栏图标和菜单会一直保留到应用真正退出。
@@ -74,16 +92,6 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 Qt 实现参考了 Apple WWDC26 Liquid Glass 对层级、标准控件、克制使用效果、可调整窗口和辅助功能
 的要求，而不是逐像素模仿 Apple 界面。实现规则与官方资料见
 [界面设计原则](docs/design/visual-system.md)。
-
-## 支持开发
-
-**如果 이음 (Ieum) 对你有帮助，请[通过 GitHub Sponsors 支持项目开发](https://github.com/sponsors/victoriousian)。**
-资金将用于 Windows 代码签名、Apple Developer Program 与公证、真机测试设备、中继基础设施和持续
-维护。
-
-`victoriousian` 的官方 GitHub Sponsors 页面已经公开，目前可通过**自定义金额按月赞助或单次赞助**。
-代码库顶部的 **Sponsor** 按钮也会打开同一官方页面。项目不会把未经批准的付款链接或个人银行账户
-作为官方赞助渠道。Star、真机测试结果、使用反馈和可复现的错误报告也能直接帮助项目。
 
 ## 韩语输入不只是按键映射
 

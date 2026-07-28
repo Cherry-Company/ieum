@@ -35,6 +35,25 @@ clipboard data** into one consistent input path across operating systems.
 > The current release is `v0.1.0-alpha.15`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
 
+## Help Ieum reach production distribution
+
+Sponsorship pays for concrete release work: **production Windows code signing, Apple Developer ID signing and
+notarization, physical Windows ARM64 and Apple Silicon regression testing, and dependable release maintenance**.
+
+**[Sponsor Ieum through GitHub Sponsors](https://github.com/sponsors/victoriousian)**
+
+| Monthly tier | Public commitment |
+| --- | --- |
+| **$3 Ieum Backer** | Sustained development and concise sponsor updates |
+| **$10 Ieum Sustainer** | Backer benefits, a monthly development report, and optional name recognition |
+| **$30 Ieum Quality Sponsor** | Sustainer benefits and priority triage for reproducible reports; no guaranteed fix or SLA |
+| **$100 Ieum Organization Sponsor** | Quality Sponsor benefits, optional organization name/logo recognition, and a quarterly technical update; commercial support is separate |
+
+Custom one-time amounts remain available. Local KVM, Korean/CJK input synchronization, and clipboard core remain
+open regardless of sponsorship. Every release publishes the
+[amount allocated and work completed with sponsorship funds](docs/release/sponsorship-impact.md). The amount
+allocated to `alpha.15` is **USD 0**.
+
 ## Alpha.15 startup and recovery
 
 - Closing the macOS window no longer changes the application activation policy. The Ieum status item and menu
@@ -81,17 +100,6 @@ The main window now uses system-palette materials, a server/client segmented con
 and stable responsive dimensions. It adapts Apple's WWDC26 Liquid Glass guidance on hierarchy, standard
 controls, restrained effects, resizable windows, and accessibility to Qt rather than imitating Apple pixels.
 See the [interface principles](docs/design/visual-system.md) for implementation rules and official sources.
-
-## Support development
-
-**If Ieum is useful to you, [sponsor its development through GitHub Sponsors](https://github.com/sponsors/victoriousian).**
-Funding will be used for Windows code signing, the Apple Developer Program and notarization, physical test
-hardware, relay infrastructure, and ongoing maintenance.
-
-The official `victoriousian` GitHub Sponsors profile is public and currently accepts **custom monthly or one-time
-sponsorships**. The **Sponsor** button at the top of this repository opens the same official profile. Ieum does not
-present unapproved payment links or personal bank accounts as official funding channels. Stars, field-test results,
-usage reports, and reproducible bug reports are also valuable contributions.
 
 ## Korean input is not just key mapping
 

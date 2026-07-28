@@ -78,6 +78,7 @@ MainWindow::MainWindow()
       m_actionAbout{new QAction(this)},
       m_actionClearSettings{new QAction(this)},
       m_actionReportBug{new QAction(this)},
+      m_actionSponsor{new QAction(this)},
       m_actionMinimize{new QAction(this)},
       m_actionQuit{new QAction(this)},
       m_actionTrayQuit{new QAction(this)},
@@ -139,6 +140,9 @@ MainWindow::MainWindow()
 
   m_actionReportBug->setIcon(QIcon::fromTheme(QStringLiteral("tools-report-bug")));
   m_actionReportBug->setMenuRole(QAction::NoRole);
+
+  m_actionSponsor->setIcon(QIcon::fromTheme(QStringLiteral("emblem-favorite")));
+  m_actionSponsor->setMenuRole(QAction::NoRole);
 
   // Setup the Instance Checking
   // In case of a previous crash remove first
@@ -273,6 +277,7 @@ void MainWindow::connectSlots()
   connect(m_actionAbout, &QAction::triggered, this, &MainWindow::openAboutDialog);
   connect(m_actionClearSettings, &QAction::triggered, this, &MainWindow::clearSettings);
   connect(m_actionReportBug, &QAction::triggered, this, &MainWindow::openHelpUrl);
+  connect(m_actionSponsor, &QAction::triggered, this, &MainWindow::openSponsorUrl);
   connect(m_actionMinimize, &QAction::triggered, this, &MainWindow::hide);
 
   connect(m_actionQuit, &QAction::triggered, this, &MainWindow::quitApplication);
@@ -625,6 +630,11 @@ void MainWindow::openHelpUrl() const
   QDesktopServices::openUrl(QUrl(kUrlHelp));
 }
 
+void MainWindow::openSponsorUrl() const
+{
+  QDesktopServices::openUrl(QUrl(kUrlSponsor));
+}
+
 void MainWindow::openGetNewVersionUrl() const
 {
   QDesktopServices::openUrl(QUrl(kUrlDownload));
@@ -850,6 +860,7 @@ void MainWindow::createMenuBar()
 
   m_menuHelp->addAction(m_actionAbout);
   m_menuHelp->addAction(m_actionReportBug);
+  m_menuHelp->addAction(m_actionSponsor);
   m_menuHelp->addSeparator();
   m_menuHelp->addAction(m_actionClearSettings);
 
@@ -1254,6 +1265,8 @@ void MainWindow::updateText()
 
   m_actionClearSettings->setText(tr("Clear settings"));
   m_actionReportBug->setText(tr("Report a Bug"));
+  //: %1 will be replaced with the app name
+  m_actionSponsor->setText(tr("Sponsor %1").arg(productDisplayName()));
   m_actionMinimize->setText(tr("&Minimize to tray"));
   m_actionQuit->setText(tr("&Quit"));
   m_actionTrayQuit->setText(tr("&Quit"));

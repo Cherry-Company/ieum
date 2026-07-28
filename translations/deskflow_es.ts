@@ -449,6 +449,11 @@ macOS will remove only Ieum&apos;s Accessibility record. No other app permission
         <translation type="unfinished">Informar un error</translation>
     </message>
     <message>
+        <source>Sponsor %1</source>
+        <extracomment>%1 will be replaced with the app name</extracomment>
+        <translation>Patrocinar %1</translation>
+    </message>
+    <message>
         <source>&amp;Minimize to tray</source>
         <translation type="unfinished">&amp;Minimizar a la bandeja</translation>
     </message>

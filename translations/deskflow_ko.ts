@@ -616,6 +616,11 @@ A bound IP is now invalid, you may need to restart the server.</source>
         <translation>버그 신고</translation>
     </message>
     <message>
+        <source>Sponsor %1</source>
+        <extracomment>%1 will be replaced with the app name</extracomment>
+        <translation>%1 후원하기</translation>
+    </message>
+    <message>
         <source>&amp;Minimize to tray</source>
         <translation>트레이로 최소화(&amp;M)</translation>
     </message>

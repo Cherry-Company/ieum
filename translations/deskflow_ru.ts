@@ -547,6 +547,11 @@ A bound IP is now invalid, you may need to restart the server.</source>
         <translation>Сообщить об ошибке</translation>
     </message>
     <message>
+        <source>Sponsor %1</source>
+        <extracomment>%1 will be replaced with the app name</extracomment>
+        <translation>Поддержать %1</translation>
+    </message>
+    <message>
         <source>&amp;Minimize to tray</source>
         <translation>&amp;Свернуть в трей</translation>
     </message>

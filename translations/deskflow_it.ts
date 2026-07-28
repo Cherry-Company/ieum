@@ -437,6 +437,11 @@ macOS will remove only Ieum&apos;s Accessibility record. No other app permission
         <translation>Segnala un Bug</translation>
     </message>
     <message>
+        <source>Sponsor %1</source>
+        <extracomment>%1 will be replaced with the app name</extracomment>
+        <translation>Sostieni %1</translation>
+    </message>
+    <message>
         <source>&amp;Minimize to tray</source>
         <translation>&amp;Minimizza a icona</translation>
     </message>

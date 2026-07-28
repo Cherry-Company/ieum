@@ -103,6 +103,7 @@ private:
   void clearSettings();
   void openAboutDialog();
   void openHelpUrl() const;
+  void openSponsorUrl() const;
   void openGetNewVersionUrl() const;
   void openSettings();
   void startCore();
@@ -216,6 +217,7 @@ private:
   QAction *m_actionAbout = nullptr;
   QAction *m_actionClearSettings = nullptr;
   QAction *m_actionReportBug = nullptr;
+  QAction *m_actionSponsor = nullptr;
   QAction *m_actionMinimize = nullptr;
   QAction *m_actionQuit = nullptr;
   QAction *m_actionTrayQuit = nullptr;

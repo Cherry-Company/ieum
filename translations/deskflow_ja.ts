@@ -547,6 +547,11 @@ A bound IP is now invalid, you may need to restart the server.</source>
         <translation>バグレポート</translation>
     </message>
     <message>
+        <source>Sponsor %1</source>
+        <extracomment>%1 will be replaced with the app name</extracomment>
+        <translation>%1 を支援</translation>
+    </message>
+    <message>
         <source>&amp;Minimize to tray</source>
         <translation>トレイに最小化(&amp;M)</translation>
     </message>
