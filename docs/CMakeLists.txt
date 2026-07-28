@@ -29,7 +29,7 @@ endif()
 add_custom_target(docs
   SOURCES
     Readme.md
-    Security.md
+    SECURITY.md
 )
 
-install(FILES Security.md Readme.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
+install(FILES SECURITY.md Readme.md DESTINATION ${CMAKE_INSTALL_DOCDIR})
