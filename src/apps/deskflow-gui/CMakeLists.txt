@@ -29,9 +29,11 @@ elseif(BUILD_OSX_BUNDLE)
 
   set(bundle_icon ../res/Ieum.icns)
   set(bundle_localizations ../res/macos/ko.lproj/InfoPlist.strings)
+  set(bundle_login_agent ../res/macos/io.github.victoriousian.ieum.login.plist)
   set_source_files_properties(${bundle_icon} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
   set_source_files_properties(${bundle_localizations} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/ko.lproj")
-  set(platform_extra ${bundle_icon} ${bundle_localizations})
+  set_source_files_properties(${bundle_login_agent} PROPERTIES MACOSX_PACKAGE_LOCATION "Library/LaunchAgents")
+  set(platform_extra ${bundle_icon} ${bundle_localizations} ${bundle_login_agent})
 endif()
 
 add_executable(${target} WIN32 MACOSX_BUNDLE

@@ -14,6 +14,7 @@
 #include "common/I18N.h"
 #include "common/Settings.h"
 #include "gui/Messages.h"
+#include "gui/StartupManager.h"
 #include "gui/StyleUtils.h"
 #include "gui/TlsUtility.h"
 #include "gui/core/NetworkMonitor.h"
@@ -162,6 +163,7 @@ void SettingsDialog::initConnections() const
   connect(ui->rbCloseToTray, &QRadioButton::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->cbElevateDaemon, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->cbAutoUpdate, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->cbStartAtLogin, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->cbGuiDebug, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->cbShowVersion, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->cbRequireClientCert, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
@@ -353,6 +355,8 @@ void SettingsDialog::updateText()
 
 void SettingsDialog::accept()
 {
+  bool startupApprovalRequired = false;
+
   if (ui->groupTailscale->isChecked()) {
     updateTailscaleStatus();
     if (!m_tailscaleStatus.isReady()) {
@@ -363,6 +367,18 @@ void SettingsDialog::accept()
       return;
     }
     applyTailscalePreset();
+  }
+
+  if (StartupManager::isSupported()) {
+    QString startupError;
+    if (!StartupManager::setEnabled(ui->cbStartAtLogin->isChecked(), &startupError)) {
+      QMessageBox::warning(
+          this, tr("Could not update automatic startup"),
+          tr("Ieum could not update its automatic startup setting.\n\n%1").arg(startupError)
+      );
+      return;
+    }
+    startupApprovalRequired = ui->cbStartAtLogin->isChecked() && StartupManager::requiresApproval();
   }
 
   const auto tailscaleWasEnabled = Settings::value(Settings::Core::UseTailscale).toBool();
@@ -385,6 +401,7 @@ void SettingsDialog::accept()
   Settings::setValue(Settings::Log::File, ui->lineLogFilename->text());
   Settings::setValue(Settings::Daemon::Elevate, ui->cbElevateDaemon->isChecked());
   Settings::setValue(Settings::Gui::Autohide, ui->rbAutoHide->isChecked());
+  Settings::setValue(Settings::Gui::StartAtLogin, ui->cbStartAtLogin->isChecked());
   Settings::setValue(Settings::Gui::AutoUpdateCheck, ui->cbAutoUpdate->isChecked());
   Settings::setValue(Settings::Core::PreventSleep, ui->cbPreventSleep->isChecked());
   Settings::setValue(Settings::Security::Certificate, ui->lineTlsCertPath->text());
@@ -412,6 +429,18 @@ void SettingsDialog::accept()
   else
     mode = Settings::ProcessMode::Desktop;
   Settings::setValue(Settings::Core::ProcessMode, mode);
+
+  if (startupApprovalRequired) {
+    const auto choice = QMessageBox::warning(
+        this, tr("Allow Ieum at login"),
+        tr("macOS still requires approval for automatic startup. Open System Settings > General > Login Items "
+           "and allow Ieum."),
+        QMessageBox::Open | QMessageBox::Cancel, QMessageBox::Open
+    );
+    if (choice == QMessageBox::Open) {
+      StartupManager::openSystemSettings();
+    }
+  }
 
   QDialog::accept();
 }
@@ -441,6 +470,8 @@ void SettingsDialog::loadFromConfig()
     m_previousNetworkCaptured = false;
   }
   ui->cbElevateDaemon->setChecked(Settings::value(Settings::Daemon::Elevate).toBool());
+  ui->cbStartAtLogin->setChecked(Settings::value(Settings::Gui::StartAtLogin).toBool());
+  ui->cbStartAtLogin->setVisible(StartupManager::isSupported());
   ui->cbAutoUpdate->setChecked(Settings::value(Settings::Gui::AutoUpdateCheck).toBool());
   ui->cbGuiDebug->setChecked(Settings::value(Settings::Log::GuiDebug).toBool());
   ui->cbShowVersion->setChecked(Settings::value(Settings::Gui::ShowVersionInTitle).toBool());
@@ -572,6 +603,7 @@ void SettingsDialog::updateControls()
   ui->groupLogToFile->setEnabled(writable);
   ui->rbAutoHide->setEnabled(writable);
   ui->rbShowOnStart->setEnabled(writable);
+  ui->cbStartAtLogin->setEnabled(writable && StartupManager::isSupported());
   ui->cbAutoUpdate->setEnabled(writable);
   ui->cbPreventSleep->setEnabled(writable);
   ui->lineTlsCertPath->setEnabled(writable);
@@ -623,6 +655,7 @@ bool SettingsDialog::isModified() const
       (ui->groupLogToFile->isChecked() != Settings::value(Settings::Log::ToFile).toBool()) ||
       (ui->lineLogFilename->text() != Settings::value(Settings::Log::File).toString()) ||
       (ui->rbAutoHide->isChecked() != Settings::value(Settings::Gui::Autohide).toBool()) ||
+      (ui->cbStartAtLogin->isChecked() != Settings::value(Settings::Gui::StartAtLogin).toBool()) ||
       (ui->cbPreventSleep->isChecked() != Settings::value(Settings::Core::PreventSleep).toBool()) ||
       (ui->rbCloseToTray->isChecked() != Settings::value(Settings::Gui::CloseToTray).toBool()) ||
       (ui->cbElevateDaemon->isChecked() != Settings::value(Settings::Daemon::Elevate).toBool()) ||
@@ -663,6 +696,7 @@ bool SettingsDialog::isDefault() const
       (ui->groupLogToFile->isChecked() == Settings::defaultValue(Settings::Log::ToFile).toBool()) &&
       (ui->lineLogFilename->text() == Settings::defaultValue(Settings::Log::File).toString()) &&
       (ui->rbAutoHide->isChecked() == Settings::defaultValue(Settings::Gui::Autohide).toBool()) &&
+      (ui->cbStartAtLogin->isChecked() == Settings::defaultValue(Settings::Gui::StartAtLogin).toBool()) &&
       (ui->cbPreventSleep->isChecked() == Settings::defaultValue(Settings::Core::PreventSleep).toBool()) &&
       (ui->rbCloseToTray->isChecked() == Settings::defaultValue(Settings::Gui::CloseToTray).toBool()) &&
       (ui->cbElevateDaemon->isChecked() == Settings::defaultValue(Settings::Daemon::Elevate).toBool()) &&
@@ -709,6 +743,7 @@ void SettingsDialog::resetToDefault()
   ui->cbPreferPhysicalNetwork->setChecked(Settings::defaultValue(Settings::Core::PreferPhysicalNetwork).toBool());
   ui->groupTailscale->setChecked(Settings::defaultValue(Settings::Core::UseTailscale).toBool());
   ui->cbElevateDaemon->setChecked(Settings::defaultValue(Settings::Daemon::Elevate).toBool());
+  ui->cbStartAtLogin->setChecked(Settings::defaultValue(Settings::Gui::StartAtLogin).toBool());
   ui->cbAutoUpdate->setChecked(Settings::defaultValue(Settings::Gui::AutoUpdateCheck).toBool());
   ui->cbGuiDebug->setChecked(Settings::defaultValue(Settings::Log::GuiDebug).toBool());
   ui->cbShowVersion->setChecked(Settings::defaultValue(Settings::Gui::ShowVersionInTitle).toBool());

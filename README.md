@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15"><strong>이음 다운로드</strong></a>
   · <a href="#설치와-첫-연결"><strong>설치 가이드</strong></a>
   · <a href="#설치-전-1분-보안-확인"><strong>보안·권한 안내</strong></a>
   · <a href="#후원"><strong>후원하기</strong></a>
@@ -32,8 +32,27 @@
 KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
 원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
 
-> 현재 단계는 `v0.1.0-alpha.14`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 현재 단계는 `v0.1.0-alpha.15`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
+
+### alpha.15 자동 기동과 연결 복구
+
+- macOS에서 창을 닫을 때 앱의 활성화 정책을 바꾸지 않도록 수정했습니다. 메뉴 막대의 이음 아이콘과
+  메뉴 객체는 앱이 종료될 때까지 유지되며, `X`는 기본 설정에서 창만 숨깁니다.
+- Windows와 macOS에서 **환경설정 → 일반 → 로그인할 때 이음 자동 실행**을 기본으로 켭니다.
+  Windows는 현재 사용자 시작 프로그램, macOS 13 이상은 ServiceManagement 로그인 항목을 사용합니다.
+- Windows의 자동 시작 서비스는 이전에 저장한 코어 구성을 부팅 때 불러옵니다. 로그인 뒤 GUI가 같은
+  시작 명령을 다시 보내더라도 실행 중인 로그인 화면 코어의 PID와 연결을 교체하지 않습니다.
+- 자동 기동 시 Tailscale이 아직 준비되지 않았으면 경고창을 반복하지 않고 1~5초 간격으로
+  재확인합니다. 온라인 데스크톱이 하나뿐이면 클라이언트가 그 기기를 자동 선택합니다.
+- 서버가 뒤늦게 올라오는 부팅 직후에는 클라이언트가 처음 5초 동안 250ms 간격으로 빠르게
+  재접속하고, 이후에는 기본 1초 간격으로 안정화합니다.
+- 서버와 클라이언트 모두 네트워크 주소 변화를 감시합니다. 사용자가 누른 **중지**, 인증서 거부와
+  같은 의도적인 중단은 자동 재시도가 되살리지 않습니다.
+
+자동 설치 업데이트는 아직 켜지지 않습니다. 서명되지 않은 패키지를 자동 실행하는 것보다 현재
+릴리스 알림과 수동 설치를 유지하며, 서명 검증·단계적 교체·상태 확인·롤백을 포함한
+[업데이트 전달 기준](docs/dev/update-delivery.md)을 먼저 충족합니다.
 
 ### alpha.14 입력 안정성 변경
 
@@ -66,17 +85,17 @@ Tailscale·Wi-Fi 품질과 마우스 폴링률은 환경마다 다르므로, 두
 ### 1. 설치 파일 고르기
 
 최신 테스트 릴리스는
-**[이음 (Ieum) v0.1.0-alpha.14](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14)**입니다.
+**[이음 (Ieum) v0.1.0-alpha.15](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15)**입니다.
 한국어 사용자는 아래 직링크를 사용하면 릴리스 자산 목록에서 파일명을 찾을 필요가 없습니다.
 
 | 기기 | 권장 다운로드 |
 | --- | --- |
-| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.14/Ieum-0.1.0-alpha.14-win-x64-ko-KR.msi) |
-| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.14/Ieum-0.1.0-alpha.14-win-arm64-ko-KR.msi) |
-| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.14/Ieum-0.1.0-alpha.14-macos-arm64.dmg) |
-| Intel Mac | [macOS Intel DMG](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.14/Ieum-0.1.0-alpha.14-macos-x86_64.dmg) |
-| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14) |
-| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14) |
+| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.15/Ieum-0.1.0-alpha.15-win-x64-ko-KR.msi) |
+| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.15/Ieum-0.1.0-alpha.15-win-arm64-ko-KR.msi) |
+| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.15/Ieum-0.1.0-alpha.15-macos-arm64.dmg) |
+| Intel Mac | [macOS Intel DMG](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.15/Ieum-0.1.0-alpha.15-macos-x86_64.dmg) |
+| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15) |
+| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15) |
 
 아키텍처를 모르겠다면 다음 위치에서 확인합니다.
 
@@ -158,8 +177,8 @@ UAC 승인은 `C:\Program Files\Ieum` 설치, 로그인·UAC 보안 화면에서
 않으며, 일반 연결은 TCP `24800`을 사용합니다.
 
 설치 후 아래 화면이 열리면 정상입니다. 문서용 화면의 컴퓨터 이름과 IP는 예시 값으로
-비식별 처리했습니다. 아래 실캡처는 `alpha.12`에서 만들었지만 `alpha.14`의 기본 배치와 조작
-순서는 같습니다. `alpha.14` 상태 표시줄에는 현재 입력 언어를 보여주는 `한`/`A` 표시가 추가됩니다.
+비식별 처리했습니다. 아래 실캡처는 `alpha.12`에서 만들었지만 `alpha.15`의 기본 배치와 조작
+순서는 같습니다. `alpha.14`부터 상태 표시줄에 현재 입력 언어를 보여주는 `한`/`A` 표시가 있습니다.
 
 <p align="center">
   <a href="artwork/screenshots/windows-main-ko.png">
@@ -229,10 +248,10 @@ Mac에서는 입력 모니터링을 먼저 켜지 말고, macOS가 실제로 요
 
 창 왼쪽 위의 `X`를 누르면 기본 설정에서는 이음이 종료되지 않고 macOS 메뉴 막대의 이음 아이콘으로
 숨습니다. 아이콘을 누르면 창을 다시 열 수 있고, 아이콘 메뉴의 **종료**를 선택해야 앱과 데스크톱
-코어가 완전히 종료됩니다. `alpha.13`은 숨김 전환 중 macOS가 상태 아이콘을 떼는 경우 아이콘을
-자동으로 다시 등록합니다.
+코어가 완전히 종료됩니다. `alpha.15`는 창을 숨길 때 앱의 활성화 정책과 메뉴 막대 상태 항목을
+분리하지 않으므로 아이콘 객체가 앱 수명 동안 그대로 유지됩니다.
 
-> “손상되어 열 수 없음”은 단순 미공증 경고와 다릅니다. `alpha.14` 파일의 SHA-256이 다르면
+> “손상되어 열 수 없음”은 단순 미공증 경고와 다릅니다. `alpha.15` 파일의 SHA-256이 다르면
 > 실행하지 말고 삭제 후 다시 받으세요. 해시가 일치하는데도 같은 문구가 나오면 macOS 버전과
 > 메시지 전체를 포함해 [버그를 제보](https://github.com/victoriousian/ieum/issues/new?template=bug_report.yml)해
 > 주세요. 보안 속성을 강제로 지우는 터미널 명령은 권장하지 않습니다.
@@ -241,6 +260,28 @@ Apple이 안내하는 권한 위치는
 [손쉬운 사용](https://support.apple.com/guide/mac-help/allow-accessibility-apps-to-access-your-mac-mh43185/mac)과
 [입력 모니터링](https://support.apple.com/guide/mac-help/control-access-to-input-monitoring-on-mac-mchl4cedafb6/mac)에서
 확인할 수 있습니다.
+
+### 자동 시작과 로그인 화면
+
+**환경설정 → 일반 → 로그인할 때 이음 자동 실행**은 기본으로 켜집니다. 이 설정은 GUI와 메뉴
+아이콘을 사용자 로그인 뒤 백그라운드에서 띄우는 기능이고, 실제 코어의 로그인 전 동작과는
+구분됩니다.
+
+| 플랫폼 | 부팅·로그인 시 동작 | 반드시 먼저 할 일 |
+| --- | --- | --- |
+| Windows MSI | `Ieum` 서비스가 부팅 시 자동 시작하고, 마지막으로 저장한 서버/클라이언트 구성을 로그인 화면 세션에서 실행 | 이음을 한 번 열어 역할·주소를 설정하고 **시작**까지 누른 뒤 서비스 모드를 유지 |
+| Windows 무설치본 | 사용자 로그인 뒤 GUI만 실행 가능하며 서비스가 없어 로그인 화면 제어 불가 | 실제 로그인 화면 KVM이 필요하면 MSI 사용 |
+| macOS | macOS 13 이상에서 승인된 로그인 항목이 **사용자 로그인 뒤** `Ieum --background` 실행 | 시스템 설정의 **일반 → 로그인 항목**과 이음의 손쉬운 사용 권한 확인 |
+
+깨끗한 PC의 첫 부팅에는 아직 역할과 상대 주소가 없으므로 Windows 서비스도 자동으로 구성을
+추측하지 않습니다. 한 번 구성을 저장한 다음 부팅부터 로그인 전 코어가 동작합니다. 로그인 화면에는
+사용자 클립보드가 없으므로 이 단계에서 보장되는 것은 키보드·마우스 경로이며, 클립보드 공유는
+사용자 세션이 열린 뒤 시작됩니다.
+
+macOS의 FileVault 해제 화면은 macOS와 사용자 데이터 볼륨이 열리기 전의 별도 preboot 환경입니다.
+일반 앱, 로그인 항목과 손쉬운 사용 권한이 아직 존재하지 않으므로 이음이 그 화면에 기동될 수
+없습니다. FileVault 이전 단계까지 원격 입력이 필요하면 하드웨어 KVM이 필요합니다. 이음은 이를
+우회하려고 보안 설정을 낮추지 않습니다.
 
 #### 연결 데이터와 개인정보
 
@@ -262,7 +303,7 @@ Linux 패키지는 아직 실험적입니다. 처음이라면 배포판 차이�
 
 ```sh
 # x86_64 예시
-flatpak install --user ./Ieum-0.1.0-alpha.14-linux-x86_64.flatpak
+flatpak install --user ./Ieum-0.1.0-alpha.15-linux-x86_64.flatpak
 flatpak run org.deskflow.deskflow
 ```
 
@@ -331,14 +372,21 @@ Tailscale이 꺼져 있거나 로그아웃된 경우 이음은 안전하지 않�
 완전히 끝난 뒤 다음 코어를 시작하므로 앱 전체를 껐다 켜야 복구되던 중복 코어 경로를 막습니다.
 다만 Tailnet ACL, TCP `24800` 방화벽 차단 또는 Tailscale 로그아웃 자체를 우회하지는 않습니다.
 
+`alpha.15`부터 로그인 자동 실행 직후 Tailscale 서비스가 늦게 준비되어도 GUI가 조용히 상태를
+재확인합니다. 사용자가 주소를 다시 입력하거나 앱 전체를 재실행할 필요가 없습니다. 온라인
+데스크톱이 하나면 자동 선택하지만 여러 대면 기존에 저장한 기기를 사용하며, 저장한 기기가 없을
+때는 사용자가 한 번 선택해야 합니다. 이는 임의의 컴퓨터에 자동 연결하지 않기 위한 안전 경계입니다.
+서버가 아직 준비 중이거나 연결이 잠깐 끊긴 경우 클라이언트는 처음 5초 동안 250ms 간격으로
+재시도한 뒤 기본 1초 간격으로 전환합니다.
+
 GUI 로그는 최근 10,000줄까지만 보관하고 50ms 단위로 묶어 화면에 반영합니다. 순간적으로 2,000줄을
 넘는 폭주에서는 초과 표시를 한 줄로 요약해 로그 창 때문에 입력과 연결 UI가 느려지는 것을
 방지합니다. 원인 분석에 모든 로그가 필요하면 환경설정의 파일 로그를 사용하세요.
 
 ### 업데이트와 제거
 
-- **Windows 업데이트:** `alpha.8`부터 `alpha.13`까지는 앱과 서비스를 수동 삭제하지 말고
-  `alpha.14` MSI를 바로 실행해 업그레이드합니다. 인증서가 바뀐 설치에서는 최초 연결 지문을 다시
+- **Windows 업데이트:** `alpha.8`부터 `alpha.14`까지는 앱과 서비스를 수동 삭제하지 말고
+  `alpha.15` MSI를 바로 실행해 업그레이드합니다. 인증서가 바뀐 설치에서는 최초 연결 지문을 다시
   승인할 수 있습니다.
 - **macOS 업데이트:** 이음을 완전히 종료하고 새 `Ieum.app`을 Applications의 기존 앱 위에
   복사합니다. 알파 빌드는 임시 서명이라 손쉬운 사용 재승인이 필요할 수 있습니다.
@@ -346,6 +394,12 @@ GUI 로그는 최근 10,000줄까지만 보관하고 50ms 단위로 묶어 화�
 - **Windows 제거:** 설정 → 앱 → 설치된 앱에서 **이음 (Ieum)** 또는 **Ieum**을 검색하거나,
   시작 메뉴의 이음 폴더에서 제거 바로 가기를 실행합니다. 설치 폴더만 수동 삭제하면 Windows
   Installer 등록과 서비스가 남으므로 그렇게 제거하지 마세요.
+
+현재 앱의 업데이트 알림은 릴리스 페이지를 열며 패키지를 자동 실행하지 않습니다. 실행 파일,
+Windows 서비스와 입력 훅은 새 바이너리로 바꾸는 순간 짧게 재시작해야 하므로 문자 그대로 무중단
+업데이트는 불가능합니다. 목표는 다운로드 중에는 연결을 유지하고, 서명과 해시를 모두 검증한 뒤
+짧게 교체·재연결하며, 실패하면 이전 버전으로 되돌리는 방식입니다. 구체적인 차단 조건과 수용 기준은
+[안전한 업데이트 전달 설계](docs/dev/update-delivery.md)에 정리했습니다.
 
 초기 `alpha.2`부터 `alpha.7`은 Deskflow의 MSI 계보를 잘못 공유했습니다. 해당 버전이 “더 최신
 버전이 설치됨”을 표시하면 설치된 앱에서 **Deskflow**도 확인하세요. 목록에 아무것도 없는데 설치가
@@ -360,9 +414,9 @@ GUI 로그는 최근 10,000줄까지만 보관하고 50ms 단위로 묶어 화�
 | MSI가 Visual C++ 런타임을 요구함 | 위의 Microsoft 공식 x64/ARM64 런타임을 설치한 뒤 MSI를 다시 실행 |
 | “더 최신 버전이 설치됨”으로 MSI가 종료됨 | 설치된 앱에서 `이음 (Ieum)`, `Ieum`, 초기 알파의 `Deskflow` 순서로 확인하고 위 Microsoft 복구 절차 사용 |
 | 설치 후 창이 안 보임 | 알림 영역 아이콘을 두 번 누르거나 `ieum.exe --show` 실행. 작업 관리자에서 서비스부터 강제 종료하지 않기 |
-| `could not contact existing core`, `QLocalSocket` 오류 | 두 컴퓨터 모두 `alpha.14`인지 확인. 이 버전은 남은 코어를 정리하고 최대 5회 자동 복구함. 계속 실패하면 관련 로그와 함께 제보 |
+| `could not contact existing core`, `QLocalSocket` 오류 | 두 컴퓨터 모두 `alpha.15`인지 확인. 이 버전은 같은 서비스 시작 명령으로 실행 중인 코어를 교체하지 않으며, 남은 데스크톱 코어는 최대 5회 자동 복구함. 계속 실패하면 관련 로그와 함께 제보 |
 | 클라이언트가 `Timed out` | 서버가 시작 상태인지, 주소와 TCP `24800`, OS 방화벽과 Tailnet ACL이 맞는지 확인 |
-| 원격 커서가 끊기거나 특정 모니터에서 멈춤 | 양쪽을 `alpha.14`로 맞추고 다시 연결. 계속되면 서버·클라이언트 OS, 모니터 배치, 로컬/Tailscale 여부와 같은 시간대의 양쪽 로그를 함께 제보 |
+| 원격 커서가 끊기거나 특정 모니터에서 멈춤 | 양쪽을 `alpha.15`로 맞추고 다시 연결. 계속되면 서버·클라이언트 OS, 모니터 배치, 로컬/Tailscale 여부와 같은 시간대의 양쪽 로그를 함께 제보 |
 | Windows 한/영 알림이 반복됨 | `alpha.14`는 알림 토스트 대신 상태 표시줄의 `한`/`A`와 알림 영역 메뉴에 상태를 표시함 |
 | Mac에서 개발자를 확인할 수 없음 | 해시 확인 후 시스템 설정의 **개인정보 보호 및 보안 → 확인 없이 열기** 사용 |
 | Mac에서 “손상됨” | 해시가 다르면 삭제·재다운로드. 해시가 같으면 우회 명령 대신 오류 전문과 macOS 버전으로 제보 |
@@ -377,20 +431,20 @@ Qt 버전과 정확한 오류를 함께 전달할 수 있습니다.
 ### 다운로드 파일 검증
 
 릴리스의
-[`SHA256SUMS.txt`](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.14/SHA256SUMS.txt)와
+[`SHA256SUMS.txt`](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.15/SHA256SUMS.txt)와
 계산 결과가 정확히 같은지 비교합니다. 파일명이 다르면 명령의 파일명만 바꾸세요.
 
 ```powershell
 # Windows PowerShell
-Get-FileHash '.\Ieum-0.1.0-alpha.14-win-x64-ko-KR.msi' -Algorithm SHA256
+Get-FileHash '.\Ieum-0.1.0-alpha.15-win-x64-ko-KR.msi' -Algorithm SHA256
 ```
 
 ```sh
 # macOS
-shasum -a 256 ./Ieum-0.1.0-alpha.14-macos-arm64.dmg
+shasum -a 256 ./Ieum-0.1.0-alpha.15-macos-arm64.dmg
 
 # Linux
-sha256sum ./Ieum-0.1.0-alpha.14-linux-x86_64.flatpak
+sha256sum ./Ieum-0.1.0-alpha.15-linux-x86_64.flatpak
 ```
 
 현재 Windows 패키지는 코드 서명 전이고 macOS 패키지는 임시(ad-hoc) 서명으로 무결성 봉인만
@@ -475,6 +529,7 @@ flowchart LR
 | Ieum 브랜드, 아이콘, 앱·설치 프로그램 이름 | 완료 |
 | Windows x64/ARM64, macOS Intel/Apple Silicon 패키지 | CI 빌드·패키지 검사 통과 |
 | `DILC`/`CILS`, raw scancode, macOS 이벤트 소스, NFC 경로 | 구현 및 자동 테스트 포함 |
+| Windows 로그인 전 서비스 코어, Windows/macOS 로그인 자동 실행 | 구현 및 패키지 회귀 검사 포함 |
 | Linux/Flatpak 패키지 | 실험적 제공 |
 | Windows ↔ macOS 실기 10분 입력 매트릭스 | **대기 중** |
 | Windows 코드 서명, Apple 서명·공증 | **대기 중** |
@@ -512,6 +567,7 @@ GPL 바이너리는 유료로 배포할 수 있지만 구매자는 대응 소스
 - [x] 입력 소스 제어 프로토콜과 운영체제별 컨트롤러
 - [x] IME raw scancode 경로, macOS 이벤트 경로, NFC 정규화
 - [x] Windows/macOS/Linux 설치 패키지 자동화
+- [x] Windows 로그인 전 서비스 코어와 Windows/macOS 로그인 자동 실행
 - [ ] Windows ↔ macOS 실기 입력 매트릭스 공개
 - [ ] 코드 서명·Apple 공증과 안정 업데이트 채널
 - [ ] 네트워크 릴레이·장치 검색의 제품/서비스 경계 설계

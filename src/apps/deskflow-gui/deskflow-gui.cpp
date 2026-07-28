@@ -16,6 +16,7 @@
 #include "gui/MainWindow.h"
 #include "gui/Messages.h"
 #include "gui/ProductIdentity.h"
+#include "gui/StartupManager.h"
 #include "gui/StyleUtils.h"
 
 #include <QApplication>
@@ -25,6 +26,7 @@
 #include <QProcess>
 #include <QPushButton>
 #include <QSharedMemory>
+#include <QTimer>
 
 #if defined(Q_OS_MACOS)
 #include <Carbon/Carbon.h>
@@ -122,6 +124,9 @@ int main(int argc, char *argv[])
   auto versionOption = QCommandLineOption({"v", "version"}, "Display version information");
   auto resetOption = QCommandLineOption("reset", "Reset all settings");
   auto showOption = QCommandLineOption("show", "Show the main window even when background startup is enabled");
+  auto backgroundOption = QCommandLineOption("background", "Start in the background without opening the main window");
+  auto unregisterStartupOption =
+      QCommandLineOption("unregister-startup", "Remove the current user's automatic startup registration");
 
   QCommandLineParser parser;
   parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
@@ -129,6 +134,8 @@ int main(int argc, char *argv[])
   parser.addOption(versionOption);
   parser.addOption(resetOption);
   parser.addOption(showOption);
+  parser.addOption(backgroundOption);
+  parser.addOption(unregisterStartupOption);
   parser.parse(QCoreApplication::arguments());
 
   if (!parser.errorText().isEmpty()) {
@@ -147,6 +154,15 @@ int main(int argc, char *argv[])
     return s_exitSuccess;
   }
 
+  if (parser.isSet(unregisterStartupOption)) {
+    QString startupError;
+    if (!StartupManager::isSupported() || StartupManager::setEnabled(false, &startupError)) {
+      return s_exitSuccess;
+    }
+    qCritical().noquote() << startupError;
+    return s_exitFailed;
+  }
+
   const auto shmId = QString::fromLatin1(kGuiIpcName);
   // Create a shared memory segment with a unique key
   // This is to prevent a new instance from running if one is already running
@@ -159,6 +175,10 @@ int main(int argc, char *argv[])
 
   // If we can create 1 byte of SHM we are the only instance
   if (!sharedMemory.create(1)) {
+    if (parser.isSet(backgroundOption)) {
+      return s_exitSuccess;
+    }
+
     // Ping the running instance to have it show itself
     QLocalSocket socket;
     socket.connectToServer(shmId, QLocalSocket::ReadOnly);
@@ -204,8 +224,33 @@ int main(int argc, char *argv[])
     diagnostic::clearSettings(false);
   }
 
+  QString startupError;
+  if (!StartupManager::reconcile(&startupError)) {
+    qWarning().noquote() << "could not reconcile automatic startup:" << startupError;
+  } else if (StartupManager::requiresApproval()) {
+    qWarning("automatic startup is registered but still requires approval in macOS Login Items");
+  }
+
   MainWindow mainWindow;
-  mainWindow.open(parser.isSet(showOption));
+  mainWindow.open(parser.isSet(showOption), parser.isSet(backgroundOption));
+
+#if defined(Q_OS_MACOS)
+  if (!parser.isSet(backgroundOption) && StartupManager::requiresApproval()) {
+    QTimer::singleShot(0, &mainWindow, [&mainWindow] {
+      const auto choice = QMessageBox::warning(
+          &mainWindow, QObject::tr("Allow Ieum at login"),
+          QObject::tr(
+              "macOS has not yet allowed Ieum to start at login. Open System Settings > General > Login Items "
+              "and allow Ieum so its menu bar icon and KVM core return after sign-in."
+          ),
+          QMessageBox::Open | QMessageBox::Cancel, QMessageBox::Open
+      );
+      if (choice == QMessageBox::Open) {
+        StartupManager::openSystemSettings();
+      }
+    });
+  }
+#endif
 
   return QApplication::exec();
 }

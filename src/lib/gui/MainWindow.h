@@ -43,6 +43,10 @@ namespace deskflow::gui::ipc {
 class DaemonIpcClient;
 }
 
+namespace deskflow::network {
+struct TailscaleStatus;
+}
+
 class MainWindow : public QMainWindow
 {
   using ConnectionState = deskflow::core::ConnectionState;
@@ -68,7 +72,7 @@ public:
   {
     return m_coreProcess.mode();
   }
-  void open(bool forceShow = false);
+  void open(bool forceShow = false, bool forceBackground = false);
   ServerConfig &serverConfig()
   {
     return m_serverConfig;
@@ -102,7 +106,11 @@ private:
   void openGetNewVersionUrl() const;
   void openSettings();
   void startCore();
+  void autoStartCore();
+  bool tryStartCore(bool interactive);
+  void scheduleAutoStartRetry();
   void stopCore();
+  void quitApplication();
   bool saveServerConfig();
   void resetCore();
 
@@ -146,9 +154,10 @@ private:
   void toggleCanRunCore(bool enableButtons);
   void remoteHostChanged(const QString &newRemoteHost);
   void refreshTailscalePeers();
+  void populateTailscalePeers(const deskflow::network::TailscaleStatus &status);
   void tailscalePeerSelected(int index);
   void updateTailscaleControls(bool refreshPeers = false);
-  bool prepareTailscale();
+  bool prepareTailscale(bool interactive = true);
   void recordServerStartNetwork();
   void networkAddressesChanged(const QStringList &addresses);
   void updateIpLabel(const QStringList &addresses);
@@ -180,6 +189,8 @@ private:
   bool m_saveOnExit = true;
   bool m_clientErrorVisible = false;
   bool m_tailscaleReady = false;
+  bool m_automaticStartPending = false;
+  bool m_quitRequested = false;
   ServerConfig m_serverConfig;
   deskflow::gui::CoreProcess m_coreProcess;
   QSet<QString> m_ignoredClients;
@@ -222,6 +233,8 @@ private:
   // Network monitoring
   NetworkMonitor *m_networkMonitor = nullptr;
   QTimer *m_networkRecoveryTimer = nullptr;
+  QTimer *m_autoStartRetryTimer = nullptr;
+  int m_autoStartRetryCount = 0;
   QString m_currentIpAddress;
   bool m_serverUsesBoundAddress = false;
   bool m_serverNetworkUnavailable = false;

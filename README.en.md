@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14"><strong>Download Ieum</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15"><strong>Download Ieum</strong></a>
   · <a href="#first-run-security-and-permissions"><strong>Security &amp; permissions</strong></a>
   · <a href="#support-development"><strong>Support development</strong></a>
 </p>
@@ -31,8 +31,27 @@ Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers
 screen edge: it connects **Korean/English mode, IME composition sessions, physical key positions, and Unicode
 clipboard data** into one consistent input path across operating systems.
 
-> The current release is `v0.1.0-alpha.14`. Automated builds and unit tests pass, but the long-running physical
+> The current release is `v0.1.0-alpha.15`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
+
+## Alpha.15 startup and recovery
+
+- Closing the macOS window no longer changes the application activation policy. The Ieum status item and menu
+  remain alive until the app actually quits.
+- **Preferences → General → Start Ieum automatically when I sign in** is enabled by default on Windows and
+  macOS 13 or later.
+- The Windows service loads the last saved core configuration at boot. A GUI that starts after sign-in can send
+  the same command without replacing the core already serving the Windows sign-in screen.
+- Automatic Tailscale startup waits quietly while its service and address become ready. A client selects the
+  only online desktop automatically; multiple devices still require an explicit saved or user selection.
+- During the first five seconds after a disconnect, the client retries every 250 ms while the server finishes
+  booting, then settles at the default one-second interval.
+- Both server and client watch network-address changes. Explicit Stop and rejected certificate decisions are
+  never undone by the automatic startup retry.
+
+Automatic package installation remains disabled until production signing, signed update metadata, staged
+replacement, health checks, and rollback are available. See the
+[safe update delivery design](docs/dev/update-delivery.md).
 
 ## Alpha.14 input reliability
 
@@ -130,6 +149,7 @@ flowchart LR
 | Ieum brand, icon, application and installer names | Complete |
 | Windows x64/ARM64 and macOS Intel/Apple Silicon packages | CI build and package checks pass |
 | `DILC`/`CILS`, raw scancode, macOS event source, NFC path | Implemented with automated tests |
+| Windows pre-login service core and Windows/macOS login startup | Implemented with package regression checks |
 | Linux and Flatpak packages | Experimental |
 | Ten-minute physical Windows ↔ macOS input matrix | **Pending** |
 | Windows signing and Apple signing/notarization | **Pending** |
@@ -141,16 +161,16 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[이음 (Ieum) v0.1.0-alpha.14 release](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14)
+[이음 (Ieum) v0.1.0-alpha.15 release](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15)
 
 | Operating system | Installer |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.14-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.14-macos-x86_64.dmg` |
-| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.14-win-x64.msi` |
-| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.14-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.14-win-arm64.msi` |
-| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.14-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.15-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.15-macos-x86_64.dmg` |
+| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.15-win-x64.msi` |
+| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.15-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.15-win-arm64.msi` |
+| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.15-win-arm64-ko-KR.msi` |
 
 Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
 `SHA256SUMS.txt`.
@@ -178,6 +198,25 @@ Screen Recording, Full Disk Access, Camera, or Microphone access. Password or To
 by macOS and is never provided to Ieum. See the [full security and privacy policy](docs/SECURITY.md) and the
 [Korean visual installation guide](README.md#설치와-첫-연결).
 
+### Startup and the sign-in screen
+
+**Preferences → General → Start Ieum automatically when I sign in** starts the GUI and status item in the
+signed-in user's session. It is separate from pre-login core operation:
+
+| Platform | Behavior |
+| --- | --- |
+| Windows MSI | The automatic `Ieum` service loads the last saved server/client configuration at boot and runs the core in the sign-in-screen session |
+| Windows portable | No service; the GUI can start only after user sign-in |
+| macOS 13+ | A ServiceManagement login item starts `Ieum --background` only after the user signs in |
+
+A new Windows installation must be opened once, configured, and started before the service has a valid topology
+to restore on later boots. The pre-login path carries keyboard and mouse input; a user clipboard does not exist
+until a user session opens.
+
+FileVault unlock is a separate preboot environment before macOS, the user data volume, application login items,
+and Accessibility approval are available. Ieum cannot run there. A hardware KVM is required when remote input
+must include FileVault preboot; Ieum does not lower that security boundary.
+
 Starting with `alpha.11`, `Network IP: Automatic` prefers an active physical Ethernet or Wi-Fi address. This
 keeps the Ieum server from listening on Tailscale, ZeroTier, VMware, Hyper-V/WSL, and similar virtual adapters
 by default. It falls back to all interfaces when no physical network is available, and the previous behavior
@@ -195,8 +234,12 @@ must permit TCP `24800` to the server.
 In `alpha.13`, a server bound to a Tailscale or preferred physical address monitors that interface and rebinds
 after the address returns or changes. Clients continue resolving and retrying after a disconnect. Stop, start,
 and restart requests are serialized so a replacement core cannot race the previous core or its local IPC
-endpoint. The macOS close button now reliably leaves Ieum in the menu bar; use **Quit** from that menu to fully
-exit. GUI logs retain 10,000 lines and repaint in batches to limit CPU use during bursts.
+endpoint. GUI logs retain 10,000 lines and repaint in batches to limit CPU use during bursts.
+
+In `alpha.15`, automatic startup waits for Tailscale to become ready instead of requiring an app restart.
+The macOS close button now leaves the same status item alive; use **Quit** from that menu to fully exit. The
+client retries every 250 ms for the first five seconds after a disconnect, then uses the default one-second
+interval.
 
 The `alpha.5` Mac DMG had a broken code seal, and `alpha.6` exited before its asynchronous Accessibility request
 could finish. In `alpha.7`, a Qt macOS Accessibility warning could feed back into the app log and repeatedly print
@@ -205,7 +248,7 @@ older Ieum release remains but macOS does not trust the current app, `alpha.10` 
 After confirmation, it removes only Ieum's Accessibility record and registers the current
 `/Applications/Ieum.app` again, avoiding the manual minus/add workflow.
 
-The final `alpha.14` app passes strict code-signature verification, but it is not yet signed with a Developer ID
+The final `alpha.15` app passes strict code-signature verification, but it is not yet signed with a Developer ID
 certificate or Apple-notarized. Move it to `/Applications`, try to open it once, then use **System Settings →
 Privacy & Security → Open Anyway** if macOS blocks it. Accessibility and Input Monitoring permissions are also
 required. Because ad-hoc signing gives each build a different code identity, a later update may require
@@ -218,13 +261,13 @@ could reject Ieum as an older version. `alpha.8` separated the installer identit
 Ieum service and desktop cores, could therefore route the GUI to the wrong core and leave TLS approval waiting
 until timeout.
 
-Since `alpha.9`, Ieum uses a monotonic MSI prerelease mapping (`alpha.14` maps to `0.1.114`),
+Since `alpha.9`, Ieum uses a monotonic MSI prerelease mapping (`alpha.15` maps to `0.1.115`),
 `ieum-core.exe`, `ieum-daemon.exe`, and versioned
 `ieum-core-v1`/`ieum-daemon-v1` IPC endpoints. A global ownership lock rejects duplicate cores, and the default
 certificate migrates to `ieum.pem` so a fresh `/CN=Ieum` certificate is generated. CI performs a real
-`alpha.9 → alpha.14` upgrade, validates the service IPC and duplicate-core rejection, and keeps Deskflow 1.26.0
-and Ieum cores running simultaneously on x64 and ARM64. Existing `alpha.8` through `alpha.13` users can run the
-`alpha.14` MSI directly without manually uninstalling. The
+`alpha.14 → alpha.15` upgrade, validates service IPC, pre-login core PID preservation, login startup, and
+duplicate-core rejection, and keeps Deskflow 1.26.0 and Ieum cores running simultaneously on x64 and ARM64.
+Existing `alpha.8` through `alpha.14` users can run the `alpha.15` MSI directly without manually uninstalling. The
 first connection may request fingerprint approval once because the certificate is replaced.
 
 The global installer appears as **Ieum** in Installed apps and the Start menu; the Korean installer appears as
@@ -272,6 +315,7 @@ trademark, and service-boundary review.
 - [x] Input-source control protocol and platform controllers
 - [x] IME raw-scancode path, macOS event path, and NFC normalization
 - [x] Automated Windows, macOS, and Linux packages
+- [x] Windows pre-login service core and Windows/macOS login startup
 - [ ] Publish the physical Windows ↔ macOS input matrix
 - [ ] Code signing, Apple notarization, and a stable update channel
 - [ ] Define the product boundary for hosted relay and device discovery

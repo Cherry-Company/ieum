@@ -41,6 +41,7 @@
 #include "platform/OSXScreen.h"
 #endif
 
+#include <algorithm>
 #include <memory>
 
 ClientApp::ClientApp(IEventQueue *events, const QString &processName) : App(events, processName)
@@ -160,8 +161,8 @@ void ClientApp::handleClientRestart(const Event &, EventQueueTimer *timer)
 
 void ClientApp::scheduleClientRestart(double retryTime)
 {
-  LOG_DEBUG("retry in %.0f seconds", retryTime);
-  ipcSendToClient("retryIn", QString::number(retryTime, 'f', 0));
+  LOG_DEBUG("retry in %.2f seconds", retryTime);
+  ipcSendToClient("retryIn", QString::number(std::max(1.0, retryTime), 'f', 0));
   // install a timer and handler to retry later
   EventQueueTimer *timer = getEvents()->newOneShotTimer(retryTime, nullptr);
   getEvents()->addHandler(EventTypes::Timer, timer, [this, timer](const auto &e) { handleClientRestart(e, timer); });
@@ -390,17 +391,21 @@ ISocketFactory *ClientApp::getSocketFactory() const
 
 double ClientApp::retryTime() const
 {
-  if (!Settings::value(Settings::Client::DynamicConnectionRetry).toBool() || m_retryCount < 300) // 5 minutes
+  // Retry quickly while both computers are finishing startup, then settle at
+  // one attempt per second so an unavailable peer does not create busy work.
+  if (m_retryCount < 20)
+    return 0.25;
+  if (!Settings::value(Settings::Client::DynamicConnectionRetry).toBool() || m_retryCount < 315) // 5 minutes
     return 1;
-  if (m_retryCount < 360) // 5 minutes
+  if (m_retryCount < 375) // 5 minutes
     return 5;
-  if (m_retryCount < 390) // 5 minutes
+  if (m_retryCount < 405) // 5 minutes
     return 10;
-  if (m_retryCount < 410) // 10 minutes
+  if (m_retryCount < 425) // 10 minutes
     return 30;
-  if (m_retryCount < 420) // 10 minutes
+  if (m_retryCount < 435) // 10 minutes
     return 60;
-  if (m_retryCount < 430) // 20 minutes
+  if (m_retryCount < 445) // 20 minutes
     return 120;
   return 300;
 }

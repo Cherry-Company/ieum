@@ -977,6 +977,14 @@ Client</source>
         <source>%1 is already running</source>
         <translation type="unfinished">%1 ya se está ejecutando</translation>
     </message>
+    <message>
+        <source>Allow Ieum at login</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>macOS has not yet allowed Ieum to start at login. Open System Settings &gt; General &gt; Login Items and allow Ieum so its menu bar icon and KVM core return after sign-in.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScreenSettingsDialog</name>
@@ -1614,6 +1622,39 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
     </message>
     <message>
         <source>Start Tailscale and sign in, then refresh its status before saving this setting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Ieum automatically when I sign in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not update automatic startup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ieum could not update its automatic startup setting.
+
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allow Ieum at login</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>macOS still requires approval for automatic startup. Open System Settings &gt; General &gt; Login Items and allow Ieum.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>StartupManager</name>
+    <message>
+        <source>Automatic startup is not supported on this operating system.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Windows could not update the current user&apos;s startup registration.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

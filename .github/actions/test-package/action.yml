@@ -23,6 +23,11 @@ runs:
           test -n "$core"
           bundle_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$app/Contents/Info.plist")
           test "$bundle_id" = "io.github.victoriousian.ieum"
+          login_agent="$app/Contents/Library/LaunchAgents/io.github.victoriousian.ieum.login.plist"
+          test -f "$login_agent"
+          plutil -lint "$login_agent"
+          test "$(/usr/libexec/PlistBuddy -c 'Print :BundleProgram' "$login_agent")" = "Contents/MacOS/Ieum"
+          /usr/libexec/PlistBuddy -c "Print :ProgramArguments" "$login_agent" | grep -Fq -- "--background"
           grep -Fq '"CFBundleDisplayName" = "이음 (Ieum)";' \
             "$app/Contents/Resources/ko.lproj/InfoPlist.strings"
           codesign --verify --deep --strict --verbose=2 "$app"

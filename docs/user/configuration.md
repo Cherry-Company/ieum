@@ -41,7 +41,25 @@ Tailscale address, uses TCP port `24800`, and lists Tailnet desktop computers by
 original interface, port, and remote-host settings are restored when the preset is disabled.
 
 Ieum does not sign in to Tailscale or change Tailnet access rules. If Tailscale is stopped, signed out, or has
-no usable address, Ieum blocks startup instead of falling back to an all-interface listener.
+no usable address, Ieum blocks an interactive start instead of falling back to an all-interface listener.
+During automatic startup it waits quietly and retries as Tailscale becomes ready. The client retries a lost
+connection every 250 ms for the first five seconds, then once per second by default.
+
+## Startup layers
+
+**Start Ieum automatically when I sign in** starts the GUI and tray or menu-bar item in the current user's
+desktop session. It is separate from Windows service mode:
+
+| Platform | Before sign-in | After sign-in |
+|:---------|:---------------|:--------------|
+| Windows MSI in service mode | The auto-start `Ieum` service can restore the last configuration and run keyboard/mouse sharing on the sign-in screen | The per-user GUI starts in the background and attaches to the existing service core |
+| Windows portable | Not available | The per-user GUI can start in the background |
+| macOS 13 or later | Not available | A user-approved ServiceManagement login item starts the GUI in the background |
+
+The Windows service needs one successful configured start before it has a server/client role and address to
+restore. Clipboard sharing begins only after a user session owns a clipboard. A macOS FileVault unlock screen
+is a preboot environment where applications, login items, and Accessibility permission are unavailable; use a
+hardware KVM if remote input must cover that stage.
 
 ## Valid GUI Keys
 
@@ -116,6 +134,7 @@ This section contains options used by the GUI it will begin with `[gui]`
 |Option                          | Valid Values      |Description|
 |:-------------------------------|:-----------------:|:-----------|
 | autoHide                       | `true` or `false` | When true the app will hide itself on start up [default: false] |
+| startAtLogin                   | `true` or `false` | Register the installed Windows or macOS app to start in the background after the current user signs in [default: true] |
 | enableUpdateCheck              | `true` or `false` | When true check the update URL to see if a new version was released on start up [default: false] |
 | closeReminder                  | `true` or `false` | Used to track if we have shown the reminder that when you close the app it remain running in the background  [default: true]|
 | closeToTray                    | `true` or `false` | When `true` the gui will run in the systemTray when its closed [default: true] |

@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import <CoreData/CoreData.h>
 #import <Foundation/Foundation.h>
+#import <ServiceManagement/ServiceManagement.h>
 #import <UserNotifications/UNNotification.h>
 #import <UserNotifications/UNNotificationContent.h>
 #import <UserNotifications/UNNotificationTrigger.h>
@@ -98,12 +99,77 @@ bool isOSXInterfaceStyleDark()
 
 void forceAppActive()
 {
-  [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
   [[NSApplication sharedApplication] setActivationPolicy:NSApplicationActivationPolicyRegular];
+  [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
 }
 
-void macOSNativeHide()
+namespace {
+
+SMAppService *ieumLoginAgent() API_AVAILABLE(macos(13.0))
 {
-  [NSApp hide:nil];
-  [[NSApplication sharedApplication] setActivationPolicy:NSApplicationActivationPolicyAccessory];
+  return [SMAppService agentServiceWithPlistName:@"io.github.victoriousian.ieum.login.plist"];
+}
+
+} // namespace
+
+bool macOSStartAtLoginSupported()
+{
+  if (@available(macOS 13.0, *)) {
+    return true;
+  }
+  return false;
+}
+
+bool macOSStartAtLoginEnabled()
+{
+  if (@available(macOS 13.0, *)) {
+    auto *service = ieumLoginAgent();
+    return service.status == SMAppServiceStatusEnabled;
+  }
+  return false;
+}
+
+bool macOSStartAtLoginRequiresApproval()
+{
+  if (@available(macOS 13.0, *)) {
+    auto *service = ieumLoginAgent();
+    return service.status == SMAppServiceStatusRequiresApproval;
+  }
+  return false;
+}
+
+bool macOSSetStartAtLogin(bool enabled, QString *error)
+{
+  if (@available(macOS 13.0, *)) {
+    auto *service = ieumLoginAgent();
+    const auto status = service.status;
+    if ((enabled && (status == SMAppServiceStatusEnabled || status == SMAppServiceStatusRequiresApproval)) ||
+        (!enabled && status == SMAppServiceStatusNotRegistered)) {
+      return true;
+    }
+
+    NSError *nativeError = nil;
+    const auto success =
+        enabled ? [service registerAndReturnError:&nativeError] : [service unregisterAndReturnError:&nativeError];
+    if (success) {
+      return true;
+    }
+    if (error != nullptr) {
+      *error = nativeError == nil ? QStringLiteral("Unknown ServiceManagement error")
+                                  : QString::fromUtf8(nativeError.localizedDescription.UTF8String);
+    }
+    return false;
+  }
+
+  if (error != nullptr) {
+    *error = QStringLiteral("Start at login requires macOS 13 or later.");
+  }
+  return false;
+}
+
+void macOSOpenLoginItemsSettings()
+{
+  if (@available(macOS 13.0, *)) {
+    [SMAppService openSystemSettingsLoginItems];
+  }
 }

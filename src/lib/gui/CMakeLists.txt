@@ -35,6 +35,8 @@ add_library(${target} STATIC
   ProductIdentity.h
   ScreenSetupModel.cpp
   ScreenSetupModel.h
+  StartupManager.cpp
+  StartupManager.h
   StyleUtils.h
   TlsUtility.cpp
   TlsUtility.h
@@ -128,6 +130,10 @@ target_link_libraries(
   Qt6::Core
   Qt6::Widgets
   Qt6::Network)
+
+if(APPLE)
+  target_link_libraries(${target} "-framework ServiceManagement")
+endif()
 
 if(WIN32)
   target_link_libraries(

@@ -95,6 +95,7 @@ public:
   {
     inline static const auto Autohide = QStringLiteral("gui/autoHide");
     inline static const auto AutoStartCore = QStringLiteral("gui/startCoreWithGui");
+    inline static const auto StartAtLogin = QStringLiteral("gui/startAtLogin");
     inline static const auto AutoUpdateCheck = QStringLiteral("gui/enableUpdateCheck");
     inline static const auto UpdateCheckUrl = QStringLiteral("gui/updateCheckUrl");
     inline static const auto CloseReminder = QStringLiteral("gui/closeReminder");
@@ -310,6 +311,7 @@ private:
     , Settings::Log::GuiDebug
     , Settings::Gui::Autohide
     , Settings::Gui::AutoStartCore
+    , Settings::Gui::StartAtLogin
     , Settings::Gui::AutoUpdateCheck
     , Settings::Gui::UpdateCheckUrl
     , Settings::Gui::CloseReminder
@@ -382,6 +384,7 @@ private:
     , Settings::Gui::CloseToTray
     , Settings::Gui::CloseReminder
     , Settings::Gui::LogExpanded
+    , Settings::Gui::StartAtLogin
     , Settings::Gui::SymbolicTrayIcon
     , Settings::Security::TlsEnabled
     , Settings::Security::CheckPeers

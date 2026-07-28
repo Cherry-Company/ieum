@@ -54,6 +54,7 @@
 #include <QSignalBlocker>
 #include <QTimer>
 
+#include <algorithm>
 #include <memory>
 
 #if defined(Q_OS_MACOS)
@@ -87,7 +88,8 @@ MainWindow::MainWindow()
       m_actionStopCore{new QAction(this)},
       m_actionInputLanguageStatus{new QAction(this)},
       m_networkMonitor{new NetworkMonitor(this)},
-      m_networkRecoveryTimer{new QTimer(this)}
+      m_networkRecoveryTimer{new QTimer(this)},
+      m_autoStartRetryTimer{new QTimer(this)}
 {
   ui->setupUi(this);
   applyIeumMainWindowStyle(*this);
@@ -273,8 +275,8 @@ void MainWindow::connectSlots()
   connect(m_actionReportBug, &QAction::triggered, this, &MainWindow::openHelpUrl);
   connect(m_actionMinimize, &QAction::triggered, this, &MainWindow::hide);
 
-  connect(m_actionQuit, &QAction::triggered, this, &MainWindow::close);
-  connect(m_actionTrayQuit, &QAction::triggered, this, &MainWindow::close);
+  connect(m_actionQuit, &QAction::triggered, this, &MainWindow::quitApplication);
+  connect(m_actionTrayQuit, &QAction::triggered, this, &MainWindow::quitApplication);
   connect(m_actionRestore, &QAction::triggered, this, &MainWindow::showAndActivate);
   connect(m_actionSettings, &QAction::triggered, this, &MainWindow::openSettings);
   connect(m_actionStartCore, &QAction::triggered, this, &MainWindow::startCore);
@@ -327,6 +329,9 @@ void MainWindow::connectSlots()
   connect(ui->lineEditName, &QLineEdit::editingFinished, this, &MainWindow::setHostName);
 
   connect(m_networkMonitor, &NetworkMonitor::ipAddressesChanged, this, &MainWindow::networkAddressesChanged);
+
+  m_autoStartRetryTimer->setSingleShot(true);
+  connect(m_autoStartRetryTimer, &QTimer::timeout, this, &MainWindow::autoStartCore);
 
   m_networkRecoveryTimer->setInterval(1000);
   m_networkRecoveryTimer->setSingleShot(true);
@@ -469,6 +474,15 @@ void MainWindow::clearInputLanguagePresentation()
 
 void MainWindow::coreProcessError(CoreProcess::Error error)
 {
+  if (m_automaticStartPending) {
+    m_automaticStartPending = false;
+    qWarning() << "automatic core start failed:" << static_cast<int>(error);
+    if (error == CoreProcess::Error::StartFailed) {
+      scheduleAutoStartRetry();
+    }
+    return;
+  }
+
   if (error == CoreProcess::Error::AddressMissing) {
     QMessageBox::warning(
         this, tr("Address missing"), tr("Please enter the hostname or IP address of the other computer.")
@@ -491,10 +505,20 @@ void MainWindow::coreProcessError(CoreProcess::Error error)
 
 void MainWindow::startCore()
 {
-  if (!prepareTailscale()) {
-    return;
-  }
+  m_autoStartRetryTimer->stop();
+  m_autoStartRetryCount = 0;
+  m_automaticStartPending = false;
+  tryStartCore(true);
+}
 
+bool MainWindow::tryStartCore(bool interactive)
+{
+  if (m_coreProcess.processState() != ProcessState::Stopped) {
+    return true;
+  }
+  if (!prepareTailscale(interactive)) {
+    return false;
+  }
   if (m_coreProcess.mode() == CoreMode::Server) {
     recordServerStartNetwork();
   }
@@ -502,14 +526,58 @@ void MainWindow::startCore()
   m_actionStartCore->setVisible(false);
   m_actionRestartCore->setVisible(true);
   m_coreProcess.start();
+  return true;
+}
+
+void MainWindow::autoStartCore()
+{
+  if (!Settings::value(Settings::Gui::AutoStartCore).toBool()) {
+    m_autoStartRetryTimer->stop();
+    m_autoStartRetryCount = 0;
+    m_automaticStartPending = false;
+    return;
+  }
+
+  const auto isClient = m_coreProcess.mode() == CoreMode::Client;
+  const auto tailscaleEnabled = Settings::value(Settings::Core::UseTailscale).toBool();
+  if (isClient && !tailscaleEnabled && ui->lineHostname->text().trimmed().isEmpty()) {
+    return;
+  }
+  m_automaticStartPending = true;
+  if (!tryStartCore(false)) {
+    scheduleAutoStartRetry();
+  }
+}
+
+void MainWindow::scheduleAutoStartRetry()
+{
+  if (!Settings::value(Settings::Gui::AutoStartCore).toBool() || m_autoStartRetryTimer->isActive()) {
+    return;
+  }
+
+  ++m_autoStartRetryCount;
+  const auto delay = std::min(5000, 1000 * m_autoStartRetryCount);
+  qInfo("automatic core start is waiting for the network, retrying in %d ms", delay);
+  m_autoStartRetryTimer->start(delay);
 }
 
 void MainWindow::stopCore()
 {
   qDebug() << "stopping core process";
+  m_autoStartRetryTimer->stop();
+  m_autoStartRetryCount = 0;
+  m_automaticStartPending = false;
+  Settings::setValue(Settings::Gui::AutoStartCore, false);
+  Settings::save(false);
   m_coreProcess.stop();
   m_actionStartCore->setVisible(true);
   m_actionRestartCore->setVisible(false);
+}
+
+void MainWindow::quitApplication()
+{
+  m_quitRequested = true;
+  close();
 }
 
 void MainWindow::clearSettings()
@@ -573,6 +641,8 @@ void MainWindow::openSettings()
 
     if (m_coreProcess.isStarted()) {
       resetCore();
+    } else if (Settings::value(Settings::Core::UseTailscale).toBool() && m_coreProcess.mode() == CoreMode::Client) {
+      QTimer::singleShot(0, this, &MainWindow::refreshTailscalePeers);
     }
   }
 }
@@ -619,6 +689,9 @@ void MainWindow::coreModeToggled(bool checked)
   Settings::save();
 
   updateModeControls();
+  if (sender() != nullptr && mode == CoreMode::Client && Settings::value(Settings::Core::UseTailscale).toBool()) {
+    QTimer::singleShot(0, this, &MainWindow::refreshTailscalePeers);
+  }
 }
 
 void MainWindow::updateModeControls()
@@ -639,7 +712,7 @@ void MainWindow::updateModeControls()
   if (ui->lblIpAddresses->isVisible())
     updateNetworkInfo();
 
-  if (isServer) {
+  if (isServer || isClient) {
     m_networkMonitor->startMonitoring();
   } else {
     m_networkMonitor->stopMonitoring();
@@ -722,9 +795,9 @@ void MainWindow::serverConnectionConfigureClient(const QString &clientName)
 // End slots
 //////////////////////////////////////////////////////////////////////////////
 
-void MainWindow::open(bool forceShow)
+void MainWindow::open(bool forceShow, bool forceBackground)
 {
-  if (forceShow || !Settings::value(Settings::Gui::Autohide).toBool())
+  if (forceShow || (!forceBackground && !Settings::value(Settings::Gui::Autohide).toBool()))
     showAndActivate();
   else if (deskflow::platform::isMac())
     // macOS to call hide after this function ends
@@ -742,20 +815,24 @@ void MainWindow::open(bool forceShow)
   const auto kCriticalDialogDelay = 100;
   QTimer::singleShot(kCriticalDialogDelay, this, &messages::raiseCriticalDialog);
 
-  if (!Settings::value(Settings::Gui::AutoUpdateCheck).isValid()) {
+  if (!forceBackground && !Settings::value(Settings::Gui::AutoUpdateCheck).isValid()) {
     Settings::setValue(Settings::Gui::AutoUpdateCheck, messages::showUpdateCheckOption(this));
   }
 
-  if (Settings::value(Settings::Gui::AutoUpdateCheck).toBool()) {
+  if (!forceBackground && Settings::value(Settings::Gui::AutoUpdateCheck).toBool()) {
     m_versionChecker.checkLatest();
   } else {
     qDebug() << "skipping check for new version, disabled";
   }
 
-  if (Settings::value(Settings::Gui::AutoStartCore).toBool()) {
-    if (ui->rbModeClient->isChecked() && ui->lineHostname->text().isEmpty())
+  const auto autoStartCore = Settings::value(Settings::Gui::AutoStartCore).toBool();
+  if (autoStartCore) {
+    if (ui->rbModeClient->isChecked() && !Settings::value(Settings::Core::UseTailscale).toBool() &&
+        ui->lineHostname->text().isEmpty())
       return;
-    startCore();
+    QTimer::singleShot(0, this, &MainWindow::autoStartCore);
+  } else if (ui->rbModeClient->isChecked() && Settings::value(Settings::Core::UseTailscale).toBool()) {
+    QTimer::singleShot(0, this, &MainWindow::refreshTailscalePeers);
   }
 }
 
@@ -820,7 +897,7 @@ void MainWindow::applyConfig()
     m_serverStartSuggestedIP = ip;
   }
 
-  updateTailscaleControls(true);
+  updateTailscaleControls(false);
   coreModeToggled(true);
 }
 
@@ -865,7 +942,9 @@ void MainWindow::setTrayIcon()
     return;
   }
 
-  auto icon = QIcon::fromTheme(themeIcon, QIcon(fallbackPath.arg(kAppId, iconMode(), themeIcon)));
+  auto icon = deskflow::platform::isMac()
+                  ? QIcon(fallbackPath.arg(kAppId, QStringLiteral("dark"), themeIcon))
+                  : QIcon::fromTheme(themeIcon, QIcon(fallbackPath.arg(kAppId, iconMode(), themeIcon)));
   icon.setIsMask(true);
   m_trayIcon->setIcon(icon);
 }
@@ -998,7 +1077,7 @@ void MainWindow::handlePeerFingerprint(const QString &fingerprint)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-  if (Settings::value(Settings::Gui::CloseToTray).toBool() && event->spontaneous()) {
+  if (Settings::value(Settings::Gui::CloseToTray).toBool() && !m_quitRequested) {
     if (Settings::value(Settings::Gui::CloseReminder).toBool()) {
       messages::showCloseReminder(this);
       Settings::setValue(Settings::Gui::CloseReminder, false);
@@ -1050,6 +1129,9 @@ void MainWindow::coreProcessStateChanged(ProcessState state)
   using enum ProcessState;
   updateStatus();
   if (state == Started) {
+    m_autoStartRetryTimer->stop();
+    m_autoStartRetryCount = 0;
+    m_automaticStartPending = false;
     qDebug() << "recording that core has started";
     Settings::setValue(Settings::Gui::AutoStartCore, true);
     if (m_coreProcess.mode() == CoreMode::Server &&
@@ -1114,18 +1196,11 @@ void MainWindow::updateFingerprintButton()
 
 void MainWindow::hide()
 {
-#ifdef Q_OS_MACOS
-  macOSNativeHide();
-  // Changing the activation policy can detach Qt's status item on macOS.
-  // Re-register it after Cocoa finishes the hide transition.
-  QTimer::singleShot(0, m_trayIcon, [this] {
-    m_trayIcon->hide();
+  QMainWindow::hide();
+  if (!m_trayIcon->isVisible()) {
     setTrayIcon();
     m_trayIcon->show();
-  });
-#else
-  QMainWindow::hide();
-#endif
+  }
   m_actionRestore->setVisible(true);
   m_actionMinimize->setVisible(false);
 }
@@ -1335,6 +1410,14 @@ void MainWindow::serverClientsChanged(const QStringList &clients)
 
 void MainWindow::daemonIpcClientConnectionFailed()
 {
+  if (m_automaticStartPending) {
+    qWarning("background service is not ready during automatic startup; retrying");
+    m_automaticStartPending = false;
+    m_coreProcess.stop();
+    scheduleAutoStartRetry();
+    return;
+  }
+
   if (deskflow::gui::messages::showDaemonOffline(this)) {
     m_coreProcess.retryDaemon();
   }
@@ -1367,6 +1450,11 @@ void MainWindow::refreshTailscalePeers()
   }
 
   const auto status = deskflow::network::TailscaleIntegration::query();
+  populateTailscalePeers(status);
+}
+
+void MainWindow::populateTailscalePeers(const deskflow::network::TailscaleStatus &status)
+{
   m_tailscaleReady = status.isReady();
   const auto currentHost = ui->lineHostname->text().trimmed();
   int matchingIndex = -1;
@@ -1471,19 +1559,23 @@ void MainWindow::updateTailscaleControls(bool refreshPeers)
   ui->comboTailscalePeer->setVisible(showPeerPicker);
   ui->btnRefreshTailscalePeers->setVisible(showPeerPicker);
 
-  if (showPeerPicker && (refreshPeers || ui->comboTailscalePeer->count() <= 1)) {
+  if (showPeerPicker && refreshPeers) {
     refreshTailscalePeers();
   }
 }
 
-bool MainWindow::prepareTailscale()
+bool MainWindow::prepareTailscale(bool interactive)
 {
   if (!Settings::value(Settings::Core::UseTailscale).toBool()) {
     return true;
   }
 
-  const auto status = deskflow::network::TailscaleIntegration::query();
-  m_tailscaleReady = status.isReady();
+  const auto status = deskflow::network::TailscaleIntegration::query(interactive ? 2000 : 750);
+  if (m_coreProcess.mode() == CoreMode::Client) {
+    populateTailscalePeers(status);
+  } else {
+    m_tailscaleReady = status.isReady();
+  }
   if (!status.isReady()) {
     QString message;
     using deskflow::network::TailscaleState;
@@ -1502,15 +1594,23 @@ bool MainWindow::prepareTailscale()
       message = tr("Ieum could not read a usable Tailscale address. Refresh Tailscale and try again.");
       break;
     }
-    QMessageBox::warning(this, tr("Tailscale is not ready"), message);
+    if (interactive) {
+      QMessageBox::warning(this, tr("Tailscale is not ready"), message);
+    } else {
+      qInfo().noquote() << "Tailscale is not ready for automatic startup:" << message;
+    }
     return false;
   }
 
   Settings::setValue(Settings::Core::Interface, status.preferredLocalAddress());
   Settings::setValue(Settings::Core::PreferPhysicalNetwork, false);
 
-  if (m_coreProcess.mode() == CoreMode::Client && ui->comboTailscalePeer->currentData().toString().isEmpty()) {
-    refreshTailscalePeers();
+  if (m_coreProcess.mode() == CoreMode::Client && ui->lineHostname->text().trimmed().isEmpty() &&
+      ui->comboTailscalePeer->currentData().toString().isEmpty()) {
+    if (!interactive) {
+      return false;
+    }
+
     if (ui->comboTailscalePeer->isEnabled() && ui->comboTailscalePeer->currentData().toString().isEmpty()) {
       QMessageBox::information(
           this, tr("Select a Tailscale device"), tr("Select the Ieum server computer, then start again.")
@@ -1538,6 +1638,10 @@ void MainWindow::recordServerStartNetwork()
 
 void MainWindow::networkAddressesChanged(const QStringList &addresses)
 {
+  if (m_autoStartRetryTimer->isActive()) {
+    m_autoStartRetryTimer->start(0);
+  }
+
   if (m_coreProcess.mode() != CoreMode::Server || !m_coreProcess.isStarted()) {
     updateIpLabel(addresses);
     return;

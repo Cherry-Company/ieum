@@ -89,6 +89,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QCheckBox" name="cbStartAtLogin">
+         <property name="text">
+          <string>Start Ieum automatically when I sign in</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QCheckBox" name="cbPreventSleep">
          <property name="text">
           <string>Prevent this computer from going to sleep</string>

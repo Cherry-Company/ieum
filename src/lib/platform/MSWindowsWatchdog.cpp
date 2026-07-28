@@ -323,8 +323,20 @@ void MSWindowsWatchdog::setProcessConfig(const std::string_view &command, bool e
   LOG_VERBOSE("locking process state mutex for watchdog config change");
   std::scoped_lock lock{m_processStateMutex};
 
+  const auto newCommand = std::wstring(command.begin(), command.end());
+  if (m_command == newCommand && m_elevateProcess == elevate) {
+    if (!newCommand.empty() && m_processState == ProcessState::Idle) {
+      LOG_DEBUG("unchanged watchdog command is idle, queueing process start");
+      m_processState = ProcessState::StartPending;
+      m_nextStartTime.reset();
+    } else {
+      LOG_DEBUG("watchdog process config is unchanged, keeping current process");
+    }
+    return;
+  }
+
   LOG_DEBUG("setting watchdog process config");
-  m_command = std::wstring(command.begin(), command.end());
+  m_command = newCommand;
   m_elevateProcess = elevate;
 
   if (m_command.empty()) {

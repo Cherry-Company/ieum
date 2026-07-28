@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14"><strong>下载 Ieum</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15"><strong>下载 Ieum</strong></a>
   · <a href="#首次运行时的安全与权限"><strong>安全与权限</strong></a>
   · <a href="#支持开发"><strong>支持开发</strong></a>
 </p>
@@ -31,8 +31,23 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 还试图把不同系统中的 **韩/英输入状态、输入法组合会话、物理按键位置和 Unicode 剪贴板**连接成
 一致的输入链路。
 
-> 当前版本为 `v0.1.0-alpha.14`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
+> 当前版本为 `v0.1.0-alpha.15`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
+
+## Alpha.15 自动启动与连接恢复
+
+- 关闭 macOS 窗口时不再改变应用激活策略；Ieum 的菜单栏图标和菜单会一直保留到应用真正退出。
+- Windows 和 macOS 13 及以上版本默认启用**设置 → 常规 → 登录时自动启动 Ieum**。
+- Windows 服务会在开机时加载上次保存的核心配置。用户登录后 GUI 再次发送相同命令时，不会替换
+  已在 Windows 登录界面运行的核心进程。
+- 自动启动时若 Tailscale 服务或地址尚未准备好，Ieum 会静默等待并重试。只有一台在线桌面设备时
+  客户端自动选择；多台设备仍使用已保存选择或要求用户明确选择。
+- 断开后的前五秒内，客户端会以 250ms 间隔快速重连，给服务端完成启动的时间，之后恢复为默认
+  的一秒间隔。
+- 服务端和客户端都会监控网络地址变化。用户主动停止或拒绝证书后，自动重试不会擅自重新启动。
+
+在正式代码签名、签名更新元数据、分阶段替换、健康检查和回滚全部就绪前，Ieum 不会自动执行下载的
+安装包。详见[安全更新交付设计](docs/dev/update-delivery.md)。
 
 ## Alpha.14 输入稳定性
 
@@ -122,6 +137,7 @@ flowchart LR
 | Ieum 品牌、图标、应用与安装程序名称 | 已完成 |
 | Windows x64/ARM64、macOS Intel/Apple Silicon 安装包 | CI 构建与打包检查通过 |
 | `DILC`/`CILS`、原始扫描码、macOS 事件源、NFC 链路 | 已实现并包含自动测试 |
+| Windows 登录前服务核心、Windows/macOS 登录自动启动 | 已实现并包含安装包回归检查 |
 | Linux 与 Flatpak 安装包 | 实验性提供 |
 | Windows ↔ macOS 十分钟真机输入矩阵 | **待完成** |
 | Windows 签名、Apple 签名与公证 | **待完成** |
@@ -132,16 +148,16 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.14 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14)
+[Ieum v0.1.0-alpha.15 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.14-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.14-macos-x86_64.dmg` |
-| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.14-win-x64.msi` |
-| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.14-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.14-win-arm64.msi` |
-| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.14-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.15-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.15-macos-x86_64.dmg` |
+| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.15-win-x64.msi` |
+| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.15-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.15-win-arm64.msi` |
+| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.15-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
 
@@ -168,6 +184,24 @@ macOS 不允许应用自动批准权限开关，这是 Apple 的系统安全边�
 不会交给 Ieum。更多信息请参阅
 [完整安全与隐私策略](docs/SECURITY.md)和[韩文图示安装指南](README.md#설치와-첫-연결)。
 
+### 自动启动与登录界面
+
+**设置 → 常规 → 登录时自动启动 Ieum**会在用户登录后启动 GUI 和菜单栏/托盘图标。它与登录前
+核心运行是两个不同层次：
+
+| 平台 | 行为 |
+| --- | --- |
+| Windows MSI | 自动启动的 `Ieum` 服务在开机时加载上次保存的服务端/客户端配置，并在登录界面会话运行核心 |
+| Windows 便携版 | 没有服务，只能在用户登录后启动 GUI |
+| macOS 13+ | ServiceManagement 登录项仅在用户登录后启动 `Ieum --background` |
+
+全新 Windows 安装必须先打开一次 Ieum、完成角色与地址配置并启动，服务才有可在后续开机恢复的
+有效拓扑。登录前路径可传送键盘和鼠标；用户剪贴板要到用户会话打开后才存在。
+
+FileVault 解锁属于独立的 preboot 环境，此时 macOS、用户数据卷、应用登录项和“辅助功能”授权都
+尚不可用，因此 Ieum 无法运行。若远程输入必须覆盖 FileVault 解锁阶段，需要硬件 KVM；Ieum 不会
+降低或绕过这个安全边界。
+
 从 `alpha.11` 开始，`网络 IP：自动`会优先选择活动的物理以太网或 Wi-Fi 地址。Ieum 服务端默认
 不再监听 Tailscale、ZeroTier、VMware、Hyper-V/WSL 等虚拟适配器；没有可用物理网络时会回退到
 全部接口，以保留连接能力。在高级设置中关闭**优先使用物理网络**即可恢复旧行为。此选项只限制
@@ -181,9 +215,12 @@ Ieum 的监听范围，不会隐藏或绕过 Genian NAC 针对操作系统中虚
 
 从 `alpha.13` 开始，绑定到 Tailscale 或首选物理地址的服务端会监控该接口，并在地址恢复或变化后
 自动重新绑定。客户端断开后会继续解析地址并重试。停止、启动和重启请求现在按顺序执行，避免新核心
-与旧核心或本地 IPC 端点发生竞争。macOS 的关闭按钮会可靠地把 Ieum 留在菜单栏中；要完全退出，
-请使用菜单栏图标中的**退出**。GUI 日志最多保留 10,000 行，并批量刷新以降低日志突发时的 CPU
-开销。
+与旧核心或本地 IPC 端点发生竞争。GUI 日志最多保留 10,000 行，并批量刷新以降低日志突发时的
+CPU 开销。
+
+从 `alpha.15` 开始，自动启动会等待 Tailscale 准备完成，不再要求重启整个应用。macOS 关闭按钮会
+保留同一个菜单栏状态项；只有菜单中的**退出**才会完全结束应用。断开后的前五秒内客户端每
+250ms 重试一次，之后使用默认的一秒间隔。
 
 `alpha.5` 的 Mac DMG 代码签名封印已损坏，`alpha.6` 又会在异步“辅助功能”请求完成前退出。
 在 `alpha.7` 中，Qt 的 macOS 辅助功能警告可能被反复写回应用日志，持续显示
@@ -191,7 +228,7 @@ Ieum 的监听范围，不会隐藏或绕过 Genian NAC 针对操作系统中虚
 条目仍然存在，但 macOS 不信任当前应用，`alpha.10` 会提供**重置旧授权**。确认后，它只会删除
 Ieum 的“辅助功能”记录，并重新注册当前的 `/Applications/Ieum.app`，无需手动点按减号和加号。
 
-`alpha.14` 最终应用已通过严格的代码签名验证，但尚未使用 Developer ID 证书签名，也未经过 Apple
+`alpha.15` 最终应用已通过严格的代码签名验证，但尚未使用 Developer ID 证书签名，也未经过 Apple
 公证。请将应用移到 `/Applications` 并尝试打开一次；若 macOS 阻止运行，请前往
 **系统设置 → 隐私与安全性 → 仍要打开**。应用还需要“辅助功能”和“输入监控”权限。临时签名会让
 每个构建具有不同的代码身份，因此后续更新仍可能需要**重置旧授权**并再次批准。要自动继承权限，
@@ -202,12 +239,13 @@ Windows `alpha.2` 至 `alpha.7` 错误复用了 Deskflow 的 MSI `UpgradeCode`�
 `deskflow-core` 与 `deskflow-daemon` 的可执行文件和 IPC 名称。Deskflow 正在运行时，或 Ieum 的
 服务核心与桌面核心重叠时，GUI 可能连接到错误的核心，并让 TLS 授权一直等待到超时。
 
-从 `alpha.9` 开始，Ieum 使用单调递增的 MSI 预发行版本映射（`alpha.14` 对应 `0.1.114`）、
+从 `alpha.9` 开始，Ieum 使用单调递增的 MSI 预发行版本映射（`alpha.15` 对应 `0.1.115`）、
 `ieum-core.exe`、`ieum-daemon.exe`，以及带版本的
 `ieum-core-v1`/`ieum-daemon-v1` IPC。全局所有权锁会拒绝重复核心；默认认证文件迁移到
 `ieum.pem`，从而重新生成 `/CN=Ieum` 证书。CI 会在 x64 与 ARM64 上执行真实的
-`alpha.9 → alpha.14` 升级，验证服务 IPC、重复核心拒绝，并确认 Deskflow 1.26.0 与 Ieum 核心可
-同时运行。现有 `alpha.8` 至 `alpha.13` 用户可直接运行 `alpha.14` MSI，无需手动卸载。证书更新后，
+`alpha.14 → alpha.15` 升级，验证服务 IPC、登录界面核心 PID 保持、登录自动启动和重复核心拒绝，
+并确认 Deskflow 1.26.0 与 Ieum 核心可同时运行。现有 `alpha.8` 至 `alpha.14` 用户可直接运行
+`alpha.15` MSI，无需手动卸载。证书更新后，
 首次连接时可能需要重新确认一次指纹。
 
 全局安装包在“已安装的应用”和开始菜单中显示为 **Ieum**，韩文安装包显示为 **이음 (Ieum)**。
@@ -252,6 +290,7 @@ GPL 二进制可以收费发行，但接收者仍然有权获得对应源代码�
 - [x] 输入源控制协议与各平台控制器
 - [x] 输入法原始扫描码、macOS 事件链路和 NFC 规范化
 - [x] Windows、macOS 与 Linux 自动打包
+- [x] Windows 登录前服务核心与 Windows/macOS 登录自动启动
 - [ ] 发布 Windows ↔ macOS 真机输入矩阵
 - [ ] 代码签名、Apple 公证与稳定更新通道
 - [ ] 定义托管中继与设备发现的产品边界

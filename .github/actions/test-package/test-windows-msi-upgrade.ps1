@@ -454,6 +454,41 @@ function Assert-IeumServiceRuntime {
     Wait-NamedPipe -Name $CoexistingPipeName
   }
 
+  # A GUI launched after sign-in sends the persisted service configuration
+  # again. The already-running login-screen core must not be replaced.
+  Invoke-IpcCommands -Name 'ieum-daemon-v1' -Messages @(
+    "configFile=$ipcSettingsPath",
+    'start'
+  )
+  Start-Sleep -Milliseconds 1500
+  $primaryCore.Refresh()
+  if ($primaryCore.HasExited) {
+    throw 'Repeating the unchanged service configuration replaced the primary Ieum core'
+  }
+  $serviceCores = @(Get-Process -Name 'ieum-core' -ErrorAction SilentlyContinue)
+  if ($serviceCores.Count -ne 1 -or $serviceCores[0].Id -ne $primaryCore.Id) {
+    throw "Unchanged service configuration did not preserve core PID $($primaryCore.Id)"
+  }
+
+  # Simulate a reboot boundary: the daemon must restore the persisted core
+  # configuration without a signed-in GUI sending another start command.
+  Stop-Service -Name 'Ieum' -Force
+  (Get-Service -Name 'Ieum').WaitForStatus(
+    [System.ServiceProcess.ServiceControllerStatus]::Stopped,
+    [TimeSpan]::FromSeconds(15)
+  )
+  Wait-ProcessExit -Name 'ieum-core'
+  $primaryCore.Dispose()
+
+  Start-Service -Name 'Ieum'
+  Wait-ServiceRunning -Name 'Ieum'
+  Wait-NamedPipe -Name 'ieum-daemon-v1'
+  $primaryCore = Wait-ProcessName -Name 'ieum-core'
+  Wait-NamedPipe -Name 'ieum-core-v1'
+  if (-not [string]::IsNullOrWhiteSpace($CoexistingPipeName)) {
+    Wait-NamedPipe -Name $CoexistingPipeName
+  }
+
   $duplicateCore = Start-ClientCore -Executable $core -SettingsFile $SettingsFile
   try {
     if (-not $duplicateCore.WaitForExit(5000)) {
@@ -482,6 +517,57 @@ function Assert-IeumServiceRuntime {
   Invoke-IpcCommands -Name 'ieum-daemon-v1' -Messages @('stop')
   Wait-ProcessExit -Name 'ieum-core'
   $primaryCore.Dispose()
+}
+
+function Assert-UserStartupRegistration {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $InstallLocation
+  )
+
+  $gui = Join-Path $InstallLocation 'ieum.exe'
+  $runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
+  $expectedCommand = '"' + $gui + '" --background'
+  $process = Start-Process -FilePath $gui -ArgumentList '--background' -PassThru
+  try {
+    $deadline = [DateTime]::UtcNow.AddSeconds(15)
+    $registeredCommand = $null
+    do {
+      $runRegistration = Get-ItemProperty -LiteralPath $runKey -Name 'Ieum' -ErrorAction SilentlyContinue
+      $registeredCommand = if ($null -eq $runRegistration) { $null } else { $runRegistration.Ieum }
+      if ($registeredCommand -eq $expectedCommand) {
+        break
+      }
+      Start-Sleep -Milliseconds 250
+    } while ([DateTime]::UtcNow -lt $deadline)
+
+    if ($registeredCommand -ne $expectedCommand) {
+      throw "Ieum did not register the expected startup command: $expectedCommand"
+    }
+
+    $duplicate = Start-Process -FilePath $gui -ArgumentList '--background' -PassThru
+    try {
+      if (-not $duplicate.WaitForExit(5000)) {
+        throw 'A duplicate background GUI did not exit'
+      }
+      if ($duplicate.ExitCode -ne 0) {
+        throw "A duplicate background GUI exited with code $($duplicate.ExitCode)"
+      }
+    }
+    finally {
+      if (-not $duplicate.HasExited) {
+        $duplicate.Kill($true)
+      }
+      $duplicate.Dispose()
+    }
+  }
+  finally {
+    if (-not $process.HasExited) {
+      $process.Kill($true)
+      $process.WaitForExit()
+    }
+    $process.Dispose()
+  }
 }
 
 $previousRevision = if ($CurrentTag -like 'v*') {
@@ -591,6 +677,8 @@ try {
     throw "Installed core executable failed with exit code $LASTEXITCODE"
   }
 
+  Assert-UserStartupRegistration -InstallLocation $product.InstallLocation
+
   $runtimeSettings = Join-Path $workDirectory 'ieum-upgrade-runtime.conf'
   New-ClientSettings -Path $runtimeSettings -ComputerName 'ieum-upgrade-ci'
   Assert-IeumServiceRuntime -InstallLocation $product.InstallLocation -SettingsFile $runtimeSettings
@@ -616,6 +704,12 @@ finally {
         -Target $productCode `
         -Log (Join-Path $workDirectory "uninstall-$($productCode.Trim('{}')).log")
     }
+  }
+  $runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
+  $runRegistration = Get-ItemProperty -LiteralPath $runKey -Name 'Ieum' -ErrorAction SilentlyContinue
+  $startupValue = if ($null -eq $runRegistration) { $null } else { $runRegistration.Ieum }
+  if ($null -ne $startupValue) {
+    throw "Uninstall left the Ieum startup registration behind: $startupValue"
   }
 }
 

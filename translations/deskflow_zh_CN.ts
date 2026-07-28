@@ -1001,6 +1001,14 @@ Client</source>
         <source>%1 is already running</source>
         <translation>%1 已经在运行中</translation>
     </message>
+    <message>
+        <source>Allow Ieum at login</source>
+        <translation>允许 Ieum 登录时启动</translation>
+    </message>
+    <message>
+        <source>macOS has not yet allowed Ieum to start at login. Open System Settings &gt; General &gt; Login Items and allow Ieum so its menu bar icon and KVM core return after sign-in.</source>
+        <translation>macOS 尚未允许 Ieum 登录时启动。请打开“系统设置”&gt;“通用”&gt;“登录项”并允许 Ieum，以便登录后恢复菜单栏图标和 KVM 核心。</translation>
+    </message>
 </context>
 <context>
     <name>ScreenSettingsDialog</name>
@@ -1638,6 +1646,41 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Start Tailscale and sign in, then refresh its status before saving this setting.</source>
         <translation>请启动并登录 Tailscale，然后刷新状态再保存此设置。</translation>
+    </message>
+    <message>
+        <source>Start Ieum automatically when I sign in</source>
+        <translation>登录时自动启动 Ieum</translation>
+    </message>
+    <message>
+        <source>Could not update automatic startup</source>
+        <translation>无法更新自动启动设置</translation>
+    </message>
+    <message>
+        <source>Ieum could not update its automatic startup setting.
+
+%1</source>
+        <translation>Ieum 无法更新自动启动设置。
+
+%1</translation>
+    </message>
+    <message>
+        <source>Allow Ieum at login</source>
+        <translation>允许 Ieum 登录时启动</translation>
+    </message>
+    <message>
+        <source>macOS still requires approval for automatic startup. Open System Settings &gt; General &gt; Login Items and allow Ieum.</source>
+        <translation>macOS 仍需要批准自动启动。请打开“系统设置”&gt;“通用”&gt;“登录项”并允许 Ieum。</translation>
+    </message>
+</context>
+<context>
+    <name>StartupManager</name>
+    <message>
+        <source>Automatic startup is not supported on this operating system.</source>
+        <translation>此操作系统不支持自动启动。</translation>
+    </message>
+    <message>
+        <source>Windows could not update the current user&apos;s startup registration.</source>
+        <translation>Windows 无法更新当前用户的启动项注册。</translation>
     </message>
 </context>
 <context>

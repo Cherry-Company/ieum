@@ -1001,6 +1001,14 @@ Additionally, check you are able to %1 the server config file: %2</source>
         <source>%1 is already running</source>
         <translation>%1이(가) 이미 실행 중입니다</translation>
     </message>
+    <message>
+        <source>Allow Ieum at login</source>
+        <translation>로그인할 때 이음 허용</translation>
+    </message>
+    <message>
+        <source>macOS has not yet allowed Ieum to start at login. Open System Settings &gt; General &gt; Login Items and allow Ieum so its menu bar icon and KVM core return after sign-in.</source>
+        <translation>macOS가 아직 로그인할 때 이음 실행을 허용하지 않았습니다. 로그인 뒤 메뉴 막대 아이콘과 KVM 코어가 다시 실행되도록 시스템 설정 &gt; 일반 &gt; 로그인 항목을 열어 이음을 허용하세요.</translation>
+    </message>
 </context>
 <context>
     <name>ScreenSettingsDialog</name>
@@ -1638,6 +1646,41 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Start Tailscale and sign in, then refresh its status before saving this setting.</source>
         <translation>Tailscale을 실행하고 로그인한 뒤 상태를 새로 고쳐 이 설정을 저장하세요.</translation>
+    </message>
+    <message>
+        <source>Start Ieum automatically when I sign in</source>
+        <translation>로그인할 때 이음 자동 실행</translation>
+    </message>
+    <message>
+        <source>Could not update automatic startup</source>
+        <translation>자동 실행 설정을 변경할 수 없음</translation>
+    </message>
+    <message>
+        <source>Ieum could not update its automatic startup setting.
+
+%1</source>
+        <translation>이음이 자동 실행 설정을 변경하지 못했습니다.
+
+%1</translation>
+    </message>
+    <message>
+        <source>Allow Ieum at login</source>
+        <translation>로그인할 때 이음 허용</translation>
+    </message>
+    <message>
+        <source>macOS still requires approval for automatic startup. Open System Settings &gt; General &gt; Login Items and allow Ieum.</source>
+        <translation>macOS 자동 실행 승인이 아직 필요합니다. 시스템 설정 &gt; 일반 &gt; 로그인 항목을 열어 이음을 허용하세요.</translation>
+    </message>
+</context>
+<context>
+    <name>StartupManager</name>
+    <message>
+        <source>Automatic startup is not supported on this operating system.</source>
+        <translation>이 운영체제에서는 자동 실행을 지원하지 않습니다.</translation>
+    </message>
+    <message>
+        <source>Windows could not update the current user&apos;s startup registration.</source>
+        <translation>Windows에서 현재 사용자의 시작 프로그램 등록을 변경하지 못했습니다.</translation>
     </message>
 </context>
 <context>
