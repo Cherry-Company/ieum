@@ -19,13 +19,14 @@
   <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15"><strong>이음 다운로드</strong></a>
   · <a href="#설치와-첫-연결"><strong>설치 가이드</strong></a>
   · <a href="#설치-전-1분-보안-확인"><strong>보안·권한 안내</strong></a>
-  · <a href="#후원"><strong>후원하기</strong></a>
+  · <a href="https://github.com/sponsors/victoriousian"><strong>GitHub Sponsors로 후원</strong></a>
 </p>
 
 <p align="center">
   <a href="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
   <a href="https://github.com/victoriousian/ieum/releases"><img src="https://img.shields.io/github/v/release/victoriousian/ieum?include_prereleases&label=release" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--only-blue" alt="GPL-2.0-only"></a>
+  <a href="https://github.com/sponsors/victoriousian"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-EA4AAA?logo=githubsponsors&logoColor=white" alt="GitHub Sponsors에서 이음 후원하기"></a>
 </p>
 
 이음은 한 대의 키보드와 마우스로 Windows, macOS, Linux 컴퓨터를 오가게 해주는 소프트웨어
@@ -463,13 +464,14 @@ sha256sum ./Ieum-0.1.0-alpha.15-linux-x86_64.flatpak
 
 ## 후원
 
-**이음이 도움이 됐다면 개발을 후원해 주세요.** 후원금은 Windows 코드 서명, Apple Developer
-Program과 공증, 실기 테스트 장비, 릴레이 인프라와 지속적인 유지보수에 사용합니다.
+**이음이 도움이 됐다면 [GitHub Sponsors에서 개발을 후원해 주세요](https://github.com/sponsors/victoriousian).**
+후원금은 Windows 코드 서명, Apple Developer Program과 공증, 실기 테스트 장비, 릴레이 인프라와
+지속적인 유지보수에 사용합니다.
 
-현재 `victoriousian` GitHub Sponsors 결제 프로필은 개설 준비 중입니다. 승인되지 않은 결제 링크나
-개인 계좌를 공식 후원 경로처럼 게시하지 않으며, 프로필이 활성화되면 이 위치와 저장소의 Sponsor
-버튼에서 일회성·정기 후원을 받을 예정입니다. 금전 후원 전에도 저장소 Star, 사용 후기, 실기 테스트
-결과와 버그 제보는 프로젝트에 직접적인 도움이 됩니다.
+`victoriousian`의 공식 GitHub Sponsors 프로필은 공개되어 있으며, 현재 **월간 또는 일회성 사용자 지정
+금액**으로 후원할 수 있습니다. 저장소 상단의 **Sponsor** 버튼도 같은 공식 프로필로 연결됩니다.
+승인되지 않은 결제 링크나 개인 계좌는 공식 후원 경로로 안내하지 않습니다. 금전 후원 외에도 저장소
+Star, 사용 후기, 실기 테스트 결과와 재현 가능한 버그 제보는 프로젝트에 직접적인 도움이 됩니다.
 
 ## 한국어 입력은 단순한 키 매핑이 아닙니다
 

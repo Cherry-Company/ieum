@@ -18,13 +18,14 @@
 <p align="center">
   <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15"><strong>下载 Ieum</strong></a>
   · <a href="#首次运行时的安全与权限"><strong>安全与权限</strong></a>
-  · <a href="#支持开发"><strong>支持开发</strong></a>
+  · <a href="https://github.com/sponsors/victoriousian"><strong>赞助 Ieum</strong></a>
 </p>
 
 <p align="center">
   <a href="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
   <a href="https://github.com/victoriousian/ieum/releases"><img src="https://img.shields.io/github/v/release/victoriousian/ieum?include_prereleases&label=release" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--only-blue" alt="GPL-2.0-only"></a>
+  <a href="https://github.com/sponsors/victoriousian"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-EA4AAA?logo=githubsponsors&logoColor=white" alt="通过 GitHub Sponsors 赞助 Ieum"></a>
 </p>
 
 Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切换。它不仅让指针跨越屏幕边缘，
@@ -76,12 +77,13 @@ Qt 实现参考了 Apple WWDC26 Liquid Glass 对层级、标准控件、克制�
 
 ## 支持开发
 
-**如果 이음 (Ieum) 对你有帮助，请考虑支持项目开发。** 资金将用于 Windows 代码签名、Apple
-Developer Program 与公证、真机测试设备、中继基础设施和持续维护。
+**如果 이음 (Ieum) 对你有帮助，请[通过 GitHub Sponsors 支持项目开发](https://github.com/sponsors/victoriousian)。**
+资金将用于 Windows 代码签名、Apple Developer Program 与公证、真机测试设备、中继基础设施和持续
+维护。
 
-`victoriousian` 的 GitHub Sponsors 收款资料目前正在准备中。在资料激活之前，项目不会把未获批准的
-付款链接或个人银行账户作为官方赞助渠道。激活后，可从这里和代码库的 Sponsor 按钮进行单次或定期
-赞助。在此之前，Star、真机测试结果、使用反馈和可复现的错误报告同样能直接帮助项目。
+`victoriousian` 的官方 GitHub Sponsors 页面已经公开，目前可通过**自定义金额按月赞助或单次赞助**。
+代码库顶部的 **Sponsor** 按钮也会打开同一官方页面。项目不会把未经批准的付款链接或个人银行账户
+作为官方赞助渠道。Star、真机测试结果、使用反馈和可复现的错误报告也能直接帮助项目。
 
 ## 韩语输入不只是按键映射
 

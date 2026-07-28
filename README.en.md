@@ -18,13 +18,14 @@
 <p align="center">
   <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15"><strong>Download Ieum</strong></a>
   · <a href="#first-run-security-and-permissions"><strong>Security &amp; permissions</strong></a>
-  · <a href="#support-development"><strong>Support development</strong></a>
+  · <a href="https://github.com/sponsors/victoriousian"><strong>Sponsor Ieum</strong></a>
 </p>
 
 <p align="center">
   <a href="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
   <a href="https://github.com/victoriousian/ieum/releases"><img src="https://img.shields.io/github/v/release/victoriousian/ieum?include_prereleases&label=release" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--only-blue" alt="GPL-2.0-only"></a>
+  <a href="https://github.com/sponsors/victoriousian"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-EA4AAA?logo=githubsponsors&logoColor=white" alt="Sponsor Ieum on GitHub Sponsors"></a>
 </p>
 
 Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers. It goes beyond crossing a
@@ -83,14 +84,14 @@ See the [interface principles](docs/design/visual-system.md) for implementation 
 
 ## Support development
 
-**If Ieum is useful to you, please consider supporting its development.** Funding will be used for Windows code
-signing, the Apple Developer Program and notarization, physical test hardware, relay infrastructure, and ongoing
-maintenance.
+**If Ieum is useful to you, [sponsor its development through GitHub Sponsors](https://github.com/sponsors/victoriousian).**
+Funding will be used for Windows code signing, the Apple Developer Program and notarization, physical test
+hardware, relay infrastructure, and ongoing maintenance.
 
-The `victoriousian` GitHub Sponsors payment profile is currently being prepared. Ieum will not present an
-unapproved payment link or personal bank account as an official funding channel. Once the profile is active,
-one-time and recurring sponsorships will be available here and through the repository Sponsor button. Stars,
-field-test results, usage reports, and actionable bug reports are valuable contributions in the meantime.
+The official `victoriousian` GitHub Sponsors profile is public and currently accepts **custom monthly or one-time
+sponsorships**. The **Sponsor** button at the top of this repository opens the same official profile. Ieum does not
+present unapproved payment links or personal bank accounts as official funding channels. Stars, field-test results,
+usage reports, and reproducible bug reports are also valuable contributions.
 
 ## Korean input is not just key mapping
 

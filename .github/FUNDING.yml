@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: (C) 2026 Ieum Developers
 # SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
 
-# The Sponsors profile must be activated by the account owner before payments work.
+# Enables the repository Sponsor button for the active public profile.
 github: [victoriousian]
