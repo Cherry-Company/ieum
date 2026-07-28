@@ -1,5 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
+ * SPDX-FileCopyrightText: (C) 2026 Cherry Inc.
  * SPDX-FileCopyrightText: (C) 2025 Deskflow Developers
  * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2002 Chris Schoeneman
@@ -60,6 +61,8 @@ public:
   //@}
 
 protected:
+  ServerProxy(Client *client, deskflow::IStream *stream, IEventQueue *events, void *clientEventTarget);
+
   enum class ConnectionResult
   {
     Okay,
@@ -138,6 +141,7 @@ private:
 
   MessageParser m_parser = &ServerProxy::parseHandshakeMessage;
   IEventQueue *m_events = nullptr;
+  void *m_clientEventTarget = nullptr;
   std::string m_serverLayout = "";
   std::string m_clipboardDataCached;
   ClipboardChunkAssemblyState m_clipboardChunkState;

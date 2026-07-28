@@ -38,9 +38,15 @@ constexpr uint32_t kMaxMessagesPerDispatch = 32;
 //
 
 ServerProxy::ServerProxy(Client *client, deskflow::IStream *stream, IEventQueue *events)
+    : ServerProxy(client, stream, events, client != nullptr ? client->getEventTarget() : nullptr)
+{
+}
+
+ServerProxy::ServerProxy(Client *client, deskflow::IStream *stream, IEventQueue *events, void *clientEventTarget)
     : m_client(client),
       m_stream(stream),
-      m_events(events)
+      m_events(events),
+      m_clientEventTarget(clientEventTarget)
 {
   assert(m_client != nullptr);
   assert(m_stream != nullptr);
@@ -56,7 +62,7 @@ ServerProxy::ServerProxy(Client *client, deskflow::IStream *stream, IEventQueue 
   m_events->addHandler(EventTypes::ClipboardSending, this, [this](const auto &e) {
     ClipboardChunk::send(m_stream, e.getDataObject());
   });
-  m_events->addHandler(EventTypes::InputLanguageChanged, m_client->getEventTarget(), [this](const auto &e) {
+  m_events->addHandler(EventTypes::InputLanguageChanged, m_clientEventTarget, [this](const auto &e) {
     handleInputLanguageChanged(e);
   });
 
@@ -72,7 +78,7 @@ ServerProxy::~ServerProxy()
   setKeepAliveRate(-1.0);
   m_events->removeHandler(EventTypes::StreamInputReady, m_stream->getEventTarget());
   m_events->removeHandler(EventTypes::ClipboardSending, this);
-  m_events->removeHandler(EventTypes::InputLanguageChanged, m_client->getEventTarget());
+  m_events->removeHandler(EventTypes::InputLanguageChanged, m_clientEventTarget);
 }
 
 void ServerProxy::resetKeepAliveAlarm()

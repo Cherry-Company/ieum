@@ -242,7 +242,10 @@ private:
 class TestServerProxy : public ServerProxy
 {
 public:
-  using ServerProxy::ServerProxy;
+  TestServerProxy(Client *client, deskflow::IStream *stream, IEventQueue *events)
+      : ServerProxy(client, stream, events, nullptr)
+  {
+  }
 
   bool parseHandshakeMessageReturnsDisconnect(const uint8_t *code)
   {
@@ -282,7 +285,7 @@ void ServerProxyTests::handleKeepAliveAlarm_timeout_queuesDisconnectRequest()
 {
   RecordingEventQueue events;
   FakeStream stream;
-  ServerProxy proxy(undereferenceableClient(), &stream, &events);
+  TestServerProxy proxy(undereferenceableClient(), &stream, &events);
 
   QVERIFY(events.dispatchEvent(Event(EventTypes::Timer, events.timer())));
 
@@ -302,7 +305,7 @@ void ServerProxyTests::handleData_incompleteMessage_queuesDisconnectRequest()
   RecordingEventQueue events;
   FakeStream stream;
   stream.push("DF");
-  ServerProxy proxy(undereferenceableClient(), &stream, &events);
+  TestServerProxy proxy(undereferenceableClient(), &stream, &events);
 
   QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, stream.getEventTarget())));
 
@@ -315,6 +318,26 @@ void ServerProxyTests::handleData_incompleteMessage_queuesDisconnectRequest()
   QVERIFY(request != nullptr);
   QVERIFY(request->kind() == Client::DisconnectRequest::Kind::Disconnect);
   QCOMPARE(QString::fromUtf8(request->message()), QStringLiteral("incomplete message from server"));
+}
+
+void ServerProxyTests::handleData_largeBurst_queuesBoundedContinuation()
+{
+  RecordingEventQueue events;
+  FakeStream stream;
+  std::string messages;
+  for (int i = 0; i < 64; ++i) {
+    messages.append(kMsgCNoop, 4);
+  }
+  stream.push(messages);
+  TestServerProxy proxy(undereferenceableClient(), &stream, &events);
+
+  QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, stream.getEventTarget())));
+
+  QCOMPARE(stream.getSize(), uint32_t{32 * 4});
+  QCOMPARE(events.addedEvents().size(), static_cast<size_t>(1));
+  const auto &continuation = events.addedEvents().front();
+  QVERIFY(continuation.getType() == EventTypes::StreamInputReady);
+  QCOMPARE(continuation.getTarget(), stream.getEventTarget());
 }
 
 void ServerProxyTests::parseHandshakeMessage_protocolError_queuesRefusalRequest()

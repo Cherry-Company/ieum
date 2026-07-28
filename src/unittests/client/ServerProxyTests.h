@@ -18,6 +18,7 @@ private Q_SLOTS:
   void initTestCase();
   void handleKeepAliveAlarm_timeout_queuesDisconnectRequest();
   void handleData_incompleteMessage_queuesDisconnectRequest();
+  void handleData_largeBurst_queuesBoundedContinuation();
   void parseHandshakeMessage_protocolError_queuesRefusalRequest();
 
 private:
