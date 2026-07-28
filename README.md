@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.13"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14"><strong>이음 다운로드</strong></a>
   · <a href="#설치와-첫-연결"><strong>설치 가이드</strong></a>
   · <a href="#후원"><strong>후원하기</strong></a>
 </p>
@@ -31,8 +31,25 @@
 KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
 원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
 
-> 현재 단계는 `v0.1.0-alpha.13`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 현재 단계는 `v0.1.0-alpha.14`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
+
+### alpha.14 입력 안정성 변경
+
+- 지연된 네트워크 입력을 짧은 단위로 나눠 처리해 긴 마우스 이동이 한 지점으로 뭉치는 현상을
+  줄이고, 이벤트 루프가 입력 폭주에 장시간 점유되지 않도록 했습니다.
+- Windows 클라이언트의 절대 좌표를 주 모니터가 아닌 전체 가상 데스크톱 기준으로 계산해, 보조
+  모니터와 음수 좌표에서 커서가 멈추거나 잘못 이동하는 경로를 보정했습니다.
+- macOS 클라이언트에서는 원격 화면에 있는 동안 마우스를 계속 캡처하고, macOS 27의 배경 클릭과
+  드래그 이벤트 번호를 보존하는 upstream 수정까지 포함했습니다.
+- 한/영 상태 변경은 Windows 알림 토스트를 반복해서 띄우지 않습니다. 메인 창 상태 표시줄의
+  고정된 `한`/`A` 표시와 알림 영역 아이콘의 메뉴·도움말에서 조용히 확인할 수 있습니다.
+- 연결 종료와 거절은 현재 네트워크 콜백이 끝난 뒤 처리하고, 이벤트 핸들러 수명도 보존해
+  끊김·재접속 중 자기 자신을 정리하던 불안정 경로를 제거했습니다.
+
+좌표 변환, 수신 분할, 상태 표시와 연결 종료에는 자동 회귀 테스트를 추가했습니다. 다만 실제
+Tailscale·Wi-Fi 품질과 마우스 폴링률은 환경마다 다르므로, 두 대의 실기에서 장시간 사용 결과는
+계속 확인해야 합니다.
 
 ## 설치와 첫 연결
 
@@ -48,17 +65,17 @@ KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제�
 ### 1. 설치 파일 고르기
 
 최신 테스트 릴리스는
-**[이음 (Ieum) v0.1.0-alpha.13](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.13)**입니다.
+**[이음 (Ieum) v0.1.0-alpha.14](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14)**입니다.
 한국어 사용자는 아래 직링크를 사용하면 릴리스 자산 목록에서 파일명을 찾을 필요가 없습니다.
 
 | 기기 | 권장 다운로드 |
 | --- | --- |
-| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.13/Ieum-0.1.0-alpha.13-win-x64-ko-KR.msi) |
-| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.13/Ieum-0.1.0-alpha.13-win-arm64-ko-KR.msi) |
-| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.13/Ieum-0.1.0-alpha.13-macos-arm64.dmg) |
-| Intel Mac | [macOS Intel DMG](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.13/Ieum-0.1.0-alpha.13-macos-x86_64.dmg) |
-| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.13) |
-| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.13) |
+| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.14/Ieum-0.1.0-alpha.14-win-x64-ko-KR.msi) |
+| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.14/Ieum-0.1.0-alpha.14-win-arm64-ko-KR.msi) |
+| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.14/Ieum-0.1.0-alpha.14-macos-arm64.dmg) |
+| Intel Mac | [macOS Intel DMG](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.14/Ieum-0.1.0-alpha.14-macos-x86_64.dmg) |
+| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14) |
+| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14) |
 
 아키텍처를 모르겠다면 다음 위치에서 확인합니다.
 
@@ -149,7 +166,7 @@ Apple Silicon 패키지는 macOS 14 이상, Intel 패키지는 macOS 12 이상�
 코어가 완전히 종료됩니다. `alpha.13`은 숨김 전환 중 macOS가 상태 아이콘을 떼는 경우 아이콘을
 자동으로 다시 등록합니다.
 
-> “손상되어 열 수 없음”은 단순 미공증 경고와 다릅니다. `alpha.13` 파일의 SHA-256이 다르면
+> “손상되어 열 수 없음”은 단순 미공증 경고와 다릅니다. `alpha.14` 파일의 SHA-256이 다르면
 > 실행하지 말고 삭제 후 다시 받으세요. 해시가 일치하는데도 같은 문구가 나오면 macOS 버전과
 > 메시지 전체를 포함해 [버그를 제보](https://github.com/victoriousian/ieum/issues/new?template=bug_report.yml)해
 > 주세요. 보안 속성을 강제로 지우는 터미널 명령은 권장하지 않습니다.
@@ -165,7 +182,7 @@ Linux 패키지는 아직 실험적입니다. 처음이라면 배포판 차이�
 
 ```sh
 # x86_64 예시
-flatpak install --user ./Ieum-0.1.0-alpha.13-linux-x86_64.flatpak
+flatpak install --user ./Ieum-0.1.0-alpha.14-linux-x86_64.flatpak
 flatpak run org.deskflow.deskflow
 ```
 
@@ -238,8 +255,8 @@ GUI 로그는 최근 10,000줄까지만 보관하고 50ms 단위로 묶어 화�
 
 ### 업데이트와 제거
 
-- **Windows 업데이트:** `alpha.8`부터 `alpha.12`까지는 앱과 서비스를 수동 삭제하지 말고
-  `alpha.13` MSI를 바로 실행해 업그레이드합니다. 인증서가 바뀐 설치에서는 최초 연결 지문을 다시
+- **Windows 업데이트:** `alpha.8`부터 `alpha.13`까지는 앱과 서비스를 수동 삭제하지 말고
+  `alpha.14` MSI를 바로 실행해 업그레이드합니다. 인증서가 바뀐 설치에서는 최초 연결 지문을 다시
   승인할 수 있습니다.
 - **macOS 업데이트:** 이음을 완전히 종료하고 새 `Ieum.app`을 Applications의 기존 앱 위에
   복사합니다. 알파 빌드는 임시 서명이라 손쉬운 사용 재승인이 필요할 수 있습니다.
@@ -261,8 +278,10 @@ GUI 로그는 최근 10,000줄까지만 보관하고 50ms 단위로 묶어 화�
 | MSI가 Visual C++ 런타임을 요구함 | 위의 Microsoft 공식 x64/ARM64 런타임을 설치한 뒤 MSI를 다시 실행 |
 | “더 최신 버전이 설치됨”으로 MSI가 종료됨 | 설치된 앱에서 `이음 (Ieum)`, `Ieum`, 초기 알파의 `Deskflow` 순서로 확인하고 위 Microsoft 복구 절차 사용 |
 | 설치 후 창이 안 보임 | 알림 영역 아이콘을 두 번 누르거나 `ieum.exe --show` 실행. 작업 관리자에서 서비스부터 강제 종료하지 않기 |
-| `could not contact existing core`, `QLocalSocket` 오류 | 두 컴퓨터 모두 `alpha.13`인지 확인. 이 버전은 남은 코어를 정리하고 최대 5회 자동 복구함. 계속 실패하면 관련 로그와 함께 제보 |
+| `could not contact existing core`, `QLocalSocket` 오류 | 두 컴퓨터 모두 `alpha.14`인지 확인. 이 버전은 남은 코어를 정리하고 최대 5회 자동 복구함. 계속 실패하면 관련 로그와 함께 제보 |
 | 클라이언트가 `Timed out` | 서버가 시작 상태인지, 주소와 TCP `24800`, OS 방화벽과 Tailnet ACL이 맞는지 확인 |
+| 원격 커서가 끊기거나 특정 모니터에서 멈춤 | 양쪽을 `alpha.14`로 맞추고 다시 연결. 계속되면 서버·클라이언트 OS, 모니터 배치, 로컬/Tailscale 여부와 같은 시간대의 양쪽 로그를 함께 제보 |
+| Windows 한/영 알림이 반복됨 | `alpha.14`는 알림 토스트 대신 상태 표시줄의 `한`/`A`와 알림 영역 메뉴에 상태를 표시함 |
 | Mac에서 개발자를 확인할 수 없음 | 해시 확인 후 시스템 설정의 **개인정보 보호 및 보안 → 확인 없이 열기** 사용 |
 | Mac에서 “손상됨” | 해시가 다르면 삭제·재다운로드. 해시가 같으면 우회 명령 대신 오류 전문과 macOS 버전으로 제보 |
 | Mac 권한 목록에 현재 앱이 없음 | 앱을 Applications로 옮긴 뒤 **이전 승인 초기화 → 다시 확인**. 입력 모니터링만 남으면 현재 앱을 목록에 다시 추가 |
@@ -276,20 +295,20 @@ Qt 버전과 정확한 오류를 함께 전달할 수 있습니다.
 ### 다운로드 파일 검증
 
 릴리스의
-[`SHA256SUMS.txt`](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.13/SHA256SUMS.txt)와
+[`SHA256SUMS.txt`](https://github.com/victoriousian/ieum/releases/download/v0.1.0-alpha.14/SHA256SUMS.txt)와
 계산 결과가 정확히 같은지 비교합니다. 파일명이 다르면 명령의 파일명만 바꾸세요.
 
 ```powershell
 # Windows PowerShell
-Get-FileHash '.\Ieum-0.1.0-alpha.13-win-x64-ko-KR.msi' -Algorithm SHA256
+Get-FileHash '.\Ieum-0.1.0-alpha.14-win-x64-ko-KR.msi' -Algorithm SHA256
 ```
 
 ```sh
 # macOS
-shasum -a 256 ./Ieum-0.1.0-alpha.13-macos-arm64.dmg
+shasum -a 256 ./Ieum-0.1.0-alpha.14-macos-arm64.dmg
 
 # Linux
-sha256sum ./Ieum-0.1.0-alpha.13-linux-x86_64.flatpak
+sha256sum ./Ieum-0.1.0-alpha.14-linux-x86_64.flatpak
 ```
 
 현재 Windows 패키지는 코드 서명 전이고 macOS 패키지는 임시(ad-hoc) 서명으로 무결성 봉인만
