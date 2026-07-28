@@ -44,6 +44,22 @@ p, li { white-space: pre-wrap; }
         <translation>%1 정보</translation>
     </message>
     <message>
+        <source>Credits</source>
+        <translation>크레딧</translation>
+    </message>
+    <message>
+        <source>Developer and contributor:</source>
+        <translation>개발자 및 기여자:</translation>
+    </message>
+    <message>
+        <source>Company:</source>
+        <translation>개발사:</translation>
+    </message>
+    <message>
+        <source>Upstream contributors:</source>
+        <translation>상류 프로젝트 기여자:</translation>
+    </message>
+    <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }

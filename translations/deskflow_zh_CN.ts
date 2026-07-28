@@ -51,6 +51,22 @@ p, li { white-space: pre-wrap; }
         <source>About %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Credits</source>
+        <translation>制作人员</translation>
+    </message>
+    <message>
+        <source>Developer and contributor:</source>
+        <translation>开发者与贡献者：</translation>
+    </message>
+    <message>
+        <source>Company:</source>
+        <translation>公司：</translation>
+    </message>
+    <message>
+        <source>Upstream contributors:</source>
+        <translation>上游项目贡献者：</translation>
+    </message>
 </context>
 <context>
     <name>ActionDialog</name>

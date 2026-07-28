@@ -1,4 +1,4 @@
-<!-- SPDX-FileCopyrightText: (C) 2026 Ieum Developers -->
+<!-- SPDX-FileCopyrightText: (C) 2026 Cherry Inc. -->
 <!-- SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception -->
 
 <p align="center">
@@ -8,6 +8,8 @@
 <h1 align="center">Ieum</h1>
 
 <p align="center"><strong>Software KVM across Windows, macOS, and Linux</strong></p>
+
+<p align="center">Developer and contributor <strong>Heesang Kim (PhD)</strong> · Company <strong>Cherry Inc.</strong></p>
 
 <p align="center">
   <a href="README.md">한국어</a> · English · <a href="README.zh-CN.md">简体中文</a>

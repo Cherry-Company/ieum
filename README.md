@@ -1,4 +1,4 @@
-<!-- SPDX-FileCopyrightText: (C) 2026 Ieum Developers -->
+<!-- SPDX-FileCopyrightText: (C) 2026 Cherry Inc. -->
 <!-- SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception -->
 
 <p align="center">
@@ -8,6 +8,8 @@
 <h1 align="center">이음 (Ieum)</h1>
 
 <p align="center"><strong>한글과 CJK 입력기를 키 매핑이 아닌 입력 상태로 다루는 IME 네이티브 소프트 KVM</strong></p>
+
+<p align="center">개발자 및 기여자 <strong>Heesang Kim (PhD)</strong> · 개발사 <strong>Cherry Inc.</strong></p>
 
 <p align="center">
   한국어 · <a href="README.en.md">English</a> · <a href="README.zh-CN.md">简体中文</a>

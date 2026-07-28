@@ -1,5 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
+ * SPDX-FileCopyrightText: (C) 2026 Cherry Inc.
  * SPDX-FileCopyrightText: (C) 2024 Chris Rizzitello <sithlord48@gmail.com>
  * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
@@ -37,6 +38,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui{std::make_unique
   ui->lblName->setText(deskflow::gui::productDisplayName());
   ui->lblDescription->setText(deskflow::gui::productTagline());
   ui->lblCopyright->setText(kCopyright);
+  ui->groupBox->setTitle(tr("Credits"));
 
   // Use non-breaking space in each awesome dev name so names are not split across lines.
   QStringList devsNbsp;
@@ -46,7 +48,12 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui{std::make_unique
   }
 
   ui->lblImportantDevs->setTextFormat(Qt::RichText);
-  ui->lblImportantDevs->setText(QStringLiteral("%1\n").arg(devsNbsp.join(", ")));
+  ui->lblImportantDevs->setText(QStringLiteral("<b>%1</b> %2<br><b>%3</b> %4<br><br><b>%5</b><br>%6")
+                                    .arg(
+                                        tr("Developer and contributor:"), QStringLiteral("Heesang Kim&nbsp;(PhD)"),
+                                        tr("Company:"), QStringLiteral("Cherry Inc."), tr("Upstream contributors:"),
+                                        devsNbsp.join(QStringLiteral(", "))
+                                    ));
 
   ui->btnOk->setDefault(true);
   connect(ui->btnOk, &QPushButton::clicked, this, &AboutDialog::close);
@@ -55,7 +62,7 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui{std::make_unique
 void AboutDialog::copyVersionText() const
 {
   QString infoString =
-      QStringLiteral("%1: %2 (%3)\nQt: %4\nSystem: %5")
+      QStringLiteral("%1: %2 (%3)\nDeveloper: Heesang Kim (PhD)\nCompany: Cherry Inc.\nQt: %4\nSystem: %5")
           .arg(
               deskflow::gui::productDisplayName(), kVersion, kVersionGitSha, qVersion(), QSysInfo::prettyProductName()
           );
