@@ -28,6 +28,7 @@
 class QAction;
 class QMenu;
 class QLocalServer;
+class QTimer;
 
 class DeskflowApplication;
 class LogDock;
@@ -145,6 +146,8 @@ private:
   void tailscalePeerSelected(int index);
   void updateTailscaleControls(bool refreshPeers = false);
   bool prepareTailscale();
+  void recordServerStartNetwork();
+  void networkAddressesChanged(const QStringList &addresses);
   void updateIpLabel(const QStringList &addresses);
   void updateTimeoutDelay(int newDelay);
 
@@ -210,7 +213,10 @@ private:
 
   // Network monitoring
   NetworkMonitor *m_networkMonitor = nullptr;
+  QTimer *m_networkRecoveryTimer = nullptr;
   QString m_currentIpAddress;
+  bool m_serverUsesBoundAddress = false;
+  bool m_serverNetworkUnavailable = false;
 
   // Server IP strategy optimization
   QStringList m_serverStartIPs;

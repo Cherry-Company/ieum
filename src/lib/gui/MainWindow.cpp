@@ -51,6 +51,7 @@
 #include <QScreen>
 #include <QScrollBar>
 #include <QSignalBlocker>
+#include <QTimer>
 
 #include <memory>
 
@@ -83,7 +84,8 @@ MainWindow::MainWindow()
       m_actionStartCore{new QAction(this)},
       m_actionRestartCore{new QAction(this)},
       m_actionStopCore{new QAction(this)},
-      m_networkMonitor{new NetworkMonitor(this)}
+      m_networkMonitor{new NetworkMonitor(this)},
+      m_networkRecoveryTimer{new QTimer(this)}
 {
   ui->setupUi(this);
   applyIeumMainWindowStyle(*this);
@@ -318,7 +320,26 @@ void MainWindow::connectSlots()
 
   connect(ui->lineEditName, &QLineEdit::editingFinished, this, &MainWindow::setHostName);
 
-  connect(m_networkMonitor, &NetworkMonitor::ipAddressesChanged, this, &MainWindow::updateIpLabel);
+  connect(m_networkMonitor, &NetworkMonitor::ipAddressesChanged, this, &MainWindow::networkAddressesChanged);
+
+  m_networkRecoveryTimer->setInterval(1000);
+  m_networkRecoveryTimer->setSingleShot(true);
+  connect(m_networkRecoveryTimer, &QTimer::timeout, this, [this] {
+    if (m_coreProcess.mode() != CoreMode::Server || !m_coreProcess.isStarted()) {
+      return;
+    }
+
+    const auto availableAddresses = NetworkMonitor::validAddresses();
+    const auto replacementAddress = Settings::serverBindAddress();
+    if (replacementAddress.isEmpty() || !availableAddresses.contains(replacementAddress)) {
+      return;
+    }
+
+    qInfo().noquote() << "server network address recovered, restarting core on" << replacementAddress;
+    m_serverNetworkUnavailable = false;
+    recordServerStartNetwork();
+    m_coreProcess.restart();
+  });
 }
 
 void MainWindow::toggleLogVisible(bool visible)
@@ -431,9 +452,7 @@ void MainWindow::startCore()
   }
 
   if (m_coreProcess.mode() == CoreMode::Server) {
-    const auto bindAddress = Settings::serverBindAddress();
-    m_serverStartIPs = bindAddress.isEmpty() ? NetworkMonitor::validAddresses() : QStringList{bindAddress};
-    m_serverStartSuggestedIP = m_serverStartIPs.isEmpty() ? "" : m_serverStartIPs.first();
+    recordServerStartNetwork();
   }
 
   m_actionStartCore->setVisible(false);
@@ -518,6 +537,9 @@ void MainWindow::resetCore()
 {
   if (!prepareTailscale()) {
     return;
+  }
+  if (m_coreProcess.mode() == CoreMode::Server) {
+    recordServerStartNetwork();
   }
   m_coreProcess.restart();
 }
@@ -728,6 +750,7 @@ void MainWindow::setupTrayIcon()
   trayMenu->insertSeparator(m_actionMinimize);
   trayMenu->insertSeparator(m_actionTrayQuit);
   m_trayIcon->setContextMenu(trayMenu);
+  m_trayIcon->setToolTip(productDisplayName());
 
   setTrayIcon();
   m_trayIcon->show();
@@ -773,10 +796,13 @@ void MainWindow::setTrayIcon()
 
   QString themeIcon = kRevFqdnName;
   if (!Settings::value(Settings::Gui::SymbolicTrayIcon).toBool()) {
-    if (deskflow::platform::isMac())
-      m_trayIcon->setIcon(QIcon::fromTheme(themeIcon));
-    else
+    if (deskflow::platform::isMac()) {
+      m_trayIcon->setIcon(
+          QIcon::fromTheme(themeIcon, QIcon(fallbackPath.arg(kAppId, QStringLiteral("dark"), themeIcon)))
+      );
+    } else {
       m_trayIcon->setIcon(QIcon(fallbackPath.arg(kAppId, QStringLiteral("dark"), themeIcon)));
+    }
     return;
   }
 
@@ -988,6 +1014,11 @@ void MainWindow::coreProcessStateChanged(ProcessState state)
     }
   }
 
+  if (state == Stopped) {
+    m_networkRecoveryTimer->stop();
+    m_serverNetworkUnavailable = false;
+  }
+
   if (state == Started || state == Starting || state == RetryPending) {
     disconnect(ui->btnToggleCore, &QPushButton::clicked, m_actionStartCore, &QAction::trigger);
     connect(ui->btnToggleCore, &QPushButton::clicked, m_actionStopCore, &QAction::trigger, Qt::UniqueConnection);
@@ -1038,6 +1069,13 @@ void MainWindow::hide()
 {
 #ifdef Q_OS_MACOS
   macOSNativeHide();
+  // Changing the activation policy can detach Qt's status item on macOS.
+  // Re-register it after Cocoa finishes the hide transition.
+  QTimer::singleShot(0, m_trayIcon, [this] {
+    m_trayIcon->hide();
+    setTrayIcon();
+    m_trayIcon->show();
+  });
 #else
   QMainWindow::hide();
 #endif
@@ -1439,6 +1477,44 @@ bool MainWindow::prepareTailscale()
     }
   }
   return true;
+}
+
+void MainWindow::recordServerStartNetwork()
+{
+  const auto bindAddress = Settings::serverBindAddress();
+  m_serverUsesBoundAddress = !bindAddress.isEmpty();
+  m_serverStartIPs = m_serverUsesBoundAddress ? QStringList{bindAddress} : NetworkMonitor::validAddresses();
+  m_serverStartSuggestedIP = m_serverStartIPs.isEmpty() ? QString() : m_serverStartIPs.first();
+}
+
+void MainWindow::networkAddressesChanged(const QStringList &addresses)
+{
+  if (m_coreProcess.mode() != CoreMode::Server || !m_coreProcess.isStarted()) {
+    updateIpLabel(addresses);
+    return;
+  }
+
+  if (!m_serverUsesBoundAddress) {
+    m_serverStartIPs = addresses;
+    m_serverStartSuggestedIP = addresses.isEmpty() ? QString() : addresses.first();
+    updateIpLabel(addresses);
+    return;
+  }
+
+  const auto startAddressAvailable = addresses.contains(m_serverStartSuggestedIP);
+  if (!startAddressAvailable) {
+    m_serverNetworkUnavailable = true;
+    m_networkRecoveryTimer->stop();
+
+    const auto replacementAddress = Settings::serverBindAddress();
+    if (!replacementAddress.isEmpty() && addresses.contains(replacementAddress)) {
+      m_networkRecoveryTimer->start();
+    }
+  } else if (m_serverNetworkUnavailable) {
+    m_networkRecoveryTimer->start();
+  }
+
+  updateIpLabel(addresses);
 }
 
 void MainWindow::updateIpLabel(const QStringList &addresses)

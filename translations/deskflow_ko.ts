@@ -328,6 +328,13 @@ Do you want to connect to the server?
     </message>
 </context>
 <context>
+    <name>LogWidget</name>
+    <message>
+        <source>%1 additional log lines were omitted to keep the interface responsive.</source>
+        <translation>인터페이스 응답성을 유지하기 위해 추가 로그 %1줄을 생략했습니다.</translation>
+    </message>
+</context>
+<context>
     <name>MacAccessibility</name>
     <message>
         <source>Ieum needs Accessibility access to share the keyboard and mouse.

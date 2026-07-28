@@ -176,8 +176,8 @@ void MSWindowsWatchdog::mainLoop(const void *)
     std::unique_lock lock(m_processStateMutex);
 
     if (m_processState == Running && !m_command.empty() && !m_foreground && m_session.hasChanged()) {
-      LOG_DEBUG("session changed, queueing process start");
-      m_processState = StartPending;
+      LOG_DEBUG("session changed, queueing process replacement");
+      m_processState = StopPending;
       m_nextStartTime.reset();
     }
 
@@ -224,7 +224,7 @@ void MSWindowsWatchdog::mainLoop(const void *)
         LOG_WARN("no process to stop");
       }
       shutdownExistingProcesses();
-      m_processState = Idle;
+      m_processState = m_command.empty() ? Idle : StartPending;
     } break;
     }
 
@@ -330,6 +330,10 @@ void MSWindowsWatchdog::setProcessConfig(const std::string_view &command, bool e
   if (m_command.empty()) {
     LOG_DEBUG("command cleared, queueing process stop");
     m_processState = ProcessState::StopPending;
+  } else if (m_processState == ProcessState::Running || m_processState == ProcessState::StopPending) {
+    LOG_DEBUG("command changed while process is active, queueing process replacement");
+    m_processState = ProcessState::StopPending;
+    m_nextStartTime.reset();
   } else {
     LOG_DEBUG("command changed, queueing process start");
     m_processState = ProcessState::StartPending;

@@ -106,8 +106,11 @@ private Q_SLOTS:
 private:
   void startForegroundProcess(const QStringList &args);
   void startProcessFromDaemon();
+  void stop(std::optional<ProcessMode> processMode, bool restartRequested);
   void stopForegroundProcess() const;
   void stopProcessFromDaemon();
+  void scheduleRestart(int delayMs);
+  void connectCoreIpc(quint64 startGeneration);
   QPair<bool, QString> persistServerConfig() const;
   void setConnectionState(ConnectionState state);
   void setProcessState(ProcessState state);
@@ -130,6 +133,11 @@ private:
   QString m_secureSocketVersion;
   std::optional<ProcessMode> m_lastProcessMode = std::nullopt;
   QTimer m_retryTimer;
+  bool m_restartRequested = false;
+  quint64 m_daemonCommandGeneration = 0;
+  quint64 m_coreStartGeneration = 0;
+  int m_duplicateRecoveryAttempts = 0;
+  QMetaObject::Connection m_coreStartConnection;
   deskflow::gui::ipc::CoreIpcClient *m_coreIpcClient = nullptr;
   deskflow::gui::ipc::DaemonIpcClient *m_daemonIpcClient = nullptr;
   FileTail *m_daemonFileTail = nullptr;

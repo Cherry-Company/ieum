@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
   QGuiApplication::setDesktopFileName(kRevFqdnName);
 
   QApplication app(argc, argv);
+  QApplication::setQuitOnLastWindowClosed(false);
 
   // Ensure the I18N object is made before strings
   QTextStream(stdout) << "initial language: " << I18N::currentLanguage() << '\n';

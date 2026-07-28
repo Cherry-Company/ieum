@@ -15,6 +15,8 @@
 
 LogWidget::LogWidget(QWidget *parent) : QWidget{parent}, m_textLog{new QPlainTextEdit(this)}
 {
+  static constexpr auto kLogFlushIntervalMs = 50;
+
   m_textLog->setReadOnly(true);
   m_textLog->setMaximumBlockCount(10000);
   m_textLog->setLineWrapMode(QPlainTextEdit::NoWrap);
@@ -26,18 +28,47 @@ LogWidget::LogWidget(QWidget *parent) : QWidget{parent}, m_textLog{new QPlainTex
 
   setLayout(layout);
 
-  connect(
-      deskflow::gui::Logger::instance(), &deskflow::gui::Logger::newLine, m_textLog, &QPlainTextEdit::appendPlainText
-  );
+  m_flushTimer.setInterval(kLogFlushIntervalMs);
+  m_flushTimer.setSingleShot(true);
+  connect(&m_flushTimer, &QTimer::timeout, this, &LogWidget::flushPendingLines);
+  connect(deskflow::gui::Logger::instance(), &deskflow::gui::Logger::newLine, this, &LogWidget::appendLine);
 }
 
 void LogWidget::appendLine(const QString &msg)
 {
-  m_textLog->appendPlainText(msg);
+  static constexpr qsizetype kMaxPendingLines = 2000;
+
+  if (m_pendingLines.size() >= kMaxPendingLines) {
+    ++m_droppedLineCount;
+  } else {
+    m_pendingLines.append(msg);
+  }
+
+  if (!m_flushTimer.isActive()) {
+    m_flushTimer.start();
+  }
+}
+
+void LogWidget::flushPendingLines()
+{
+  if (m_droppedLineCount > 0) {
+    m_pendingLines.append(
+        tr("%1 additional log lines were omitted to keep the interface responsive.").arg(m_droppedLineCount)
+    );
+    m_droppedLineCount = 0;
+  }
+
+  if (m_pendingLines.isEmpty()) {
+    return;
+  }
+
+  m_textLog->appendPlainText(m_pendingLines.join(QLatin1Char('\n')));
+  m_pendingLines.clear();
 }
 
 void LogWidget::findNext(const QString &text)
 {
+  flushPendingLines();
   if (text.isEmpty())
     return;
 
@@ -49,6 +80,7 @@ void LogWidget::findNext(const QString &text)
 
 void LogWidget::findPrevious(const QString &text)
 {
+  flushPendingLines();
   if (text.isEmpty())
     return;
 

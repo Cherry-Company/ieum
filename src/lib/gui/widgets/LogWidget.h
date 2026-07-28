@@ -7,6 +7,8 @@
 #pragma once
 
 #include <QObject>
+#include <QStringList>
+#include <QTimer>
 #include <QWidget>
 
 class QPlainTextEdit;
@@ -23,5 +25,10 @@ public:
   void scrollToBottom() const;
 
 private:
+  void flushPendingLines();
+
   QPlainTextEdit *m_textLog = nullptr;
+  QTimer m_flushTimer;
+  QStringList m_pendingLines;
+  qsizetype m_droppedLineCount = 0;
 };
