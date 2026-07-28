@@ -17,6 +17,7 @@
 
 <p align="center">
   <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14"><strong>Download Ieum</strong></a>
+  · <a href="#first-run-security-and-permissions"><strong>Security &amp; permissions</strong></a>
   · <a href="#support-development"><strong>Support development</strong></a>
 </p>
 
@@ -153,6 +154,29 @@ claim those hardware results before the matrix is run.
 
 Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
 `SHA256SUMS.txt`.
+
+### First-run security and permissions
+
+Download only from `github.com/victoriousian/ieum/releases` and compare the file with `SHA256SUMS.txt`. Do not
+disable SmartScreen, Microsoft Defender, Gatekeeper, or macOS privacy protection. A checksum mismatch or an
+explicit malware detection is a stop condition.
+
+Windows packages are not yet code-signed, so SmartScreen and UAC may show an unknown publisher. UAC is used to
+install under `C:\Program Files\Ieum`, register the `Ieum` service, and add a Windows Firewall program exception
+for `ieum-core.exe`; the installer does not turn off the firewall.
+
+macOS permission switches cannot be auto-approved by an app. This is an Apple security boundary:
+
+| macOS permission | Required for |
+| --- | --- |
+| Local Network | Connecting to the user-selected Ieum server or client |
+| Accessibility | Synthesizing remote input and handling KVM input events on a Mac server or client |
+| Input Monitoring | Reading physical keyboard and mouse input; required on a Mac server |
+
+A client-only Mac should not enable Input Monitoring unless macOS actually requests it. Ieum does not request
+Screen Recording, Full Disk Access, Camera, or Microphone access. Password or Touch ID confirmation is handled
+by macOS and is never provided to Ieum. See the [full security and privacy policy](docs/SECURITY.md) and the
+[Korean visual installation guide](README.md#설치와-첫-연결).
 
 Starting with `alpha.11`, `Network IP: Automatic` prefers an active physical Ethernet or Wi-Fi address. This
 keeps the Ieum server from listening on Tailscale, ZeroTier, VMware, Hyper-V/WSL, and similar virtual adapters

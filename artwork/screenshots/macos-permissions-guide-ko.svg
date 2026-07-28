@@ -1,0 +1,136 @@
+<!-- SPDX-FileCopyrightText: (C) 2026 Cherry Inc. -->
+<!-- SPDX-License-Identifier: GPL-2.0-only -->
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="940" viewBox="0 0 1440 940" role="img" aria-labelledby="title desc">
+  <title id="title">이음 macOS 최초 실행과 권한 안내</title>
+  <desc id="desc">Applications 설치, 확인 없이 열기, 로컬 네트워크, 손쉬운 사용, 입력 모니터링 순서를 보여주는 개인정보 없는 재구성 화면</desc>
+  <defs>
+    <style>
+      .ui { font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; letter-spacing: 0; }
+      .title { font-size: 36px; font-weight: 700; fill: #17212b; }
+      .subtitle { font-size: 19px; fill: #4b5968; }
+      .step-num { font-size: 16px; font-weight: 700; fill: #ffffff; text-anchor: middle; }
+      .step-title { font-size: 19px; font-weight: 700; fill: #17212b; }
+      .body { font-size: 17px; fill: #334252; }
+      .small { font-size: 15px; fill: #566575; }
+      .panel-title { font-size: 24px; font-weight: 700; fill: #17212b; }
+      .label { font-size: 17px; font-weight: 650; fill: #17212b; }
+      .badge { font-size: 14px; font-weight: 700; }
+    </style>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#17212b" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="1440" height="940" fill="#f5f7f8"/>
+  <g class="ui">
+    <text x="72" y="76" class="title">macOS 최초 실행과 권한 부여</text>
+    <text x="72" y="110" class="subtitle">아래 화면은 개인정보를 제거한 안내도입니다. macOS 버전과 시스템 언어에 따라 배치는 조금 다를 수 있습니다.</text>
+
+    <rect x="72" y="140" width="1296" height="74" rx="8" fill="#fff8e8" stroke="#e4c675"/>
+    <circle cx="112" cy="177" r="17" fill="#e09a22"/>
+    <text x="112" y="183" class="step-num">!</text>
+    <text x="144" y="172" class="label">이 스위치는 이음이 자동으로 켤 수 없습니다.</text>
+    <text x="144" y="198" class="body">Apple의 TCC 보호가 사용자 직접 승인만 허용합니다. 암호나 Touch ID는 macOS가 확인하며 이음에는 전달되지 않습니다.</text>
+
+    <g transform="translate(72 246)">
+      <line x1="40" y1="30" x2="1216" y2="30" stroke="#ccd4dc" stroke-width="4"/>
+
+      <g transform="translate(0 0)">
+        <circle cx="40" cy="30" r="24" fill="#2667c9"/>
+        <text x="40" y="36" class="step-num">1</text>
+        <text x="40" y="80" class="step-title" text-anchor="middle">Applications</text>
+        <text x="40" y="106" class="small" text-anchor="middle">DMG에서 이동</text>
+      </g>
+      <g transform="translate(294 0)">
+        <circle cx="40" cy="30" r="24" fill="#2667c9"/>
+        <text x="40" y="36" class="step-num">2</text>
+        <text x="40" y="80" class="step-title" text-anchor="middle">확인 없이 열기</text>
+        <text x="40" y="106" class="small" text-anchor="middle">해시 일치 후 1회</text>
+      </g>
+      <g transform="translate(588 0)">
+        <circle cx="40" cy="30" r="24" fill="#267a69"/>
+        <text x="40" y="36" class="step-num">3</text>
+        <text x="40" y="80" class="step-title" text-anchor="middle">로컬 네트워크</text>
+        <text x="40" y="106" class="small" text-anchor="middle">기기 연결용</text>
+      </g>
+      <g transform="translate(882 0)">
+        <circle cx="40" cy="30" r="24" fill="#267a69"/>
+        <text x="40" y="36" class="step-num">4</text>
+        <text x="40" y="80" class="step-title" text-anchor="middle">손쉬운 사용</text>
+        <text x="40" y="106" class="small" text-anchor="middle">Mac 입력 제어</text>
+      </g>
+      <g transform="translate(1176 0)">
+        <circle cx="40" cy="30" r="24" fill="#8a5a2b"/>
+        <text x="40" y="36" class="step-num">5</text>
+        <text x="40" y="80" class="step-title" text-anchor="middle">입력 모니터링</text>
+        <text x="40" y="106" class="small" text-anchor="middle">서버 Mac 필수</text>
+      </g>
+    </g>
+
+    <g transform="translate(72 396)" filter="url(#shadow)">
+      <rect width="622" height="398" rx="8" fill="#ffffff" stroke="#d8dee5"/>
+      <circle cx="26" cy="24" r="7" fill="#ff5f57"/>
+      <circle cx="48" cy="24" r="7" fill="#febc2e"/>
+      <circle cx="70" cy="24" r="7" fill="#28c840"/>
+      <text x="98" y="31" class="small">시스템 설정</text>
+      <rect x="18" y="56" width="188" height="322" rx="6" fill="#f1f3f5"/>
+      <text x="34" y="90" class="small">검색</text>
+      <text x="34" y="135" class="body">일반</text>
+      <text x="34" y="175" class="body">네트워크</text>
+      <rect x="26" y="198" width="172" height="42" rx="6" fill="#dceaff"/>
+      <text x="34" y="225" class="label">개인정보 보호 및 보안</text>
+
+      <text x="238" y="92" class="panel-title">손쉬운 사용</text>
+      <text x="238" y="120" class="small">컴퓨터를 제어하도록 허용한 응용 프로그램</text>
+      <rect x="230" y="146" width="366" height="74" rx="8" fill="#f6f8f9" stroke="#d8dee5"/>
+      <rect x="250" y="162" width="42" height="42" rx="8" fill="#1d2832"/>
+      <circle cx="271" cy="183" r="13" fill="none" stroke="#64d4c4" stroke-width="5"/>
+      <circle cx="271" cy="183" r="5" fill="#ffffff"/>
+      <text x="310" y="190" class="label">이음 (Ieum)</text>
+      <rect x="527" y="168" width="50" height="30" rx="15" fill="#2d8c72"/>
+      <circle cx="561" cy="183" r="12" fill="#ffffff"/>
+
+      <rect x="230" y="246" width="366" height="100" rx="8" fill="#eef7f4" stroke="#b8d9d0"/>
+      <text x="252" y="277" class="label">왜 필요한가요?</text>
+      <text x="252" y="306" class="body">원격 입력을 합성하고, 서버 모드에서</text>
+      <text x="252" y="332" class="body">키보드와 마우스를 공유하는 데 씁니다.</text>
+    </g>
+
+    <g transform="translate(746 396)" filter="url(#shadow)">
+      <rect width="622" height="398" rx="8" fill="#ffffff" stroke="#d8dee5"/>
+      <circle cx="26" cy="24" r="7" fill="#ff5f57"/>
+      <circle cx="48" cy="24" r="7" fill="#febc2e"/>
+      <circle cx="70" cy="24" r="7" fill="#28c840"/>
+      <text x="98" y="31" class="small">시스템 설정</text>
+      <rect x="18" y="56" width="188" height="322" rx="6" fill="#f1f3f5"/>
+      <text x="34" y="90" class="small">검색</text>
+      <text x="34" y="135" class="body">일반</text>
+      <text x="34" y="175" class="body">네트워크</text>
+      <rect x="26" y="198" width="172" height="42" rx="6" fill="#dceaff"/>
+      <text x="34" y="225" class="label">개인정보 보호 및 보안</text>
+
+      <text x="238" y="92" class="panel-title">입력 모니터링</text>
+      <rect x="472" y="69" width="108" height="28" rx="6" fill="#fff0df"/>
+      <text x="526" y="88" class="badge" fill="#9a591d" text-anchor="middle">서버 필수</text>
+      <text x="238" y="120" class="small">키보드, 마우스 또는 트랙패드 입력 모니터링</text>
+      <rect x="230" y="146" width="366" height="74" rx="8" fill="#f6f8f9" stroke="#d8dee5"/>
+      <rect x="250" y="162" width="42" height="42" rx="8" fill="#1d2832"/>
+      <circle cx="271" cy="183" r="13" fill="none" stroke="#64d4c4" stroke-width="5"/>
+      <circle cx="271" cy="183" r="5" fill="#ffffff"/>
+      <text x="310" y="190" class="label">이음 (Ieum)</text>
+      <rect x="527" y="168" width="50" height="30" rx="15" fill="#2d8c72"/>
+      <circle cx="561" cy="183" r="12" fill="#ffffff"/>
+
+      <rect x="230" y="246" width="366" height="100" rx="8" fill="#fff8ed" stroke="#e4c675"/>
+      <text x="252" y="277" class="label">언제 필요한가요?</text>
+      <text x="252" y="306" class="body">이 Mac의 물리 키보드와 마우스를 다른</text>
+      <text x="252" y="332" class="body">컴퓨터에 공유하는 서버 모드에서 필수입니다.</text>
+    </g>
+
+    <rect x="72" y="824" width="1296" height="70" rx="8" fill="#ffffff" stroke="#d8dee5"/>
+    <circle cx="108" cy="859" r="13" fill="#bd3d43"/>
+    <path d="M102 853 l12 12 M114 853 l-12 12" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+    <text x="134" y="853" class="label">중단 기준</text>
+    <text x="134" y="878" class="body">“손상됨”과 SHA-256 불일치, 출처가 GitHub 릴리스가 아님, 또는 이음 이외 앱의 권한 요청</text>
+  </g>
+</svg>

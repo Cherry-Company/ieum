@@ -18,6 +18,7 @@
 <p align="center">
   <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14"><strong>이음 다운로드</strong></a>
   · <a href="#설치와-첫-연결"><strong>설치 가이드</strong></a>
+  · <a href="#설치-전-1분-보안-확인"><strong>보안·권한 안내</strong></a>
   · <a href="#후원"><strong>후원하기</strong></a>
 </p>
 
@@ -107,9 +108,30 @@ Windows MSI는 필요한 Visual C++ 런타임 버전을 검사하지만 현재�
 이미 최신 런타임이 설치되어 있으면 다시 설치할 필요가 없습니다. MSI가 런타임 오류를 표시할 때만
 위 파일을 설치하고 이음 설치를 다시 시작하세요.
 
+### 설치 전 1분 보안 확인
+
+이음의 현재 알파 패키지는 Windows 코드 서명과 Apple Developer ID 서명·공증 전입니다. 따라서
+운영체제의 경고 자체를 없애지는 못합니다. 대신 아래 세 가지를 모두 확인한 뒤 진행하세요.
+
+1. 주소창이 `github.com/victoriousian/ieum/releases`인 공식 릴리스에서 받았는지 확인합니다.
+2. 파일명이 현재 릴리스 목록과 같은지 확인하고 [SHA-256을 대조](#다운로드-파일-검증)합니다.
+3. SmartScreen, Defender, Gatekeeper를 끄거나 예외 목록에 영구 추가하지 않습니다.
+
+SHA-256 일치는 내려받은 파일이 릴리스에 게시된 파일과 동일하다는 뜻입니다. 파일의 안전성을
+독립적으로 보증하는 코드 서명을 대신하지는 않습니다. 현재는 공개 소스, 공개 CI 기록,
+릴리스 체크섬을 함께 확인하는 과도기입니다.
+
 ### Windows 설치
 
 지원 대상은 Windows 10/11 x64와 ARM64입니다.
+
+<p align="center">
+  <a href="artwork/screenshots/windows-install-security-guide-ko.svg">
+    <img src="artwork/screenshots/windows-install-security-guide-ko.svg" alt="Windows SmartScreen, UAC, 설치 중단 조건 안내" width="920">
+  </a>
+</p>
+
+<p align="center"><sub>개인정보 없는 재구성 안내도입니다. 눌러서 크게 볼 수 있으며 Windows 버전과 조직 정책에 따라 문구가 조금 다를 수 있습니다.</sub></p>
 
 1. 위 표에서 PC 아키텍처에 맞는 `*-ko-KR.msi`를 받습니다.
 2. 처음 설치하는 PC에서 런타임 오류가 예상되면 위의 Visual C++ 설치 파일을 먼저 실행합니다.
@@ -122,11 +144,27 @@ Windows MSI는 필요한 Visual C++ 런타임 버전을 검사하지만 현재�
 5. 마지막 화면에서 **완료 후 이음 (Ieum) 실행**을 켠 채 마칩니다. 시작 메뉴 검색 결과와
    **설정 → 앱 → 설치된 앱**에는 한국어 설치본이 **이음 (Ieum)** 으로 표시됩니다.
 
+Windows가 보여주는 경고는 다음처럼 구분하세요.
+
+| 화면 | 현재 알파에서의 의미 | 행동 |
+| --- | --- | --- |
+| **Windows의 PC 보호 / 인식할 수 없는 앱** | 코드 서명 평판이 없어서 SmartScreen이 게시자를 확인하지 못함 | 공식 릴리스와 SHA-256이 모두 맞을 때만 **추가 정보 → 실행** |
+| **사용자 계정 컨트롤 / 게시자 알 수 없음** | 설치 폴더, 서비스와 방화벽 프로그램 예외를 등록하기 위한 관리자 승인 | 파일명과 해시를 다시 본 뒤 **예** |
+| Defender 또는 백신이 구체적인 악성코드 이름으로 차단 | 단순 미서명 경고와 다름 | 허용하지 말고 삭제한 뒤 탐지명과 파일 해시를 제보 |
+| 회사·학교 정책이 설치를 차단 | 관리자가 의도적으로 제한한 장치 | 정책을 우회하지 말고 IT 관리자에게 확인 |
+
+UAC 승인은 `C:\Program Files\Ieum` 설치, 로그인·UAC 보안 화면에서도 동작하는 **Ieum** 서비스,
+`ieum-core.exe`의 Windows 방화벽 프로그램 예외를 등록하는 데 쓰입니다. 방화벽 전체를 끄지
+않으며, 일반 연결은 TCP `24800`을 사용합니다.
+
 설치 후 아래 화면이 열리면 정상입니다. 문서용 화면의 컴퓨터 이름과 IP는 예시 값으로
-비식별 처리했습니다.
+비식별 처리했습니다. 아래 실캡처는 `alpha.12`에서 만들었지만 `alpha.14`의 기본 배치와 조작
+순서는 같습니다. `alpha.14` 상태 표시줄에는 현재 입력 언어를 보여주는 `한`/`A` 표시가 추가됩니다.
 
 <p align="center">
-  <img src="artwork/screenshots/windows-main-ko.png" alt="이음 alpha.12 Windows 메인 화면" width="660">
+  <a href="artwork/screenshots/windows-main-ko.png">
+    <img src="artwork/screenshots/windows-main-ko.png" alt="이음 alpha.12 Windows 메인 화면" width="660">
+  </a>
 </p>
 
 창을 닫아도 기본 설정에서는 알림 영역에서 계속 실행됩니다. 다시 열 때는 알림 영역의 이음 아이콘을
@@ -141,6 +179,18 @@ Windows MSI는 필요한 Visual C++ 런타임 버전을 검사하지만 현재�
 
 Apple Silicon 패키지는 macOS 14 이상, Intel 패키지는 macOS 12 이상을 대상으로 빌드합니다.
 
+<p align="center">
+  <a href="artwork/screenshots/macos-permissions-guide-ko.svg">
+    <img src="artwork/screenshots/macos-permissions-guide-ko.svg" alt="macOS 이음 설치와 손쉬운 사용 및 입력 모니터링 권한 안내" width="920">
+  </a>
+</p>
+
+<p align="center"><sub>현재 macOS 메뉴 이름을 기준으로 개인정보를 제거해 재구성한 안내도입니다. 모바일에서는 눌러서 확대하세요.</sub></p>
+
+macOS가 권한 스위치를 사용자에게 직접 켜게 하는 것은 오류가 아니라 **TCC(투명성·동의·제어)**
+보호입니다. 이음이 이 과정을 자동 승인하거나 시스템 설정을 우회할 수는 없습니다. 권한을 켤 때
+암호나 Touch ID가 나오면 macOS가 직접 확인하며, 이음은 암호나 생체 정보를 받지 않습니다.
+
 1. 칩 종류에 맞는 DMG를 내려받아 엽니다.
 2. DMG 창의 `Ieum.app`을 **Applications** 폴더로 끌어 놓습니다. DMG 안에서 바로 실행하지
    마세요.
@@ -150,11 +200,27 @@ Apple Silicon 패키지는 macOS 14 이상, Intel 패키지는 macOS 12 이상�
    [해시를 확인](#다운로드-파일-검증)하고 **시스템 설정 → 개인정보 보호 및 보안 → 확인 없이
    열기(Open Anyway) → 열기**를 선택합니다.
    [Apple의 공식 절차](https://support.apple.com/102445)도 함께 확인할 수 있습니다.
-5. 이음의 권한 안내창을 열어 둔 상태에서 **시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용**의
+5. **로컬 네트워크의 기기를 찾고 연결하도록 허용**하는 질문이 나오면 **허용**합니다. 이 권한은
+   화면을 전송하지 않으며 같은 LAN 또는 Tailscale 주소의 이음 기기와 통신하는 데 사용됩니다.
+6. 이음의 권한 안내창을 열어 둔 상태에서 **시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용**의
    이음을 켠 뒤 앱으로 돌아와 **다시 확인**을 누릅니다.
-6. 서버로 쓸 Mac에서는 이음을 한 번 시작해 **입력 모니터링** 요청을 발생시킨 뒤
+7. 서버로 쓸 Mac에서는 이음을 한 번 시작해 **입력 모니터링** 요청을 발생시킨 뒤
    **개인정보 보호 및 보안 → 입력 모니터링**에서도 이음을 켭니다. 변경 뒤 앱 재실행을 요구하면
    재실행합니다.
+
+#### macOS 권한이 실제로 하는 일
+
+| macOS 항목 | 언제 필요한가 | 이음에서의 용도 | 거부하면 |
+| --- | --- | --- | --- |
+| **로컬 네트워크** | 서버·클라이언트 모두 | 사용자가 지정한 LAN/Tailscale 주소의 이음 기기와 통신 | 검색과 연결이 실패할 수 있음 |
+| **손쉬운 사용** | 서버·클라이언트 모두 | 원격 입력을 macOS에 합성하고 KVM 입력 이벤트를 처리 | 커서·키보드 제어 또는 서버 시작 불가 |
+| **입력 모니터링** | 이 Mac의 키보드·마우스를 공유하는 서버에서 필수 | 다른 앱이 앞에 있어도 물리 입력을 읽어 원격 기기로 전달 | 서버가 로컬 입력을 공유할 수 없음 |
+| **화면 기록** | **요청하지 않음** | 이음은 화면 영상을 전송하는 원격 데스크톱 앱이 아님 | 해당 없음 |
+| **전체 디스크 접근·카메라·마이크** | **요청하지 않음** | KVM 동작에 사용하지 않음 | 해당 없음 |
+
+손쉬운 사용과 입력 모니터링은 운영체제 차원에서 강한 권한입니다. 공식 릴리스와 체크섬을 확인한
+이음에만 허용하고, 사용하지 않을 때는 언제든 시스템 설정에서 끌 수 있습니다. 클라이언트로만 쓸
+Mac에서는 입력 모니터링을 먼저 켜지 말고, macOS가 실제로 요청하는 경우에만 승인하세요.
 
 업데이트 뒤 켜진 구버전 항목만 남고 현재 앱이 승인되지 않으면 이음 권한 안내창에서
 **이전 승인 초기화**를 선택하세요. 이 기능은 이음의 **손쉬운 사용** 기록만 초기화하고 현재
@@ -175,6 +241,20 @@ Apple이 안내하는 권한 위치는
 [손쉬운 사용](https://support.apple.com/guide/mac-help/allow-accessibility-apps-to-access-your-mac-mh43185/mac)과
 [입력 모니터링](https://support.apple.com/guide/mac-help/control-access-to-input-monitoring-on-mac-mchl4cedafb6/mac)에서
 확인할 수 있습니다.
+
+#### 연결 데이터와 개인정보
+
+- 이음은 광고 SDK나 사용 추적 텔레메트리를 포함하지 않습니다.
+- 업데이트 확인은 최초 질문에서 사용자가 동의한 경우에만 GitHub의 `VERSION` 파일을 조회합니다.
+  이 요청에는 이음 버전, 운영체제 이름과 시스템 언어가 포함됩니다.
+- 키보드·마우스와 클립보드는 설정한 이음 기기 사이의 직접 TLS 연결로 전달됩니다. 기본값인
+  **클라이언트 인증서 요구**를 끄지 마세요.
+- 클립보드 공유는 기본으로 켜져 있습니다. 민감한 클립보드를 공유하고 싶지 않다면
+  **서버 설정 → 클립보드 공유**를 끌 수 있습니다.
+- 로그에는 장치 이름, IP 주소와 연결 오류가 포함될 수 있으므로 공개 이슈에 올리기 전에
+  개인정보를 가리세요.
+
+전체 보안 범위와 취약점 신고 방법은 [보안 정책](docs/SECURITY.md)에서 확인할 수 있습니다.
 
 ### Linux 설치
 
@@ -236,7 +316,9 @@ Tailscale은 선택 사항이며 이음이 계정, ACL 또는 VPN 설정을 대�
 4. Tailnet ACL과 각 컴퓨터 방화벽에서 서버의 TCP `24800` 연결이 허용되는지 확인합니다.
 
 <p align="center">
-  <img src="artwork/screenshots/windows-network-settings-ko.png" alt="이음 alpha.12 네트워크와 Tailscale 간편 연결 설정" width="424">
+  <a href="artwork/screenshots/windows-network-settings-ko.png">
+    <img src="artwork/screenshots/windows-network-settings-ko.png" alt="이음 alpha.12 네트워크와 Tailscale 간편 연결 설정" width="424">
+  </a>
 </p>
 
 Tailscale이 꺼져 있거나 로그아웃된 경우 이음은 안전하지 않은 전체 인터페이스로 조용히 폴백하지

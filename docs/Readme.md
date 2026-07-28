@@ -15,4 +15,4 @@ Ieum is a free and open source keyboard and mouse sharing app. Use the keyboard,
 
 ## Reporting security issues
 
-Check [Security](Security.md) to find out how to report security issues.
+Check [Security](SECURITY.md) to find out how to report security issues.

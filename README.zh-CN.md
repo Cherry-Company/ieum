@@ -17,6 +17,7 @@
 
 <p align="center">
   <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.14"><strong>下载 Ieum</strong></a>
+  · <a href="#首次运行时的安全与权限"><strong>安全与权限</strong></a>
   · <a href="#支持开发"><strong>支持开发</strong></a>
 </p>
 
@@ -143,6 +144,29 @@ flowchart LR
 | ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.14-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
+
+### 首次运行时的安全与权限
+
+请只从 `github.com/victoriousian/ieum/releases` 下载，并用 `SHA256SUMS.txt` 校验文件。不要关闭
+SmartScreen、Microsoft Defender、Gatekeeper 或 macOS 隐私保护。校验值不一致或安全软件明确报告
+恶意软件时，应立即停止安装。
+
+Windows 安装包尚未进行代码签名，因此 SmartScreen 与 UAC 可能显示“未知发布者”。UAC 用于写入
+`C:\Program Files\Ieum`、注册 `Ieum` 服务，并为 `ieum-core.exe` 添加 Windows 防火墙程序例外；
+安装程序不会关闭防火墙。
+
+macOS 不允许应用自动批准权限开关，这是 Apple 的系统安全边界：
+
+| macOS 权限 | 用途 |
+| --- | --- |
+| 本地网络 | 连接用户选择的 Ieum 服务端或客户端 |
+| 辅助功能 | 在 Mac 服务端或客户端合成远程输入并处理 KVM 输入事件 |
+| 输入监控 | 读取物理键盘与鼠标输入；Mac 服务端必须开启 |
+
+只作为客户端使用的 Mac 不应预先开启“输入监控”，除非 macOS 实际提出请求。Ieum 不申请屏幕
+录制、完全磁盘访问、摄像头或麦克风权限。切换权限时出现的密码或 Touch ID 由 macOS 处理，
+不会交给 Ieum。更多信息请参阅
+[完整安全与隐私策略](docs/SECURITY.md)和[韩文图示安装指南](README.md#설치와-첫-연결)。
 
 从 `alpha.11` 开始，`网络 IP：自动`会优先选择活动的物理以太网或 Wi-Fi 地址。Ieum 服务端默认
 不再监听 Tailscale、ZeroTier、VMware、Hyper-V/WSL 等虚拟适配器；没有可用物理网络时会回退到
