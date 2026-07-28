@@ -51,6 +51,22 @@ p, li { white-space: pre-wrap; }
         <source>About %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Credits</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Developer and contributor:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Company:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Upstream contributors:</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ActionDialog</name>
@@ -655,12 +671,6 @@ Additionally, check you are able to %1 the server config file: %2</source>
     </message>
     <message>
         <source>Input: %1 - %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%1
-%2
-%3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

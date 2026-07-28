@@ -743,12 +743,6 @@ Additionally, check you are able to %1 the server config file: %2</source>
         <translation>입력: %1 - %2</translation>
     </message>
     <message>
-        <source>%1
-%2
-%3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Select the server computer from your Tailscale network.</source>
         <translation>Tailscale 네트워크에서 서버 컴퓨터를 선택하세요.</translation>
     </message>

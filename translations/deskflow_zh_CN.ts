@@ -695,12 +695,6 @@ Additionally, check you are able to %1 the server config file: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>%1
-%2
-%3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>This device</source>
         <translation type="unfinished"></translation>
     </message>
