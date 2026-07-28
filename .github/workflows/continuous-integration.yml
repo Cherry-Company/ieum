@@ -222,7 +222,17 @@ jobs:
         shell: bash
         run: |
           if [ "${{matrix.target.like}}" == "debian" ]; then
-            apt update -qqq > /dev/null && apt install -qqq git devscripts > /dev/null
+            export DEBIAN_FRONTEND=noninteractive
+            apt_options=(
+              -o Acquire::ForceIPv4=true
+              -o Acquire::Retries=5
+              -o Acquire::http::Timeout=20
+              -o Acquire::https::Timeout=20
+            )
+            # Bound mirror stalls so one hosted runner cannot consume the
+            # complete job timeout before the repository is checked out.
+            timeout --signal=TERM 180s apt-get "${apt_options[@]}" update -qq
+            timeout --signal=TERM 300s apt-get "${apt_options[@]}" install -y -qq git devscripts
           elif [ "${{matrix.target.like}}" == "fedora" ]; then
             dnf install -y git
           elif [ "${{matrix.target.like}}" == "suse" ]; then

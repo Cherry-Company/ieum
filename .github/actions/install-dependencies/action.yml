@@ -33,12 +33,20 @@ runs:
             brew install googletest openssl doxygen --quiet
           elif [ "$RUNNER_OS" == "Linux" ]; then
             if [ ${{inputs.like}} == "debian" ]; then
-              apt update -qqq > /dev/null
-              apt install -qqq cmake build-essential ninja-build \
+              export DEBIAN_FRONTEND=noninteractive
+              apt_options=(
+                -o Acquire::ForceIPv4=true
+                -o Acquire::Retries=5
+                -o Acquire::http::Timeout=20
+                -o Acquire::https::Timeout=20
+              )
+              timeout --signal=TERM 180s apt-get "${apt_options[@]}" update -qq
+              timeout --signal=TERM 360s apt-get "${apt_options[@]}" install -y -qq \
+                cmake build-essential ninja-build \
                 xorg-dev libx11-dev libxtst-dev libssl-dev \
                 libglib2.0-dev libxkbfile-dev qt6-base-dev qt6-tools-dev \
                 libgtk-3-dev libgtest-dev libgmock-dev \
-                libei-dev libportal-dev help2man doxygen -y >/dev/null
+                libei-dev libportal-dev help2man doxygen
             elif [ ${{inputs.like}} == "fedora" ]; then
               dnf install -y cmake make ninja-build gcc-c++ rpm-build openssl-devel \
                 glib2-devel libXtst-devel libxkbfile-devel qt6-qtbase-devel qt6-qttools-devel \
