@@ -62,6 +62,7 @@ protected:
 
   void toggleDefaultLockToComputerState(bool state);
   void toggleLockToComputer(bool disabled);
+  void toggleAutoLockFullscreen(bool enabled);
   void toggleWin32Foreground(bool enabled);
 
   void toggleClipboard(bool enabled);
@@ -71,6 +72,7 @@ protected:
   void setHeartbeat(int rate);
 
   void toggleRelativeMouseMoves(bool enabled);
+  void setRemotePointerSpeed(int speed);
   void toggleProtocol();
 
   void toggleExternalConfig(bool enable = false);
@@ -105,6 +107,8 @@ private:
   int m_switchDoubleTap;
   uint m_clipboardSize;
   bool m_relativeMouseMoves;
+  int m_remotePointerSpeed;
+  bool m_autoLockFullscreen;
   bool m_enableSwitchDelay;
   bool m_enableSwitchDoubleTap;
   bool m_originalServerConfigIsExternal;

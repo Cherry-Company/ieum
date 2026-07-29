@@ -67,6 +67,7 @@ MainWindow::MainWindow()
     : ui{std::make_unique<Ui::MainWindow>()},
       m_coreProcess(m_serverConfig),
       m_trayIcon{new QSystemTrayIcon(this)},
+      m_trayRepairTimer{new QTimer(this)},
       m_guiDupeChecker{new QLocalServer(this)},
       m_daemonIpcClient{new ipc::DaemonIpcClient(this)},
       m_logDock{new LogDock(this)},
@@ -154,6 +155,24 @@ MainWindow::MainWindow()
   updateText();
   connectSlots();
   setupTrayIcon();
+#ifdef Q_OS_MACOS
+  macOSInstallApplicationReopenHandler(this);
+  m_trayRepairTimer->setInterval(5000);
+  connect(m_trayRepairTimer, &QTimer::timeout, this, [this] { ensureTrayIcon(); });
+  m_trayRepairTimer->start();
+  connect(qApp, &QGuiApplication::applicationStateChanged, this, [this](Qt::ApplicationState state) {
+    if (state == Qt::ApplicationActive) {
+      QTimer::singleShot(250, this, [this] { ensureTrayIcon(true); });
+    }
+  });
+  connect(qApp, &QGuiApplication::screenAdded, this, [this](QScreen *) {
+    QTimer::singleShot(250, this, [this] { ensureTrayIcon(true); });
+  });
+  connect(qApp, &QGuiApplication::screenRemoved, this, [this](QScreen *) {
+    QTimer::singleShot(250, this, [this] { ensureTrayIcon(true); });
+  });
+  QTimer::singleShot(1000, this, [this] { ensureTrayIcon(true); });
+#endif
   updateScreenName();
 
   qDebug().noquote() << "active settings path:" << Settings::settingsPath();
@@ -180,6 +199,10 @@ MainWindow::MainWindow()
 }
 MainWindow::~MainWindow()
 {
+#ifdef Q_OS_MACOS
+  macOSRemoveApplicationReopenHandler();
+#endif
+
   // Stop network monitoring
   if (m_networkMonitor) {
     m_networkMonitor->stopMonitoring();
@@ -287,10 +310,6 @@ void MainWindow::connectSlots()
   connect(m_actionStartCore, &QAction::triggered, this, &MainWindow::startCore);
   connect(m_actionRestartCore, &QAction::triggered, this, &MainWindow::resetCore);
   connect(m_actionStopCore, &QAction::triggered, this, &MainWindow::stopCore);
-
-  // Mac os tray will only show a menu
-  if (!deskflow::platform::isMac())
-    connect(m_trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayIconActivated);
 
   connect(&m_coreProcess, &CoreProcess::connectedClientsChanged, this, &MainWindow::serverClientsChanged);
   connect(&m_coreProcess, &CoreProcess::unrecognisedClient, this, &MainWindow::handleUnrecognisedClient);
@@ -796,7 +815,9 @@ void MainWindow::serverConnectionConfigureClient(const QString &clientName)
   m_serverConfigDialogVisible = true;
   ServerConfigDialog dialog(this, m_serverConfig);
   if (dialog.addClient(clientName) && dialog.exec() == QDialog::Accepted) {
-    m_coreProcess.restart();
+    if (!m_coreProcess.reloadServerConfig()) {
+      m_coreProcess.restart();
+    }
   }
   m_serverConfigDialogVisible = false;
 }
@@ -875,17 +896,74 @@ void MainWindow::createMenuBar()
 
 void MainWindow::setupTrayIcon()
 {
-  auto trayMenu = new QMenu(this);
-  trayMenu->addAction(m_actionInputLanguageStatus);
-  trayMenu->addSeparator();
-  trayMenu->addActions(
+  m_trayMenu = new QMenu(this);
+  m_trayMenu->addAction(m_actionInputLanguageStatus);
+  m_trayMenu->addSeparator();
+  m_trayMenu->addActions(
       {m_actionStartCore, m_actionRestartCore, m_actionStopCore, m_actionMinimize, m_actionRestore, m_actionTrayQuit}
   );
-  trayMenu->insertSeparator(m_actionMinimize);
-  trayMenu->insertSeparator(m_actionTrayQuit);
-  m_trayIcon->setContextMenu(trayMenu);
+  m_trayMenu->insertSeparator(m_actionMinimize);
+  m_trayMenu->insertSeparator(m_actionTrayQuit);
+  m_trayIcon->setContextMenu(m_trayMenu);
   m_trayIcon->setToolTip(productDisplayName());
+  if (!deskflow::platform::isMac()) {
+    connect(m_trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayIconActivated);
+  }
 
+  setTrayIcon();
+  m_trayIcon->show();
+}
+
+void MainWindow::ensureTrayIcon(bool immediate)
+{
+#ifndef Q_OS_MACOS
+  Q_UNUSED(immediate)
+  return;
+#else
+  if (!QSystemTrayIcon::isSystemTrayAvailable()) {
+    return;
+  }
+
+  const bool healthy = m_trayIcon != nullptr && m_trayIcon->isVisible() && !m_trayIcon->geometry().isEmpty();
+  if (healthy) {
+    m_trayHealthFailures = 0;
+    m_trayRepairAttempts = 0;
+    m_trayRepairCooldown.invalidate();
+    return;
+  }
+
+  ++m_trayHealthFailures;
+  if (!immediate && m_trayHealthFailures < 2) {
+    return;
+  }
+  if (m_trayRepairAttempts >= 2 || (m_trayRepairCooldown.isValid() && m_trayRepairCooldown.elapsed() < 60000)) {
+    return;
+  }
+
+  qWarning("macOS menu bar item disappeared; recreating it");
+  recreateTrayIcon();
+  ++m_trayRepairAttempts;
+  m_trayRepairCooldown.restart();
+  m_trayHealthFailures = 0;
+#endif
+}
+
+void MainWindow::recreateTrayIcon()
+{
+  const auto toolTip =
+      m_trayIcon == nullptr || m_trayIcon->toolTip().isEmpty() ? productDisplayName() : m_trayIcon->toolTip();
+  if (m_trayIcon != nullptr) {
+    m_trayIcon->hide();
+    m_trayIcon->setContextMenu(nullptr);
+    m_trayIcon->deleteLater();
+  }
+
+  m_trayIcon = new QSystemTrayIcon(this);
+  m_trayIcon->setContextMenu(m_trayMenu);
+  m_trayIcon->setToolTip(toolTip);
+  if (!deskflow::platform::isMac()) {
+    connect(m_trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayIconActivated);
+  }
   setTrayIcon();
   m_trayIcon->show();
 }
@@ -927,15 +1005,20 @@ void MainWindow::saveSettings() const
 void MainWindow::setTrayIcon()
 {
   static const auto fallbackPath = QStringLiteral(":/icons/%1-%2/apps/64/%3");
+  const auto setIcon = [this](QIcon icon) {
+    if (icon.isNull()) {
+      qWarning("tray icon resource is unavailable; using the application icon");
+      icon = windowIcon();
+    }
+    m_trayIcon->setIcon(icon);
+  };
 
   QString themeIcon = kRevFqdnName;
   if (!Settings::value(Settings::Gui::SymbolicTrayIcon).toBool()) {
     if (deskflow::platform::isMac()) {
-      m_trayIcon->setIcon(
-          QIcon::fromTheme(themeIcon, QIcon(fallbackPath.arg(kAppId, QStringLiteral("dark"), themeIcon)))
-      );
+      setIcon(QIcon::fromTheme(themeIcon, QIcon(fallbackPath.arg(kAppId, QStringLiteral("dark"), themeIcon))));
     } else {
-      m_trayIcon->setIcon(QIcon(fallbackPath.arg(kAppId, QStringLiteral("dark"), themeIcon)));
+      setIcon(QIcon(fallbackPath.arg(kAppId, QStringLiteral("dark"), themeIcon)));
     }
     return;
   }
@@ -949,7 +1032,7 @@ void MainWindow::setTrayIcon()
     );
     const QString theme = settings.value(QStringLiteral("SystemUsesLightTheme"), 1).toBool() ? QStringLiteral("light")
                                                                                              : QStringLiteral("dark");
-    m_trayIcon->setIcon(QIcon(fallbackPath.arg(kAppId, theme, themeIcon)));
+    setIcon(QIcon(fallbackPath.arg(kAppId, theme, themeIcon)));
     return;
   }
 
@@ -957,7 +1040,7 @@ void MainWindow::setTrayIcon()
                   ? QIcon(fallbackPath.arg(kAppId, QStringLiteral("dark"), themeIcon))
                   : QIcon::fromTheme(themeIcon, QIcon(fallbackPath.arg(kAppId, iconMode(), themeIcon)));
   icon.setIsMask(true);
-  m_trayIcon->setIcon(icon);
+  setIcon(icon);
 }
 
 void MainWindow::handleLogLine(const QString &line)
@@ -1300,7 +1383,9 @@ void MainWindow::showConfigureServer(const QString &message)
   ServerConfigDialog dialog(this, serverConfig());
   dialog.message(message);
   if ((dialog.exec() == QDialog::Accepted) && m_coreProcess.isStarted()) {
-    m_coreProcess.restart();
+    if (!m_coreProcess.reloadServerConfig()) {
+      m_coreProcess.restart();
+    }
   }
 }
 
@@ -1330,6 +1415,7 @@ void MainWindow::showAndActivate()
 {
   const auto wasVisible = isVisible();
 #ifdef Q_OS_MACOS
+  ensureTrayIcon(true);
   forceAppActive();
 #endif
   showNormal();

@@ -1344,6 +1344,14 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>시작 시 컴퓨터 잠금 사용</translation>
     </message>
     <message>
+        <source>Automatically lock while a full-screen app is active on this computer</source>
+        <translation>이 컴퓨터에서 전체 화면 앱 실행 중 자동으로 화면 전환 잠금</translation>
+    </message>
+    <message>
+        <source>Remote pointer speed</source>
+        <translation>원격 포인터 속도</translation>
+    </message>
+    <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 use the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;An Ieum client automatically selects the protocol required by the server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Synergy 또는 Barrier 프로토콜을 사용하는 프로그램과의 호환성을 활성화합니다.&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3는 Synergy 프로토콜을 사용합니다.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap, Synergy 1은 Barrier 프로토콜을 사용합니다.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Ieum 클라이언트는 서버에 필요한 프로토콜을 자동으로 선택합니다.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>

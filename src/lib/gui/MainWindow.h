@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <QElapsedTimer>
 #include <QMainWindow>
 #include <QProcess>
 #include <QRegularExpression>
@@ -80,6 +81,9 @@ public:
 
   void hide();
 
+public Q_SLOTS:
+  void showAndActivate();
+
 protected:
   void changeEvent(QEvent *e) override;
   bool eventFilter(QObject *obj, QEvent *event) override;
@@ -126,6 +130,8 @@ private:
 
   void createMenuBar();
   void setupTrayIcon();
+  void ensureTrayIcon(bool immediate = false);
+  void recreateTrayIcon();
   void applyConfig();
   void setTrayIcon();
   void handleUnrecognisedClient(const QString &clientName);
@@ -148,7 +154,6 @@ private:
   void setupControls();
   void showFirstConnectedMessage();
   void updateStatus();
-  void showAndActivate();
   void showHostNameEditor();
   void setHostName();
   void daemonIpcClientConnectionFailed();
@@ -201,6 +206,11 @@ private:
   QStringList m_checkedClients;
   QStringList m_checkedServers;
   QSystemTrayIcon *m_trayIcon = nullptr;
+  QMenu *m_trayMenu = nullptr;
+  QTimer *m_trayRepairTimer = nullptr;
+  int m_trayHealthFailures = 0;
+  int m_trayRepairAttempts = 0;
+  QElapsedTimer m_trayRepairCooldown;
   QLocalServer *m_guiDupeChecker = nullptr;
   deskflow::gui::ipc::DaemonIpcClient *m_daemonIpcClient = nullptr;
 

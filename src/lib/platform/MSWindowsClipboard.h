@@ -71,6 +71,7 @@ private:
   HWND m_window;
   mutable std::mutex m_mutex;
   mutable Time m_time;
+  mutable bool m_open = false;
   ConverterList m_converters;
   static UINT s_ownershipFormat;
   IMSWindowsClipboardFacade *m_facade;

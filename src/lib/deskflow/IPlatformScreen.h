@@ -150,6 +150,12 @@ public:
     return {};
   }
 
+  //! Return true when the foreground application covers an entire display.
+  virtual bool isForegroundFullscreen() const
+  {
+    return false;
+  }
+
   //! Convert a platform KeyButton into a canonical PC Set-1 scancode.
   /*!
   Returns nothing when this platform's key buttons are not Set-1 codes (X11 and

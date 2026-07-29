@@ -19,6 +19,7 @@
 #include <mach/mach_port.h>
 
 #include <bitset>
+#include <chrono>
 #include <map>
 #include <memory>
 #include <optional>
@@ -97,6 +98,7 @@ public:
   std::string getSecureInputApp() const override;
   void inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target) override;
   deskflow::InputLanguageStatus inputLanguageStatus() const override;
+  bool isForegroundFullscreen() const override;
   std::optional<KeyButton> canonicalKeyButton(KeyButton button) const override;
   bool fakeRawKey(KeyButton button, KeyModifierMask mask, bool press, bool repeat) override;
 
@@ -325,6 +327,9 @@ private:
   CondVar<bool> *m_carbonLoopReady;
 
   OSXPowerManager m_powerManager;
+
+  mutable std::chrono::steady_clock::time_point m_fullscreenLastCheck;
+  mutable bool m_foregroundFullscreen = false;
 
   class OSXScreenImpl *m_impl;
 };

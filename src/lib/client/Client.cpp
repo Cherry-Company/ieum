@@ -413,7 +413,10 @@ void Client::sendClipboard(ClipboardID id)
   if (clipboard.open(m_timeClipboard[id])) {
     clipboard.close();
   }
-  m_screen->getClipboard(id, &clipboard);
+  if (!m_screen->getClipboard(id, &clipboard)) {
+    LOG_WARN("could not read clipboard %d; keeping the previous remote clipboard", id);
+    return;
+  }
 
   // check time
   if (m_timeClipboard[id] == 0 || clipboard.getTime() != m_timeClipboard[id]) {

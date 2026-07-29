@@ -12,4 +12,7 @@ class ServerTests : public QObject
 private Q_SLOTS:
   void SwitchToScreenInfo_alloc_screen();
   void KeyboardBroadcastInfo_alloc_stateAndSceens();
+  void cursorTransform_clampsOutOfBounds();
+  void cursorTransform_mapsBetweenDifferentResolutions();
+  void cursorTransform_preservesSubpixelMotion();
 };

@@ -8,6 +8,8 @@
 
 #include <QString>
 
+class QObject;
+
 void requestOSXNotificationPermission();
 bool isOSXDevelopmentBuild();
 bool showOSXNotification(const QString &title, const QString &body);
@@ -18,3 +20,5 @@ bool macOSStartAtLoginEnabled();
 bool macOSStartAtLoginRequiresApproval();
 bool macOSSetStartAtLogin(bool enabled, QString *error = nullptr);
 void macOSOpenLoginItemsSettings();
+void macOSInstallApplicationReopenHandler(QObject *receiver);
+void macOSRemoveApplicationReopenHandler();

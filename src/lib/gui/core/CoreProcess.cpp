@@ -656,6 +656,24 @@ void CoreProcess::restart()
   stop(previousMode, true);
 }
 
+bool CoreProcess::reloadServerConfig()
+{
+  if (m_mode != Settings::CoreMode::Server || m_processState != ProcessState::Started || m_coreIpcClient == nullptr ||
+      !m_coreIpcClient->isConnected()) {
+    return false;
+  }
+
+  const auto [configReady, configFile] = persistServerConfig();
+  if (!configReady) {
+    qWarning() << "cannot reload unreadable server config:" << configFile;
+    return false;
+  }
+
+  qDebug() << "reloading server config without restarting the core:" << configFile;
+  m_coreIpcClient->sendReloadConfig();
+  return true;
+}
+
 void CoreProcess::cleanup()
 {
   qInfo("cleaning up core process");

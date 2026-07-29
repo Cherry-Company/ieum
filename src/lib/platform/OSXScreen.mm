@@ -36,6 +36,7 @@
 #include "platform/OSXScreenSaver.h"
 
 #include <AppKit/NSEvent.h>
+#include <AppKit/NSWorkspace.h>
 #include <AvailabilityMacros.h>
 #include <IOKit/hidsystem/event_status_driver.h>
 #include <dispatch/dispatch.h>
@@ -282,6 +283,77 @@ void OSXScreen::getCursorPos(int32_t &x, int32_t &y) const
   m_xCursor = x;
   m_yCursor = y;
   CFRelease(event);
+}
+
+bool OSXScreen::isForegroundFullscreen() const
+{
+  using namespace std::chrono_literals;
+  const auto now = std::chrono::steady_clock::now();
+  if (m_fullscreenLastCheck.time_since_epoch().count() != 0 && now - m_fullscreenLastCheck < 250ms) {
+    return m_foregroundFullscreen;
+  }
+  m_fullscreenLastCheck = now;
+  m_foregroundFullscreen = false;
+
+  @autoreleasepool {
+    NSRunningApplication *frontmostApplication = NSWorkspace.sharedWorkspace.frontmostApplication;
+    if (frontmostApplication == nil) {
+      return false;
+    }
+    const pid_t foregroundPid = frontmostApplication.processIdentifier;
+
+    CFArrayRef windows = CGWindowListCopyWindowInfo(
+        kCGWindowListOptionOnScreenOnly | kCGWindowListExcludeDesktopElements, kCGNullWindowID
+    );
+    if (windows == nullptr) {
+      return false;
+    }
+
+    CGDisplayCount displayCount = 0;
+    if (CGGetActiveDisplayList(0, nullptr, &displayCount) != kCGErrorSuccess || displayCount == 0) {
+      CFRelease(windows);
+      return false;
+    }
+    std::vector<CGDirectDisplayID> displays(displayCount);
+    if (CGGetActiveDisplayList(displayCount, displays.data(), &displayCount) != kCGErrorSuccess) {
+      CFRelease(windows);
+      return false;
+    }
+
+    constexpr CGFloat tolerance = 2.0;
+    const CFIndex windowCount = CFArrayGetCount(windows);
+    for (CFIndex i = 0; i < windowCount && !m_foregroundFullscreen; ++i) {
+      const auto window = static_cast<CFDictionaryRef>(CFArrayGetValueAtIndex(windows, i));
+      int ownerPid = 0;
+      int layer = 0;
+      const auto ownerValue = static_cast<CFNumberRef>(CFDictionaryGetValue(window, kCGWindowOwnerPID));
+      const auto layerValue = static_cast<CFNumberRef>(CFDictionaryGetValue(window, kCGWindowLayer));
+      const auto boundsValue = static_cast<CFDictionaryRef>(CFDictionaryGetValue(window, kCGWindowBounds));
+      if (ownerValue == nullptr || layerValue == nullptr || boundsValue == nullptr ||
+          !CFNumberGetValue(ownerValue, kCFNumberIntType, &ownerPid) ||
+          !CFNumberGetValue(layerValue, kCFNumberIntType, &layer) || ownerPid != foregroundPid || layer != 0) {
+        continue;
+      }
+
+      CGRect windowBounds;
+      if (!CGRectMakeWithDictionaryRepresentation(boundsValue, &windowBounds)) {
+        continue;
+      }
+      for (CGDisplayCount displayIndex = 0; displayIndex < displayCount; ++displayIndex) {
+        const CGRect display = CGDisplayBounds(displays[displayIndex]);
+        if (CGRectGetMinX(windowBounds) <= CGRectGetMinX(display) + tolerance &&
+            CGRectGetMinY(windowBounds) <= CGRectGetMinY(display) + tolerance &&
+            CGRectGetMaxX(windowBounds) >= CGRectGetMaxX(display) - tolerance &&
+            CGRectGetMaxY(windowBounds) >= CGRectGetMaxY(display) - tolerance) {
+          m_foregroundFullscreen = true;
+          break;
+        }
+      }
+    }
+    CFRelease(windows);
+  }
+
+  return m_foregroundFullscreen;
 }
 
 void OSXScreen::reconfigure(uint32_t activeSides)

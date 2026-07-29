@@ -467,6 +467,8 @@ void Config::readSectionOptions(ConfigReadContext &s)
   addOption("", kOptionDefaultLockToScreenState, Settings::value(Settings::Server::DefaultLockToComputerState).toInt());
   addOption("", kOptionDisableLockToScreen, Settings::value(Settings::Server::DisableLockToComputer).toInt());
   addOption("", kOptionRelativeMouseMoves, Settings::value(Settings::Server::RelativeMouseMoves).toInt());
+  addOption("", kOptionRemotePointerSpeed, Settings::value(Settings::Server::RemotePointerSpeed).toInt());
+  addOption("", kOptionAutoLockFullscreen, Settings::value(Settings::Server::AutoLockFullscreen).toInt());
   addOption("", kOptionWin32KeepForeground, Settings::value(Settings::Server::Win32KeepForeground).toInt());
   addOption("", kOptionClipboardSharing, Settings::value(Settings::Server::EnableClipboard).toBool());
   addOption("", kOptionClipboardSharingSize, Settings::value(Settings::Server::ClipboardSize).toUInt() * 1024);
@@ -1034,6 +1036,12 @@ const char *Config::getOptionName(OptionID id)
   if (id == kOptionRelativeMouseMoves) {
     return "relativeMouseMoves";
   }
+  if (id == kOptionRemotePointerSpeed) {
+    return "remotePointerSpeed";
+  }
+  if (id == kOptionAutoLockFullscreen) {
+    return "autoLockFullscreen";
+  }
   if (id == kOptionWin32KeepForeground) {
     return "win32KeepForeground";
   }
@@ -1061,7 +1069,7 @@ std::string Config::getOptionValue(OptionID id, OptionValue value)
       id == kOptionScreenSwitchNeedsShift || id == kOptionScreenSwitchNeedsControl ||
       id == kOptionScreenSwitchNeedsAlt || id == kOptionXTestXineramaUnaware || id == kOptionRelativeMouseMoves ||
       id == kOptionWin32KeepForeground || id == kOptionScreenPreserveFocus || id == kOptionClipboardSharing ||
-      id == kOptionClipboardSharingSize) {
+      id == kOptionClipboardSharingSize || id == kOptionAutoLockFullscreen) {
     return (value != 0) ? "true" : "false";
   }
   if (id == kOptionModifierMapForShift || id == kOptionModifierMapForControl || id == kOptionModifierMapForAlt ||
@@ -1090,7 +1098,7 @@ std::string Config::getOptionValue(OptionID id, OptionValue value)
     }
   }
   if (id == kOptionHeartbeat || id == kOptionScreenSwitchCornerSize || id == kOptionScreenSwitchDelay ||
-      id == kOptionScreenSwitchTwoTap) {
+      id == kOptionScreenSwitchTwoTap || id == kOptionRemotePointerSpeed) {
     return deskflow::string::sprintf("%d", value);
   }
   if (id == kOptionScreenSwitchCorners) {

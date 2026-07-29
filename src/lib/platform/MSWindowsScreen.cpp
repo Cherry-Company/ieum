@@ -437,8 +437,7 @@ void *MSWindowsScreen::getEventTarget() const
 bool MSWindowsScreen::getClipboard(ClipboardID, IClipboard *dst) const
 {
   MSWindowsClipboard src(m_window);
-  Clipboard::copy(dst, &src);
-  return true;
+  return Clipboard::copy(dst, &src);
 }
 
 void MSWindowsScreen::getShape(int32_t &x, int32_t &y, int32_t &w, int32_t &h) const
@@ -454,6 +453,45 @@ void MSWindowsScreen::getShape(int32_t &x, int32_t &y, int32_t &w, int32_t &h) c
 void MSWindowsScreen::getCursorPos(int32_t &x, int32_t &y) const
 {
   m_desks->getCursorPos(x, y);
+}
+
+bool MSWindowsScreen::isForegroundFullscreen() const
+{
+  using namespace std::chrono_literals;
+  const auto now = std::chrono::steady_clock::now();
+  if (m_fullscreenLastCheck.time_since_epoch().count() != 0 && now - m_fullscreenLastCheck < 250ms) {
+    return m_foregroundFullscreen;
+  }
+  m_fullscreenLastCheck = now;
+  m_foregroundFullscreen = false;
+
+  const HWND foreground = GetForegroundWindow();
+  if (foreground == nullptr || foreground == m_window || foreground == GetShellWindow() ||
+      !IsWindowVisible(foreground) || IsIconic(foreground)) {
+    return false;
+  }
+
+  RECT windowBounds;
+  if (!GetWindowRect(foreground, &windowBounds)) {
+    return false;
+  }
+
+  const HMONITOR monitor = MonitorFromWindow(foreground, MONITOR_DEFAULTTONULL);
+  if (monitor == nullptr) {
+    return false;
+  }
+
+  MONITORINFO monitorInfo{sizeof(MONITORINFO)};
+  if (!GetMonitorInfo(monitor, &monitorInfo)) {
+    return false;
+  }
+
+  constexpr LONG tolerance = 2;
+  const RECT &display = monitorInfo.rcMonitor;
+  m_foregroundFullscreen =
+      windowBounds.left <= display.left + tolerance && windowBounds.top <= display.top + tolerance &&
+      windowBounds.right >= display.right - tolerance && windowBounds.bottom >= display.bottom - tolerance;
+  return m_foregroundFullscreen;
 }
 
 /*

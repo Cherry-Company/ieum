@@ -25,6 +25,7 @@
 #include "server/ClientListener.h"
 #include "server/ClientProxy.h"
 #include "server/ClientProxyUnknown.h"
+#include "server/CursorTransform.h"
 #include "server/PrimaryClient.h"
 
 #ifdef _WIN32
@@ -361,6 +362,10 @@ bool Server::isLockedToScreen() const
     return false;
   }
 
+  if (m_autoLockFullscreen && m_active == m_primaryClient && m_screen->isForegroundFullscreen()) {
+    return true;
+  }
+
   // locked if we say we're locked
   if (isLockedToScreenServer()) {
     if (!m_defaultLockToScreenState) {
@@ -397,34 +402,21 @@ void Server::switchScreen(BaseClientProxy *dst, int32_t x, int32_t y, bool forSc
   int32_t dh;
   dst->getShape(dx, dy, dw, dh);
 
-  // any of these conditions seem to trigger when the portal permission dialog
-  // is visible on wayland. this was previously an assert, but that's pretty
-  // annoying since it makes the mouse unusable on the server and you'll have to
-  // ssh into your machine to kill it. better to just log a warning.
-  if (x < dx) {
+  if (dw <= 0 || dh <= 0) {
+    LOG_WARN("refusing to switch to \"%s\" with invalid shape %d,%d %dx%d", getName(dst).c_str(), dx, dy, dw, dh);
+    return;
+  }
+
+  const auto clampedX = cursor::clampCoordinate(x, dx, dw);
+  const auto clampedY = cursor::clampCoordinate(y, dy, dh);
+  if (x != clampedX || y != clampedY) {
     LOG_WARN(
-        "on switch, x (%d) is less than the left boundary dx (%d)", //
-        x, dx
+        "clamping switch position for \"%s\" from %d,%d to %d,%d after a screen shape change", getName(dst).c_str(), x,
+        y, clampedX, clampedY
     );
   }
-  if (y < dy) {
-    LOG_WARN(
-        "on switch, y (%d) is less than the top boundary dy (%d)", //
-        y, dy
-    );
-  }
-  if (x >= dx + dw) {
-    LOG_WARN(
-        "on switch, x (%d) exceeds the right boundary (dx + width = %d)", //
-        x, dx + dw
-    );
-  }
-  if (y >= dy + dh) {
-    LOG_WARN(
-        "on switch, y (%d) exceeds the bottom boundary (dy + height = %d)", //
-        y, dy + dh
-    );
-  }
+  x = clampedX;
+  y = clampedY;
 
   assert(m_active != nullptr);
 
@@ -440,6 +432,8 @@ void Server::switchScreen(BaseClientProxy *dst, int32_t x, int32_t y, bool forSc
   m_yDelta = 0;
   m_xDelta2 = 0;
   m_yDelta2 = 0;
+  m_pointerRemainderX = 0.0;
+  m_pointerRemainderY = 0.0;
 
   // wrapping means leaving the active screen and entering it again.
   // since that's a waste of time we skip that and just warp the
@@ -540,11 +534,11 @@ float Server::mapToFraction(const BaseClientProxy *client, Direction dir, int32_
     using enum Direction;
   case Left:
   case Right:
-    return (y - sy + 0.5f) / static_cast<float>(sh);
+    return cursor::toFraction(y, sy, sh);
 
   case Top:
   case Bottom:
-    return (x - sx + 0.5f) / static_cast<float>(sw);
+    return cursor::toFraction(x, sx, sw);
 
   case NoDirection:
     assert(0 && "bad direction");
@@ -564,12 +558,12 @@ void Server::mapToPixel(const BaseClientProxy *client, Direction dir, float f, i
     using enum Direction;
   case Left:
   case Right:
-    y = static_cast<int32_t>(f * sh) + sy;
+    y = cursor::fromFraction(f, sy, sh);
     break;
 
   case Top:
   case Bottom:
-    x = static_cast<int32_t>(f * sw) + sx;
+    x = cursor::fromFraction(f, sx, sw);
     break;
 
   case NoDirection:
@@ -1107,6 +1101,12 @@ void Server::processOptions()
       stopSwitchTwoTap();
     } else if (id == kOptionRelativeMouseMoves) {
       newRelativeMoves = (value != 0);
+    } else if (id == kOptionRemotePointerSpeed) {
+      m_remotePointerSpeed = std::clamp<int>(value, cursor::kMinimumPointerSpeed, cursor::kMaximumPointerSpeed);
+      m_pointerRemainderX = 0.0;
+      m_pointerRemainderY = 0.0;
+    } else if (id == kOptionAutoLockFullscreen) {
+      m_autoLockFullscreen = (value != 0);
     } else if (id == kOptionDefaultLockToScreenState) {
       m_defaultLockToScreenState = (value != 0);
     } else if (id == kOptionDisableLockToScreen) {
@@ -1147,12 +1147,32 @@ void Server::handleShapeChanged(BaseClientProxy *client)
   int32_t x;
   int32_t y;
   client->getCursorPos(x, y);
+  int32_t shapeX;
+  int32_t shapeY;
+  int32_t shapeWidth;
+  int32_t shapeHeight;
+  client->getShape(shapeX, shapeY, shapeWidth, shapeHeight);
+  if (shapeWidth <= 0 || shapeHeight <= 0) {
+    LOG_WARN(
+        "ignoring invalid shape update for \"%s\": %d,%d %dx%d", getName(client).c_str(), shapeX, shapeY, shapeWidth,
+        shapeHeight
+    );
+    return;
+  }
+  x = cursor::clampCoordinate(x, shapeX, shapeWidth);
+  y = cursor::clampCoordinate(y, shapeY, shapeHeight);
   client->setJumpCursorPos(x, y);
 
   // update the mouse coordinates
   if (client == m_active) {
     m_x = x;
     m_y = y;
+    m_xDelta = 0;
+    m_yDelta = 0;
+    m_xDelta2 = 0;
+    m_yDelta2 = 0;
+    m_pointerRemainderX = 0.0;
+    m_pointerRemainderY = 0.0;
   }
 
   // handle resolution change to primary screen
@@ -1626,8 +1646,17 @@ void Server::sendKeyDown(
 )
 {
   if (isInputLanguageControl(client, id)) {
-    const auto action = id == kKeyHangul ? deskflow::InputLanguageAction::Toggle : deskflow::InputLanguageAction::Set;
-    client->inputLanguageControl(action, id == kKeyHanja ? "hanja" : "");
+    if (id == kKeyHanja) {
+      client->inputLanguageControl(deskflow::InputLanguageAction::Set, "hanja");
+      return;
+    }
+
+    const auto status = client->inputLanguageStatus();
+    if (status.m_category == deskflow::InputLanguageCategory::Unknown) {
+      client->inputLanguageControl(deskflow::InputLanguageAction::Toggle, "");
+    } else {
+      client->inputLanguageControl(deskflow::InputLanguageAction::Set, status.isInputMethod() ? "en" : "ko");
+    }
     return;
   }
   client->keyDown(id, mask, buttonForClient(client, button), lang);
@@ -1800,25 +1829,15 @@ void Server::onMouseMoveSecondary(int32_t dx, int32_t dy)
 {
   LOG_VERBOSE("mouse move on secondary: %+d,%+d", dx, dy);
 
-  // TODO: move this to client side and use a qt setting or cli arg instead of env var.
-  const static auto adjustEnv = "DESKFLOW_MOUSE_ADJUSTMENT";
-  if (const char *envVal = std::getenv(adjustEnv); envVal) {
-    try {
-      double multiplier = std::stod(envVal);
-      dx = static_cast<int32_t>(std::round(dx * multiplier));
-      dy = static_cast<int32_t>(std::round(dy * multiplier));
-      LOG_VERBOSE("adjusted mouse x %.2f: %+d,%+d", multiplier, dx, dy);
-    } catch (const std::exception &e) {
-      LOG_ERR("invalid %s value: %s", adjustEnv, e.what());
-    }
-  }
-
   // mouse move on secondary (client's) screen
   assert(m_active != nullptr);
   if (m_active == m_primaryClient) {
     // stale event -- we're actually on the primary screen
     return;
   }
+
+  dx = cursor::scaleDelta(dx, m_remotePointerSpeed, m_pointerRemainderX);
+  dy = cursor::scaleDelta(dy, m_remotePointerSpeed, m_pointerRemainderY);
 
   // if doing relative motion on secondary screens and we're locked
   // to the screen (which activates relative moves) then send a

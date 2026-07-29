@@ -20,6 +20,7 @@ public:
   explicit CoreIpcClient(QObject *parent = nullptr);
 
   void sendStop();
+  void sendReloadConfig();
 
 Q_SIGNALS:
   void commandReceived(const QString &command, const QString &args);

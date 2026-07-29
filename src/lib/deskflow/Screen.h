@@ -248,6 +248,9 @@ public:
   */
   bool isLockedToScreen() const;
 
+  //! Test whether the foreground application occupies a full display.
+  bool isForegroundFullscreen() const;
+
   //! Get jump zone size
   /*!
   Return the jump zone size, the size of the regions on the edges of

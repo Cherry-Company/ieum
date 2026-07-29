@@ -12,6 +12,7 @@
 #include "platform/MSWindowsHook.h"
 #include "platform/MSWindowsPowerManager.h"
 
+#include <chrono>
 #include <map>
 #include <memory>
 #include <optional>
@@ -126,6 +127,7 @@ public:
   std::string getSecureInputApp() const override;
   void inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target) override;
   deskflow::InputLanguageStatus inputLanguageStatus() const override;
+  bool isForegroundFullscreen() const override;
   std::optional<KeyButton> canonicalKeyButton(KeyButton button) const override;
   bool fakeRawKey(KeyButton button, KeyModifierMask mask, bool press, bool repeat) override;
 
@@ -345,4 +347,7 @@ private:
 
   PrimaryKeyDownList m_primaryKeyDownList;
   MSWindowsPowerManager m_powerManager;
+
+  mutable std::chrono::steady_clock::time_point m_fullscreenLastCheck;
+  mutable bool m_foregroundFullscreen = false;
 };

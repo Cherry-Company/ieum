@@ -6,6 +6,7 @@
 
 #import "OSXHelpers.h"
 
+#import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
 #import <CoreData/CoreData.h>
 #import <Foundation/Foundation.h>
@@ -17,8 +18,39 @@
 
 #import <QtGlobal>
 
+#include <QMetaObject>
+#include <QObject>
+#include <QPointer>
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+@interface IeumApplicationReopenHandler : NSObject {
+  QPointer<QObject> m_receiver;
+}
+- (instancetype)initWithReceiver:(QObject *)receiver;
+- (void)handleReopenApplication:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent;
+@end
+
+@implementation IeumApplicationReopenHandler
+- (instancetype)initWithReceiver:(QObject *)receiver
+{
+  self = [super init];
+  if (self != nil) {
+    m_receiver = receiver;
+  }
+  return self;
+}
+
+- (void)handleReopenApplication:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
+{
+  Q_UNUSED(event)
+  Q_UNUSED(replyEvent)
+  if (auto *receiver = m_receiver.data(); receiver != nullptr) {
+    QMetaObject::invokeMethod(receiver, "showAndActivate", Qt::QueuedConnection);
+  }
+}
+@end
 
 void requestOSXNotificationPermission()
 {
@@ -105,6 +137,8 @@ void forceAppActive()
 
 namespace {
 
+IeumApplicationReopenHandler *g_applicationReopenHandler = nil;
+
 SMAppService *ieumLoginAgent() API_AVAILABLE(macos(13.0))
 {
   return [SMAppService agentServiceWithPlistName:@"io.github.victoriousian.ieum.login.plist"];
@@ -172,4 +206,25 @@ void macOSOpenLoginItemsSettings()
   if (@available(macOS 13.0, *)) {
     [SMAppService openSystemSettingsLoginItems];
   }
+}
+
+void macOSInstallApplicationReopenHandler(QObject *receiver)
+{
+  macOSRemoveApplicationReopenHandler();
+  g_applicationReopenHandler = [[IeumApplicationReopenHandler alloc] initWithReceiver:receiver];
+  [[NSAppleEventManager sharedAppleEventManager] setEventHandler:g_applicationReopenHandler
+                                                     andSelector:@selector(handleReopenApplication:withReplyEvent:)
+                                                   forEventClass:kCoreEventClass
+                                                      andEventID:kAEReopenApplication];
+}
+
+void macOSRemoveApplicationReopenHandler()
+{
+  if (g_applicationReopenHandler == nil) {
+    return;
+  }
+  [[NSAppleEventManager sharedAppleEventManager] removeEventHandlerForEventClass:kCoreEventClass
+                                                                      andEventID:kAEReopenApplication];
+  [g_applicationReopenHandler release];
+  g_applicationReopenHandler = nil;
 }

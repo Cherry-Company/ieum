@@ -43,6 +43,7 @@ public:
   void start(std::optional<ProcessMode> processMode = std::nullopt);
   void stop(std::optional<ProcessMode> processMode = std::nullopt);
   void restart();
+  bool reloadServerConfig();
   void cleanup();
   void applyLogLevel();
   void clearSettings();

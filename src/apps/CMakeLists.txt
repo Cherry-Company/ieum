@@ -39,11 +39,25 @@ set(WIN32_POST_EXCLUDE_REGEXES ".*system32.*")
 
 set(WIN32_RUNTIME_DEPENDENCY_SET_ARGS)
 if(WIN32)
-# Runtime DLL fallback for layouts like vcpkg
+  # Runtime DLL fallbacks for layouts like vcpkg and the MSVC developer tools.
   if(DEFINED OPENSSL_EXE_DIR AND EXISTS "${OPENSSL_EXE_DIR}")
     list(APPEND WIN32_RUNTIME_DEPENDENCY_SET_ARGS DIRECTORIES "${OPENSSL_EXE_DIR}")
   elseif(DEFINED OPENSSL_ROOT_DIR AND EXISTS "${OPENSSL_ROOT_DIR}/bin")
     list(APPEND WIN32_RUNTIME_DEPENDENCY_SET_ARGS DIRECTORIES "${OPENSSL_ROOT_DIR}/bin")
+  endif()
+
+  if(MSVC AND DEFINED ENV{VCToolsRedistDir})
+    cmake_path(CONVERT "$ENV{VCToolsRedistDir}" TO_CMAKE_PATH_LIST _msvc_redist_dir NORMALIZE)
+    file(
+      GLOB _msvc_runtime_dirs
+      LIST_DIRECTORIES true
+      "${_msvc_redist_dir}/${BUILD_ARCHITECTURE}/Microsoft.VC*.CRT"
+    )
+    foreach(_msvc_runtime_dir IN LISTS _msvc_runtime_dirs)
+      if(IS_DIRECTORY "${_msvc_runtime_dir}")
+        list(APPEND WIN32_RUNTIME_DEPENDENCY_SET_ARGS DIRECTORIES "${_msvc_runtime_dir}")
+      endif()
+    endforeach()
   endif()
 endif()
 

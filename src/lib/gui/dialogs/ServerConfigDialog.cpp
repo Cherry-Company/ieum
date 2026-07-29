@@ -20,6 +20,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
+#include <algorithm>
+
 using enum ScreenConfig::SwitchCorner;
 
 ServerConfigDialog::ServerConfigDialog(QWidget *parent, ServerConfig &config)
@@ -87,6 +89,8 @@ void ServerConfigDialog::accept()
   Settings::setValue(Settings::Server::EnableSwitchDoubleTap, m_enableSwitchDoubleTap);
   Settings::setValue(Settings::Server::SwitchDoubleTap, m_switchDoubleTap);
   Settings::setValue(Settings::Server::RelativeMouseMoves, m_relativeMouseMoves);
+  Settings::setValue(Settings::Server::RemotePointerSpeed, m_remotePointerSpeed);
+  Settings::setValue(Settings::Server::AutoLockFullscreen, m_autoLockFullscreen);
   Settings::setValue(Settings::Server::Win32KeepForeground, m_win32keepForeground);
 
   QStringList screenNames;
@@ -274,6 +278,14 @@ void ServerConfigDialog::toggleRelativeMouseMoves(bool enabled)
   onChange();
 }
 
+void ServerConfigDialog::setRemotePointerSpeed(int speed)
+{
+  if (m_remotePointerSpeed == speed)
+    return;
+  m_remotePointerSpeed = speed;
+  onChange();
+}
+
 void ServerConfigDialog::toggleProtocol()
 {
   m_protocol = ui->rbProtocolBarrier->isChecked() ? NetworkProtocol::Barrier : NetworkProtocol::Synergy;
@@ -330,6 +342,14 @@ void ServerConfigDialog::toggleLockToComputer(bool disabled)
   if (m_disableLockToComputer == disabled)
     return;
   m_disableLockToComputer = disabled;
+  onChange();
+}
+
+void ServerConfigDialog::toggleAutoLockFullscreen(bool enabled)
+{
+  if (m_autoLockFullscreen == enabled)
+    return;
+  m_autoLockFullscreen = enabled;
   onChange();
 }
 
@@ -397,6 +417,13 @@ void ServerConfigDialog::loadFromConfig()
 
   m_relativeMouseMoves = Settings::value(Settings::Server::RelativeMouseMoves).toBool();
   ui->cbRelativeMouseMoves->setChecked(m_relativeMouseMoves);
+
+  m_remotePointerSpeed = std::clamp(Settings::value(Settings::Server::RemotePointerSpeed).toInt(), 25, 400);
+  ui->sliderRemotePointerSpeed->setValue(m_remotePointerSpeed);
+  ui->sbRemotePointerSpeed->setValue(m_remotePointerSpeed);
+
+  m_autoLockFullscreen = Settings::value(Settings::Server::AutoLockFullscreen).toBool();
+  ui->cbAutoLockFullscreen->setChecked(m_autoLockFullscreen);
 
   m_win32keepForeground = Settings::value(Settings::Server::Win32KeepForeground).toBool();
   ui->cbWin32KeepForeground->setChecked(m_win32keepForeground);
@@ -488,6 +515,15 @@ void ServerConfigDialog::initConnections() const
   );
 
   connect(ui->cbRelativeMouseMoves, &QCheckBox::toggled, this, &ServerConfigDialog::toggleRelativeMouseMoves);
+  connect(ui->sliderRemotePointerSpeed, &QSlider::valueChanged, ui->sbRemotePointerSpeed, &QSpinBox::setValue);
+  connect(
+      ui->sbRemotePointerSpeed, QOverload<int>::of(&QSpinBox::valueChanged), ui->sliderRemotePointerSpeed,
+      &QSlider::setValue
+  );
+  connect(
+      ui->sbRemotePointerSpeed, QOverload<int>::of(&QSpinBox::valueChanged), this,
+      &ServerConfigDialog::setRemotePointerSpeed
+  );
   connect(ui->cbEnableClipboard, &QCheckBox::toggled, this, &ServerConfigDialog::toggleClipboard);
   connect(ui->btnBrowseConfigFile, &QPushButton::clicked, this, &ServerConfigDialog::browseConfigFile);
   connect(ui->groupExternalConfig, &QGroupBox::toggled, this, &ServerConfigDialog::toggleExternalConfig);
@@ -500,6 +536,7 @@ void ServerConfigDialog::initConnections() const
       ui->cbDefaultLockToComputerState, &QCheckBox::toggled, this, &ServerConfigDialog::toggleDefaultLockToComputerState
   );
   connect(ui->cbDisableLockToComputer, &QCheckBox::toggled, this, &ServerConfigDialog::toggleLockToComputer);
+  connect(ui->cbAutoLockFullscreen, &QCheckBox::toggled, this, &ServerConfigDialog::toggleAutoLockFullscreen);
   connect(&m_screenSetupModel, &ScreenSetupModel::screensChanged, this, &ServerConfigDialog::onChange);
 }
 
@@ -532,6 +569,8 @@ void ServerConfigDialog::onChange()
       m_enableSwitchDoubleTap == Settings::value(Settings::Server::EnableSwitchDoubleTap).toBool() &&
       m_switchDoubleTap == Settings::value(Settings::Server::SwitchDoubleTap).toInt() &&
       m_relativeMouseMoves == Settings::value(Settings::Server::RelativeMouseMoves).toBool() &&
+      m_remotePointerSpeed == Settings::value(Settings::Server::RemotePointerSpeed).toInt() &&
+      m_autoLockFullscreen == Settings::value(Settings::Server::AutoLockFullscreen).toBool() &&
       m_win32keepForeground == Settings::value(Settings::Server::Win32KeepForeground).toBool() &&
       m_disableLockToComputer == Settings::value(Settings::Server::DisableLockToComputer).toBool() &&
       m_defaultLockToComputerState == Settings::value(Settings::Server::DefaultLockToComputerState).toBool();

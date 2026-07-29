@@ -37,6 +37,12 @@ void CoreIpcServer::processCommand(QLocalSocket *clientSocket, const QString &co
     Q_EMIT stopProcessRequested();
     return;
   }
+  if (command == QStringLiteral("reloadConfig")) {
+    LOG_DEBUG("core ipc server got reload config message");
+    writeToClientSocket(clientSocket, QStringLiteral("ok"));
+    Q_EMIT reloadConfigRequested();
+    return;
+  }
   LOG_WARN("core ipc server got unknown command: %s", command.toUtf8().constData());
 }
 

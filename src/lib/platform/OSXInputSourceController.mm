@@ -11,6 +11,7 @@
 #include "base/Log.h"
 #include "platform/OSXAutoTypes.h"
 
+#include <chrono>
 #include <cstring>
 #include <dispatch/dispatch.h>
 #include <pthread.h>
@@ -79,6 +80,7 @@ struct OSXInputSourceController::Request
   OSXInputSourceController *m_controller;
   deskflow::InputLanguageAction m_action;
   const std::string *m_target;
+  std::string m_expectedSourceId;
 };
 
 struct OSXInputSourceController::StatusRequest
@@ -95,7 +97,8 @@ OSXInputSourceController::OSXInputSourceController(IEventQueue *events, void *ev
       CFNotificationCenterGetDistributedCenter(), this, inputSourceChanged,
       kTISNotifySelectedKeyboardInputSourceChanged, nullptr, CFNotificationSuspensionBehaviorDeliverImmediately
   );
-  status();
+  const auto initialStatus = status();
+  m_observedSourceId = initialStatus.m_sourceId;
 }
 
 OSXInputSourceController::~OSXInputSourceController()
@@ -107,11 +110,25 @@ OSXInputSourceController::~OSXInputSourceController()
 
 void OSXInputSourceController::control(deskflow::InputLanguageAction action, const std::string &target)
 {
-  Request request{this, action, &target};
+  {
+    std::lock_guard<std::mutex> lock(m_changeMutex);
+    m_controlInProgress = true;
+  }
+
+  Request request{this, action, &target, {}};
   if (pthread_main_np() != 0) {
     applyRequest(&request);
   } else {
     dispatch_sync_f(dispatch_get_main_queue(), &request, applyRequest);
+  }
+
+  if (!request.m_expectedSourceId.empty() && !waitForSource(request.m_expectedSourceId)) {
+    LOG_WARN("input source did not become active in time: %s", request.m_expectedSourceId.c_str());
+  }
+
+  {
+    std::lock_guard<std::mutex> lock(m_changeMutex);
+    m_controlInProgress = false;
   }
 }
 
@@ -141,7 +158,7 @@ deskflow::InputLanguageStatus OSXInputSourceController::readStatus() const
 void OSXInputSourceController::applyRequest(void *context)
 {
   auto *request = static_cast<Request *>(context);
-  request->m_controller->apply(request->m_action, *request->m_target);
+  request->m_expectedSourceId = request->m_controller->apply(request->m_action, *request->m_target);
 }
 
 void OSXInputSourceController::readStatusRequest(void *context)
@@ -154,14 +171,13 @@ void OSXInputSourceController::inputSourceChanged(
     CFNotificationCenterRef, void *observer, CFStringRef, const void *, CFDictionaryRef
 )
 {
-  static_cast<OSXInputSourceController *>(observer)->emitStatus();
+  static_cast<OSXInputSourceController *>(observer)->handleInputSourceChanged();
 }
 
-void OSXInputSourceController::apply(deskflow::InputLanguageAction action, const std::string &target)
+std::string OSXInputSourceController::apply(deskflow::InputLanguageAction action, const std::string &target)
 {
   if (action == deskflow::InputLanguageAction::Query) {
-    emitStatus();
-    return;
+    return {};
   }
 
   std::string resolvedTarget = target;
@@ -172,25 +188,53 @@ void OSXInputSourceController::apply(deskflow::InputLanguageAction action, const
   AutoTISInputSourceRef source(resolve(resolvedTarget), CFRelease);
   if (!source || !boolProperty(source.get(), kTISPropertyInputSourceIsSelectCapable)) {
     LOG_WARN("input source is unavailable or not selectable: %s", resolvedTarget.c_str());
-    emitStatus();
-    return;
+    return {};
   }
 
-  OSStatus result = noErr;
-  {
-    std::lock_guard<std::mutex> lock(g_tisMutex);
-    result = TISSelectInputSource(source.get());
-  }
+  const auto expectedSourceId = sourceId(source.get());
+  // Selection runs on the main thread. Do not hold g_tisMutex here because
+  // TIS may synchronously deliver its change notification on this thread.
+  const OSStatus result = TISSelectInputSource(source.get());
   if (result != noErr) {
-    LOG_WARN("failed to select input source %s: %d", sourceId(source.get()).c_str(), result);
+    LOG_WARN("failed to select input source %s: %d", expectedSourceId.c_str(), result);
+    return {};
   }
-  emitStatus();
+  return expectedSourceId;
 }
 
-void OSXInputSourceController::emitStatus() const
+void OSXInputSourceController::handleInputSourceChanged()
 {
-  m_events->addEvent(Event(EventTypes::InputLanguageChanged, m_eventTarget, new deskflow::InputLanguageStatus(status()))
-  );
+  const auto currentStatus = readStatus();
+  bool reportChange = false;
+  {
+    std::lock_guard<std::mutex> lock(m_changeMutex);
+    m_observedSourceId = currentStatus.m_sourceId;
+    reportChange = !m_controlInProgress;
+  }
+  m_changeCondition.notify_all();
+  if (reportChange) {
+    m_events->addEvent(
+        Event(EventTypes::InputLanguageChanged, m_eventTarget, new deskflow::InputLanguageStatus(currentStatus))
+    );
+  }
+}
+
+bool OSXInputSourceController::waitForSource(const std::string &expectedSourceId)
+{
+  using namespace std::chrono_literals;
+  if (pthread_main_np() != 0) {
+    return readStatus().m_sourceId == expectedSourceId;
+  }
+
+  std::unique_lock<std::mutex> lock(m_changeMutex);
+  if (m_changeCondition.wait_for(lock, 500ms, [this, &expectedSourceId] {
+        return m_observedSourceId == expectedSourceId;
+      })) {
+    return true;
+  }
+
+  lock.unlock();
+  return status().m_sourceId == expectedSourceId;
 }
 
 TISInputSourceRef OSXInputSourceController::resolve(const std::string &target) const

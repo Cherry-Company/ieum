@@ -129,6 +129,12 @@ int main(int argc, char **argv)
   QObject::connect(
       ipcServer, &deskflow::core::ipc::IpcServer::stopProcessRequested, coreApp, &App::quit, Qt::DirectConnection
   );
+  if (auto *serverApp = dynamic_cast<ServerApp *>(coreApp); serverApp != nullptr) {
+    QObject::connect(
+        ipcServer, &deskflow::core::ipc::CoreIpcServer::reloadConfigRequested, serverApp, &ServerApp::reloadConfig,
+        Qt::QueuedConnection
+    );
+  }
 
   QThread coreThread;
   QObject::connect(&coreThread, &QThread::finished, &app, &QApplication::quit);

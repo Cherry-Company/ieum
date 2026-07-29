@@ -34,6 +34,7 @@ MSWindowsClipboard::MSWindowsClipboard(HWND window)
 
 MSWindowsClipboard::~MSWindowsClipboard()
 {
+  close();
   clearConverters();
 
   // dependency injection causes confusion over ownership, so we need
@@ -117,33 +118,55 @@ bool MSWindowsClipboard::open(Time time) const
 {
   LOG_DEBUG("open clipboard");
 
+  std::scoped_lock lock{m_mutex};
+  if (m_open) {
+    m_time = time;
+    return true;
+  }
+
   // The clipboard is a global mutex on Windows. We aren't always going to
-  // get the lock on the first try, so try a few times before giving up.
-  // Based on Chromium's ScopedClipboard::Acquire() retry loop.
-  static const int kMaxRetries = 5;
-  static const int kRetryDelayMs = 5;
+  // get the lock on the first try. Keep the total wait bounded so a busy
+  // clipboard does not turn into an empty clipboard update on another screen.
+  static const int kMaxRetries = 20;
+  static const int kRetryDelayMs = 10;
+  DWORD lastError = ERROR_SUCCESS;
 
   for (int i = 0; i < kMaxRetries; ++i) {
     if (OpenClipboard(m_window)) {
-      std::scoped_lock lock{m_mutex};
       m_time = time;
+      m_open = true;
       return true;
     }
 
+    lastError = GetLastError();
     if (i < kMaxRetries - 1) {
-      LOG_DEBUG("failed to open clipboard (attempt %d/%d, error=%d), retrying", i + 1, kMaxRetries, GetLastError());
+      if (i == 0) {
+        LOG_DEBUG(
+            "clipboard is busy (attempt %d/%d, error=%lu), retrying", i + 1, kMaxRetries,
+            static_cast<unsigned long>(lastError)
+        );
+      }
       Sleep(kRetryDelayMs);
     }
   }
 
-  LOG_WARN("failed to open clipboard after %d attempts: %d", kMaxRetries, GetLastError());
+  LOG_WARN("failed to open clipboard after %d attempts: %lu", kMaxRetries, static_cast<unsigned long>(lastError));
   return false;
 }
 
 void MSWindowsClipboard::close() const
 {
+  std::scoped_lock lock{m_mutex};
+  if (!m_open) {
+    return;
+  }
+
   LOG_DEBUG("close clipboard");
-  CloseClipboard();
+  if (!CloseClipboard()) {
+    LOG_WARN("failed to close clipboard: %lu", static_cast<unsigned long>(GetLastError()));
+    return;
+  }
+  m_open = false;
 }
 
 IClipboard::Time MSWindowsClipboard::getTime() const

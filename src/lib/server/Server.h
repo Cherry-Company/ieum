@@ -466,6 +466,10 @@ private:
   // relative mouse move option
   bool m_relativeMoves = false;
 
+  int m_remotePointerSpeed = 100;
+  double m_pointerRemainderX = 0.0;
+  double m_pointerRemainderY = 0.0;
+
   // flag whether or not we have broadcasting enabled and the screens to
   // which we should send broadcasted keys.
   bool m_keyboardBroadcasting = false;
@@ -475,5 +479,6 @@ private:
 
   bool m_defaultLockToScreenState = false;
   bool m_disableLockToScreen = false;
+  bool m_autoLockFullscreen = true;
   bool m_enableClipboard = true;
 };

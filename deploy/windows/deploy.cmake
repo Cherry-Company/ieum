@@ -53,6 +53,7 @@ set(CPACK_WIX_PROPERTY_ARPCOMMENTS
 set(CPACK_WIX_PROPERTY_ARPHELPLINK "https://github.com/victoriousian/ieum/issues")
 set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "https://github.com/victoriousian/ieum")
 set(CPACK_WIX_PROPERTY_ARPURLUPDATEINFO "https://github.com/victoriousian/ieum/releases")
+set(CPACK_WIX_TEMPLATE "${MY_DIR}/WIX.template.in")
 
 # Required Extra Extenstions
 list(APPEND CPACK_WIX_EXTENSIONS "WixToolset.Util.wixext" "WixToolset.Firewall.wixext")

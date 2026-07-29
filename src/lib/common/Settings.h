@@ -138,6 +138,8 @@ public:
     inline static const auto Heartbeat = QStringLiteral("server/heartbeat");
     inline static const auto Protocol = QStringLiteral("server/protocol");
     inline static const auto RelativeMouseMoves = QStringLiteral("server/relativeMouseMoves");
+    inline static const auto RemotePointerSpeed = QStringLiteral("server/remotePointerSpeed");
+    inline static const auto AutoLockFullscreen = QStringLiteral("server/autoLockFullscreen");
     inline static const auto SwitchDelay = QStringLiteral("server/switchDelay");
     inline static const auto SwitchDoubleTap = QStringLiteral("server/switchDoubleTap");
     inline static const auto Win32KeepForeground = QStringLiteral("server/win32KeepForeground");
@@ -341,6 +343,8 @@ private:
     , Settings::Server::Heartbeat
     , Settings::Server::Protocol
     , Settings::Server::RelativeMouseMoves
+    , Settings::Server::RemotePointerSpeed
+    , Settings::Server::AutoLockFullscreen
     , Settings::Server::SwitchDelay
     , Settings::Server::SwitchDoubleTap
     , Settings::Server::Win32KeepForeground
@@ -389,6 +393,7 @@ private:
     , Settings::Security::TlsEnabled
     , Settings::Security::CheckPeers
     , Settings::Server::EnableClipboard
+    , Settings::Server::AutoLockFullscreen
     , Settings::Server::Win32KeepForeground
   };
 

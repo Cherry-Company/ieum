@@ -15,6 +15,9 @@ cmake_policy(SET CMP0005 NEW)
 if(POLICY CMP0156)
   cmake_policy(SET CMP0156 NEW)
 endif()
+if(POLICY CMP0207)
+  cmake_policy(SET CMP0207 NEW)
+endif()
 
 # Set CXX Requirements
 set(CMAKE_CXX_STANDARD 20)

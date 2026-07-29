@@ -269,6 +269,9 @@ QVariant Settings::defaultValue(const QString &key)
   if (key == Server::ClipboardSize)
     return 3; // 3 MiB
 
+  if (key == Server::RemotePointerSpeed)
+    return 100;
+
   return QVariant();
 }
 

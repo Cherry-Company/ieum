@@ -122,6 +122,9 @@ try {
       if ($properties.UpgradeCode -ne $upgradeCode) {
         throw "$($msi.Name): unexpected UpgradeCode '$($properties.UpgradeCode)'"
       }
+      if ($properties.MSIRESTARTMANAGERCONTROL -ne 'Disable') {
+        throw "$($msi.Name): Restart Manager must be disabled so the service can stop before runtime replacement"
+      }
       if ($properties.ContainsKey('ARPSYSTEMCOMPONENT') -and $properties.ARPSYSTEMCOMPONENT -ne '0') {
         throw "$($msi.Name): ARPSYSTEMCOMPONENT hides Ieum from Installed apps"
       }
@@ -138,6 +141,30 @@ try {
       )
       if ($runIeumRows.Count -ne 1 -or $runIeumRows[0].Values[1] -notmatch '(?:^|\s)--show(?:\s|$)') {
         throw "$($msi.Name): the post-install launch does not force the main window to show"
+      }
+
+      $upgradeSequence = @(
+        Get-MsiRows -Database $database -Query (
+          "SELECT ``Action``,``Condition``,``Sequence`` FROM ``InstallExecuteSequence`` WHERE " +
+          "``Action`` = 'InstallExecute' OR ``Action`` = 'RemoveExistingProducts' OR " +
+          "``Action`` = 'StartServices' OR ``Action`` = 'InstallExecuteAgain'"
+        )
+      )
+      $upgradeSequenceByAction = @{}
+      foreach ($row in $upgradeSequence) {
+        $upgradeSequenceByAction[$row.Values[0]] = $row.Values
+      }
+      if (
+        $upgradeSequenceByAction.Count -ne 4 -or
+        [int] $upgradeSequenceByAction.InstallExecute[2] -ge
+          [int] $upgradeSequenceByAction.RemoveExistingProducts[2] -or
+        [int] $upgradeSequenceByAction.RemoveExistingProducts[2] -ge
+          [int] $upgradeSequenceByAction.StartServices[2] -or
+        [int] $upgradeSequenceByAction.StartServices[2] -ge
+          [int] $upgradeSequenceByAction.InstallExecuteAgain[2] -or
+        $upgradeSequenceByAction.InstallExecuteAgain[1] -notmatch 'REMOVE'
+      ) {
+        throw "$($msi.Name): upgrade must remove the old product while Ieum is stopped, then restart the service"
       }
 
       $installedFiles = @(

@@ -400,6 +400,11 @@ bool Screen::isLockedToScreen() const
   return false;
 }
 
+bool Screen::isForegroundFullscreen() const
+{
+  return m_screen->isForegroundFullscreen();
+}
+
 int32_t Screen::getJumpZoneSize() const
 {
   if (!m_isPrimary) {

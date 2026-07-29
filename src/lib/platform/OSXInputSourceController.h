@@ -10,6 +10,8 @@
 
 #include <Carbon/Carbon.h>
 
+#include <condition_variable>
+#include <mutex>
 #include <string>
 
 class IEventQueue;
@@ -31,9 +33,10 @@ private:
   static void readStatusRequest(void *context);
   static void inputSourceChanged(CFNotificationCenterRef, void *observer, CFStringRef, const void *, CFDictionaryRef);
 
-  void apply(deskflow::InputLanguageAction action, const std::string &target);
+  std::string apply(deskflow::InputLanguageAction action, const std::string &target);
   deskflow::InputLanguageStatus readStatus() const;
-  void emitStatus() const;
+  void handleInputSourceChanged();
+  bool waitForSource(const std::string &expectedSourceId);
   TISInputSourceRef resolve(const std::string &target) const;
   TISInputSourceRef resolveKorean() const;
   TISInputSourceRef resolveLatin() const;
@@ -42,4 +45,8 @@ private:
   IEventQueue *m_events;
   void *m_eventTarget;
   mutable std::string m_lastLatinSourceId;
+  std::mutex m_changeMutex;
+  std::condition_variable m_changeCondition;
+  std::string m_observedSourceId;
+  bool m_controlInProgress = false;
 };

@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15"><strong>下载 Ieum</strong></a>
+  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.16"><strong>下载 Ieum</strong></a>
   · <a href="#首次运行时的安全与权限"><strong>安全与权限</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>赞助 Ieum</strong></a>
 </p>
@@ -32,7 +32,7 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 还试图把不同系统中的 **韩/英输入状态、输入法组合会话、物理按键位置和 Unicode 剪贴板**连接成
 一致的输入链路。
 
-> 当前版本为 `v0.1.0-alpha.15`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
+> 当前版本为 `v0.1.0-alpha.16`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
 
 ## 帮助 Ieum 完成正式发行
@@ -51,7 +51,29 @@ ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
 
 仍可选择自定义金额进行单次赞助。无论是否赞助，本地 KVM、韩语/CJK 输入同步和剪贴板核心都将保持
 开放。每个版本都会公开[赞助资金分配金额和完成的工作](docs/release/sponsorship-impact.md)。
-`alpha.15` 分配的赞助资金为 **USD 0**。
+`alpha.16` 分配的赞助资金为 **USD 0**。
+
+## Alpha.16 输入、窗口与更新可靠性
+
+`alpha.16` 包含以下改动：
+
+- 开机、分辨率变化或显示器重新连接后，旧坐标会被限制在新屏幕范围内。不同分辨率之间按相同的
+  高度或宽度比例计算进入位置。
+- 服务端前台应用覆盖整个显示器时会自动锁定边缘切换，无需快捷键即可防止游戏中误切换；可在
+  **服务端设置 → 高级**中关闭。
+- **远程指针速度**可在 `25%` 至 `400%` 之间调节。低速移动会保留小数余量，保存后无需断开客户端
+  即可让运行中的服务端立即重载配置。
+- macOS 会定期检查菜单栏项目，并在异常消失时进行有限次数的恢复。用 `X` 隐藏窗口后点击 Dock
+  图标，也会重新显示并激活原窗口。
+- Windows 物理韩/英键不再让 Mac 盲目切换，而是根据 Mac 报告的当前状态请求明确的目标状态。
+  Mac 确认真实的 TIS 输入源变化通知后才继续处理下一按键。
+- Windows 剪贴板获取会进行有上限的重试；读取失败时不会向远端发送空剪贴板，剪贴板对象销毁时
+  也会释放残留的 Win32 剪贴板锁。
+- Windows MSI 会在服务停止期间移除旧包，再启动新服务。实际运行中的 `alpha.16` 替换安装以
+  返回码 `0` 完成，无需重启，服务自动恢复，服务端配置、TLS 信任和用户设置逐字节保持一致。
+
+比例映射依据操作系统报告的像素几何信息，无法推断显示器支架高度、边框尺寸或不同尺寸显示器在
+现实中的上下偏移。
 
 ## Alpha.15 自动启动与连接恢复
 
@@ -158,16 +180,16 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.15 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.15)
+[Ieum v0.1.0-alpha.16 发布页](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.16)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.15-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.15-macos-x86_64.dmg` |
-| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.15-win-x64.msi` |
-| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.15-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.15-win-arm64.msi` |
-| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.15-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.16-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.16-macos-x86_64.dmg` |
+| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.16-win-x64.msi` |
+| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.16-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.16-win-arm64.msi` |
+| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.16-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
 
@@ -238,7 +260,7 @@ CPU 开销。
 条目仍然存在，但 macOS 不信任当前应用，`alpha.10` 会提供**重置旧授权**。确认后，它只会删除
 Ieum 的“辅助功能”记录，并重新注册当前的 `/Applications/Ieum.app`，无需手动点按减号和加号。
 
-`alpha.15` 最终应用已通过严格的代码签名验证，但尚未使用 Developer ID 证书签名，也未经过 Apple
+`alpha.16` 最终应用已通过严格的代码签名验证，但尚未使用 Developer ID 证书签名，也未经过 Apple
 公证。请将应用移到 `/Applications` 并尝试打开一次；若 macOS 阻止运行，请前往
 **系统设置 → 隐私与安全性 → 仍要打开**。应用还需要“辅助功能”和“输入监控”权限。临时签名会让
 每个构建具有不同的代码身份，因此后续更新仍可能需要**重置旧授权**并再次批准。要自动继承权限，
@@ -249,18 +271,22 @@ Windows `alpha.2` 至 `alpha.7` 错误复用了 Deskflow 的 MSI `UpgradeCode`�
 `deskflow-core` 与 `deskflow-daemon` 的可执行文件和 IPC 名称。Deskflow 正在运行时，或 Ieum 的
 服务核心与桌面核心重叠时，GUI 可能连接到错误的核心，并让 TLS 授权一直等待到超时。
 
-从 `alpha.9` 开始，Ieum 使用单调递增的 MSI 预发行版本映射（`alpha.15` 对应 `0.1.115`）、
+从 `alpha.9` 开始，Ieum 使用单调递增的 MSI 预发行版本映射（`alpha.16` 对应 `0.1.116`）、
 `ieum-core.exe`、`ieum-daemon.exe`，以及带版本的
 `ieum-core-v1`/`ieum-daemon-v1` IPC。全局所有权锁会拒绝重复核心；默认认证文件迁移到
 `ieum.pem`，从而重新生成 `/CN=Ieum` 证书。CI 会在 x64 与 ARM64 上执行真实的
-`alpha.14 → alpha.15` 升级，验证服务 IPC、登录界面核心 PID 保持、登录自动启动和重复核心拒绝，
-并确认 Deskflow 1.26.0 与 Ieum 核心可同时运行。现有 `alpha.8` 至 `alpha.14` 用户可直接运行
-`alpha.15` MSI，无需手动卸载。证书更新后，
+`alpha.15 → alpha.16` 升级，验证服务 IPC、登录界面核心 PID 保持、登录自动启动和重复核心拒绝，
+并确认 Deskflow 1.26.0 与 Ieum 核心可同时运行。现有 `alpha.8` 至 `alpha.15` 用户可直接运行
+`alpha.16` MSI，无需手动卸载。证书更新后，
 首次连接时可能需要重新确认一次指纹。
 
 全局安装包在“已安装的应用”和开始菜单中显示为 **Ieum**，韩文安装包显示为 **이음 (Ieum)**。
 安装目录为 `C:\Program Files\Ieum`，Windows 服务名为 `Ieum`，开始菜单中还会创建卸载快捷方式。
 Windows 安装包尚未进行代码签名，因此 SmartScreen 仍可能显示警告。
+
+正常的 Ieum MSI 更新不应要求重启 Windows。`alpha.16` MSI 会先请求 GUI 和核心正常退出，等待十秒，
+仅在进程仍未退出时才终止它并替换文件。`3010` 表示更新已完成但仍需重启，通常由锁定的系统文件
+或单独安装的 Visual C++ 运行库引起；`/norestart` 只能阻止自动重启，不能消除该待重启状态。
 
 ## 快速开始
 

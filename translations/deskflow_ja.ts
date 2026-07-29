@@ -1322,6 +1322,14 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>起動時にコンピューター間移動のロックを有効にする</translation>
     </message>
     <message>
+        <source>Automatically lock while a full-screen app is active on this computer</source>
+        <translation>このコンピューターでフルスクリーンアプリの使用中は自動的に画面切り替えをロック</translation>
+    </message>
+    <message>
+        <source>Remote pointer speed</source>
+        <translation>リモートポインター速度</translation>
+    </message>
+    <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 use the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;An Ieum client automatically selects the protocol required by the server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>

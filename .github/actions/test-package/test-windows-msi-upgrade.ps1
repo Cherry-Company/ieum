@@ -144,7 +144,9 @@ function Invoke-MsiExec {
     [string] $Target,
 
     [Parameter(Mandatory = $true)]
-    [string] $Log
+    [string] $Log,
+
+    [switch] $AllowRebootRequired
   )
 
   $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
@@ -164,11 +166,30 @@ function Invoke-MsiExec {
     $process.Dispose()
   }
 
-  if ($exitCode -notin @(0, 3010)) {
+  if ($exitCode -eq 3010 -and $AllowRebootRequired) {
+    Write-Warning "msiexec $Operation requested a reboot for an external package"
+    return
+  }
+
+  if ($exitCode -ne 0) {
     Write-Host "::group::Windows Installer log: $Log"
     Get-Content -LiteralPath $Log -ErrorAction SilentlyContinue
     Write-Host '::endgroup::'
+    if ($exitCode -eq 3010) {
+      throw "msiexec $Operation completed but requires a reboot (exit code 3010)"
+    }
     throw "msiexec $Operation failed with exit code $exitCode"
+  }
+
+  $hiddenRebootRequirement = Select-String -LiteralPath $Log -Quiet -Pattern (
+      'RESTART MANAGER: Did detect that a critical application holds file\[s\] in use|' +
+      'MainEngineThread is returning 3010'
+    )
+  if (-not $AllowRebootRequired -and $hiddenRebootRequirement) {
+    Write-Host "::group::Windows Installer log: $Log"
+    Get-Content -LiteralPath $Log -ErrorAction SilentlyContinue
+    Write-Host '::endgroup::'
+    throw "msiexec $Operation reported a hidden reboot requirement in $Log"
   }
 }
 
@@ -742,7 +763,8 @@ try {
   Invoke-MsiExec `
     -Operation '/i' `
     -Target $deskflowMsi.FullName `
-    -Log (Join-Path $workDirectory 'deskflow-install.log')
+    -Log (Join-Path $workDirectory 'deskflow-install.log') `
+    -AllowRebootRequired
 
   if ((Get-ProductState -ProductCode $deskflowProductCode) -ne 5) {
     throw "Deskflow did not reach installed state"
@@ -836,7 +858,8 @@ finally {
       Invoke-MsiExec `
         -Operation '/x' `
         -Target $productCode `
-        -Log (Join-Path $workDirectory "uninstall-$($productCode.Trim('{}')).log")
+        -Log (Join-Path $workDirectory "uninstall-$($productCode.Trim('{}')).log") `
+        -AllowRebootRequired:($productCode -eq $deskflowProductCode)
     }
   }
 }
