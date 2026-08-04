@@ -83,7 +83,7 @@ ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
   粗粒度计时器，以减少空闲状态下的 UI 工作。
 - IME、CJK、原始按键、屏幕进入和 Mac 按键延迟设置集中到**设置 → 输入**；服务与命令自动化位于
   **系统**，指针与剪贴板设置位于**指针与共享**。
-- Apple Silicon 包在真实 MacBook Pro runner `yijios-apple-primary-macbook` 上原生构建，并通过
+- Apple Silicon 包在真实 MacBook Pro runner `cherry-apple-primary-macbook` 上原生构建，并通过
   测试、DMG 挂载和签名结构检查。Developer ID 签名和 Apple 公证尚未配置，因此此预发行版在
   macOS 上可能仍需手动通过 Gatekeeper。
 

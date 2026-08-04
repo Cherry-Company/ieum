@@ -90,7 +90,7 @@ allocated to `alpha.18` is **USD 0**.
 - IME, CJK, raw-key, screen-entry, and Mac key-delay controls now live under **Preferences → Input**. Service and
   command automation are under **System**, while pointer and clipboard controls are under **Pointer & sharing**.
 - Apple Silicon packages are built natively on the physical MacBook Pro runner
-  `yijios-apple-primary-macbook` and pass tests, DMG mounting, and signature-structure checks. Developer ID
+  `cherry-apple-primary-macbook` and pass tests, DMG mounting, and signature-structure checks. Developer ID
   signing and Apple notarization are not configured yet, so this prerelease may require manual Gatekeeper
   approval on macOS.
 

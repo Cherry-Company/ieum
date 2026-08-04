@@ -93,7 +93,7 @@ ARM64·Apple Silicon 실기 회귀 테스트와 안정적인 릴리스 유지**�
   네트워크·메뉴 막대 감시는 저정밀 타이머를 사용해 유휴 상태 UI 작업을 줄였습니다.
 - 입력기·CJK·원시 키·화면 진입·Mac 키 지연 설정은 **환경설정 → 입력**에 모았습니다. 서비스와
   명령 자동화는 **시스템**, 포인터와 클립보드 공유는 **포인터 및 공유**로 정리했습니다.
-- Apple Silicon 패키지는 실제 MacBook Pro의 `yijios-apple-primary-macbook`에서 ARM64로 빌드하고
+- Apple Silicon 패키지는 실제 MacBook Pro의 `cherry-apple-primary-macbook`에서 ARM64로 빌드하고
   테스트·DMG 마운트·서명 구조 검증을 통과했습니다. 다만 Developer ID 서명과 Apple 공증은 아직
   없으므로 프리릴리스의 macOS 설치에는 Gatekeeper 수동 승인이 필요할 수 있습니다.
 

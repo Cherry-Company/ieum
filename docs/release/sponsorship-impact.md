@@ -15,11 +15,11 @@ Release: v0.1.0-alpha.18
 
 ## 빌드 및 실기 검증 범위 / Build and physical validation scope
 
-- Apple Silicon 패키지는 공유 Apple 기본 경로 `yijios-apple-primary`를 통해 MacBook Pro의
-  `yijios-apple-primary-macbook`에서 네이티브 ARM64로 빌드합니다. 외부 공개 포크 PR만 격리를 위해
+- Apple Silicon 패키지는 Cherry 조직의 공유 Apple 기본 경로 `cherry-apple-primary`를 통해 MacBook Pro의
+  `cherry-apple-primary-macbook`에서 네이티브 ARM64로 빌드합니다. 외부 공개 포크 PR만 격리를 위해
   `macos-15`를 사용하며 Intel DMG는 `macos-15-intel`에서 빌드합니다. / Apple Silicon packages are
-  built natively on the MacBook Pro runner `yijios-apple-primary-macbook` through the shared Apple primary
-  lane `yijios-apple-primary`. Only public fork pull requests use `macos-15` for isolation, while Intel DMGs
+  built natively on the MacBook Pro runner `cherry-apple-primary-macbook` through Cherry's shared Apple primary
+  lane `cherry-apple-primary`. Only public fork pull requests use `macos-15` for isolation, while Intel DMGs
   use `macos-15-intel`.
 - 릴리스 전 최종 커밋은 MacBook Pro에서 ARM64 컴파일, 37개 CTest 대상, DMG 생성·마운트,
   `codesign --verify --deep --strict`, ARM64 Mach-O 확인과 아티팩트 업로드를 통과했습니다. Windows
