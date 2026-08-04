@@ -79,6 +79,9 @@ runs:
         version: ${{inputs.qt-version}}
         cache: true
         cache-key-prefix: ${{matrix.target.os}}-${{inputs.qt-version}}
+        # setup-python expects a GitHub-hosted tool-cache layout. Self-hosted
+        # Apple runners already provide Python and must not write /Users/runner.
+        setup-python: ${{ runner.environment != 'self-hosted' }}
 
     - name: Build and cache vcpkg
       if: ${{ runner.os == 'Windows' }}
