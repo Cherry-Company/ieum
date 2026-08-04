@@ -15,23 +15,26 @@ Release: v0.1.0-alpha.16
 
 ## 빌드 및 실기 검증 범위 / Build and physical validation scope
 
-- 사용자의 MacBook Pro는 다른 개인 저장소에서 `dev-macbook` self-hosted runner로 이미 정상
-  운용 중입니다. 다만 이 릴리스 시점에는 Ieum 전용 `dev-macbook-ieum` 등록과 워크플로 라우팅이
-  없었습니다. 따라서 macOS ARM64·Intel DMG는 MacBook Pro가 아니라 GitHub Actions의 임시 macOS
-  runner(`macos-15`, `macos-15-intel`)에서 빌드하고 패키지 검사했습니다. 실제 MacBook Pro 수용
-  테스트는 아직 완료하지 않았으므로 Apple 패키지는 **빌드·패키지 검증 완료, 실기 검증 대기**로
-  표시합니다. / The user's MacBook Pro was already operating normally as a `dev-macbook` self-hosted
-  runner for other personal repositories. However, this release did not yet have an Ieum-specific
-  `dev-macbook-ieum` registration or workflow route. The macOS ARM64 and Intel DMGs were therefore built
-  and package-tested on ephemeral GitHub-hosted macOS runners (`macos-15` and `macos-15-intel`), not on
-  the MacBook Pro. Physical MacBook Pro acceptance testing is still pending, so the Apple packages are
-  **build/package verified and awaiting physical validation**.
-- 이번 릴리스 시점의 저장소 전용 self-hosted runner 등록 수는 0개입니다. Windows x64 소스 빌드,
-  MSI 검증과 실행 중 교체 설치는 `PICOPULSE409`에서 별도로 검증했습니다. 태그의 교차 플랫폼
-  패키징은 문서화된 예외로 GitHub-hosted runner를 사용했습니다. / At this release point, the
-  repository has zero registered self-hosted runners. Windows x64 source, MSI, and live replacement
-  testing was also completed on `PICOPULSE409`; tag packaging used GitHub-hosted runners as a documented
-  exception.
+- MacBook Pro의 공유 Apple 기본 실행 경로 `yijios-apple-primary`와 runner
+  `yijios-apple-primary-macbook`는 이 릴리스 당시에도 등록되어 있었습니다. Ieum 전용 runner 복제본은
+  필요하지 않습니다. 이전 문구는 "Ieum 전용 runner가 없다"는 사실을 "사용 가능한 MacBook runner가
+  없다"는 의미로 잘못 설명했습니다. / The shared Apple primary lane `yijios-apple-primary` and runner
+  `yijios-apple-primary-macbook` on the MacBook Pro were already registered when this release was
+  published. Ieum does not require a repository-specific runner replica. The previous wording incorrectly
+  conflated the absence of an Ieum-specific replica with the absence of an available MacBook runner.
+- 공개된 v0.1.0-alpha.16 ARM64 DMG는 기존 워크플로가 `runs-on: macos-15`로 고정되어 있었기 때문에
+  GitHub-hosted runner에서 빌드됐습니다. 이는 runner 등록 문제가 아니라 워크플로 라우팅 문제였습니다.
+  현재 신뢰된 브랜치·태그·수동 ARM64 작업은 `yijios-apple-primary`를 사용하고, 외부 공개 포크 PR만
+  격리를 위해 `macos-15`를 사용합니다. Intel DMG는 `macos-15-intel`에서 빌드합니다. / The published
+  v0.1.0-alpha.16 ARM64 DMG was built on a GitHub-hosted runner because the old workflow hard-coded
+  `runs-on: macos-15`. This was a workflow-routing defect, not a runner-registration problem. Trusted
+  branch, tag, and manual ARM64 jobs now use `yijios-apple-primary`; only public fork pull requests use
+  `macos-15` for isolation. Intel DMGs continue to use `macos-15-intel`.
+- Windows x64 소스 빌드, MSI 검증과 실행 중 교체 설치는 `PICOPULSE409`에서 별도로 검증했습니다.
+  alpha.16 태그의 Windows 및 Apple 패키지는 당시 워크플로 설정에 따라 GitHub-hosted runner에서
+  생성됐습니다. / Windows x64 source, MSI, and live replacement testing was also completed on
+  `PICOPULSE409`. The alpha.16 tag's Windows and Apple packages were produced on GitHub-hosted runners
+  under the workflow configuration in effect at that time.
 
 후원금이 투입된 이후의 릴리스는 이 섹션에 배분 금액과 완료한 작업을 함께 공개합니다. Future releases
 that use sponsorship funds disclose both the allocated amount and the completed work in this section.
