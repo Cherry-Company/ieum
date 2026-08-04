@@ -29,11 +29,11 @@
 		</p>
 	</description>
 	<launchable type="desktop-id">org.deskflow.deskflow.desktop</launchable>
-	<url type="homepage">https://github.com/YijiOS/ieum</url>
-	<url type="bugtracker">https://github.com/YijiOS/ieum/issues</url>
-	<url type="help">https://github.com/YijiOS/ieum#readme</url>
-	<url type="vcs-browser">https://github.com/YijiOS/ieum</url>
-	<url type="contribute">https://github.com/YijiOS/ieum/blob/ieum/main/.github/CONTRIBUTING.md</url>
+	<url type="homepage">https://github.com/Cherry-Company/ieum</url>
+	<url type="bugtracker">https://github.com/Cherry-Company/ieum/issues</url>
+	<url type="help">https://github.com/Cherry-Company/ieum#readme</url>
+	<url type="vcs-browser">https://github.com/Cherry-Company/ieum</url>
+	<url type="contribute">https://github.com/Cherry-Company/ieum/blob/ieum/main/.github/CONTRIBUTING.md</url>
 	<provides>
 		<id>org.deskflow.deskflow.desktop</id>
 	</provides>
@@ -60,21 +60,21 @@
 				<p>Adds borderless-game pointer-capture protection and protocol-level physical-monitor edge mapping.</p>
 				<p xml:lang="ko">전체 창 게임의 포인터 캡처 보호와 프로토콜 기반 물리 모니터 경계 좌표 변환을 추가했습니다.</p>
 			</description>
-			<url>https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18</url>
+			<url>https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.18</url>
 		</release>
 		<release version="0.1.0-alpha.17" date="2026-08-04" urgency="high" type="development">
 			<description>
 				<p>Improves macOS input-source activation, reconnect recovery, mixed-display edge mapping, full-screen protection, and settings organization.</p>
 				<p xml:lang="ko">macOS 입력 소스 활성화, 재연결 복구, 혼합 모니터 경계 좌표, 전체 화면 보호와 설정 구성을 개선했습니다.</p>
 			</description>
-			<url>https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.17</url>
+			<url>https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.17</url>
 		</release>
 		<release version="0.1.0-alpha.2" date="2026-07-14" urgency="high" type="development">
 			<description>
 				<p>First fully branded Ieum preview with Windows, macOS, and Linux packages.</p>
 				<p xml:lang="ko">Windows, macOS, Linux 패키지를 제공하는 첫 이음 브랜드 프리뷰입니다.</p>
 			</description>
-			<url>https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.2</url>
+			<url>https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.2</url>
 		</release>
 	</releases>
 </component>

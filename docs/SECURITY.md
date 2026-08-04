@@ -8,7 +8,7 @@ installer inconvenience.
 ## Supported Versions
 
 The latest minor release is supported and receives security updates:
-https://github.com/YijiOS/ieum/releases
+https://github.com/Cherry-Company/ieum/releases
 
 ## Package Trust
 
@@ -76,7 +76,7 @@ and
 ## Reporting a Vulnerability
 
 Please report vulnerabilities through
-[GitHub Security Advisories](https://github.com/YijiOS/ieum/security/advisories/new)
+[GitHub Security Advisories](https://github.com/Cherry-Company/ieum/security/advisories/new)
 when the report contains exploit details or sensitive information. Ordinary
 hardening requests and non-sensitive bugs can use the
-[issue tracker](https://github.com/YijiOS/ieum/issues).
+[issue tracker](https://github.com/Cherry-Company/ieum/issues).

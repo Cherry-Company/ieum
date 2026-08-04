@@ -16,14 +16,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18"><strong>下载 Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.18"><strong>下载 Ieum</strong></a>
   · <a href="#首次运行时的安全与权限"><strong>安全与权限</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>赞助 Ieum</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/YijiOS/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/YijiOS/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
-  <a href="https://github.com/YijiOS/ieum/releases"><img src="https://img.shields.io/github/v/release/YijiOS/ieum?include_prereleases&label=release" alt="Release"></a>
+  <a href="https://github.com/Cherry-Company/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/Cherry-Company/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases"><img src="https://img.shields.io/github/v/release/Cherry-Company/ieum?include_prereleases&label=release" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--only-blue" alt="GPL-2.0-only"></a>
   <a href="https://github.com/sponsors/victoriousian"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-EA4AAA?logo=githubsponsors&logoColor=white" alt="通过 GitHub Sponsors 赞助 Ieum"></a>
 </p>
@@ -214,7 +214,7 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.18 发布页](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18)
+[Ieum v0.1.0-alpha.18 发布页](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.18)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
@@ -229,7 +229,7 @@ flowchart LR
 
 ### 首次运行时的安全与权限
 
-请只从 `github.com/YijiOS/ieum/releases` 下载，并用 `SHA256SUMS.txt` 校验文件。不要关闭
+请只从 `github.com/Cherry-Company/ieum/releases` 下载，并用 `SHA256SUMS.txt` 校验文件。不要关闭
 SmartScreen、Microsoft Defender、Gatekeeper 或 macOS 隐私保护。校验值不一致或安全软件明确报告
 恶意软件时，应立即停止安装。
 

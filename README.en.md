@@ -16,14 +16,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18"><strong>Download Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.18"><strong>Download Ieum</strong></a>
   · <a href="#first-run-security-and-permissions"><strong>Security &amp; permissions</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>Sponsor Ieum</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/YijiOS/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/YijiOS/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
-  <a href="https://github.com/YijiOS/ieum/releases"><img src="https://img.shields.io/github/v/release/YijiOS/ieum?include_prereleases&label=release" alt="Release"></a>
+  <a href="https://github.com/Cherry-Company/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/Cherry-Company/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases"><img src="https://img.shields.io/github/v/release/Cherry-Company/ieum?include_prereleases&label=release" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--only-blue" alt="GPL-2.0-only"></a>
   <a href="https://github.com/sponsors/victoriousian"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-EA4AAA?logo=githubsponsors&logoColor=white" alt="Sponsor Ieum on GitHub Sponsors"></a>
 </p>
@@ -233,7 +233,7 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[이음 (Ieum) v0.1.0-alpha.18 release](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18)
+[이음 (Ieum) v0.1.0-alpha.18 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.18)
 
 | Operating system | Installer |
 | --- | --- |
@@ -249,7 +249,7 @@ Windows portable archives and experimental Linux packages are included. Verify d
 
 ### First-run security and permissions
 
-Download only from `github.com/YijiOS/ieum/releases` and compare the file with `SHA256SUMS.txt`. Do not
+Download only from `github.com/Cherry-Company/ieum/releases` and compare the file with `SHA256SUMS.txt`. Do not
 disable SmartScreen, Microsoft Defender, Gatekeeper, or macOS privacy protection. A checksum mismatch or an
 explicit malware detection is a stop condition.
 

@@ -16,15 +16,15 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.18"><strong>이음 다운로드</strong></a>
   · <a href="#설치와-첫-연결"><strong>설치 가이드</strong></a>
   · <a href="#설치-전-1분-보안-확인"><strong>보안·권한 안내</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>GitHub Sponsors로 후원</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/YijiOS/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/YijiOS/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
-  <a href="https://github.com/YijiOS/ieum/releases"><img src="https://img.shields.io/github/v/release/YijiOS/ieum?include_prereleases&label=release" alt="Release"></a>
+  <a href="https://github.com/Cherry-Company/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/Cherry-Company/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases"><img src="https://img.shields.io/github/v/release/Cherry-Company/ieum?include_prereleases&label=release" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--only-blue" alt="GPL-2.0-only"></a>
   <a href="https://github.com/sponsors/victoriousian"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-EA4AAA?logo=githubsponsors&logoColor=white" alt="GitHub Sponsors에서 이음 후원하기"></a>
 </p>
@@ -174,17 +174,17 @@ Tailscale·Wi-Fi 품질과 마우스 폴링률은 환경마다 다르므로, 두
 ### 1. 설치 파일 고르기
 
 최신 테스트 릴리스는
-**[이음 (Ieum) v0.1.0-alpha.18](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18)**입니다.
+**[이음 (Ieum) v0.1.0-alpha.18](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.18)**입니다.
 한국어 사용자는 아래 직링크를 사용하면 릴리스 자산 목록에서 파일명을 찾을 필요가 없습니다.
 
 | 기기 | 권장 다운로드 |
 | --- | --- |
-| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-win-x64-ko-KR.msi) |
-| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-win-arm64-ko-KR.msi) |
-| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-macos-arm64.dmg) |
-| Intel Mac | [macOS Intel DMG](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-macos-x86_64.dmg) |
-| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18) |
-| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18) |
+| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-win-x64-ko-KR.msi) |
+| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-win-arm64-ko-KR.msi) |
+| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-macos-arm64.dmg) |
+| Intel Mac | [macOS Intel DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-macos-x86_64.dmg) |
+| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.18) |
+| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.18) |
 
 아키텍처를 모르겠다면 다음 위치에서 확인합니다.
 
@@ -221,7 +221,7 @@ Windows MSI는 필요한 Visual C++ 런타임 버전을 검사하지만 현재�
 이음의 현재 알파 패키지는 Windows 코드 서명과 Apple Developer ID 서명·공증 전입니다. 따라서
 운영체제의 경고 자체를 없애지는 못합니다. 대신 아래 세 가지를 모두 확인한 뒤 진행하세요.
 
-1. 주소창이 `github.com/YijiOS/ieum/releases`인 공식 릴리스에서 받았는지 확인합니다.
+1. 주소창이 `github.com/Cherry-Company/ieum/releases`인 공식 릴리스에서 받았는지 확인합니다.
 2. 파일명이 현재 릴리스 목록과 같은지 확인하고 [SHA-256을 대조](#다운로드-파일-검증)합니다.
 3. SmartScreen, Defender, Gatekeeper를 끄거나 예외 목록에 영구 추가하지 않습니다.
 
@@ -342,7 +342,7 @@ Mac에서는 입력 모니터링을 먼저 켜지 말고, macOS가 실제로 요
 
 > “손상되어 열 수 없음”은 단순 미공증 경고와 다릅니다. `alpha.18` 파일의 SHA-256이 다르면
 > 실행하지 말고 삭제 후 다시 받으세요. 해시가 일치하는데도 같은 문구가 나오면 macOS 버전과
-> 메시지 전체를 포함해 [버그를 제보](https://github.com/YijiOS/ieum/issues/new?template=bug_report.yml)해
+> 메시지 전체를 포함해 [버그를 제보](https://github.com/Cherry-Company/ieum/issues/new?template=bug_report.yml)해
 > 주세요. 보안 속성을 강제로 지우는 터미널 명령은 권장하지 않습니다.
 
 Apple이 안내하는 권한 위치는
@@ -521,12 +521,12 @@ Windows 서비스와 입력 훅은 새 바이너리로 바꾸는 순간 짧게 �
 
 버그 제보 전 **도움말 → 이음 정보 → 버전 정보 복사**와 메인 화면의 관련 로그를 준비하면 운영체제,
 Qt 버전과 정확한 오류를 함께 전달할 수 있습니다.
-[버그 제보 양식 열기](https://github.com/YijiOS/ieum/issues/new?template=bug_report.yml)
+[버그 제보 양식 열기](https://github.com/Cherry-Company/ieum/issues/new?template=bug_report.yml)
 
 ### 다운로드 파일 검증
 
 릴리스의
-[`SHA256SUMS.txt`](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.18/SHA256SUMS.txt)와
+[`SHA256SUMS.txt`](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.18/SHA256SUMS.txt)와
 계산 결과가 정확히 같은지 비교합니다. 파일명이 다르면 명령의 파일명만 바꾸세요.
 
 ```powershell
