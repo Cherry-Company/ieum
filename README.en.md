@@ -16,14 +16,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.16"><strong>Download Ieum</strong></a>
+  <a href="https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.17"><strong>Download Ieum</strong></a>
   · <a href="#first-run-security-and-permissions"><strong>Security &amp; permissions</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>Sponsor Ieum</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/victoriousian/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
-  <a href="https://github.com/victoriousian/ieum/releases"><img src="https://img.shields.io/github/v/release/victoriousian/ieum?include_prereleases&label=release" alt="Release"></a>
+  <a href="https://github.com/YijiOS/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/YijiOS/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
+  <a href="https://github.com/YijiOS/ieum/releases"><img src="https://img.shields.io/github/v/release/YijiOS/ieum?include_prereleases&label=release" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--only-blue" alt="GPL-2.0-only"></a>
   <a href="https://github.com/sponsors/victoriousian"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-EA4AAA?logo=githubsponsors&logoColor=white" alt="Sponsor Ieum on GitHub Sponsors"></a>
 </p>
@@ -32,7 +32,7 @@ Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers
 screen edge: it connects **Korean/English mode, IME composition sessions, physical key positions, and Unicode
 clipboard data** into one consistent input path across operating systems.
 
-> The current release is `v0.1.0-alpha.16`. Automated builds and unit tests pass, but the long-running physical
+> The current release is `v0.1.0-alpha.17`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
 
 ## Help Ieum reach production distribution
@@ -52,7 +52,29 @@ notarization, physical Windows ARM64 and Apple Silicon regression testing, and d
 Custom one-time amounts remain available. Local KVM, Korean/CJK input synchronization, and clipboard core remain
 open regardless of sponsorship. Every release publishes the
 [amount allocated and work completed with sponsorship funds](docs/release/sponsorship-impact.md). The amount
-allocated to `alpha.16` is **USD 0**.
+allocated to `alpha.17` is **USD 0**.
+
+## Alpha.17 input switching, reconnect, and edge reliability
+
+`alpha.17` includes the following changes:
+
+- `Alt`/Korean-English and `Control+Space` from a Windows server are handled as input-state controls for a Mac
+  client. After selecting a CJK input source, macOS now activates the focused application's input context so the
+  menu-bar indicator and actual typing state do not diverge.
+- After reboot or a network interruption, the client retries 20 times at 250 ms, then every second, with a
+  long-term maximum interval of two seconds. Successful connections, explicit Stop, and application shutdown
+  cancel any pending retry timer.
+- Display unions and edge coordinates are recomputed for mixed resolutions, scale factors, and negative monitor
+  origins. Windows DWM frame bounds, hidden-window exclusion, display coverage, and short hysteresis reduce
+  accidental switching while a full-screen game is active.
+- Log lines are rendered in batches, hidden log panels defer rendering, and pending output is bounded. Network
+  and macOS status-item monitoring use coarse timers to reduce idle UI work.
+- IME, CJK, raw-key, screen-entry, and Mac key-delay controls now live under **Preferences → Input**. Service and
+  command automation are under **System**, while pointer and clipboard controls are under **Pointer & sharing**.
+- Apple Silicon packages are built natively on the physical MacBook Pro runner
+  `yijios-apple-primary-macbook` and pass tests, DMG mounting, and signature-structure checks. Developer ID
+  signing and Apple notarization are not configured yet, so this prerelease may require manual Gatekeeper
+  approval on macOS.
 
 ## Alpha.16 input, window, and upgrade reliability
 
@@ -193,23 +215,23 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[이음 (Ieum) v0.1.0-alpha.16 release](https://github.com/victoriousian/ieum/releases/tag/v0.1.0-alpha.16)
+[이음 (Ieum) v0.1.0-alpha.17 release](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.17)
 
 | Operating system | Installer |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.16-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.16-macos-x86_64.dmg` |
-| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.16-win-x64.msi` |
-| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.16-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.16-win-arm64.msi` |
-| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.16-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.17-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.17-macos-x86_64.dmg` |
+| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.17-win-x64.msi` |
+| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.17-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.17-win-arm64.msi` |
+| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.17-win-arm64-ko-KR.msi` |
 
 Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
 `SHA256SUMS.txt`.
 
 ### First-run security and permissions
 
-Download only from `github.com/victoriousian/ieum/releases` and compare the file with `SHA256SUMS.txt`. Do not
+Download only from `github.com/YijiOS/ieum/releases` and compare the file with `SHA256SUMS.txt`. Do not
 disable SmartScreen, Microsoft Defender, Gatekeeper, or macOS privacy protection. A checksum mismatch or an
 explicit malware detection is a stop condition.
 
@@ -280,7 +302,7 @@ older Ieum release remains but macOS does not trust the current app, `alpha.10` 
 After confirmation, it removes only Ieum's Accessibility record and registers the current
 `/Applications/Ieum.app` again, avoiding the manual minus/add workflow.
 
-The final `alpha.16` app passes strict code-signature verification, but it is not yet signed with a Developer ID
+The final `alpha.17` app passes strict code-signature verification, but it is not yet signed with a Developer ID
 certificate or Apple-notarized. Move it to `/Applications`, try to open it once, then use **System Settings →
 Privacy & Security → Open Anyway** if macOS blocks it. Accessibility and Input Monitoring permissions are also
 required. Because ad-hoc signing gives each build a different code identity, a later update may require
@@ -293,13 +315,13 @@ could reject Ieum as an older version. `alpha.8` separated the installer identit
 Ieum service and desktop cores, could therefore route the GUI to the wrong core and leave TLS approval waiting
 until timeout.
 
-Since `alpha.9`, Ieum uses a monotonic MSI prerelease mapping (`alpha.16` maps to `0.1.116`),
+Since `alpha.9`, Ieum uses a monotonic MSI prerelease mapping (`alpha.17` maps to `0.1.117`),
 `ieum-core.exe`, `ieum-daemon.exe`, and versioned
 `ieum-core-v1`/`ieum-daemon-v1` IPC endpoints. A global ownership lock rejects duplicate cores, and the default
 certificate migrates to `ieum.pem` so a fresh `/CN=Ieum` certificate is generated. CI performs a real
-`alpha.15 → alpha.16` upgrade, validates service IPC, pre-login core PID preservation, login startup, and
+`alpha.16 → alpha.17` upgrade, validates service IPC, pre-login core PID preservation, login startup, and
 duplicate-core rejection, and keeps Deskflow 1.26.0 and Ieum cores running simultaneously on x64 and ARM64.
-Existing `alpha.8` through `alpha.15` users can run the `alpha.16` MSI directly without manually uninstalling. The
+Existing `alpha.8` through `alpha.16` users can run the `alpha.17` MSI directly without manually uninstalling. The
 first connection may request fingerprint approval once because the certificate is replaced.
 
 The global installer appears as **Ieum** in Installed apps and the Start menu; the Korean installer appears as
@@ -307,7 +329,7 @@ The global installer appears as **Ieum** in Installed apps and the Start menu; t
 and the Start menu includes an uninstall shortcut. Windows packages are not yet code-signed, so SmartScreen may
 show a warning.
 
-A normal Ieum MSI upgrade is expected to finish without a Windows reboot. The `alpha.16` MSI first asks the GUI
+A normal Ieum MSI upgrade is expected to finish without a Windows reboot. The `alpha.17` MSI first asks the GUI
 and core to close cleanly, waits ten seconds, and only then terminates a remaining process before replacement. A
 `3010` result is an exceptional “completed, reboot required” state, usually caused by a locked system file or a
 separately installed Visual C++ runtime. `/norestart` prevents an automatic reboot; it does not clear that pending

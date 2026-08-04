@@ -82,7 +82,7 @@ project(
   deskflow
   VERSION "${DESKFLOW_VERSION_MAJOR}.${DESKFLOW_VERSION_MINOR}.${DESKFLOW_VERSION_PATCH}.${DESKFLOW_VERSION_TWEAK}"
   DESCRIPTION "Software KVM across Windows, macOS, and Linux"
-  HOMEPAGE_URL "https://github.com/victoriousian/ieum"
+  HOMEPAGE_URL "https://github.com/YijiOS/ieum"
   LANGUAGES C CXX
 )
 
@@ -91,7 +91,7 @@ set(CMAKE_PROJECT_PROPER_NAME "Ieum")
 set(CMAKE_PROJECT_AUTHOR "Heesang Kim (PhD)")
 set(CMAKE_PROJECT_VENDOR "Cherry Inc.")
 set(CMAKE_PROJECT_COPYRIGHT "(C) 2026 ${CMAKE_PROJECT_VENDOR}")
-set(CMAKE_PROJECT_CONTACT "${CMAKE_PROJECT_PROPER_NAME} <https://github.com/victoriousian/ieum/issues>")
+set(CMAKE_PROJECT_CONTACT "${CMAKE_PROJECT_PROPER_NAME} <https://github.com/YijiOS/ieum/issues>")
 # Keep the upstream CMake project name for source compatibility, but never use
 # it for process names or local IPC. Ieum and Deskflow must be able to run on
 # the same machine without sharing executables, pipes, or single-instance keys.

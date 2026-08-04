@@ -4,7 +4,7 @@
 # Ieum Developer Guide
 
 Ieum is an IME-native software KVM derived from Deskflow. New development targets the `ieum/main` branch and is
-released from [victoriousian/ieum](https://github.com/victoriousian/ieum).
+released from [YijiOS/ieum](https://github.com/YijiOS/ieum).
 
 - [Build instructions](build.md)
 - [IME protocol and implementation](ime.md)

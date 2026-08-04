@@ -50,9 +50,9 @@ set(CPACK_WIX_CULTURES "en-US")
 set(CPACK_WIX_PROPERTY_ARPCOMMENTS
   "Ieum release ${CMAKE_PROJECT_RELEASE_VERSION} - software KVM for Windows, macOS, and Linux"
 )
-set(CPACK_WIX_PROPERTY_ARPHELPLINK "https://github.com/victoriousian/ieum/issues")
-set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "https://github.com/victoriousian/ieum")
-set(CPACK_WIX_PROPERTY_ARPURLUPDATEINFO "https://github.com/victoriousian/ieum/releases")
+set(CPACK_WIX_PROPERTY_ARPHELPLINK "https://github.com/YijiOS/ieum/issues")
+set(CPACK_WIX_PROPERTY_ARPURLINFOABOUT "https://github.com/YijiOS/ieum")
+set(CPACK_WIX_PROPERTY_ARPURLUPDATEINFO "https://github.com/YijiOS/ieum/releases")
 set(CPACK_WIX_TEMPLATE "${MY_DIR}/WIX.template.in")
 
 # Required Extra Extenstions

@@ -4,7 +4,7 @@
 version = 1
 SPDX-PackageName = "Ieum"
 SPDX-PackageSupplier = "Cherry Inc."
-SPDX-PackageDownloadLocation = "https://github.com/victoriousian/ieum"
+SPDX-PackageDownloadLocation = "https://github.com/YijiOS/ieum"
 
 [[annotations]]
 path = [

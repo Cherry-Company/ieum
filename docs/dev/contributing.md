@@ -6,7 +6,7 @@ Thanks for your interest in contributing to Ieum! We welcome all kinds of contri
 
 To keep this repository clean and contribution-friendly, we've outlined our full contributing guidelines on the Ieum Wiki:
 
-👉 [How to Contribute to Ieum](https://github.com/victoriousian/ieum/wiki/Contributing)
+👉 [How to Contribute to Ieum](https://github.com/YijiOS/ieum/wiki/Contributing)
 
 Please take a moment to read through the page before opening an issue or submitting a pull request.
 
