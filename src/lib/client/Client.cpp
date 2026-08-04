@@ -217,6 +217,16 @@ void Client::getCursorPos(int32_t &x, int32_t &y) const
   m_screen->getCursorPos(x, y);
 }
 
+deskflow::DisplayLayout Client::getDisplayLayout() const
+{
+  return m_screen->getDisplayLayout();
+}
+
+bool Client::isForegroundFullscreen() const
+{
+  return m_screen->isForegroundFullscreen();
+}
+
 void Client::enter(int32_t xAbs, int32_t yAbs, uint32_t, KeyModifierMask mask, bool)
 {
   m_active = true;

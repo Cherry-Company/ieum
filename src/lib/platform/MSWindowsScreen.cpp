@@ -33,9 +33,11 @@
 
 #include <Shlobj.h>
 #include <algorithm>
+#include <array>
 #include <comutil.h>
 #include <dwmapi.h>
 #include <string.h>
+#include <tuple>
 
 // suppress warning about GetVersionEx, which is used indirectly in this
 // compilation unit.
@@ -457,51 +459,129 @@ void MSWindowsScreen::getCursorPos(int32_t &x, int32_t &y) const
   m_desks->getCursorPos(x, y);
 }
 
+deskflow::DisplayLayout MSWindowsScreen::getDisplayLayout() const
+{
+  deskflow::DisplayLayout displays;
+  EnumDisplayMonitors(
+      nullptr, nullptr,
+      [](HMONITOR, HDC, LPRECT bounds, LPARAM data) -> BOOL {
+        auto *layout = reinterpret_cast<deskflow::DisplayLayout *>(data);
+        const auto width = bounds->right - bounds->left;
+        const auto height = bounds->bottom - bounds->top;
+        if (width > 0 && height > 0) {
+          layout->push_back({bounds->left, bounds->top, width, height});
+        }
+        return TRUE;
+      },
+      reinterpret_cast<LPARAM>(&displays)
+  );
+
+  if (displays.empty()) {
+    return {{m_x, m_y, m_w, m_h}};
+  }
+
+  std::ranges::sort(displays, {}, [](const auto &display) {
+    return std::tuple{display.x, display.y, display.width, display.height};
+  });
+  displays.erase(std::unique(displays.begin(), displays.end()), displays.end());
+  return displays;
+}
+
 bool MSWindowsScreen::isForegroundFullscreen() const
 {
   using namespace std::chrono_literals;
   const auto now = std::chrono::steady_clock::now();
-  if (m_fullscreenLastCheck.time_since_epoch().count() != 0 && now - m_fullscreenLastCheck < 250ms) {
+  if (m_fullscreenLastCheck.time_since_epoch().count() != 0 && now - m_fullscreenLastCheck < 100ms) {
     return m_foregroundFullscreen;
   }
   m_fullscreenLastCheck = now;
   m_foregroundFullscreen = false;
 
   const HWND foreground = GetForegroundWindow();
-  if (foreground == nullptr || foreground == m_window || foreground == GetShellWindow() ||
-      !IsWindowVisible(foreground) || IsIconic(foreground)) {
+  if (foreground == nullptr || foreground == m_window || foreground == GetShellWindow()) {
     return false;
   }
 
-  BOOL cloaked = FALSE;
-  if (SUCCEEDED(DwmGetWindowAttribute(foreground, DWMWA_CLOAKED, &cloaked, sizeof(cloaked))) && cloaked) {
-    return false;
-  }
+  std::array<HWND, 3> candidates{foreground, GetAncestor(foreground, GA_ROOT), GetAncestor(foreground, GA_ROOTOWNER)};
+  for (size_t candidateIndex = 0; candidateIndex < candidates.size(); ++candidateIndex) {
+    const HWND candidate = candidates[candidateIndex];
+    if (candidate == nullptr || candidate == m_window || candidate == GetShellWindow() || !IsWindowVisible(candidate) ||
+        IsIconic(candidate)) {
+      continue;
+    }
+    if (std::find(candidates.begin(), candidates.begin() + candidateIndex, candidate) !=
+        candidates.begin() + candidateIndex) {
+      continue;
+    }
 
-  RECT windowBounds{};
-  if (FAILED(DwmGetWindowAttribute(foreground, DWMWA_EXTENDED_FRAME_BOUNDS, &windowBounds, sizeof(windowBounds))) &&
-      !GetWindowRect(foreground, &windowBounds)) {
-    return false;
-  }
+    BOOL cloaked = FALSE;
+    if (SUCCEEDED(DwmGetWindowAttribute(candidate, DWMWA_CLOAKED, &cloaked, sizeof(cloaked))) && cloaked) {
+      continue;
+    }
 
-  const HMONITOR monitor = MonitorFromWindow(foreground, MONITOR_DEFAULTTONULL);
-  if (monitor == nullptr) {
-    return false;
-  }
+    const HMONITOR monitor = MonitorFromWindow(candidate, MONITOR_DEFAULTTONEAREST);
+    MONITORINFO monitorInfo{sizeof(MONITORINFO)};
+    if (monitor == nullptr || !GetMonitorInfo(monitor, &monitorInfo)) {
+      continue;
+    }
 
-  MONITORINFO monitorInfo{sizeof(MONITORINFO)};
-  if (!GetMonitorInfo(monitor, &monitorInfo)) {
-    return false;
-  }
+    const RECT &display = monitorInfo.rcMonitor;
+    const auto displayBounds = deskflow::fullscreen::Bounds{
+        static_cast<double>(display.left), static_cast<double>(display.top), static_cast<double>(display.right),
+        static_cast<double>(display.bottom)
+    };
+    const auto coversMonitor = [&displayBounds](const RECT &bounds) {
+      return bounds.right > bounds.left && bounds.bottom > bounds.top &&
+             deskflow::fullscreen::coversDisplay(
+                 {static_cast<double>(bounds.left), static_cast<double>(bounds.top), static_cast<double>(bounds.right),
+                  static_cast<double>(bounds.bottom)},
+                 displayBounds, 12.0
+             );
+    };
 
-  const RECT &display = monitorInfo.rcMonitor;
-  m_foregroundFullscreen = deskflow::fullscreen::coversDisplay(
-      {static_cast<double>(windowBounds.left), static_cast<double>(windowBounds.top),
-       static_cast<double>(windowBounds.right), static_cast<double>(windowBounds.bottom)},
-      {static_cast<double>(display.left), static_cast<double>(display.top), static_cast<double>(display.right),
-       static_cast<double>(display.bottom)},
-      12.0
-  );
+    RECT bounds{};
+    if (SUCCEEDED(DwmGetWindowAttribute(candidate, DWMWA_EXTENDED_FRAME_BOUNDS, &bounds, sizeof(bounds))) &&
+        coversMonitor(bounds)) {
+      m_foregroundFullscreen = true;
+      break;
+    }
+    if (GetWindowRect(candidate, &bounds) && coversMonitor(bounds)) {
+      m_foregroundFullscreen = true;
+      break;
+    }
+
+    RECT clientBounds{};
+    if (GetClientRect(candidate, &clientBounds)) {
+      POINT topLeft{clientBounds.left, clientBounds.top};
+      POINT bottomRight{clientBounds.right, clientBounds.bottom};
+      if (ClientToScreen(candidate, &topLeft) && ClientToScreen(candidate, &bottomRight)) {
+        const RECT screenClientBounds{topLeft.x, topLeft.y, bottomRight.x, bottomRight.y};
+        if (coversMonitor(screenClientBounds)) {
+          m_foregroundFullscreen = true;
+          break;
+        }
+      }
+    }
+
+    RECT clip{};
+    if (GetClipCursor(&clip)) {
+      const RECT desktop{
+          GetSystemMetrics(SM_XVIRTUALSCREEN), GetSystemMetrics(SM_YVIRTUALSCREEN),
+          GetSystemMetrics(SM_XVIRTUALSCREEN) + GetSystemMetrics(SM_CXVIRTUALSCREEN),
+          GetSystemMetrics(SM_YVIRTUALSCREEN) + GetSystemMetrics(SM_CYVIRTUALSCREEN)
+      };
+      m_foregroundFullscreen = deskflow::fullscreen::pointerIsConfinedToDisplay(
+          {static_cast<double>(clip.left), static_cast<double>(clip.top), static_cast<double>(clip.right),
+           static_cast<double>(clip.bottom)},
+          displayBounds,
+          {static_cast<double>(desktop.left), static_cast<double>(desktop.top), static_cast<double>(desktop.right),
+           static_cast<double>(desktop.bottom)}
+      );
+      if (m_foregroundFullscreen) {
+        break;
+      }
+    }
+  }
   return m_foregroundFullscreen;
 }
 

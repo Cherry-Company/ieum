@@ -28,6 +28,16 @@ void BaseClientProxy::getJumpCursorPos(int32_t &x, int32_t &y) const
   y = m_y;
 }
 
+deskflow::DisplayLayout BaseClientProxy::getDisplayLayout() const
+{
+  int32_t x = 0;
+  int32_t y = 0;
+  int32_t width = 0;
+  int32_t height = 0;
+  getShape(x, y, width, height);
+  return {{x, y, width, height}};
+}
+
 std::string BaseClientProxy::getName() const
 {
   return m_name;

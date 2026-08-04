@@ -369,21 +369,31 @@ bool Server::isLockedToScreenServer() const
 
 bool Server::isLockedToScreen() const
 {
-  if (m_disableLockToScreen) {
-    return false;
-  }
-
-  if (m_autoLockFullscreen && m_active == m_primaryClient) {
+  if (m_autoLockFullscreen && m_active != nullptr) {
     using namespace std::chrono_literals;
     const auto now = std::chrono::steady_clock::now();
-    if (m_screen->isForegroundFullscreen()) {
-      m_fullscreenLockUntil = now + 1s;
+    if (m_active->isForegroundFullscreen()) {
+      m_fullscreenLockUntil = now + 1500ms;
     }
-    if (now < m_fullscreenLockUntil) {
+    const bool locked = now < m_fullscreenLockUntil;
+    if (locked != m_fullscreenAutoLockActive) {
+      LOG_INFO(
+          "automatic foreground capture lock %s on \"%s\"", locked ? "enabled" : "released", getName(m_active).c_str()
+      );
+      m_fullscreenAutoLockActive = locked;
+    }
+    if (locked) {
       return true;
     }
   } else {
     m_fullscreenLockUntil = {};
+    m_fullscreenAutoLockActive = false;
+  }
+
+  // This option disables the manual Scroll Lock/action path. It must not
+  // disable the separate automatic protection requested for foreground games.
+  if (m_disableLockToScreen) {
+    return false;
   }
 
   // locked if we say we're locked
@@ -491,6 +501,8 @@ void Server::switchScreen(BaseClientProxy *dst, int32_t x, int32_t y, bool forSc
 
     // cut over
     m_active = dst;
+    m_fullscreenLockUntil = {};
+    m_fullscreenAutoLockActive = false;
 
     // increment enter sequence number
     ++m_seqNum;
@@ -612,6 +624,9 @@ BaseClientProxy *Server::getNeighbor(const BaseClientProxy *src, Direction dir, 
 
   // convert position to fraction
   float t = mapToFraction(src, dir, x, y);
+  const float sourcePosition = t;
+  const int32_t sourceOrthogonalCoordinate = dir == Direction::Left || dir == Direction::Right ? y : x;
+  bool skippedDisconnectedScreen = false;
 
   // search for the closest neighbor that exists in direction dir
   float tTmp;
@@ -632,12 +647,59 @@ BaseClientProxy *Server::getNeighbor(const BaseClientProxy *src, Direction dir, 
     if (ClientList::const_iterator index = m_clients.find(dstName); index != m_clients.end()) {
       LOG_VERBOSE("\"%s\" is on %s of \"%s\" at %f", dstName.c_str(), Config::dirName(dir), srcName.c_str(), t);
       mapToPixel(index->second, dir, tTmp, x, y);
+
+      // A custom fractional link is an explicit user coordinate mapping and
+      // must win. For a normal full-edge link, map against the physical
+      // displays at the two touching machine edges instead of the bounding
+      // rectangle around every monitor on each machine.
+      bool identityLink = !skippedDisconnectedScreen && std::abs(tTmp - sourcePosition) < 0.0001f;
+      for (const float offset : {-0.01f, 0.01f}) {
+        if (!identityLink) {
+          break;
+        }
+        const auto sample = std::clamp(sourcePosition + offset, 0.0001f, 0.9999f);
+        float mappedSample = 0.0f;
+        const auto sampleNeighbor = m_config->getNeighbor(getName(src), dir, sample, &mappedSample);
+        identityLink = sampleNeighbor == dstName && std::abs(mappedSample - sample) < 0.0001f;
+      }
+
+      if (identityLink) {
+        int32_t sourceX = 0;
+        int32_t sourceY = 0;
+        int32_t sourceWidth = 0;
+        int32_t sourceHeight = 0;
+        int32_t destinationX = 0;
+        int32_t destinationY = 0;
+        int32_t destinationWidth = 0;
+        int32_t destinationHeight = 0;
+        src->getShape(sourceX, sourceY, sourceWidth, sourceHeight);
+        index->second->getShape(destinationX, destinationY, destinationWidth, destinationHeight);
+
+        const int32_t fallbackCoordinate = dir == Direction::Left || dir == Direction::Right ? y : x;
+        const auto mappedCoordinate = cursor::mapAcrossDisplayEdges(
+            src->getDisplayLayout(), {sourceX, sourceY, sourceWidth, sourceHeight}, index->second->getDisplayLayout(),
+            {destinationX, destinationY, destinationWidth, destinationHeight}, dir, sourceOrthogonalCoordinate,
+            fallbackCoordinate
+        );
+        if (mappedCoordinate) {
+          if (dir == Direction::Left || dir == Direction::Right) {
+            y = *mappedCoordinate;
+          } else {
+            x = *mappedCoordinate;
+          }
+          LOG_DEBUG(
+              "physical display edge mapping from \"%s\" to \"%s\": %d -> %d (desktop fallback %d)",
+              getName(src).c_str(), dstName.c_str(), sourceOrthogonalCoordinate, *mappedCoordinate, fallbackCoordinate
+          );
+        }
+      }
       return index->second;
     }
 
     // skip over unconnected screen
     LOG_VERBOSE("ignored \"%s\" on %s of \"%s\"", dstName.c_str(), Config::dirName(dir), srcName.c_str());
     srcName = dstName;
+    skippedDisconnectedScreen = true;
 
     // use position on skipped screen
     t = tTmp;

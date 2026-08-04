@@ -9,6 +9,7 @@
 #pragma once
 
 #include "deskflow/ClipboardTypes.h"
+#include "deskflow/DisplayGeometry.h"
 #include "deskflow/IKeyState.h"
 #include "deskflow/IPrimaryScreen.h"
 #include "deskflow/IScreen.h"
@@ -148,6 +149,17 @@ public:
   virtual deskflow::InputLanguageStatus inputLanguageStatus() const
   {
     return {};
+  }
+
+  //! Return the physical displays that form the platform's virtual desktop.
+  virtual deskflow::DisplayLayout getDisplayLayout() const
+  {
+    int32_t x = 0;
+    int32_t y = 0;
+    int32_t width = 0;
+    int32_t height = 0;
+    getShape(x, y, width, height);
+    return {{x, y, width, height}};
   }
 
   //! Return true when the foreground application covers an entire display.

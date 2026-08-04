@@ -8,6 +8,7 @@
 #pragma once
 
 #include "deskflow/ClipboardTypes.h"
+#include "deskflow/DisplayGeometry.h"
 #include "deskflow/IScreen.h"
 #include "deskflow/InputLanguageTypes.h"
 #include "deskflow/KeyTypes.h"
@@ -250,6 +251,8 @@ public:
 
   //! Test whether the foreground application occupies a full display.
   bool isForegroundFullscreen() const;
+
+  deskflow::DisplayLayout getDisplayLayout() const;
 
   //! Get jump zone size
   /*!

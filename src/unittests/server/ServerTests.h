@@ -15,6 +15,8 @@ private Q_SLOTS:
   void cursorTransform_clampsOutOfBounds();
   void cursorTransform_mapsBetweenDifferentResolutions();
   void cursorTransform_roundTripsMixedOrigins();
+  void cursorTransform_mapsPhysicalEdgeDisplays();
   void cursorTransform_preservesSubpixelMotion();
   void fullscreenGeometry_distinguishesFullscreenFromMaximized();
+  void fullscreenGeometry_detectsPointerCapture();
 };

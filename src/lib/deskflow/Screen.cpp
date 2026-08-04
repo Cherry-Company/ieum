@@ -405,6 +405,11 @@ bool Screen::isForegroundFullscreen() const
   return m_screen->isForegroundFullscreen();
 }
 
+deskflow::DisplayLayout Screen::getDisplayLayout() const
+{
+  return m_screen->getDisplayLayout();
+}
+
 int32_t Screen::getJumpZoneSize() const
 {
   if (!m_isPrimary) {

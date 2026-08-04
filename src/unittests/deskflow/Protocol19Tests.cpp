@@ -12,8 +12,10 @@
 #include "io/IStream.h"
 
 #include <algorithm>
+#include <bit>
 #include <cstring>
 #include <string>
+#include <vector>
 
 namespace {
 
@@ -133,6 +135,33 @@ void Protocol19Tests::canonicalScancodeFlagRoundTrip()
   QCOMPARE(button, expectedButton);
   QVERIFY(deskflow::scancode::isCanonical(button));
   QCOMPARE(deskflow::scancode::stripCanonical(button), KeyButton{0x11d});
+}
+
+void Protocol19Tests::displayLayoutRoundTrip()
+{
+  QCOMPARE(kProtocolDisplayLayoutMinorVersion, static_cast<int16_t>(11));
+  QVERIFY(kProtocolMinorVersion >= kProtocolDisplayLayoutMinorVersion);
+
+  MemoryStream stream;
+  const std::vector<uint32_t> expected{std::bit_cast<uint32_t>(int32_t{-1920}), std::bit_cast<uint32_t>(int32_t{0}),
+                                       std::bit_cast<uint32_t>(int32_t{1920}),  std::bit_cast<uint32_t>(int32_t{1080}),
+                                       std::bit_cast<uint32_t>(int32_t{0}),     std::bit_cast<uint32_t>(int32_t{0}),
+                                       std::bit_cast<uint32_t>(int32_t{2560}),  std::bit_cast<uint32_t>(int32_t{1440})};
+  ProtocolUtil::writef(&stream, kMsgCDisplayLayout, &expected);
+
+  std::vector<uint32_t> actual;
+  QVERIFY(ProtocolUtil::readf(&stream, kMsgCDisplayLayout, &actual));
+  QCOMPARE(actual, expected);
+}
+
+void Protocol19Tests::foregroundFullscreenRoundTrip()
+{
+  MemoryStream stream;
+  ProtocolUtil::writef(&stream, kMsgCForegroundFullscreen, static_cast<int8_t>(1));
+
+  int8_t actual = 0;
+  QVERIFY(ProtocolUtil::readf(&stream, kMsgCForegroundFullscreen, &actual));
+  QCOMPARE(actual, static_cast<int8_t>(1));
 }
 
 QTEST_MAIN(Protocol19Tests)

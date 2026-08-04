@@ -24,7 +24,10 @@
 #include "deskflow/ipc/CoreIpc.h"
 #include "io/IStream.h"
 
+#include <bit>
+#include <chrono>
 #include <cstring>
+#include <vector>
 
 namespace {
 // Keep a network burst from monopolizing the core event loop. Mouse motion is
@@ -438,6 +441,50 @@ void ServerProxy::sendInfo(const ClientInfo &info)
   ProtocolUtil::writef(m_stream, kMsgDInfo, info.m_x, info.m_y, info.m_w, info.m_h, 0, info.m_mx, info.m_my);
 }
 
+void ServerProxy::sendDisplayLayout()
+{
+  if (m_client->protocolMinorVersion() < kProtocolDisplayLayoutMinorVersion) {
+    return;
+  }
+
+  const auto layout = m_client->getDisplayLayout();
+  std::vector<uint32_t> packed;
+  packed.reserve(layout.size() * 4);
+  for (const auto &display : layout) {
+    if (display.width <= 0 || display.height <= 0) {
+      continue;
+    }
+    packed.push_back(std::bit_cast<uint32_t>(display.x));
+    packed.push_back(std::bit_cast<uint32_t>(display.y));
+    packed.push_back(std::bit_cast<uint32_t>(display.width));
+    packed.push_back(std::bit_cast<uint32_t>(display.height));
+  }
+
+  if (!packed.empty()) {
+    ProtocolUtil::writef(m_stream, kMsgCDisplayLayout, &packed);
+  }
+}
+
+void ServerProxy::maybeSendForegroundFullscreen(bool force)
+{
+  if (m_client->protocolMinorVersion() < kProtocolDisplayLayoutMinorVersion) {
+    return;
+  }
+
+  using namespace std::chrono_literals;
+  const auto now = std::chrono::steady_clock::now();
+  if (!force && m_lastFullscreenCheck.time_since_epoch().count() != 0 && now - m_lastFullscreenCheck < 100ms) {
+    return;
+  }
+  m_lastFullscreenCheck = now;
+
+  const bool fullscreen = m_client->isForegroundFullscreen();
+  if (force || !m_lastFullscreenState || *m_lastFullscreenState != fullscreen) {
+    ProtocolUtil::writef(m_stream, kMsgCForegroundFullscreen, static_cast<int8_t>(fullscreen ? 1 : 0));
+    m_lastFullscreenState = fullscreen;
+  }
+}
+
 KeyID ServerProxy::translateKey(KeyID id) const
 {
   static const KeyID s_translationTable[kKeyModifierIDLast][2] = {
@@ -567,6 +614,7 @@ void ServerProxy::enter()
 
   // forward
   m_client->enter(x, y, seqNum, static_cast<KeyModifierMask>(mask), false);
+  maybeSendForegroundFullscreen(true);
 }
 
 void ServerProxy::leave()
@@ -777,6 +825,7 @@ void ServerProxy::mouseMove()
   if (!ignore) {
     m_client->mouseMove(x, y);
   }
+  maybeSendForegroundFullscreen();
 }
 
 void ServerProxy::mouseRelativeMove()
@@ -807,6 +856,7 @@ void ServerProxy::mouseRelativeMove()
   if (!ignore) {
     m_client->mouseRelativeMove(dx, dy);
   }
+  maybeSendForegroundFullscreen();
 }
 
 void ServerProxy::mouseWheel()
@@ -902,6 +952,8 @@ void ServerProxy::queryInfo()
   m_client->getShape(info.m_x, info.m_y, info.m_w, info.m_h);
   m_client->getCursorPos(info.m_mx, info.m_my);
   sendInfo(info);
+  sendDisplayLayout();
+  maybeSendForegroundFullscreen(true);
 }
 
 void ServerProxy::infoAcknowledgment()

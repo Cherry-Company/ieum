@@ -38,4 +38,25 @@ inline bool coversDisplay(const Bounds &window, const Bounds &display, double ed
          window.bottom >= display.bottom - edgeTolerance;
 }
 
+inline bool
+pointerIsConfinedToDisplay(const Bounds &clip, const Bounds &display, const Bounds &desktop, double edgeTolerance = 4.0)
+{
+  const auto clipWidth = clip.right - clip.left;
+  const auto clipHeight = clip.bottom - clip.top;
+  if (clipWidth < 64.0 || clipHeight < 64.0) {
+    return false;
+  }
+
+  // The ordinary unclipped state covers the complete virtual desktop. A
+  // smaller rectangle contained by one physical display is an explicit
+  // pointer-capture request, which games commonly use in both exclusive and
+  // borderless/windowed modes.
+  if (coversDisplay(clip, desktop, edgeTolerance)) {
+    return false;
+  }
+
+  return clip.left >= display.left - edgeTolerance && clip.top >= display.top - edgeTolerance &&
+         clip.right <= display.right + edgeTolerance && clip.bottom <= display.bottom + edgeTolerance;
+}
+
 } // namespace deskflow::fullscreen
