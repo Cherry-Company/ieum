@@ -124,7 +124,7 @@ jobs:
           - name: "macos-arm64"
             # Trusted pushes and tags build on the shared physical MacBook Pro.
             # Untrusted public-fork pull requests remain isolated on GitHub-hosted macOS.
-            runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork && 'macos-15' || 'yijios-apple-primary' }}
+            runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'macos-15' || 'yijios-apple-primary' }}
             timeout: 60
             qt-version: 6.11.1
             config-args: '-DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_OSX_DEPLOYMENT_TARGET=14'
