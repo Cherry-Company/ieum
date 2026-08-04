@@ -3,7 +3,7 @@
 
 ## 후원 투명성 / Sponsorship transparency
 
-Release: v0.1.0-alpha.17
+Release: v0.1.0-alpha.18
 
 - 이번 릴리스에 배분된 GitHub Sponsors 후원금 / Sponsor funds allocated to this release: **USD 0**
 - 후원금으로 완료한 작업 / Work claimed as sponsor-funded: **없음 / None**
@@ -28,6 +28,13 @@ Release: v0.1.0-alpha.17
   `codesign --verify --deep --strict`, ARM64 Mach-O inspection, and artifact upload on the MacBook Pro.
   Windows x64 and ARM64 packages passed build, MSI structure, replacement-install, and service-coexistence
   checks.
+- alpha.17의 실제 게임·혼합 모니터 시험에서 전체 창 게임 잠금과 진입 좌표가 수용 기준을 통과하지
+  못했습니다. alpha.18은 전체 창·클라이언트 경계와 포인터 캡처 판별, 물리 모니터 사각형 교환을
+  구현했지만, 실제 게임별 재시험과 Windows↔macOS 장시간 좌표 왕복이 끝날 때까지 해결 완료로
+  분류하지 않습니다. / Physical game and mixed-monitor testing showed that alpha.17 did not meet acceptance
+  criteria for borderless-game locking or entry coordinates. Alpha.18 implements window/client-bound and
+  pointer-capture detection plus physical-monitor rectangle exchange, but remains unresolved until per-game
+  retesting and sustained Windows-to-macOS coordinate traversal are complete.
 - 저장소에 Apple Developer ID 및 공증 자격 증명이 아직 구성되지 않아 macOS 패키지는 ad-hoc 서명
   상태이며 Apple 공증을 받지 않았습니다. 따라서 이 버전은 프리릴리스이고 Gatekeeper 수동 승인이
   필요할 수 있습니다. 실제 Windows 서버와 Mac 클라이언트 사이의 한/영 입력, 장시간 커서 이동과

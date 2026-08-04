@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.17"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18"><strong>이음 다운로드</strong></a>
   · <a href="#설치와-첫-연결"><strong>설치 가이드</strong></a>
   · <a href="#설치-전-1분-보안-확인"><strong>보안·권한 안내</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>GitHub Sponsors로 후원</strong></a>
@@ -33,7 +33,7 @@
 KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
 원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
 
-> 현재 단계는 `v0.1.0-alpha.17`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 현재 단계는 `v0.1.0-alpha.18`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
 
 ## 이음의 정식 배포를 함께 완성해 주세요
@@ -53,7 +53,28 @@ ARM64·Apple Silicon 실기 회귀 테스트와 안정적인 릴리스 유지**�
 월간 티어 외에 일회성 사용자 지정 금액도 선택할 수 있습니다. 후원 여부와 관계없이 로컬 KVM,
 한글·CJK 입력 동기화와 클립보드 코어는 공개 프로젝트로 유지합니다. 릴리스마다
 [배분 금액과 후원으로 완료한 작업](docs/release/sponsorship-impact.md)을 함께 공개하며, 이번
-`alpha.17`에 배분된 후원금은 **USD 0**입니다.
+`alpha.18`에 배분된 후원금은 **USD 0**입니다.
+
+### alpha.18 전체 창 게임 잠금과 물리 모니터 좌표 변경
+
+`alpha.17`은 실제 게임과 혼합 모니터 실기에서 전체 창 게임 잠금과 진입 좌표 수용 기준을
+통과하지 못했습니다. `alpha.18`은 그 결과를 기준으로 두 경로를 다시 구현한 검증용 릴리스입니다.
+
+- Windows의 독점 전체 화면뿐 아니라 **테두리 없는 전체 창**, 실제 창·클라이언트 영역과 게임의
+  포인터 캡처(`ClipCursor`)를 함께 판별합니다. 수동 Scroll Lock 잠금 비활성화가 자동 게임 보호까지
+  우회하던 경로를 분리했고, 서버와 현재 활성 클라이언트 어느 쪽에서 게임을 실행해도 상태를
+  서버에 전달합니다.
+- 프로토콜 `1.11`에서 각 컴퓨터의 전체 가상 화면 한 장이 아니라 **물리 모니터 사각형 목록**을
+  교환합니다. 커서가 빠져나온 실제 모니터 경계의 픽셀 비율을 상대 컴퓨터의 진입 모니터 경계에
+  대응시켜, 세로·가로 모니터와 서로 다른 해상도가 섞여도 양방향 진입 높이가 누적해서 틀어지지
+  않도록 했습니다.
+- 이 좌표 변경은 **양쪽 컴퓨터 모두 alpha.18일 때** 활성화됩니다. 한쪽이 구버전이면 연결 호환성을
+  위해 기존 전체 가상 화면 비율 방식으로 동작하며, 사용자가 만든 부분 화면 매핑은 자동 변환보다
+  우선합니다.
+- Windows 네이티브 전체 빌드와 관련 회귀 테스트, 클립보드 실세션 환경 테스트를 제외한 36개 CTest,
+  레거시 키 입력 15개 테스트를 통과했습니다. 실제 게임별 전체 창 동작과 Windows↔macOS 혼합 모니터
+  장시간 이동은 패키지 설치 후 계속 확인할 실기 수용 항목이며, 확인 전에는 해결 완료로 표시하지
+  않습니다.
 
 ### alpha.17 입력 전환·재연결·화면 경계 안정성 변경
 
@@ -153,17 +174,17 @@ Tailscale·Wi-Fi 품질과 마우스 폴링률은 환경마다 다르므로, 두
 ### 1. 설치 파일 고르기
 
 최신 테스트 릴리스는
-**[이음 (Ieum) v0.1.0-alpha.17](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.17)**입니다.
+**[이음 (Ieum) v0.1.0-alpha.18](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18)**입니다.
 한국어 사용자는 아래 직링크를 사용하면 릴리스 자산 목록에서 파일명을 찾을 필요가 없습니다.
 
 | 기기 | 권장 다운로드 |
 | --- | --- |
-| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.17/Ieum-0.1.0-alpha.17-win-x64-ko-KR.msi) |
-| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.17/Ieum-0.1.0-alpha.17-win-arm64-ko-KR.msi) |
-| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.17/Ieum-0.1.0-alpha.17-macos-arm64.dmg) |
-| Intel Mac | [macOS Intel DMG](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.17/Ieum-0.1.0-alpha.17-macos-x86_64.dmg) |
-| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.17) |
-| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.17) |
+| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-win-x64-ko-KR.msi) |
+| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-win-arm64-ko-KR.msi) |
+| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-macos-arm64.dmg) |
+| Intel Mac | [macOS Intel DMG](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.18/Ieum-0.1.0-alpha.18-macos-x86_64.dmg) |
+| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18) |
+| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.18) |
 
 아키텍처를 모르겠다면 다음 위치에서 확인합니다.
 
@@ -245,7 +266,7 @@ UAC 승인은 `C:\Program Files\Ieum` 설치, 로그인·UAC 보안 화면에서
 않으며, 일반 연결은 TCP `24800`을 사용합니다.
 
 설치 후 아래 화면이 열리면 정상입니다. 문서용 화면의 컴퓨터 이름과 IP는 예시 값으로
-비식별 처리했습니다. 아래 실캡처는 `alpha.12`에서 만들었지만 `alpha.17`의 기본 배치와 조작
+비식별 처리했습니다. 아래 실캡처는 `alpha.12`에서 만들었지만 `alpha.18`의 기본 배치와 조작
 순서는 같습니다. `alpha.14`부터 상태 표시줄에 현재 입력 언어를 보여주는 `한`/`A` 표시가 있습니다.
 
 <p align="center">
@@ -319,7 +340,7 @@ Mac에서는 입력 모니터링을 먼저 켜지 말고, macOS가 실제로 요
 코어가 완전히 종료됩니다. `alpha.16`부터 메뉴 막대 항목이 비정상적으로 사라지면 제한적으로
 재생성하고, `X`로 숨긴 뒤 Dock 아이콘을 눌렀을 때도 기존 창을 다시 표시합니다.
 
-> “손상되어 열 수 없음”은 단순 미공증 경고와 다릅니다. `alpha.17` 파일의 SHA-256이 다르면
+> “손상되어 열 수 없음”은 단순 미공증 경고와 다릅니다. `alpha.18` 파일의 SHA-256이 다르면
 > 실행하지 말고 삭제 후 다시 받으세요. 해시가 일치하는데도 같은 문구가 나오면 macOS 버전과
 > 메시지 전체를 포함해 [버그를 제보](https://github.com/YijiOS/ieum/issues/new?template=bug_report.yml)해
 > 주세요. 보안 속성을 강제로 지우는 터미널 명령은 권장하지 않습니다.
@@ -371,7 +392,7 @@ Linux 패키지는 아직 실험적입니다. 처음이라면 배포판 차이�
 
 ```sh
 # x86_64 예시
-flatpak install --user ./Ieum-0.1.0-alpha.17-linux-x86_64.flatpak
+flatpak install --user ./Ieum-0.1.0-alpha.18-linux-x86_64.flatpak
 flatpak run org.deskflow.deskflow
 ```
 
@@ -453,8 +474,8 @@ GUI 로그는 최근 10,000줄까지만 보관하고 50ms 단위로 묶어 화�
 
 ### 업데이트와 제거
 
-- **Windows 업데이트:** `alpha.8`부터 `alpha.16`까지는 앱과 서비스를 수동 삭제하지 말고
-  `alpha.17` MSI를 바로 실행해 업그레이드합니다. 인증서가 바뀐 설치에서는 최초 연결 지문을 다시
+- **Windows 업데이트:** `alpha.8`부터 `alpha.17`까지는 앱과 서비스를 수동 삭제하지 말고
+  `alpha.18` MSI를 바로 실행해 업그레이드합니다. 인증서가 바뀐 설치에서는 최초 연결 지문을 다시
   승인할 수 있습니다.
 - **macOS 업데이트:** 이음을 완전히 종료하고 새 `Ieum.app`을 Applications의 기존 앱 위에
   복사합니다. 알파 빌드는 임시 서명이라 손쉬운 사용 재승인이 필요할 수 있습니다.
@@ -463,7 +484,7 @@ GUI 로그는 최근 10,000줄까지만 보관하고 50ms 단위로 묶어 화�
   시작 메뉴의 이음 폴더에서 제거 바로 가기를 실행합니다. 설치 폴더만 수동 삭제하면 Windows
   Installer 등록과 서비스가 남으므로 그렇게 제거하지 마세요.
 
-정상적인 이음 MSI 업데이트는 Windows 재부팅을 요구하지 않는 것이 수용 기준입니다. `alpha.17` MSI는
+정상적인 이음 MSI 업데이트는 Windows 재부팅을 요구하지 않는 것이 수용 기준입니다. `alpha.18` MSI는
 실행 중인 GUI와 코어에 정상 종료를 먼저 요청하고 10초 뒤에만 강제 종료한 후 교체합니다. 다만
 Windows Installer가 잠긴 시스템 파일이나 별도로 설치한 Visual C++ 런타임 때문에 `3010`을
 반환하면 업데이트는 끝났지만 재부팅이 보류된 예외 상태입니다. `/norestart`는 자동 재부팅만
@@ -488,9 +509,9 @@ Windows 서비스와 입력 훅은 새 바이너리로 바꾸는 순간 짧게 �
 | MSI가 Visual C++ 런타임을 요구함 | 위의 Microsoft 공식 x64/ARM64 런타임을 설치한 뒤 MSI를 다시 실행 |
 | “더 최신 버전이 설치됨”으로 MSI가 종료됨 | 설치된 앱에서 `이음 (Ieum)`, `Ieum`, 초기 알파의 `Deskflow` 순서로 확인하고 위 Microsoft 복구 절차 사용 |
 | 설치 후 창이 안 보임 | 알림 영역 아이콘을 두 번 누르거나 `ieum.exe --show` 실행. 작업 관리자에서 서비스부터 강제 종료하지 않기 |
-| `could not contact existing core`, `QLocalSocket` 오류 | 두 컴퓨터 모두 `alpha.17`인지 확인. 이 버전은 실행 중인 코어를 중복 교체하지 않고 재연결 간격을 최대 2초로 제한함. 계속 실패하면 관련 로그와 함께 제보 |
+| `could not contact existing core`, `QLocalSocket` 오류 | 두 컴퓨터 모두 `alpha.18`인지 확인. 이 버전은 실행 중인 코어를 중복 교체하지 않고 재연결 간격을 최대 2초로 제한함. 계속 실패하면 관련 로그와 함께 제보 |
 | 클라이언트가 `Timed out` | 서버가 시작 상태인지, 주소와 TCP `24800`, OS 방화벽과 Tailnet ACL이 맞는지 확인 |
-| 원격 커서가 끊기거나 특정 모니터에서 멈춤 | 양쪽을 `alpha.17`로 맞추고 다시 연결. **서버 설정 → 포인터 및 공유 → 원격 포인터 속도**도 확인. 계속되면 서버·클라이언트 OS, 모니터 배치, 로컬/Tailscale 여부와 같은 시간대의 양쪽 로그를 함께 제보 |
+| 원격 커서가 끊기거나 특정 모니터에서 멈춤 | 양쪽을 `alpha.18`로 맞추고 다시 연결. 이 버전부터 실제 물리 모니터 경계를 교환함. 계속되면 서버·클라이언트 OS, 각 모니터 해상도·배율·배치, 로컬/Tailscale 여부와 같은 시간대의 양쪽 로그를 함께 제보 |
 | Windows 한/영 알림이 반복됨 | `alpha.14`는 알림 토스트 대신 상태 표시줄의 `한`/`A`와 알림 영역 메뉴에 상태를 표시함 |
 | Mac에서 개발자를 확인할 수 없음 | 해시 확인 후 시스템 설정의 **개인정보 보호 및 보안 → 확인 없이 열기** 사용 |
 | Mac에서 “손상됨” | 해시가 다르면 삭제·재다운로드. 해시가 같으면 우회 명령 대신 오류 전문과 macOS 버전으로 제보 |
@@ -505,20 +526,20 @@ Qt 버전과 정확한 오류를 함께 전달할 수 있습니다.
 ### 다운로드 파일 검증
 
 릴리스의
-[`SHA256SUMS.txt`](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.17/SHA256SUMS.txt)와
+[`SHA256SUMS.txt`](https://github.com/YijiOS/ieum/releases/download/v0.1.0-alpha.18/SHA256SUMS.txt)와
 계산 결과가 정확히 같은지 비교합니다. 파일명이 다르면 명령의 파일명만 바꾸세요.
 
 ```powershell
 # Windows PowerShell
-Get-FileHash '.\Ieum-0.1.0-alpha.17-win-x64-ko-KR.msi' -Algorithm SHA256
+Get-FileHash '.\Ieum-0.1.0-alpha.18-win-x64-ko-KR.msi' -Algorithm SHA256
 ```
 
 ```sh
 # macOS
-shasum -a 256 ./Ieum-0.1.0-alpha.17-macos-arm64.dmg
+shasum -a 256 ./Ieum-0.1.0-alpha.18-macos-arm64.dmg
 
 # Linux
-sha256sum ./Ieum-0.1.0-alpha.17-linux-x86_64.flatpak
+sha256sum ./Ieum-0.1.0-alpha.18-linux-x86_64.flatpak
 ```
 
 현재 Windows 패키지는 코드 서명 전이고 macOS 패키지는 임시(ad-hoc) 서명으로 무결성 봉인만
