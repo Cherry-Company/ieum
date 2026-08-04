@@ -158,6 +158,7 @@ MainWindow::MainWindow()
 #ifdef Q_OS_MACOS
   macOSInstallApplicationReopenHandler(this);
   m_trayRepairTimer->setInterval(5000);
+  m_trayRepairTimer->setTimerType(Qt::VeryCoarseTimer);
   connect(m_trayRepairTimer, &QTimer::timeout, this, [this] { ensureTrayIcon(); });
   m_trayRepairTimer->start();
   connect(qApp, &QGuiApplication::applicationStateChanged, this, [this](Qt::ApplicationState state) {

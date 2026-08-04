@@ -19,6 +19,7 @@ bool NetworkMonitor::isVirtualInterface(const QString &interfaceName)
 
 NetworkMonitor::NetworkMonitor(QObject *parent) : QObject(parent), m_checkTimer(new QTimer(this))
 {
+  m_checkTimer->setTimerType(Qt::VeryCoarseTimer);
   connect(m_checkTimer, &QTimer::timeout, this, &NetworkMonitor::updateNetworkState);
 }
 

@@ -181,7 +181,7 @@ add_library(platform STATIC ${PLATFORM_SOURCES})
 target_link_libraries(platform client ${libs})
 
 if(WIN32)
-  target_link_libraries(platform imm32)
+  target_link_libraries(platform dwmapi imm32)
 endif()
 
 if(UNIX)

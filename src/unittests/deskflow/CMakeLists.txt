@@ -14,6 +14,14 @@ create_test(
 )
 
 create_test(
+  NAME ClientReconnectPolicyTests
+  DEPENDS app
+  LIBS arch base ${extra_libs}
+  SOURCE ClientReconnectPolicyTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+)
+
+create_test(
   NAME Protocol19Tests
   DEPENDS app
   LIBS arch base io ${extra_libs}

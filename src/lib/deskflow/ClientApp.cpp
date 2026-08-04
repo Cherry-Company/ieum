@@ -8,6 +8,8 @@
 
 #include "deskflow/ClientApp.h"
 
+#include "deskflow/ClientReconnectPolicy.h"
+
 #include "base/Event.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
@@ -151,28 +153,50 @@ void ClientApp::closeClientScreen(deskflow::Screen *screen)
 
 void ClientApp::handleClientRestart(const Event &, EventQueueTimer *timer)
 {
-  // discard old timer
-  getEvents()->deleteTimer(timer);
-  getEvents()->removeHandler(EventTypes::Timer, timer);
+  if (timer != m_restartTimer) {
+    return;
+  }
 
-  // reconnect
-  startClient();
+  getEvents()->removeHandler(EventTypes::Timer, timer);
+  getEvents()->deleteTimer(timer);
+  m_restartTimer = nullptr;
+
+  if (!m_suspended) {
+    startClient();
+  }
 }
 
 void ClientApp::scheduleClientRestart(double retryTime)
 {
+  cancelClientRestart();
+  if (m_suspended) {
+    return;
+  }
+
   LOG_DEBUG("retry in %.2f seconds", retryTime);
   ipcSendToClient("retryIn", QString::number(std::max(1.0, retryTime), 'f', 0));
-  // install a timer and handler to retry later
-  EventQueueTimer *timer = getEvents()->newOneShotTimer(retryTime, nullptr);
-  getEvents()->addHandler(EventTypes::Timer, timer, [this, timer](const auto &e) { handleClientRestart(e, timer); });
+  m_restartTimer = getEvents()->newOneShotTimer(retryTime, nullptr);
+  getEvents()->addHandler(EventTypes::Timer, m_restartTimer, [this, timer = m_restartTimer](const auto &e) {
+    handleClientRestart(e, timer);
+  });
+}
+
+void ClientApp::cancelClientRestart()
+{
+  if (m_restartTimer == nullptr) {
+    return;
+  }
+  getEvents()->removeHandler(EventTypes::Timer, m_restartTimer);
+  getEvents()->deleteTimer(m_restartTimer);
+  m_restartTimer = nullptr;
 }
 
 void ClientApp::handleClientConnected()
 {
+  cancelClientRestart();
   LOG_DEBUG("connected to server");
   ipcSendConnectionState(deskflow::core::ConnectionState::Connected);
-  // Reset server index on successful connection
+  m_retryCount = 0;
   m_currentServerIndex = 0;
   m_lastServerAddressIndex = 0;
 }
@@ -216,7 +240,7 @@ void ClientApp::handleClientRefused(const Event &e)
     LOG_WARN("failed to connect to server: %s", qPrintable(info->m_what));
     if (!m_suspended) {
       scheduleClientRestart(retryTime());
-      m_retryCount++;
+      ++m_retryCount;
     }
   }
 }
@@ -305,11 +329,13 @@ bool ClientApp::startClient()
   }
 
   scheduleClientRestart(retryTime());
+  ++m_retryCount;
   return true;
 }
 
 void ClientApp::stopClient()
 {
+  cancelClientRestart();
   closeClient(m_client);
   closeClientScreen(m_clientScreen);
   m_client = nullptr;
@@ -391,21 +417,7 @@ ISocketFactory *ClientApp::getSocketFactory() const
 
 double ClientApp::retryTime() const
 {
-  // Retry quickly while both computers are finishing startup, then settle at
-  // one attempt per second so an unavailable peer does not create busy work.
-  if (m_retryCount < 20)
-    return 0.25;
-  if (!Settings::value(Settings::Client::DynamicConnectionRetry).toBool() || m_retryCount < 315) // 5 minutes
-    return 1;
-  if (m_retryCount < 375) // 5 minutes
-    return 5;
-  if (m_retryCount < 405) // 5 minutes
-    return 10;
-  if (m_retryCount < 425) // 10 minutes
-    return 30;
-  if (m_retryCount < 435) // 10 minutes
-    return 60;
-  if (m_retryCount < 445) // 20 minutes
-    return 120;
-  return 300;
+  return deskflow::reconnect::retryDelay(
+      m_retryCount, Settings::value(Settings::Client::DynamicConnectionRetry).toBool()
+  );
 }

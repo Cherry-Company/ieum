@@ -17,6 +17,7 @@
 #include "base/TMethodJob.h"
 #include "client/Client.h"
 #include "common/ExitCodes.h"
+#include "common/FullscreenGeometry.h"
 #include "common/Settings.h"
 #include "deskflow/CanonicalScancode.h"
 #include "deskflow/ClientApp.h"
@@ -321,7 +322,6 @@ bool OSXScreen::isForegroundFullscreen() const
       return false;
     }
 
-    constexpr CGFloat tolerance = 2.0;
     const CFIndex windowCount = CFArrayGetCount(windows);
     for (CFIndex i = 0; i < windowCount && !m_foregroundFullscreen; ++i) {
       const auto window = static_cast<CFDictionaryRef>(CFArrayGetValueAtIndex(windows, i));
@@ -342,10 +342,11 @@ bool OSXScreen::isForegroundFullscreen() const
       }
       for (CGDisplayCount displayIndex = 0; displayIndex < displayCount; ++displayIndex) {
         const CGRect display = CGDisplayBounds(displays[displayIndex]);
-        if (CGRectGetMinX(windowBounds) <= CGRectGetMinX(display) + tolerance &&
-            CGRectGetMinY(windowBounds) <= CGRectGetMinY(display) + tolerance &&
-            CGRectGetMaxX(windowBounds) >= CGRectGetMaxX(display) - tolerance &&
-            CGRectGetMaxY(windowBounds) >= CGRectGetMaxY(display) - tolerance) {
+        if (deskflow::fullscreen::coversDisplay(
+                {CGRectGetMinX(windowBounds), CGRectGetMinY(windowBounds), CGRectGetMaxX(windowBounds),
+                 CGRectGetMaxY(windowBounds)},
+                {CGRectGetMinX(display), CGRectGetMinY(display), CGRectGetMaxX(display), CGRectGetMaxY(display)}
+            )) {
           m_foregroundFullscreen = true;
           break;
         }
@@ -1107,7 +1108,7 @@ bool OSXScreen::onMouseMove(CGEventRef event)
     CGFloat x = mx - m_xCursor;
     CGFloat y = my - m_yCursor;
 
-    if ((x == 0 && y == 0) || (mx == m_xCenter && mx == m_yCenter)) {
+    if ((x == 0 && y == 0) || (mx == m_xCenter && my == m_yCenter)) {
       return true;
     }
 
@@ -1166,12 +1167,16 @@ void OSXScreen::displayReconfigurationCallback(
 {
   OSXScreen *screen = (OSXScreen *)inUserData;
 
-  // Closing or opening the lid when an external monitor is
-  // connected causes an kCGDisplayBeginConfigurationFlag event
-  CGDisplayChangeSummaryFlags mask = kCGDisplayBeginConfigurationFlag | kCGDisplayMovedFlag | kCGDisplaySetModeFlag |
-                                     kCGDisplayAddFlag | kCGDisplayRemoveFlag | kCGDisplayEnabledFlag |
-                                     kCGDisplayDisabledFlag | kCGDisplayMirrorFlag | kCGDisplayUnMirrorFlag |
-                                     kCGDisplayDesktopShapeChangedFlag;
+  // The begin notification exposes an intermediate topology. Wait for the
+  // subsequent concrete change flags before publishing coordinates to peers.
+  if ((flags & kCGDisplayBeginConfigurationFlag) != 0) {
+    LOG_VERBOSE("event: display reconfiguration started; waiting for stable dimensions");
+    return;
+  }
+
+  CGDisplayChangeSummaryFlags mask = kCGDisplayMovedFlag | kCGDisplaySetModeFlag | kCGDisplayAddFlag |
+                                     kCGDisplayRemoveFlag | kCGDisplayEnabledFlag | kCGDisplayDisabledFlag |
+                                     kCGDisplayMirrorFlag | kCGDisplayUnMirrorFlag | kCGDisplayDesktopShapeChangedFlag;
 
   LOG_VERBOSE("event: display was reconfigured: %x %x %x", flags, mask, flags & mask);
 
@@ -1438,8 +1443,8 @@ bool OSXScreen::updateScreenShape()
   }
 
   // get smallest rect enclosing all display rects
-  CGRect totalBounds = CGRectZero;
-  for (CGDisplayCount i = 0; i < displayCount; ++i) {
+  CGRect totalBounds = CGDisplayBounds(displays[0]);
+  for (CGDisplayCount i = 1; i < displayCount; ++i) {
     CGRect bounds = CGDisplayBounds(displays[i]);
     totalBounds = CGRectUnion(totalBounds, bounds);
   }

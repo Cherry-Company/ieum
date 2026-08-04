@@ -1220,7 +1220,7 @@ Client</source>
     </message>
     <message>
         <source>Advanced</source>
-        <translation type="unfinished">Avanzado</translation>
+        <translation type="obsolete">Avanzado</translation>
     </message>
     <message>
         <source>&amp;Misc</source>
@@ -1331,6 +1331,10 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 use the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;An Ieum client automatically selects the protocol required by the server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Pointer &amp; sharing</source>
+        <translation>Puntero y uso compartido</translation>
+    </message>
 </context>
 <context>
     <name>SettingsDialog</name>
@@ -1380,7 +1384,7 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
     </message>
     <message>
         <source>&amp;Advanced</source>
-        <translation type="unfinished">&amp;Avanzado</translation>
+        <translation type="obsolete">&amp;Avanzado</translation>
     </message>
     <message>
         <source>Port</source>
@@ -1539,10 +1543,6 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
         <translation type="unfinished">Utilizar un nivel de registro superior a Info puede afectar el rendimiento.</translation>
     </message>
     <message>
-        <source>Input language</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Synchronize Korean/English input state</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1658,6 +1658,18 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
     <message>
         <source>macOS still requires approval for automatic startup. Open System Settings &gt; General &gt; Login Items and allow Ieum.</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Input</source>
+        <translation>Entrada (&amp;I)</translation>
+    </message>
+    <message>
+        <source>Input language and shared text</source>
+        <translation>Idioma de entrada y texto compartido</translation>
+    </message>
+    <message>
+        <source>&amp;System</source>
+        <translation>Sistema (&amp;S)</translation>
     </message>
 </context>
 <context>

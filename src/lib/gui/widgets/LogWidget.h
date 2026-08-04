@@ -12,6 +12,7 @@
 #include <QWidget>
 
 class QPlainTextEdit;
+class QShowEvent;
 class QTemporaryFile;
 
 class LogWidget : public QWidget
@@ -26,6 +27,7 @@ public:
 
 private:
   void flushPendingLines();
+  void showEvent(QShowEvent *event) override;
 
   QPlainTextEdit *m_textLog = nullptr;
   QTimer m_flushTimer;

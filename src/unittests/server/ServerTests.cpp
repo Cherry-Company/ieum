@@ -7,6 +7,7 @@
 
 #include "ServerTests.h"
 
+#include "common/FullscreenGeometry.h"
 #include "server/CursorTransform.h"
 #include "server/Server.h"
 
@@ -41,6 +42,17 @@ void ServerTests::cursorTransform_mapsBetweenDifferentResolutions()
   QCOMPARE(fromFraction(sourceFraction, 0, 2160), 1079);
 }
 
+void ServerTests::cursorTransform_roundTripsMixedOrigins()
+{
+  using namespace deskflow::server::cursor;
+  for (int coordinate = -1080; coordinate < 840; coordinate += 31) {
+    const auto mapped = fromFraction(toFraction(coordinate, -1080, 1920), 0, 2160);
+    const auto roundTrip = fromFraction(toFraction(mapped, 0, 2160), -1080, 1920);
+    QVERIFY(std::abs(roundTrip - coordinate) <= 1);
+  }
+  QCOMPARE(fromFraction(std::numeric_limits<float>::quiet_NaN(), -100, 200), 0);
+}
+
 void ServerTests::cursorTransform_preservesSubpixelMotion()
 {
   using namespace deskflow::server::cursor;
@@ -60,6 +72,18 @@ void ServerTests::cursorTransform_preservesSubpixelMotion()
 
   QCOMPARE(scaleDelta(std::numeric_limits<int32_t>::max(), 400, remainder), std::numeric_limits<int32_t>::max());
   QCOMPARE(remainder, 0.0);
+}
+
+void ServerTests::fullscreenGeometry_distinguishesFullscreenFromMaximized()
+{
+  using deskflow::fullscreen::Bounds;
+  using deskflow::fullscreen::coversDisplay;
+  const Bounds display{-1920.0, 0.0, 0.0, 1080.0};
+
+  QVERIFY(coversDisplay({-1924.0, -4.0, 4.0, 1084.0}, display));
+  QVERIFY(coversDisplay({-1916.0, 4.0, -4.0, 1076.0}, display));
+  QVERIFY(!coversDisplay({-1920.0, 0.0, 0.0, 1040.0}, display));
+  QVERIFY(!coversDisplay({-1800.0, 0.0, 0.0, 1080.0}, display));
 }
 
 QTEST_MAIN(ServerTests)

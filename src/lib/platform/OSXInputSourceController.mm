@@ -11,6 +11,8 @@
 #include "base/Log.h"
 #include "platform/OSXAutoTypes.h"
 
+#import <AppKit/AppKit.h>
+
 #include <chrono>
 #include <cstring>
 #include <dispatch/dispatch.h>
@@ -71,6 +73,75 @@ bool isKorean(TISInputSourceRef source)
     }
   }
   return sourceId(source).find("Korean") != std::string::npos;
+}
+
+bool isCjkvInputSource(TISInputSourceRef source)
+{
+  const auto languages = static_cast<CFArrayRef>(TISGetInputSourceProperty(source, kTISPropertyInputSourceLanguages));
+  if (languages == nullptr) {
+    return isKorean(source);
+  }
+
+  for (CFIndex i = 0; i < CFArrayGetCount(languages); ++i) {
+    const auto language = static_cast<CFStringRef>(CFArrayGetValueAtIndex(languages, i));
+    if (language != nullptr && (CFStringHasPrefix(language, CFSTR("ko")) || CFStringHasPrefix(language, CFSTR("zh")) ||
+                                CFStringHasPrefix(language, CFSTR("ja")) || CFStringHasPrefix(language, CFSTR("vi")))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void commitCjkvInputSourceSelection()
+{
+  if (pthread_main_np() == 0) {
+    return;
+  }
+
+  // macOS can update the menu-bar source without committing a CJKV input
+  // method to the focused application. A short accessory-window activation
+  // makes the input context commit before queued remote keystrokes continue.
+  // This follows the independently implemented workaround documented by
+  // macism: https://github.com/laishulu/macism
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  @autoreleasepool {
+    NSRunningApplication *previousApplication = NSWorkspace.sharedWorkspace.frontmostApplication;
+    NSApplication *application = NSApplication.sharedApplication;
+    const NSApplicationActivationPolicy previousPolicy = application.activationPolicy;
+    [application setActivationPolicy:NSApplicationActivationPolicyAccessory];
+
+    NSScreen *screen = NSScreen.mainScreen;
+    const NSRect frame = screen != nil ? screen.visibleFrame : NSMakeRect(0.0, 0.0, 3.0, 3.0);
+    const NSRect windowFrame = NSMakeRect(NSMaxX(frame) - 11.0, NSMinY(frame) + 8.0, 3.0, 3.0);
+    NSWindow *window = [[NSWindow alloc] initWithContentRect:windowFrame
+                                                   styleMask:NSWindowStyleMaskTitled
+                                                     backing:NSBackingStoreBuffered
+                                                       defer:NO];
+    [window setReleasedWhenClosed:NO];
+    [window setAlphaValue:0.01];
+    [window setOpaque:YES];
+    [window setBackgroundColor:NSColor.blackColor];
+    [window setHasShadow:NO];
+    [window setIgnoresMouseEvents:YES];
+    [window setLevel:NSScreenSaverWindowLevel];
+    [window setCollectionBehavior:NSWindowCollectionBehaviorCanJoinAllSpaces | NSWindowCollectionBehaviorStationary];
+    [window makeKeyAndOrderFront:nil];
+    [application activateIgnoringOtherApps:YES];
+
+    [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.15]];
+
+    [window orderOut:nil];
+    [window close];
+    [window release];
+    [application setActivationPolicy:previousPolicy];
+
+    if (previousApplication != nil && !previousApplication.terminated &&
+        previousApplication.processIdentifier != NSRunningApplication.currentApplication.processIdentifier) {
+      [previousApplication activateWithOptions:NSApplicationActivateIgnoringOtherApps];
+    }
+  }
+#pragma clang diagnostic pop
 }
 
 } // namespace
@@ -198,6 +269,9 @@ std::string OSXInputSourceController::apply(deskflow::InputLanguageAction action
   if (result != noErr) {
     LOG_WARN("failed to select input source %s: %d", expectedSourceId.c_str(), result);
     return {};
+  }
+  if (isCjkvInputSource(source.get())) {
+    commitCjkvInputSourceSelection();
   }
   return expectedSourceId;
 }

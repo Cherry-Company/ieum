@@ -142,6 +142,120 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tabInput">
+      <attribute name="title">
+       <string>&amp;Input</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayoutInput">
+       <property name="spacing">
+        <number>9</number>
+       </property>
+       <property name="leftMargin">
+        <number>12</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>12</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <spacer name="verticalSpacerInputTop">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupInputLanguage">
+         <property name="title">
+          <string>Input language and shared text</string>
+         </property>
+         <layout class="QFormLayout" name="formInputLanguage">
+          <property name="fieldGrowthPolicy">
+           <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
+          </property>
+          <item row="0" column="0" colspan="2">
+           <widget class="QCheckBox" name="cbImeSync">
+            <property name="text">
+             <string>Synchronize Korean/English input state</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="lblCjkRawScancode">
+            <property name="text">
+             <string>CJK raw scan codes</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="comboCjkRawScancode"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="lblEnterScreenLang">
+            <property name="text">
+             <string>On screen entry</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="comboEnterScreenLang"/>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <widget class="QCheckBox" name="cbClipboardNormalizeNfc">
+            <property name="text">
+             <string>Normalize shared text to NFC</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="lblMacInterKeyDelay">
+            <property name="text">
+             <string>macOS inter-key delay</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSpinBox" name="spinMacInterKeyDelayMicros">
+            <property name="suffix">
+             <string> us</string>
+            </property>
+            <property name="maximum">
+             <number>2000</number>
+            </property>
+            <property name="singleStep">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacerInputBottom">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tabWindow">
       <attribute name="title">
        <string>&amp;Window</string>
@@ -834,7 +948,7 @@
      </widget>
      <widget class="QWidget" name="tabAdvanced">
       <attribute name="title">
-       <string>&amp;Advanced</string>
+       <string>&amp;System</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <property name="spacing">
@@ -865,72 +979,6 @@
          </property>
        </spacer>
       </item>
-       <item>
-        <widget class="QGroupBox" name="groupInputLanguage">
-         <property name="title">
-          <string>Input language</string>
-         </property>
-         <layout class="QFormLayout" name="formInputLanguage">
-          <property name="fieldGrowthPolicy">
-           <enum>QFormLayout::FieldGrowthPolicy::ExpandingFieldsGrow</enum>
-          </property>
-          <item row="0" column="0" colspan="2">
-           <widget class="QCheckBox" name="cbImeSync">
-            <property name="text">
-             <string>Synchronize Korean/English input state</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="lblCjkRawScancode">
-            <property name="text">
-             <string>CJK raw scan codes</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QComboBox" name="comboCjkRawScancode"/>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="lblEnterScreenLang">
-            <property name="text">
-             <string>On screen entry</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QComboBox" name="comboEnterScreenLang"/>
-          </item>
-          <item row="3" column="0" colspan="2">
-           <widget class="QCheckBox" name="cbClipboardNormalizeNfc">
-            <property name="text">
-             <string>Normalize shared text to NFC</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="lblMacInterKeyDelay">
-            <property name="text">
-             <string>macOS inter-key delay</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QSpinBox" name="spinMacInterKeyDelayMicros">
-            <property name="suffix">
-             <string> us</string>
-            </property>
-            <property name="maximum">
-             <number>2000</number>
-            </property>
-            <property name="singleStep">
-             <number>100</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item>
         <widget class="QGroupBox" name="groupService">
          <property name="enabled">

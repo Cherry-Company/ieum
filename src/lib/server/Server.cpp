@@ -39,6 +39,17 @@
 
 using namespace deskflow::server;
 
+namespace {
+
+constexpr KeyID kKeySpace = 0x0020;
+
+bool isMacInputSource(const deskflow::InputLanguageStatus &status)
+{
+  return status.m_sourceId.starts_with("com.apple.");
+}
+
+} // namespace
+
 //
 // Server
 //
@@ -362,8 +373,17 @@ bool Server::isLockedToScreen() const
     return false;
   }
 
-  if (m_autoLockFullscreen && m_active == m_primaryClient && m_screen->isForegroundFullscreen()) {
-    return true;
+  if (m_autoLockFullscreen && m_active == m_primaryClient) {
+    using namespace std::chrono_literals;
+    const auto now = std::chrono::steady_clock::now();
+    if (m_screen->isForegroundFullscreen()) {
+      m_fullscreenLockUntil = now + 1s;
+    }
+    if (now < m_fullscreenLockUntil) {
+      return true;
+    }
+  } else {
+    m_fullscreenLockUntil = {};
   }
 
   // locked if we say we're locked
@@ -1614,10 +1634,18 @@ void Server::onKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyButto
   sendKeyRepeat(m_active, id, mask, count, button, lang);
 }
 
-bool Server::isInputLanguageControl(const BaseClientProxy *client, KeyID id) const
+bool Server::isInputLanguageControl(const BaseClientProxy *client, KeyID id, KeyModifierMask mask) const
 {
-  return client != nullptr && !client->isPrimary() && client->protocolMinorVersion() >= 9 &&
-         Settings::value(Settings::Core::ImeSync).toBool() && (id == kKeyHangul || id == kKeyHanja);
+  if (client == nullptr || client->isPrimary() || client->protocolMinorVersion() < 9 ||
+      !Settings::value(Settings::Core::ImeSync).toBool()) {
+    return false;
+  }
+
+  if (id == kKeyHangul || id == kKeyHanja) {
+    return true;
+  }
+
+  return id == kKeySpace && (mask & KeyModifierControl) != 0 && isMacInputSource(client->inputLanguageStatus());
 }
 
 KeyButton Server::buttonForClient(const BaseClientProxy *client, KeyButton button) const
@@ -1645,7 +1673,8 @@ void Server::sendKeyDown(
     BaseClientProxy *client, KeyID id, KeyModifierMask mask, KeyButton button, const std::string &lang
 )
 {
-  if (isInputLanguageControl(client, id)) {
+  if (isInputLanguageControl(client, id, mask)) {
+    m_inputLanguageControlButtons.emplace(client, button);
     if (id == kKeyHanja) {
       client->inputLanguageControl(deskflow::InputLanguageAction::Set, "hanja");
       return;
@@ -1664,7 +1693,9 @@ void Server::sendKeyDown(
 
 void Server::sendKeyUp(BaseClientProxy *client, KeyID id, KeyModifierMask mask, KeyButton button)
 {
-  if (!isInputLanguageControl(client, id)) {
+  const auto controlKey = std::make_pair(static_cast<const BaseClientProxy *>(client), button);
+  const bool wasInputLanguageControl = m_inputLanguageControlButtons.erase(controlKey) != 0;
+  if (!wasInputLanguageControl) {
     client->keyUp(id, mask, buttonForClient(client, button));
   }
 }
@@ -1673,7 +1704,8 @@ void Server::sendKeyRepeat(
     BaseClientProxy *client, KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &lang
 )
 {
-  if (!isInputLanguageControl(client, id)) {
+  const auto controlKey = std::make_pair(static_cast<const BaseClientProxy *>(client), button);
+  if (!m_inputLanguageControlButtons.contains(controlKey)) {
     client->keyRepeat(id, mask, count, buttonForClient(client, button), lang);
   }
 }
@@ -2047,6 +2079,7 @@ bool Server::removeClient(BaseClientProxy *client)
   // remove from list
   m_clients.erase(getName(client));
   m_clientSet.erase(i);
+  std::erase_if(m_inputLanguageControlButtons, [client](const auto &entry) { return entry.first == client; });
 
   return true;
 }

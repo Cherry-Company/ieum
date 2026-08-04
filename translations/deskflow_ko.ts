@@ -1244,7 +1244,7 @@ Additionally, check you are able to %1 the server config file: %2</source>
     </message>
     <message>
         <source>Advanced</source>
-        <translation>고급</translation>
+        <translation type="vanished">고급</translation>
     </message>
     <message>
         <source>&amp;Misc</source>
@@ -1355,6 +1355,10 @@ Enabling this setting will disable the server config GUI.</source>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enables compatibility with programs that use either the Synergy or Barrier protocols:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3 uses the Synergy protocol.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap and Synergy 1 use the Barrier protocol.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;An Ieum client automatically selects the protocol required by the server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Synergy 또는 Barrier 프로토콜을 사용하는 프로그램과의 호환성을 활성화합니다.&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Synergy 3는 Synergy 프로토콜을 사용합니다.&lt;/li&gt;&lt;li style=&quot; margin-top:0px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Barrier, Input-Leap, Synergy 1은 Barrier 프로토콜을 사용합니다.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Ieum 클라이언트는 서버에 필요한 프로토콜을 자동으로 선택합니다.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
+    <message>
+        <source>Pointer &amp; sharing</source>
+        <translation>포인터 및 공유</translation>
+    </message>
 </context>
 <context>
     <name>SettingsDialog</name>
@@ -1404,7 +1408,7 @@ Enabling this setting will disable the server config GUI.</source>
     </message>
     <message>
         <source>&amp;Advanced</source>
-        <translation>고급(&amp;A)</translation>
+        <translation type="vanished">고급(&amp;A)</translation>
     </message>
     <message>
         <source>Port</source>
@@ -1564,7 +1568,7 @@ Enabling this setting will disable the server config GUI.</source>
     </message>
     <message>
         <source>Input language</source>
-        <translation>입력 언어</translation>
+        <translation type="vanished">입력 언어</translation>
     </message>
     <message>
         <source>Synchronize Korean/English input state</source>
@@ -1683,6 +1687,18 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>macOS still requires approval for automatic startup. Open System Settings &gt; General &gt; Login Items and allow Ieum.</source>
         <translation>macOS 자동 실행 승인이 아직 필요합니다. 시스템 설정 &gt; 일반 &gt; 로그인 항목을 열어 이음을 허용하세요.</translation>
+    </message>
+    <message>
+        <source>&amp;Input</source>
+        <translation>입력(&amp;I)</translation>
+    </message>
+    <message>
+        <source>Input language and shared text</source>
+        <translation>입력 언어 및 공유 텍스트</translation>
+    </message>
+    <message>
+        <source>&amp;System</source>
+        <translation>시스템(&amp;S)</translation>
     </message>
 </context>
 <context>

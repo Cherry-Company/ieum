@@ -18,6 +18,7 @@
 #include "deskflow/MouseTypes.h"
 #include "server/Config.h"
 
+#include <chrono>
 #include <climits>
 #include <map>
 #include <set>
@@ -328,7 +329,7 @@ private:
   void handlePrimaryInputLanguageChanged(const Event &event);
 
   // event processing
-  bool isInputLanguageControl(const BaseClientProxy *client, KeyID id) const;
+  bool isInputLanguageControl(const BaseClientProxy *client, KeyID id, KeyModifierMask mask) const;
   KeyButton buttonForClient(const BaseClientProxy *client, KeyButton button) const;
   void sendKeyDown(BaseClientProxy *client, KeyID, KeyModifierMask, KeyButton, const std::string &);
   void sendKeyUp(BaseClientProxy *client, KeyID, KeyModifierMask, KeyButton);
@@ -414,6 +415,11 @@ private:
   // Name of screen broadcasting the keyboard events
   std::string m_keyboardBroadcastingScreens;
 
+  // Key presses converted to input-language control packets. Tracking both
+  // the client and button prevents an orphan key-up during broadcast or when
+  // modifier release order differs between keyboards.
+  std::set<std::pair<const BaseClientProxy *, KeyButton>> m_inputLanguageControlButtons;
+
   // all clients (including the primary client) indexed by name
   using ClientList = std::map<std::string, BaseClientProxy *>;
   using ClientSet = std::set<BaseClientProxy *>;
@@ -480,5 +486,6 @@ private:
   bool m_defaultLockToScreenState = false;
   bool m_disableLockToScreen = false;
   bool m_autoLockFullscreen = true;
+  mutable std::chrono::steady_clock::time_point m_fullscreenLockUntil;
   bool m_enableClipboard = true;
 };

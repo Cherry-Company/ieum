@@ -305,7 +305,7 @@
      </widget>
      <widget class="QWidget" name="tabAdvanced">
       <attribute name="title">
-       <string>Advanced</string>
+       <string>Pointer &amp; sharing</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <property name="leftMargin">

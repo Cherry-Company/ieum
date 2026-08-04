@@ -13,6 +13,7 @@ add_library(common STATIC
   Coordinate.h
   Enums.h
   ExitCodes.h
+  FullscreenGeometry.h
   I18N.h
   I18N.cpp
   LogLevel.h

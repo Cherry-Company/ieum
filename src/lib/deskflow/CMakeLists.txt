@@ -34,6 +34,7 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   CanonicalScancode.h
   ClientApp.cpp
   ClientApp.h
+  ClientReconnectPolicy.h
   ClipboardTypes.h
   Clipboard.cpp
   Clipboard.h

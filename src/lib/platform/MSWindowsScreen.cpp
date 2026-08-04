@@ -16,6 +16,7 @@
 #include "base/TMethodJob.h"
 #include "client/Client.h"
 #include "common/Constants.h"
+#include "common/FullscreenGeometry.h"
 #include "common/Settings.h"
 #include "deskflow/App.h"
 #include "deskflow/CanonicalScancode.h"
@@ -33,6 +34,7 @@
 #include <Shlobj.h>
 #include <algorithm>
 #include <comutil.h>
+#include <dwmapi.h>
 #include <string.h>
 
 // suppress warning about GetVersionEx, which is used indirectly in this
@@ -471,8 +473,14 @@ bool MSWindowsScreen::isForegroundFullscreen() const
     return false;
   }
 
-  RECT windowBounds;
-  if (!GetWindowRect(foreground, &windowBounds)) {
+  BOOL cloaked = FALSE;
+  if (SUCCEEDED(DwmGetWindowAttribute(foreground, DWMWA_CLOAKED, &cloaked, sizeof(cloaked))) && cloaked) {
+    return false;
+  }
+
+  RECT windowBounds{};
+  if (FAILED(DwmGetWindowAttribute(foreground, DWMWA_EXTENDED_FRAME_BOUNDS, &windowBounds, sizeof(windowBounds))) &&
+      !GetWindowRect(foreground, &windowBounds)) {
     return false;
   }
 
@@ -486,11 +494,14 @@ bool MSWindowsScreen::isForegroundFullscreen() const
     return false;
   }
 
-  constexpr LONG tolerance = 2;
   const RECT &display = monitorInfo.rcMonitor;
-  m_foregroundFullscreen =
-      windowBounds.left <= display.left + tolerance && windowBounds.top <= display.top + tolerance &&
-      windowBounds.right >= display.right - tolerance && windowBounds.bottom >= display.bottom - tolerance;
+  m_foregroundFullscreen = deskflow::fullscreen::coversDisplay(
+      {static_cast<double>(windowBounds.left), static_cast<double>(windowBounds.top),
+       static_cast<double>(windowBounds.right), static_cast<double>(windowBounds.bottom)},
+      {static_cast<double>(display.left), static_cast<double>(display.top), static_cast<double>(display.right),
+       static_cast<double>(display.bottom)},
+      12.0
+  );
   return m_foregroundFullscreen;
 }
 

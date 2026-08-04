@@ -88,6 +88,7 @@ private:
   ISocketFactory *getSocketFactory() const;
   NetworkAddress &getCurrentServerAddress();
   void tryNextServer();
+  void cancelClientRestart();
 
   bool m_suspended = false;
   Client *m_client = nullptr;
@@ -96,4 +97,5 @@ private:
   size_t m_currentServerIndex = 0;
   size_t m_lastServerAddressIndex = 0;
   uint m_retryCount = 0;
+  EventQueueTimer *m_restartTimer = nullptr;
 };

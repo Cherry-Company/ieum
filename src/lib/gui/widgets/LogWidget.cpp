@@ -11,6 +11,7 @@
 
 #include <QPlainTextEdit>
 #include <QScrollBar>
+#include <QShowEvent>
 #include <QVBoxLayout>
 
 LogWidget::LogWidget(QWidget *parent) : QWidget{parent}, m_textLog{new QPlainTextEdit(this)}
@@ -30,6 +31,7 @@ LogWidget::LogWidget(QWidget *parent) : QWidget{parent}, m_textLog{new QPlainTex
 
   m_flushTimer.setInterval(kLogFlushIntervalMs);
   m_flushTimer.setSingleShot(true);
+  m_flushTimer.setTimerType(Qt::CoarseTimer);
   connect(&m_flushTimer, &QTimer::timeout, this, &LogWidget::flushPendingLines);
   connect(deskflow::gui::Logger::instance(), &deskflow::gui::Logger::newLine, this, &LogWidget::appendLine);
 }
@@ -44,8 +46,17 @@ void LogWidget::appendLine(const QString &msg)
     m_pendingLines.append(msg);
   }
 
-  if (!m_flushTimer.isActive()) {
+  const bool hiddenInsidePanel = parentWidget() != nullptr && !isVisible();
+  if (!hiddenInsidePanel && !m_flushTimer.isActive()) {
     m_flushTimer.start();
+  }
+}
+
+void LogWidget::showEvent(QShowEvent *event)
+{
+  QWidget::showEvent(event);
+  if (!m_pendingLines.isEmpty() || m_droppedLineCount > 0) {
+    m_flushTimer.start(0);
   }
 }
 
