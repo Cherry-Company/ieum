@@ -70,6 +70,14 @@ runs:
           fi
       shell: bash
 
+    - name: Prepare Python for self-hosted Qt
+      if: ${{ runner.os == 'macOS' && runner.environment == 'self-hosted' }}
+      shell: bash
+      run: |
+        venv="$RUNNER_TEMP/ieum-qt-python-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+        python3 -m venv "$venv"
+        echo "$venv/bin" >> "$GITHUB_PATH"
+
     - name: Install Qt
       if: ${{runner.os != 'Linux' }}
       uses: jurplel/install-qt-action@v4
@@ -78,7 +86,7 @@ runs:
       with:
         version: ${{inputs.qt-version}}
         cache: true
-        cache-key-prefix: ${{matrix.target.os}}-${{inputs.qt-version}}
+        cache-key-prefix: ${{runner.os}}-${{runner.arch}}-${{inputs.qt-version}}
         # setup-python expects a GitHub-hosted tool-cache layout. Self-hosted
         # Apple runners already provide Python and must not write /Users/runner.
         setup-python: ${{ runner.environment != 'self-hosted' }}
