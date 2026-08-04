@@ -10,6 +10,8 @@
 
 #include "base/EventQueue.h"
 
+#include <ApplicationServices/ApplicationServices.h>
+
 #define SHIFT_ID_L kKeyShift_L
 #define SHIFT_ID_R kKeyShift_R
 #define SHIFT_BUTTON 57
@@ -57,6 +59,10 @@ void OSXKeyStateTests::mapModifiersFromOSX_OSXMask()
 
 void OSXKeyStateTests::fakePollShift()
 {
+  if (!CGPreflightPostEventAccess()) {
+    QSKIP("macOS has not granted input injection access to the test process");
+  }
+
   deskflow::KeyMap keyMap;
   EventQueue eventQueue;
   OSXKeyState keyState(&eventQueue, keyMap, {"en"}, true);
@@ -77,6 +83,10 @@ void OSXKeyStateTests::fakePollShift()
 
 void OSXKeyStateTests::fakePollChar()
 {
+  if (!CGPreflightPostEventAccess()) {
+    QSKIP("macOS has not granted input injection access to the test process");
+  }
+
   deskflow::KeyMap keyMap;
   EventQueue eventQueue;
   OSXKeyState keyState(&eventQueue, keyMap, {"en"}, true);
@@ -96,6 +106,10 @@ void OSXKeyStateTests::fakePollChar()
 
 void OSXKeyStateTests::fakePollCharWithModifier()
 {
+  if (!CGPreflightPostEventAccess()) {
+    QSKIP("macOS has not granted input injection access to the test process");
+  }
+
   deskflow::KeyMap keyMap;
   EventQueue eventQueue;
   OSXKeyState keyState(&eventQueue, keyMap, {"en"}, true);
