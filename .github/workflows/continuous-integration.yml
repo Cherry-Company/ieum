@@ -122,9 +122,9 @@ jobs:
             qt-version: 6.11.1
 
           - name: "macos-arm64"
-            # Trusted Ieum builds run on the shared MacBook Pro. Public fork
-            # pull requests stay on an isolated hosted runner.
-            runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork && 'macos-15' || 'yijios-apple-primary' }}
+            # Ieum is public, so every event—including trusted pushes and tags—
+            # stays isolated from owner-managed hosts and their input state.
+            runs-on: macos-15
             timeout: 60
             qt-version: 6.11.1
             config-args: '-DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_OSX_DEPLOYMENT_TARGET=14'
