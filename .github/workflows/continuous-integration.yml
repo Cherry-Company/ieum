@@ -125,7 +125,7 @@ jobs:
             # Trusted Ieum builds run on the shared MacBook Pro. Public fork
             # pull requests stay on an isolated hosted runner.
             runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork && 'macos-15' || 'yijios-apple-primary' }}
-            timeout: 30
+            timeout: 60
             qt-version: 6.11.1
             config-args: '-DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_OSX_DEPLOYMENT_TARGET=14'
 
@@ -369,7 +369,8 @@ jobs:
             ${{ matrix.target.config-args }} \
             ${{ steps.get-deps.outputs.vcpkg-cmake-config }} \
             -DPACKAGE_VERSION_LABEL="${IEUM_PACKAGE_VERSION}" \
-            -DAPPLE_CODESIGN_DISTRIBUTION="${APPLE_CODESIGN_DISTRIBUTION}"
+            -DAPPLE_CODESIGN_DISTRIBUTION="${APPLE_CODESIGN_DISTRIBUTION}" \
+            -DIEUM_DMG_FINDER_LAYOUT="${{ runner.environment != 'self-hosted' }}"
 
       - name: Build
         shell: bash

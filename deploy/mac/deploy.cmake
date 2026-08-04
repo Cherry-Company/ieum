@@ -9,6 +9,13 @@ set(OSX_BUNDLE ${BUILD_OSX_BUNDLE})
 set(OS_STRING "macos-${BUILD_ARCHITECTURE}")
 
 if (OSX_BUNDLE)
+  option(
+    IEUM_DMG_FINDER_LAYOUT
+    "Use Finder to generate the custom DMG window layout"
+    ON
+  )
+  mark_as_advanced(IEUM_DMG_FINDER_LAYOUT)
+
   set(
     APPLE_CODESIGN_DISTRIBUTION
     ""
@@ -39,8 +46,10 @@ if (OSX_BUNDLE)
   set(CPACK_PRE_BUILD_SCRIPTS ${CMAKE_CURRENT_BINARY_DIR}/pre-cpack-macos.cmake)
 
   set(CPACK_PACKAGE_ICON "${MY_DIR}/ieum-volume.icns")
-  set(CPACK_DMG_BACKGROUND_IMAGE "${MY_DIR}/dmg-background.tiff")
-  set(CPACK_DMG_DS_STORE_SETUP_SCRIPT "${MY_DIR}/generate_ds_store.applescript")
+  if(IEUM_DMG_FINDER_LAYOUT)
+    set(CPACK_DMG_BACKGROUND_IMAGE "${MY_DIR}/dmg-background.tiff")
+    set(CPACK_DMG_DS_STORE_SETUP_SCRIPT "${MY_DIR}/generate_ds_store.applescript")
+  endif()
   set(CPACK_DMG_VOLUME_NAME "${CMAKE_PROJECT_PROPER_NAME}")
   set(CPACK_DMG_SLA_USE_RESOURCE_FILE_LICENSE ON)
   set(CPACK_GENERATOR "DragNDrop")
