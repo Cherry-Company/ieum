@@ -630,13 +630,43 @@ jobs:
         uses: actions/download-artifact@v8
 
       - name: Generate package checksums
-        id: generate_notes
         shell: bash
         run: |
-          mv $GITHUB_WORKSPACE/package-*/Ieum-* .
-          rm -rf $GITHUB_WORKSPACE/package-*
-          echo "Build: ${{env.IEUM_VERSION }}" > SHA256SUMS.txt
-          sha256sum Ieum-* >> SHA256SUMS.txt
+          shopt -s nullglob
+
+          downloaded_packages=("$GITHUB_WORKSPACE"/package-*/Ieum-*)
+          if (( ${#downloaded_packages[@]} == 0 )); then
+            echo "::error::No Ieum release packages were downloaded"
+            exit 1
+          fi
+
+          mv -- "${downloaded_packages[@]}" .
+          rm -rf -- "$GITHUB_WORKSPACE"/package-*
+
+          mapfile -t release_packages < <(
+            find . -maxdepth 1 -type f -name 'Ieum-*' -printf '%f\n' |
+              LC_ALL=C sort
+          )
+          if (( ${#release_packages[@]} == 0 )); then
+            echo "::error::No Ieum release packages are ready for publication"
+            exit 1
+          fi
+
+          : > SHA256SUMS.txt
+          for package in "${release_packages[@]}"; do
+            sha256sum -- "$package" >> SHA256SUMS.txt
+          done
+
+          # Keep the manifest directly consumable by `sha256sum --check` and
+          # ensure it describes every publishable package exactly once.
+          sha256sum --check --strict SHA256SUMS.txt
+          mapfile -t manifest_packages < <(
+            sed -nE 's/^[0-9a-fA-F]{64}  //p' SHA256SUMS.txt |
+              LC_ALL=C sort
+          )
+          diff -u \
+            <(printf '%s\n' "${release_packages[@]}") \
+            <(printf '%s\n' "${manifest_packages[@]}")
 
       - name: Deploy release
         uses: softprops/action-gh-release@v3
