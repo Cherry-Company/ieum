@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Ask a question
-    url: https://github.com/victoriousian/ieum/discussions/new?category=q-a
+    url: https://github.com/Cherry-Company/ieum/discussions/new?category=q-a
     about: Ask the Ieum community for help.
   - name: Releases
-    url: https://github.com/victoriousian/ieum/releases
+    url: https://github.com/Cherry-Company/ieum/releases
     about: Download the latest Ieum packages.

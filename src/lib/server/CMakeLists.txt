@@ -32,6 +32,8 @@ add_library(server STATIC
   ClientProxy1_9.h
   ClientProxy1_10.cpp
   ClientProxy1_10.h
+  ClientProxy1_11.cpp
+  ClientProxy1_11.h
   ClientProxyUnknown.cpp
   ClientProxyUnknown.h
   Config.cpp

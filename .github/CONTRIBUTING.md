@@ -5,7 +5,7 @@
 
 Bug reports, feature proposals, documentation fixes, translations, and code contributions are welcome.
 
-1. Search the [issue tracker](https://github.com/victoriousian/ieum/issues) before opening a new issue.
+1. Search the [issue tracker](https://github.com/Cherry-Company/ieum/issues) before opening a new issue.
 2. Base changes on `ieum/main` and keep commits focused.
 3. Add or update tests for behavior changes.
 4. Run the relevant build, unit tests, and formatting checks before opening a pull request.

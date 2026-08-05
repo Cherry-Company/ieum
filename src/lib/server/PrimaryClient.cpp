@@ -89,6 +89,16 @@ void PrimaryClient::getCursorPos(int32_t &x, int32_t &y) const
   m_screen->getCursorPos(x, y);
 }
 
+deskflow::DisplayLayout PrimaryClient::getDisplayLayout() const
+{
+  return m_screen->getDisplayLayout();
+}
+
+bool PrimaryClient::isForegroundFullscreen() const
+{
+  return m_screen->isForegroundFullscreen();
+}
+
 void PrimaryClient::enable()
 {
   m_screen->enable();

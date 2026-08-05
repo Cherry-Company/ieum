@@ -16,14 +16,14 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.17"><strong>下载 Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.18"><strong>下载 Ieum</strong></a>
   · <a href="#首次运行时的安全与权限"><strong>安全与权限</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>赞助 Ieum</strong></a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/YijiOS/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/YijiOS/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
-  <a href="https://github.com/YijiOS/ieum/releases"><img src="https://img.shields.io/github/v/release/YijiOS/ieum?include_prereleases&label=release" alt="Release"></a>
+  <a href="https://github.com/Cherry-Company/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/Cherry-Company/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases"><img src="https://img.shields.io/github/v/release/Cherry-Company/ieum?include_prereleases&label=release" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--only-blue" alt="GPL-2.0-only"></a>
   <a href="https://github.com/sponsors/victoriousian"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-EA4AAA?logo=githubsponsors&logoColor=white" alt="通过 GitHub Sponsors 赞助 Ieum"></a>
 </p>
@@ -32,7 +32,7 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 还试图把不同系统中的 **韩/英输入状态、输入法组合会话、物理按键位置和 Unicode 剪贴板**连接成
 一致的输入链路。
 
-> 当前版本为 `v0.1.0-alpha.17`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
+> 当前版本为 `v0.1.0-alpha.18`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
 
 ## 帮助 Ieum 完成正式发行
@@ -51,7 +51,26 @@ ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
 
 仍可选择自定义金额进行单次赞助。无论是否赞助，本地 KVM、韩语/CJK 输入同步和剪贴板核心都将保持
 开放。每个版本都会公开[赞助资金分配金额和完成的工作](docs/release/sponsorship-impact.md)。
-`alpha.17` 分配的赞助资金为 **USD 0**。
+`alpha.18` 分配的赞助资金为 **USD 0**。
+
+## Alpha.18 无边框全屏游戏锁定与物理显示器坐标
+
+`alpha.17` 未通过无边框全屏游戏锁定和混合显示器进入坐标的真机验收。`alpha.18` 根据这些结果
+重新实现了两条路径，并作为下一轮真机验证版本发布。
+
+- Windows 现在同时检查独占全屏、**无边框全屏窗口**、真实窗口/客户端区域，以及游戏通过
+  `ClipCursor` 设置的指针捕获。关闭手动 Scroll Lock 路径不再绕过独立的自动游戏保护；服务端还会
+  获取当前活动服务端或客户端屏幕的状态。
+- 协议 `1.11` 不再把整块虚拟桌面当作一台显示器，而是交换每台电脑的物理显示器矩形列表。
+  坐标会在实际离开与进入的显示器边缘之间映射，从而在横屏、竖屏和混合分辨率布局中保留双向高度。
+- 物理边缘映射仅在**两台电脑都运行 alpha.18**时启用。旧版本连接仍使用虚拟桌面整体比例回退，
+  用户明确配置的局部边缘映射仍优先于自动转换。
+- Windows 原生完整构建、相关回归测试、除当前会话剪贴板环境测试外的 36 个 CTest 目标，以及
+  15 个旧版按键测试均已通过。不同游戏的无边框模式和 Windows↔macOS 混合显示器长时间移动仍是
+  真机验收项目；完成这些测试前，本版本不会宣称问题已经解决。
+- 此公开仓库的 Apple Silicon CI 与 DMG 打包在临时 GitHub-hosted `macos-15-arm64` 环境中运行。
+  实际 MacBook Pro 是独立的真机验收设备，并非发布打包的必需 runner；真机结果会与托管构建验证
+  分开报告。
 
 ## Alpha.17 输入切换、重连与屏幕边缘可靠性
 
@@ -67,7 +86,7 @@ ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
   粗粒度计时器，以减少空闲状态下的 UI 工作。
 - IME、CJK、原始按键、屏幕进入和 Mac 按键延迟设置集中到**设置 → 输入**；服务与命令自动化位于
   **系统**，指针与剪贴板设置位于**指针与共享**。
-- Apple Silicon 包在真实 MacBook Pro runner `yijios-apple-primary-macbook` 上原生构建，并通过
+- `alpha.17` Apple Silicon 包当时在真实 MacBook Pro 上原生构建，并通过
   测试、DMG 挂载和签名结构检查。Developer ID 签名和 Apple 公证尚未配置，因此此预发行版在
   macOS 上可能仍需手动通过 Gatekeeper。
 
@@ -198,22 +217,22 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.17 发布页](https://github.com/YijiOS/ieum/releases/tag/v0.1.0-alpha.17)
+[Ieum v0.1.0-alpha.18 发布页](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.18)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.17-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.17-macos-x86_64.dmg` |
-| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.17-win-x64.msi` |
-| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.17-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.17-win-arm64.msi` |
-| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.17-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.18-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.18-macos-x86_64.dmg` |
+| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.18-win-x64.msi` |
+| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.18-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.18-win-arm64.msi` |
+| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.18-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
 
 ### 首次运行时的安全与权限
 
-请只从 `github.com/YijiOS/ieum/releases` 下载，并用 `SHA256SUMS.txt` 校验文件。不要关闭
+请只从 `github.com/Cherry-Company/ieum/releases` 下载，并用 `SHA256SUMS.txt` 校验文件。不要关闭
 SmartScreen、Microsoft Defender、Gatekeeper 或 macOS 隐私保护。校验值不一致或安全软件明确报告
 恶意软件时，应立即停止安装。
 
@@ -278,7 +297,7 @@ CPU 开销。
 条目仍然存在，但 macOS 不信任当前应用，`alpha.10` 会提供**重置旧授权**。确认后，它只会删除
 Ieum 的“辅助功能”记录，并重新注册当前的 `/Applications/Ieum.app`，无需手动点按减号和加号。
 
-`alpha.17` 最终应用已通过严格的代码签名验证，但尚未使用 Developer ID 证书签名，也未经过 Apple
+`alpha.18` 最终应用已通过严格的代码签名验证，但尚未使用 Developer ID 证书签名，也未经过 Apple
 公证。请将应用移到 `/Applications` 并尝试打开一次；若 macOS 阻止运行，请前往
 **系统设置 → 隐私与安全性 → 仍要打开**。应用还需要“辅助功能”和“输入监控”权限。临时签名会让
 每个构建具有不同的代码身份，因此后续更新仍可能需要**重置旧授权**并再次批准。要自动继承权限，
@@ -289,20 +308,20 @@ Windows `alpha.2` 至 `alpha.7` 错误复用了 Deskflow 的 MSI `UpgradeCode`�
 `deskflow-core` 与 `deskflow-daemon` 的可执行文件和 IPC 名称。Deskflow 正在运行时，或 Ieum 的
 服务核心与桌面核心重叠时，GUI 可能连接到错误的核心，并让 TLS 授权一直等待到超时。
 
-从 `alpha.9` 开始，Ieum 使用单调递增的 MSI 预发行版本映射（`alpha.17` 对应 `0.1.117`）、
+从 `alpha.9` 开始，Ieum 使用单调递增的 MSI 预发行版本映射（`alpha.18` 对应 `0.1.118`）、
 `ieum-core.exe`、`ieum-daemon.exe`，以及带版本的
 `ieum-core-v1`/`ieum-daemon-v1` IPC。全局所有权锁会拒绝重复核心；默认认证文件迁移到
 `ieum.pem`，从而重新生成 `/CN=Ieum` 证书。CI 会在 x64 与 ARM64 上执行真实的
-`alpha.16 → alpha.17` 升级，验证服务 IPC、登录界面核心 PID 保持、登录自动启动和重复核心拒绝，
-并确认 Deskflow 1.26.0 与 Ieum 核心可同时运行。现有 `alpha.8` 至 `alpha.16` 用户可直接运行
-`alpha.17` MSI，无需手动卸载。证书更新后，
+`alpha.17 → alpha.18` 升级，验证服务 IPC、登录界面核心 PID 保持、登录自动启动和重复核心拒绝，
+并确认 Deskflow 1.26.0 与 Ieum 核心可同时运行。现有 `alpha.8` 至 `alpha.17` 用户可直接运行
+`alpha.18` MSI，无需手动卸载。证书更新后，
 首次连接时可能需要重新确认一次指纹。
 
 全局安装包在“已安装的应用”和开始菜单中显示为 **Ieum**，韩文安装包显示为 **이음 (Ieum)**。
 安装目录为 `C:\Program Files\Ieum`，Windows 服务名为 `Ieum`，开始菜单中还会创建卸载快捷方式。
 Windows 安装包尚未进行代码签名，因此 SmartScreen 仍可能显示警告。
 
-正常的 Ieum MSI 更新不应要求重启 Windows。`alpha.17` MSI 会先请求 GUI 和核心正常退出，等待十秒，
+正常的 Ieum MSI 更新不应要求重启 Windows。`alpha.18` MSI 会先请求 GUI 和核心正常退出，等待十秒，
 仅在进程仍未退出时才终止它并替换文件。`3010` 表示更新已完成但仍需重启，通常由锁定的系统文件
 或单独安装的 Visual C++ 运行库引起；`/norestart` 只能阻止自动重启，不能消除该待重启状态。
 

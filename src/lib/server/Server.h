@@ -487,5 +487,6 @@ private:
   bool m_disableLockToScreen = false;
   bool m_autoLockFullscreen = true;
   mutable std::chrono::steady_clock::time_point m_fullscreenLockUntil;
+  mutable bool m_fullscreenAutoLockActive = false;
   bool m_enableClipboard = true;
 };

@@ -42,6 +42,7 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   ClipboardChunk.h
   DeskflowException.cpp
   DeskflowException.h
+  DisplayGeometry.h
   DisplayInvalidException.h
   IApp.h
   IClient.h

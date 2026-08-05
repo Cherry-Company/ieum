@@ -53,6 +53,34 @@ void ServerTests::cursorTransform_roundTripsMixedOrigins()
   QCOMPARE(fromFraction(std::numeric_limits<float>::quiet_NaN(), -100, 200), 0);
 }
 
+void ServerTests::cursorTransform_mapsPhysicalEdgeDisplays()
+{
+  using deskflow::DisplayGeometry;
+  using deskflow::DisplayLayout;
+  using deskflow::server::cursor::mapAcrossDisplayEdges;
+
+  const DisplayGeometry windowsDesktop{0, 0, 4000, 2560};
+  const DisplayLayout windowsDisplays{{0, 0, 1440, 2560}, {1440, 0, 2560, 1440}};
+  const DisplayGeometry macDesktop{0, 0, 2560, 1440};
+  const DisplayLayout macDisplays{macDesktop};
+
+  // The old aggregate mapping produced 405. The two touching 1440 px edges
+  // should preserve y=720 in both directions.
+  const auto toMac =
+      mapAcrossDisplayEdges(windowsDisplays, windowsDesktop, macDisplays, macDesktop, Direction::Right, 720, 405);
+  QVERIFY(toMac.has_value());
+  QCOMPARE(*toMac, 720);
+
+  const auto toWindows =
+      mapAcrossDisplayEdges(macDisplays, macDesktop, windowsDisplays, windowsDesktop, Direction::Left, 720, 1280);
+  QVERIFY(toWindows.has_value());
+  QCOMPARE(*toWindows, 720);
+
+  const DisplayLayout invalidLayout{{0, 0, 1440, 2560}};
+  QVERIFY(!mapAcrossDisplayEdges(invalidLayout, windowsDesktop, macDisplays, macDesktop, Direction::Right, 720, 405)
+               .has_value());
+}
+
 void ServerTests::cursorTransform_preservesSubpixelMotion()
 {
   using namespace deskflow::server::cursor;
@@ -84,6 +112,19 @@ void ServerTests::fullscreenGeometry_distinguishesFullscreenFromMaximized()
   QVERIFY(coversDisplay({-1916.0, 4.0, -4.0, 1076.0}, display));
   QVERIFY(!coversDisplay({-1920.0, 0.0, 0.0, 1040.0}, display));
   QVERIFY(!coversDisplay({-1800.0, 0.0, 0.0, 1080.0}, display));
+}
+
+void ServerTests::fullscreenGeometry_detectsPointerCapture()
+{
+  using deskflow::fullscreen::Bounds;
+  using deskflow::fullscreen::pointerIsConfinedToDisplay;
+
+  const Bounds desktop{0.0, 0.0, 3840.0, 1080.0};
+  const Bounds gameDisplay{1920.0, 0.0, 3840.0, 1080.0};
+  QVERIFY(pointerIsConfinedToDisplay(gameDisplay, gameDisplay, desktop));
+  QVERIFY(pointerIsConfinedToDisplay({2100.0, 100.0, 3700.0, 1000.0}, gameDisplay, desktop));
+  QVERIFY(!pointerIsConfinedToDisplay(desktop, gameDisplay, desktop));
+  QVERIFY(!pointerIsConfinedToDisplay({2000.0, 100.0, 2030.0, 130.0}, gameDisplay, desktop));
 }
 
 QTEST_MAIN(ServerTests)

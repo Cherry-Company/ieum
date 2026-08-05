@@ -2,4 +2,4 @@
 ieum(1), ieum-core(1)
 
 All documentation is on the web, so please point your browser at
-<https://github.com/YijiOS/ieum>.
+<https://github.com/Cherry-Company/ieum>.

@@ -41,10 +41,12 @@
 #include <AppKit/NSWorkspace.h>
 #include <AvailabilityMacros.h>
 #include <IOKit/hidsystem/event_status_driver.h>
+#include <algorithm>
 #include <dispatch/dispatch.h>
 #include <libproc.h>
 #include <mach-o/dyld.h>
 #include <math.h>
+#include <tuple>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -285,6 +287,40 @@ void OSXScreen::getCursorPos(int32_t &x, int32_t &y) const
   m_xCursor = x;
   m_yCursor = y;
   CFRelease(event);
+}
+
+deskflow::DisplayLayout OSXScreen::getDisplayLayout() const
+{
+  CGDisplayCount displayCount = 0;
+  if (CGGetActiveDisplayList(0, nullptr, &displayCount) != kCGErrorSuccess || displayCount == 0) {
+    return {{m_x, m_y, m_w, m_h}};
+  }
+
+  std::vector<CGDirectDisplayID> displayIds(displayCount);
+  if (CGGetActiveDisplayList(displayCount, displayIds.data(), &displayCount) != kCGErrorSuccess) {
+    return {{m_x, m_y, m_w, m_h}};
+  }
+
+  deskflow::DisplayLayout displays;
+  displays.reserve(displayCount);
+  for (CGDisplayCount i = 0; i < displayCount; ++i) {
+    const auto bounds = CGDisplayBounds(displayIds[i]);
+    const auto width = static_cast<int32_t>(bounds.size.width);
+    const auto height = static_cast<int32_t>(bounds.size.height);
+    if (width > 0 && height > 0) {
+      displays.push_back({static_cast<int32_t>(bounds.origin.x), static_cast<int32_t>(bounds.origin.y), width, height});
+    }
+  }
+
+  if (displays.empty()) {
+    return {{m_x, m_y, m_w, m_h}};
+  }
+
+  std::ranges::sort(displays, {}, [](const auto &display) {
+    return std::tuple{display.x, display.y, display.width, display.height};
+  });
+  displays.erase(std::unique(displays.begin(), displays.end()), displays.end());
+  return displays;
 }
 
 bool OSXScreen::isForegroundFullscreen() const

@@ -45,10 +45,13 @@ static const int16_t kProtocolMajorVersion = 1;
  * @note When incrementing the minor version, the Deskflow application version should also increment
  * @since Protocol version 1.0
  */
-static const int16_t kProtocolMinorVersion = 10;
+static const int16_t kProtocolMinorVersion = 11;
 
 //! First minor version that negotiates the canonical-scancode button flag.
 static const int16_t kProtocolCanonicalScancodeMinorVersion = 10;
+
+//! First minor version that reports physical displays and foreground capture.
+static const int16_t kProtocolDisplayLayoutMinorVersion = 11;
 
 /**
  * @brief Default TCP port for Deskflow connections
@@ -1180,6 +1183,31 @@ extern const char *const kMsgDInputLangControl;
  * @since Protocol version 1.9
  */
 extern const char *const kMsgCInputLangStatus;
+
+/**
+ * @brief Physical display rectangles on a secondary machine
+ *
+ * **Message Code**: `"CDLY"`
+ * **Direction**: Secondary -> Primary
+ * **Format**: `"CDLY%4I"`
+ *
+ * The integer vector contains repeating signed x, y, width, height values.
+ * Signed values are transported bit-for-bit in the unsigned vector container.
+ *
+ * @since Protocol version 1.11
+ */
+extern const char *const kMsgCDisplayLayout;
+
+/**
+ * @brief Foreground application captures a full display or the pointer
+ *
+ * **Message Code**: `"CFLS"`
+ * **Direction**: Secondary -> Primary
+ * **Format**: `"CFLS%1i"`
+ *
+ * @since Protocol version 1.11
+ */
+extern const char *const kMsgCForegroundFullscreen;
 
 /** @} */ // end of protocol_system group
 

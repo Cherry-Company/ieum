@@ -9,8 +9,8 @@ body:
 
         <b>Sanity checks</b>
         > [!IMPORTANT]
-        > 1. Try the latest [continuous build](https://github.com/victoriousian/ieum/releases).
-        > 2. Wayland users, please review the [known issues](https://github.com/victoriousian/ieum/discussions/7499).
+        > 1. Try the latest [continuous build](https://github.com/Cherry-Company/ieum/releases).
+        > 2. Wayland users, please review the [known issues](https://github.com/Cherry-Company/ieum/discussions/7499).
         > 3. macOS users, if the app crashes, try [Apple's solution](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac).
         > 4. Search for existing issues and avoid creating duplicates.
         > 5. Provide descriptive title for this issue.

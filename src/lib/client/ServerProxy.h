@@ -16,6 +16,8 @@
 #include "deskflow/KeyTypes.h"
 #include "deskflow/KeyboardLayoutManager.h"
 
+#include <chrono>
+#include <optional>
 #include <set>
 
 class Client;
@@ -77,6 +79,8 @@ private:
   void flushCompressedMouse();
 
   void sendInfo(const ClientInfo &);
+  void sendDisplayLayout();
+  void maybeSendForegroundFullscreen(bool force = false);
 
   void resetKeepAliveAlarm();
   void setKeepAliveRate(double);
@@ -149,4 +153,6 @@ private:
   deskflow::KeyboardLayoutManager m_layoutManager;
   deskflow::InputLanguageStatus m_inputLanguageStatus;
   std::set<KeyButton> m_rawScancodeButtons;
+  std::chrono::steady_clock::time_point m_lastFullscreenCheck;
+  std::optional<bool> m_lastFullscreenState;
 };

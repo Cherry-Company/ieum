@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "deskflow/DisplayGeometry.h"
 #include "deskflow/IClient.h"
 #include "deskflow/InputLanguageTypes.h"
 
@@ -92,6 +93,11 @@ public:
   virtual deskflow::InputLanguageStatus inputLanguageStatus() const
   {
     return {};
+  }
+  virtual deskflow::DisplayLayout getDisplayLayout() const;
+  virtual bool isForegroundFullscreen() const
+  {
+    return false;
   }
   std::string getName() const override;
   virtual deskflow::IStream *getStream() const = 0;

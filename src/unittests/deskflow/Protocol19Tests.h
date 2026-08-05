@@ -17,6 +17,8 @@ private Q_SLOTS:
   void inputLanguageControlRoundTrip();
   void inputLanguageStatusRoundTrip();
   void canonicalScancodeFlagRoundTrip();
+  void displayLayoutRoundTrip();
+  void foregroundFullscreenRoundTrip();
 
 private:
   Log m_log;
