@@ -40,8 +40,34 @@ runs:
                 -o Acquire::http::Timeout=20
                 -o Acquire::https::Timeout=20
               )
-              timeout --signal=TERM 180s apt-get "${apt_options[@]}" update -qq
-              timeout --signal=TERM 360s apt-get "${apt_options[@]}" install -y -qq \
+              run_apt() {
+                local operation="$1"
+                local timeout_seconds="$2"
+                shift 2
+
+                local attempt
+                local status
+                for attempt in 1 2; do
+                  echo "apt-get $operation (attempt $attempt/2)"
+                  if timeout --signal=TERM --kill-after=30s \
+                    "${timeout_seconds}s" apt-get "${apt_options[@]}" "$@"; then
+                    return 0
+                  else
+                    status=$?
+                  fi
+
+                  if [ "$attempt" -eq 2 ]; then
+                    echo "::error::apt-get $operation failed twice (last exit: $status)"
+                    return "$status"
+                  fi
+
+                  echo "::warning::apt-get $operation exited with $status; retrying in 10 seconds"
+                  sleep 10
+                done
+              }
+
+              run_apt update 180 update -qq
+              run_apt install 600 install -y -qq \
                 cmake build-essential ninja-build \
                 xorg-dev libx11-dev libxtst-dev libssl-dev \
                 libglib2.0-dev libxkbfile-dev qt6-base-dev qt6-tools-dev \

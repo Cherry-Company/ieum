@@ -216,7 +216,7 @@ jobs:
             runs-on: ubuntu-latest
             container: ubuntu:26.04
             like: "debian"
-            timeout: 20
+            timeout: 30
             config-args: "-G Ninja -DCMAKE_INSTALL_PREFIX=/usr"
 
           - name: "ubuntu-26.04-arm64"
