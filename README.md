@@ -75,6 +75,9 @@ ARM64·Apple Silicon 실기 회귀 테스트와 안정적인 릴리스 유지**�
   레거시 키 입력 15개 테스트를 통과했습니다. 실제 게임별 전체 창 동작과 Windows↔macOS 혼합 모니터
   장시간 이동은 패키지 설치 후 계속 확인할 실기 수용 항목이며, 확인 전에는 해결 완료로 표시하지
   않습니다.
+- 공개 저장소의 Apple Silicon CI와 DMG 패키징은 임시 GitHub-hosted `macos-15-arm64` 환경에서
+  수행합니다. 실제 MacBook Pro는 릴리스 패키징의 필수 러너가 아니라 별도의 실기 수용 테스트
+  장비이며, 그 시험 결과와 호스티드 빌드 결과를 구분해 표시합니다.
 
 ### alpha.17 입력 전환·재연결·화면 경계 안정성 변경
 
@@ -93,7 +96,7 @@ ARM64·Apple Silicon 실기 회귀 테스트와 안정적인 릴리스 유지**�
   네트워크·메뉴 막대 감시는 저정밀 타이머를 사용해 유휴 상태 UI 작업을 줄였습니다.
 - 입력기·CJK·원시 키·화면 진입·Mac 키 지연 설정은 **환경설정 → 입력**에 모았습니다. 서비스와
   명령 자동화는 **시스템**, 포인터와 클립보드 공유는 **포인터 및 공유**로 정리했습니다.
-- Apple Silicon 패키지는 실제 MacBook Pro의 `cherry-apple-primary-macbook`에서 ARM64로 빌드하고
+- `alpha.17` Apple Silicon 패키지는 당시 실제 MacBook Pro에서 ARM64로 빌드하고
   테스트·DMG 마운트·서명 구조 검증을 통과했습니다. 다만 Developer ID 서명과 Apple 공증은 아직
   없으므로 프리릴리스의 macOS 설치에는 Gatekeeper 수동 승인이 필요할 수 있습니다.
 

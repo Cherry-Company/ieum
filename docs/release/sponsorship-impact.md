@@ -15,19 +15,18 @@ Release: v0.1.0-alpha.18
 
 ## 빌드 및 실기 검증 범위 / Build and physical validation scope
 
-- Apple Silicon 패키지는 Cherry 조직의 공유 Apple 기본 경로 `cherry-apple-primary`를 통해 MacBook Pro의
-  `cherry-apple-primary-macbook`에서 네이티브 ARM64로 빌드합니다. 외부 공개 포크 PR만 격리를 위해
-  `macos-15`를 사용하며 Intel DMG는 `macos-15-intel`에서 빌드합니다. / Apple Silicon packages are
-  built natively on the MacBook Pro runner `cherry-apple-primary-macbook` through Cherry's shared Apple primary
-  lane `cherry-apple-primary`. Only public fork pull requests use `macos-15` for isolation, while Intel DMGs
-  use `macos-15-intel`.
-- 릴리스 전 최종 커밋은 MacBook Pro에서 ARM64 컴파일, 37개 CTest 대상, DMG 생성·마운트,
-  `codesign --verify --deep --strict`, ARM64 Mach-O 확인과 아티팩트 업로드를 통과했습니다. Windows
-  x64/ARM64 설치 파일도 빌드, MSI 구조, 교체 설치와 서비스 공존 검사를 통과했습니다. / The final
-  pre-release commit passed native ARM64 compilation, all 37 CTest targets, DMG creation and mounting,
-  `codesign --verify --deep --strict`, ARM64 Mach-O inspection, and artifact upload on the MacBook Pro.
-  Windows x64 and ARM64 packages passed build, MSI structure, replacement-install, and service-coexistence
-  checks.
+- 공개 저장소의 Apple Silicon 패키지는 임시 GitHub-hosted `macos-15-arm64` 환경에서 네이티브로
+  빌드하고 Intel DMG는 `macos-15-intel`에서 빌드합니다. 실제 MacBook Pro는 릴리스 패키징의 필수
+  경로가 아니라 별도의 실기 수용 테스트 장비입니다. / Apple Silicon packages for this public
+  repository are built natively on the ephemeral GitHub-hosted `macos-15-arm64` environment, while Intel DMGs
+  use `macos-15-intel`. The physical MacBook Pro is a separate acceptance-test device rather than a required
+  release-packaging lane.
+- 릴리스 CI는 ARM64 컴파일과 CTest, DMG 생성·마운트, `codesign --verify --deep --strict`, ARM64 Mach-O
+  확인과 아티팩트 업로드를 모두 통과한 경우에만 태그 자산을 게시합니다. Windows x64/ARM64도 빌드,
+  MSI 구조, 교체 설치와 서비스 공존 검사를 통과해야 합니다. / Release CI publishes tagged assets only
+  after ARM64 compilation and CTest, DMG creation and mounting, `codesign --verify --deep --strict`, ARM64 Mach-O
+  inspection, and artifact upload all pass. Windows x64 and ARM64 packages must also pass build, MSI structure,
+  replacement-install, and service-coexistence checks.
 - alpha.17의 실제 게임·혼합 모니터 시험에서 전체 창 게임 잠금과 진입 좌표가 수용 기준을 통과하지
   못했습니다. alpha.18은 전체 창·클라이언트 경계와 포인터 캡처 판별, 물리 모니터 사각형 교환을
   구현했지만, 실제 게임별 재시험과 Windows↔macOS 장시간 좌표 왕복이 끝날 때까지 해결 완료로

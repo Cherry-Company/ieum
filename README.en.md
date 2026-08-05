@@ -71,6 +71,9 @@ allocated to `alpha.18` is **USD 0**.
   clipboard environment test, and 15 legacy key tests pass. Per-game borderless behavior and sustained
   Windows-to-macOS mixed-monitor movement remain physical acceptance items; this release does not call them
   resolved before that testing is complete.
+- Apple Silicon CI and DMG packaging for this public repository run on an ephemeral GitHub-hosted
+  `macos-15-arm64` environment. The physical MacBook Pro is a separate acceptance-test device, not a required
+  packaging runner, and its physical results are reported separately from hosted build verification.
 
 ## Alpha.17 input switching, reconnect, and edge reliability
 
@@ -89,8 +92,8 @@ allocated to `alpha.18` is **USD 0**.
   and macOS status-item monitoring use coarse timers to reduce idle UI work.
 - IME, CJK, raw-key, screen-entry, and Mac key-delay controls now live under **Preferences → Input**. Service and
   command automation are under **System**, while pointer and clipboard controls are under **Pointer & sharing**.
-- Apple Silicon packages are built natively on the physical MacBook Pro runner
-  `cherry-apple-primary-macbook` and pass tests, DMG mounting, and signature-structure checks. Developer ID
+- The `alpha.17` Apple Silicon packages were built natively on the physical MacBook Pro available at that time
+  and passed tests, DMG mounting, and signature-structure checks. Developer ID
   signing and Apple notarization are not configured yet, so this prerelease may require manual Gatekeeper
   approval on macOS.
 

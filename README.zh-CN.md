@@ -68,6 +68,9 @@ ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
 - Windows 原生完整构建、相关回归测试、除当前会话剪贴板环境测试外的 36 个 CTest 目标，以及
   15 个旧版按键测试均已通过。不同游戏的无边框模式和 Windows↔macOS 混合显示器长时间移动仍是
   真机验收项目；完成这些测试前，本版本不会宣称问题已经解决。
+- 此公开仓库的 Apple Silicon CI 与 DMG 打包在临时 GitHub-hosted `macos-15-arm64` 环境中运行。
+  实际 MacBook Pro 是独立的真机验收设备，并非发布打包的必需 runner；真机结果会与托管构建验证
+  分开报告。
 
 ## Alpha.17 输入切换、重连与屏幕边缘可靠性
 
@@ -83,7 +86,7 @@ ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
   粗粒度计时器，以减少空闲状态下的 UI 工作。
 - IME、CJK、原始按键、屏幕进入和 Mac 按键延迟设置集中到**设置 → 输入**；服务与命令自动化位于
   **系统**，指针与剪贴板设置位于**指针与共享**。
-- Apple Silicon 包在真实 MacBook Pro runner `cherry-apple-primary-macbook` 上原生构建，并通过
+- `alpha.17` Apple Silicon 包当时在真实 MacBook Pro 上原生构建，并通过
   测试、DMG 挂载和签名结构检查。Developer ID 签名和 Apple 公证尚未配置，因此此预发行版在
   macOS 上可能仍需手动通过 Gatekeeper。
 
