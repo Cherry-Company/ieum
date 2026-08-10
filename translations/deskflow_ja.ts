@@ -383,7 +383,15 @@ If an older enabled Ieum entry remains but this version is still not trusted, ch
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Open Accessibility Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Reset Previous Approval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show Ieum in Applications</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -521,6 +529,42 @@ macOS will remove only Ieum&apos;s Accessibility record. No other app permission
 A bound IP is now invalid, you may need to restart the server.</source>
         <translation>
 割り当て済みのIPアドレスが無効になりました。サーバーを再起動する必要があるかもしれません。</translation>
+    </message>
+    <message>
+        <source>The local report file could not be saved.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Diagnostic Ready</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;A privacy-filtered diagnostic passport was copied to the clipboard and a prefilled GitHub issue was opened.&lt;/p&gt;&lt;p&gt;Nothing was uploaded automatically. GitHub requires an account to submit the issue; without one, you can share the copied report through another channel.&lt;/p&gt;&lt;p&gt;Local copy: &lt;code&gt;%1&lt;/code&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ieum Update %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Ieum %1 is available for this Windows PC.&lt;/p&gt;&lt;p&gt;The installer now asks a running Ieum window to exit, stops the service core, replaces the package, and starts the service again. Keyboard and mouse sharing pauses briefly during that handoff; you do not need to close Ieum manually.&lt;/p&gt;&lt;p&gt;Silent installation remains disabled until production package signing and rollback verification are configured.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Ieum %1 is available for this Mac.&lt;/p&gt;&lt;p&gt;Download the disk image and replace Ieum in Applications. Do not reset Accessibility approval unless Check Again still says this build is not trusted.&lt;/p&gt;&lt;p&gt;Fully automatic replacement is disabled while alpha packages use a temporary code identity. Stable Developer ID signing and notarization are required for reliable permission inheritance.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Ieum %1 is available. Open the release to choose your Linux package.&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download Installer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>View Release Notes</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -857,9 +901,41 @@ Client</source>
         <source>&lt;p&gt;Please &lt;a href=&quot;%1&quot;&gt;report a bug&lt;/a&gt; and copy/paste the following error:&lt;/p&gt;&lt;pre&gt;v%2
 %3
 %4&lt;/pre&gt;</source>
-        <translation>&lt;p&gt;&lt;a href=&quot;%1&quot;&gt;バグレポート&lt;/a&gt;して以下のエラーをコピー＆ペーストしてください:&lt;/p&gt;&lt;pre&gt;v%2
+        <translation type="vanished">&lt;p&gt;&lt;a href=&quot;%1&quot;&gt;バグレポート&lt;/a&gt;して以下のエラーをコピー＆ペーストしてください:&lt;/p&gt;&lt;pre&gt;v%2
 %3
 %4&lt;/pre&gt;</translation>
+    </message>
+    <message>
+        <source>unknown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ieum Previous Session Ended Unexpectedly</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;The previous Ieum session did not close normally. It may have crashed, lost power, or been ended from Task Manager/Force Quit.&lt;/p&gt;&lt;p&gt;A privacy-filtered report was saved locally. Nothing was uploaded automatically.&lt;/p&gt;&lt;p&gt;Report ID: &lt;code&gt;%1&lt;/code&gt;&lt;br&gt;Local copy: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>could not save the local file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy Diagnostic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open GitHub Issue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open macOS Crash Reports</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Ieum created a privacy-filtered diagnostic passport for this error.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nothing was uploaded automatically.&lt;/b&gt; You can copy it or open a prefilled GitHub issue. Submitting on GitHub requires an account.&lt;/p&gt;&lt;p&gt;Report ID: &lt;code&gt;%1&lt;/code&gt;&lt;br&gt;Saved locally: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>&lt;p&gt;On Linux systems using GNOME 3, the notification area might be disabled. You may need to &lt;a href=&quot;%1&quot;&gt;enable an extension&lt;/a&gt; to see the %2 tray icon.&lt;/p&gt;</source>

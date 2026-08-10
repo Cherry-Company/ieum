@@ -135,39 +135,105 @@ inline int32_t orthogonalExtent(const deskflow::DisplayGeometry &display, Direct
   return edge == Direction::Left || edge == Direction::Right ? display.height : display.width;
 }
 
-inline int64_t distanceFromDisplay(const deskflow::DisplayGeometry &display, Direction edge, int32_t coordinate)
+struct EdgeSpan
 {
-  const auto origin = static_cast<int64_t>(orthogonalOrigin(display, edge));
-  const auto extent = static_cast<int64_t>(orthogonalExtent(display, edge));
-  const auto end = origin + extent;
-  if (coordinate < origin) {
-    return origin - coordinate;
-  }
-  if (coordinate >= end) {
-    return static_cast<int64_t>(coordinate) - end + 1;
-  }
-  return 0;
-}
+  int64_t begin;
+  int64_t end;
+};
 
-inline std::optional<deskflow::DisplayGeometry> findEdgeDisplay(
-    const deskflow::DisplayLayout &layout, const deskflow::DisplayGeometry &desktop, Direction edge,
-    int32_t orthogonalCoordinate
-)
+inline std::vector<EdgeSpan>
+edgeSpans(const deskflow::DisplayLayout &layout, const deskflow::DisplayGeometry &desktop, Direction edge)
 {
-  std::optional<deskflow::DisplayGeometry> closest;
-  auto closestDistance = std::numeric_limits<int64_t>::max();
+  std::vector<EdgeSpan> spans;
+  spans.reserve(layout.size());
   for (const auto &display : layout) {
     if (display.width <= 0 || display.height <= 0 || !touchesEdge(display, desktop, edge)) {
       continue;
     }
 
-    const auto distance = distanceFromDisplay(display, edge, orthogonalCoordinate);
-    if (distance < closestDistance) {
-      closest = display;
-      closestDistance = distance;
+    const auto begin = static_cast<int64_t>(orthogonalOrigin(display, edge));
+    spans.push_back({begin, begin + static_cast<int64_t>(orthogonalExtent(display, edge))});
+  }
+
+  std::ranges::sort(spans, {}, &EdgeSpan::begin);
+  std::vector<EdgeSpan> merged;
+  merged.reserve(spans.size());
+  for (const auto &span : spans) {
+    if (merged.empty() || span.begin > merged.back().end) {
+      merged.push_back(span);
+    } else {
+      merged.back().end = std::max(merged.back().end, span.end);
     }
   }
-  return closest;
+  return merged;
+}
+
+inline int64_t edgeLength(const std::vector<EdgeSpan> &spans)
+{
+  int64_t length = 0;
+  for (const auto &span : spans) {
+    length += span.end - span.begin;
+  }
+  return length;
+}
+
+inline std::optional<double> fractionAlongEdge(const std::vector<EdgeSpan> &spans, int32_t coordinate)
+{
+  const auto total = edgeLength(spans);
+  if (total <= 0) {
+    return std::nullopt;
+  }
+
+  const auto position = static_cast<int64_t>(coordinate);
+  int64_t traversed = 0;
+  for (size_t index = 0; index < spans.size(); ++index) {
+    const auto &span = spans[index];
+    const auto length = span.end - span.begin;
+    if (position >= span.begin && position < span.end) {
+      return (static_cast<double>(traversed + position - span.begin) + 0.5) / static_cast<double>(total);
+    }
+
+    if (position < span.begin) {
+      if (index == 0) {
+        return 0.5 / static_cast<double>(total);
+      }
+
+      const auto leftDistance = position - spans[index - 1].end + 1;
+      const auto rightDistance = span.begin - position;
+      const auto nearest =
+          leftDistance <= rightDistance ? static_cast<double>(traversed) - 0.5 : static_cast<double>(traversed) + 0.5;
+      return std::clamp(nearest / static_cast<double>(total), 0.0, std::nextafter(1.0, 0.0));
+    }
+    traversed += length;
+  }
+
+  return (static_cast<double>(total) - 0.5) / static_cast<double>(total);
+}
+
+inline std::optional<int32_t> coordinateAlongEdge(const std::vector<EdgeSpan> &spans, double fraction)
+{
+  const auto total = edgeLength(spans);
+  if (total <= 0) {
+    return std::nullopt;
+  }
+
+  const auto finiteFraction = std::isfinite(fraction) ? fraction : 0.5;
+  const auto normalized = std::clamp(finiteFraction, 0.0, std::nextafter(1.0, 0.0));
+  const auto offset = std::min(static_cast<int64_t>(normalized * static_cast<double>(total)), total - 1);
+
+  int64_t traversed = 0;
+  for (const auto &span : spans) {
+    const auto length = span.end - span.begin;
+    if (offset < traversed + length) {
+      const auto coordinate = span.begin + offset - traversed;
+      return static_cast<int32_t>(std::clamp(
+          coordinate, static_cast<int64_t>(std::numeric_limits<int32_t>::min()),
+          static_cast<int64_t>(std::numeric_limits<int32_t>::max())
+      ));
+    }
+    traversed += length;
+  }
+  return std::nullopt;
 }
 
 inline std::optional<int32_t> mapAcrossDisplayEdges(
@@ -176,26 +242,20 @@ inline std::optional<int32_t> mapAcrossDisplayEdges(
     Direction exitDirection, int32_t sourceCoordinate, int32_t fallbackDestinationCoordinate
 )
 {
+  static_cast<void>(fallbackDestinationCoordinate);
   if (exitDirection == Direction::NoDirection || sourceDesktop.width <= 0 || sourceDesktop.height <= 0 ||
       destinationDesktop.width <= 0 || destinationDesktop.height <= 0) {
     return std::nullopt;
   }
 
-  const auto sourceDisplay = findEdgeDisplay(sourceLayout, sourceDesktop, exitDirection, sourceCoordinate);
   const auto destinationEdge = oppositeDirection(exitDirection);
-  const auto destinationDisplay =
-      findEdgeDisplay(destinationLayout, destinationDesktop, destinationEdge, fallbackDestinationCoordinate);
-  if (!sourceDisplay || !destinationDisplay) {
+  const auto sourceSpans = edgeSpans(sourceLayout, sourceDesktop, exitDirection);
+  const auto destinationSpans = edgeSpans(destinationLayout, destinationDesktop, destinationEdge);
+  const auto fraction = fractionAlongEdge(sourceSpans, sourceCoordinate);
+  if (!fraction) {
     return std::nullopt;
   }
-
-  const auto fraction = toFraction(
-      sourceCoordinate, orthogonalOrigin(*sourceDisplay, exitDirection), orthogonalExtent(*sourceDisplay, exitDirection)
-  );
-  return fromFraction(
-      fraction, orthogonalOrigin(*destinationDisplay, destinationEdge),
-      orthogonalExtent(*destinationDisplay, destinationEdge)
-  );
+  return coordinateAlongEdge(destinationSpans, *fraction);
 }
 
 } // namespace deskflow::server::cursor

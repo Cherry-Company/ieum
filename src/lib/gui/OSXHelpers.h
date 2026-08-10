@@ -20,5 +20,7 @@ bool macOSStartAtLoginEnabled();
 bool macOSStartAtLoginRequiresApproval();
 bool macOSSetStartAtLogin(bool enabled, QString *error = nullptr);
 void macOSOpenLoginItemsSettings();
+void macOSOpenAccessibilitySettings();
+void macOSRevealCurrentApplication();
 void macOSInstallApplicationReopenHandler(QObject *receiver);
 void macOSRemoveApplicationReopenHandler();

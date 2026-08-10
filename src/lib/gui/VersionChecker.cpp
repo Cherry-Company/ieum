@@ -7,6 +7,7 @@
 #include "VersionChecker.h"
 
 #include "common/Settings.h"
+#include "common/UrlConstants.h"
 #include "common/VersionInfo.h"
 
 #include <QLocale>
@@ -15,6 +16,7 @@
 #include <QNetworkRequest>
 #include <QProcess>
 #include <QRegularExpression>
+#include <QSysInfo>
 #include <climits>
 
 VersionChecker::VersionChecker(QObject *parent) : QObject(parent), m_network{new QNetworkAccessManager(this)}
@@ -34,6 +36,63 @@ void VersionChecker::checkLatest() const
   m_network->get(request);
 }
 
+QString VersionChecker::packageFileName(
+    const QString &version, const QString &platform, const QString &architecture, bool korean
+)
+{
+  static const QRegularExpression versionPattern(
+      QStringLiteral(R"(^\d+\.\d+\.\d+(?:-(?:alpha|beta|rc)\.\d+)?$)"), QRegularExpression::CaseInsensitiveOption
+  );
+  if (!versionPattern.match(version).hasMatch()) {
+    return {};
+  }
+
+  if (platform == QStringLiteral("windows")) {
+    const auto assetArchitecture = architecture.contains(QStringLiteral("arm"), Qt::CaseInsensitive)
+                                       ? QStringLiteral("arm64")
+                                       : QStringLiteral("x64");
+    return QStringLiteral("Ieum-%1-win-%2%3.msi")
+        .arg(version, assetArchitecture, korean ? QStringLiteral("-ko-KR") : QString{});
+  }
+  if (platform == QStringLiteral("macos")) {
+    const auto assetArchitecture = architecture.contains(QStringLiteral("arm"), Qt::CaseInsensitive)
+                                       ? QStringLiteral("arm64")
+                                       : QStringLiteral("x86_64");
+    return QStringLiteral("Ieum-%1-macos-%2.dmg").arg(version, assetArchitecture);
+  }
+  return {};
+}
+
+QUrl VersionChecker::releasePageUrl(const QString &version)
+{
+  const auto normalized = version.startsWith(QLatin1Char('v')) ? version.mid(1) : version;
+  if (packageFileName(normalized, QStringLiteral("windows"), QStringLiteral("x64"), false).isEmpty()) {
+    return QUrl(kUrlDownload);
+  }
+  return QUrl(QStringLiteral("%1/tag/v%2").arg(kUrlDownload, normalized));
+}
+
+QUrl VersionChecker::packageDownloadUrl(const QString &version)
+{
+  const auto normalized = version.startsWith(QLatin1Char('v')) ? version.mid(1) : version;
+  QString platform;
+#if defined(Q_OS_WIN)
+  platform = QStringLiteral("windows");
+#elif defined(Q_OS_MACOS)
+  platform = QStringLiteral("macos");
+#else
+  return {};
+#endif
+
+  const auto fileName = packageFileName(
+      normalized, platform, QSysInfo::currentCpuArchitecture(), QLocale::system().language() == QLocale::Korean
+  );
+  if (fileName.isEmpty()) {
+    return {};
+  }
+  return QUrl(QStringLiteral("%1/download/v%2/%3").arg(kUrlDownload, normalized, fileName));
+}
+
 void VersionChecker::replyFinished(QNetworkReply *reply)
 {
   const auto httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
@@ -41,6 +100,7 @@ void VersionChecker::replyFinished(QNetworkReply *reply)
     qWarning("version check server error: %s", qPrintable(reply->errorString()));
     qWarning("version check server response: %s", qPrintable(QString(reply->readAll())));
     qWarning("error checking for updates, http status: %d", httpStatus);
+    reply->deleteLater();
     return;
   }
 
@@ -52,6 +112,10 @@ void VersionChecker::replyFinished(QNetworkReply *reply)
 
   if (newestVersion.isEmpty()) {
     qWarning() << "version check is response is empty";
+    return;
+  }
+  if (packageFileName(newestVersion, QStringLiteral("windows"), QStringLiteral("x64"), false).isEmpty()) {
+    qWarning("version check returned an invalid version: %s", qPrintable(newestVersion));
     return;
   }
 

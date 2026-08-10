@@ -14,4 +14,6 @@ class VersionCheckerTests : public QObject
 private Q_SLOTS:
   void compareVersions_ordersPrereleaseStages();
   void compareVersions_ordersPrereleaseSequence();
+  void packageFileName_selectsPlatformAndArchitecture();
+  void packageFileName_rejectsUntrustedVersionText();
 };

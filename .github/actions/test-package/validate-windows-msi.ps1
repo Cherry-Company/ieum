@@ -143,6 +143,33 @@ try {
         throw "$($msi.Name): the post-install launch does not force the main window to show"
       }
 
+      $prepareUpdateRows = @(
+        Get-MsiRows -Database $database -Query (
+          "SELECT ``Action``,``Target`` FROM ``CustomAction`` WHERE ``Action`` = 'PrepareIeumUpdate'"
+        )
+      )
+      if (
+        $prepareUpdateRows.Count -ne 1 -or
+        $prepareUpdateRows[0].Values[1] -notmatch '^"\[INSTALL_ROOT\]ieum\.exe" --prepare-update$'
+      ) {
+        throw "$($msi.Name): live upgrade does not ask the running Ieum GUI to exit cleanly"
+      }
+
+      $prepareUpdateSequence = @(
+        Get-MsiRows -Database $database -Query (
+          "SELECT ``Action``,``Condition``,``Sequence`` FROM ``InstallExecuteSequence`` WHERE " +
+          "``Action`` = 'PrepareIeumUpdate'"
+        )
+      )
+      if (
+        $prepareUpdateSequence.Count -ne 1 -or
+        $prepareUpdateSequence[0].Values[1] -notmatch 'WIX_UPGRADE_DETECTED' -or
+        $prepareUpdateSequence[0].Values[1] -notmatch 'IEUM_LEGACY_UPGRADE_DETECTED' -or
+        [int] $prepareUpdateSequence[0].Values[2] -ge 1500
+      ) {
+        throw "$($msi.Name): PrepareIeumUpdate must run for current/legacy upgrades before InstallInitialize"
+      }
+
       $upgradeSequence = @(
         Get-MsiRows -Database $database -Query (
           "SELECT ``Action``,``Condition``,``Sequence`` FROM ``InstallExecuteSequence`` WHERE " +

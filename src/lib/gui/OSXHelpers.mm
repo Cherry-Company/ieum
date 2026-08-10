@@ -208,6 +208,20 @@ void macOSOpenLoginItemsSettings()
   }
 }
 
+void macOSOpenAccessibilitySettings()
+{
+  auto *url = [NSURL URLWithString:@"x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility"];
+  [[NSWorkspace sharedWorkspace] openURL:url];
+}
+
+void macOSRevealCurrentApplication()
+{
+  NSURL *bundleUrl = [NSBundle mainBundle].bundleURL;
+  if (bundleUrl != nil) {
+    [[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:@[ bundleUrl ]];
+  }
+}
+
 void macOSInstallApplicationReopenHandler(QObject *receiver)
 {
   macOSRemoveApplicationReopenHandler();

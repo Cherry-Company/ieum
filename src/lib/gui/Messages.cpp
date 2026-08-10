@@ -6,14 +6,16 @@
 
 #include "Messages.h"
 
+#include "Diagnostic.h"
 #include "Logger.h"
 #include "ProductIdentity.h"
 
 #include "common/Settings.h"
 #include "common/UrlConstants.h"
-#include "common/VersionInfo.h"
 
 #include <QCheckBox>
+#include <QDir>
+#include <QFileInfo>
 #include <QMessageBox>
 #include <QPushButton>
 #include <memory>
@@ -36,47 +38,110 @@ void raiseCriticalDialog()
   }
 }
 
+void showUnexpectedExit(QWidget *parent, const diagnostic::PreviousSession &previousSession)
+{
+  const auto previousVersion = previousSession.version.isEmpty() ? QObject::tr("unknown") : previousSession.version;
+  const auto previousStart = previousSession.startedAt.isEmpty() ? QObject::tr("unknown") : previousSession.startedAt;
+  const auto detail = QStringLiteral(
+                          "The previous Ieum session did not complete a clean shutdown. It may have crashed or been "
+                          "force-terminated. Previous version: %1. Session started (UTC): %2."
+  )
+                          .arg(previousVersion, previousStart);
+  const auto report = diagnostic::createReport(diagnostic::ReportKind::UnexpectedExit, detail);
+
+  QMessageBox dialog(parent);
+  dialog.setIcon(QMessageBox::Warning);
+  dialog.setWindowTitle(QObject::tr("Ieum Previous Session Ended Unexpectedly"));
+  dialog.setText(
+      QObject::tr(
+          "<p>The previous Ieum session did not close normally. It may have crashed, lost power, or been ended from "
+          "Task Manager/Force Quit.</p><p>A privacy-filtered report was saved locally. Nothing was uploaded "
+          "automatically.</p><p>Report ID: <code>%1</code><br>Local copy: <code>%2</code></p>"
+      )
+          .arg(
+              report.id, report.saved ? QDir::toNativeSeparators(report.filePath).toHtmlEscaped()
+                                      : QObject::tr("could not save the local file")
+          )
+  );
+  auto *copyButton = dialog.addButton(QObject::tr("Copy Diagnostic"), QMessageBox::ActionRole);
+  auto *issueButton = dialog.addButton(QObject::tr("Open GitHub Issue"), QMessageBox::ActionRole);
+#if defined(Q_OS_MACOS)
+  auto *nativeReportsButton = dialog.addButton(QObject::tr("Open macOS Crash Reports"), QMessageBox::ActionRole);
+#endif
+  dialog.addButton(QMessageBox::Ok);
+  dialog.exec();
+
+  if (dialog.clickedButton() == copyButton) {
+    diagnostic::copyToClipboard(report);
+  } else if (dialog.clickedButton() == issueButton) {
+    diagnostic::copyToClipboard(report);
+    diagnostic::openIssue(report);
+  }
+#if defined(Q_OS_MACOS)
+  else if (dialog.clickedButton() == nativeReportsButton) {
+    diagnostic::openNativeCrashReports();
+  }
+#endif
+}
+
 void showErrorDialog(const QString &message, const QString &fileLine, QtMsgType type)
 {
-  auto errorType = QtFatalMsg ? QObject::tr("fatal error") : QObject::tr("error");
+  if (type != QtFatalMsg && Errors::s_ignoredErrors.contains(message)) {
+    return;
+  }
+
+  const auto fatal = type == QtFatalMsg;
+  const auto report = diagnostic::createReport(
+      fatal ? diagnostic::ReportKind::FatalError : diagnostic::ReportKind::CriticalError, message, fileLine
+  );
+  auto errorType = fatal ? QObject::tr("fatal error") : QObject::tr("error");
   auto title = QStringLiteral("%1 %2").arg(productDisplayName(), errorType);
   auto text = QObject::tr(
-                  R"(<p>Please <a href="%1">report a bug</a>)"
-                  " and copy/paste the following error:</p><pre>v%2\n%3\n%4</pre>"
+                  "<p>Ieum created a privacy-filtered diagnostic passport for this error.</p>"
+                  "<p><b>Nothing was uploaded automatically.</b> You can copy it or open a prefilled GitHub issue. "
+                  "Submitting on GitHub requires an account.</p>"
+                  "<p>Report ID: <code>%1</code><br>Saved locally: <code>%2</code></p>"
   )
-                  .arg(kUrlHelp, kVersion, message, fileLine);
+                  .arg(
+                      report.id, report.saved ? QDir::toNativeSeparators(report.filePath).toHtmlEscaped()
+                                              : QObject::tr("could not save the local file")
+                  );
 
-  if (type == QtFatalMsg) {
+  if (fatal) {
     text.prepend(QObject::tr("<p>Sorry, a fatal error has occurred and the application must now exit.</p>\n"));
-    // create a blocking message box for fatal errors, as we want to wait
-    // until the dialog is dismissed before aborting the app.
-    QMessageBox::critical(nullptr, title, text, QMessageBox::Abort);
+    QMessageBox dialog(QMessageBox::Critical, title, text, QMessageBox::NoButton);
+    auto *copyButton = dialog.addButton(QObject::tr("Copy Diagnostic"), QMessageBox::ActionRole);
+    auto *issueButton = dialog.addButton(QObject::tr("Open GitHub Issue"), QMessageBox::ActionRole);
+    dialog.addButton(QMessageBox::Abort);
+    dialog.exec();
+    if (dialog.clickedButton() == copyButton) {
+      diagnostic::copyToClipboard(report);
+    } else if (dialog.clickedButton() == issueButton) {
+      diagnostic::copyToClipboard(report);
+      diagnostic::openIssue(report);
+    }
     return;
   }
 
   text.prepend(QObject::tr("<p>Sorry, a critical error has occurred.</p>\n"));
-  if (!Errors::s_ignoredErrors.contains(message)) {
-    // prevent message boxes piling up by deleting the last one if it exists.
-    // if none exists yet, then nothing will happen.
-    Errors::s_criticalMessage.reset();
+  Errors::s_criticalMessage.reset();
+  Errors::s_criticalMessage = std::make_unique<QMessageBox>(QMessageBox::Critical, title, text, QMessageBox::NoButton);
+  auto *copyButton = Errors::s_criticalMessage->addButton(QObject::tr("Copy Diagnostic"), QMessageBox::ActionRole);
+  auto *issueButton = Errors::s_criticalMessage->addButton(QObject::tr("Open GitHub Issue"), QMessageBox::ActionRole);
+  Errors::s_criticalMessage->addButton(QMessageBox::Ok);
+  auto *ignoreButton = Errors::s_criticalMessage->addButton(QMessageBox::Ignore);
 
-    // as we don't abort for critical messages, create a new non-blocking
-    // message box. this is so that we don't block the message handler; if we
-    // did, we would prevent new messages from being logged properly.
-    // the memory will stay allocated until the app exits, which is acceptable.
-    Errors::s_criticalMessage =
-        std::make_unique<QMessageBox>(QMessageBox::Critical, title, text, QMessageBox::Ok | QMessageBox::Ignore);
-
-    QObject::connect(
-        Errors::s_criticalMessage.get(), &QMessageBox::finished, //
-        [message](int result) {
-          if (result == QMessageBox::Ignore) {
-            Errors::s_ignoredErrors.append(message);
-          }
-        }
-    );
-    Errors::s_criticalMessage->open();
-  }
+  QObject::connect(copyButton, &QPushButton::clicked, [report] { diagnostic::copyToClipboard(report); });
+  QObject::connect(issueButton, &QPushButton::clicked, [report] {
+    diagnostic::copyToClipboard(report);
+    diagnostic::openIssue(report);
+  });
+  QObject::connect(Errors::s_criticalMessage.get(), &QMessageBox::finished, [message, ignoreButton](int) {
+    if (Errors::s_criticalMessage && Errors::s_criticalMessage->clickedButton() == ignoreButton) {
+      Errors::s_ignoredErrors.append(message);
+    }
+  });
+  Errors::s_criticalMessage->open();
 }
 
 QString fileLine(const QMessageLogContext &context)
@@ -84,7 +149,9 @@ QString fileLine(const QMessageLogContext &context)
   if (!context.file) {
     return {};
   }
-  return QStringLiteral("%1:%2").arg(context.file, QString::number(context.line));
+  return QStringLiteral("%1:%2").arg(
+      QFileInfo(QString::fromUtf8(context.file)).fileName(), QString::number(context.line)
+  );
 }
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)

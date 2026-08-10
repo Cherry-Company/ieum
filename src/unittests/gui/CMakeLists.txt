@@ -53,3 +53,10 @@ create_test(
   SOURCE VersionCheckerTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
 )
+
+create_test(
+  NAME DiagnosticTests
+  DEPENDS gui
+  SOURCE DiagnosticTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)

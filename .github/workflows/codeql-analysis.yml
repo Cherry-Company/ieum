@@ -30,7 +30,11 @@ jobs:
   codeql:
     runs-on: ubuntu-latest
     container: debian:trixie-slim
-    timeout-minutes: 20
+    timeout-minutes: 45
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
     steps:
       - name: Install container dependencies

@@ -15,12 +15,14 @@
 #include "gui/Diagnostic.h"
 #include "gui/MainWindow.h"
 #include "gui/Messages.h"
+#include "gui/OSXHelpers.h"
 #include "gui/ProductIdentity.h"
 #include "gui/StartupManager.h"
 #include "gui/StyleUtils.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QEventLoop>
 #include <QLocalSocket>
 #include <QMessageBox>
 #include <QProcess>
@@ -87,6 +89,13 @@ bool resetMacAccessibility(QString &error)
   return true;
 }
 
+void waitForMacAccessibilityState(int milliseconds)
+{
+  QEventLoop loop;
+  QTimer::singleShot(milliseconds, &loop, &QEventLoop::quit);
+  loop.exec(QEventLoop::ExcludeUserInputEvents);
+}
+
 } // namespace
 #endif
 
@@ -125,6 +134,8 @@ int main(int argc, char *argv[])
   auto resetOption = QCommandLineOption("reset", "Reset all settings");
   auto showOption = QCommandLineOption("show", "Show the main window even when background startup is enabled");
   auto backgroundOption = QCommandLineOption("background", "Start in the background without opening the main window");
+  auto prepareUpdateOption =
+      QCommandLineOption("prepare-update", "Ask the running Ieum instance to exit before an update");
   auto unregisterStartupOption =
       QCommandLineOption("unregister-startup", "Remove the current user's automatic startup registration");
 
@@ -135,6 +146,7 @@ int main(int argc, char *argv[])
   parser.addOption(resetOption);
   parser.addOption(showOption);
   parser.addOption(backgroundOption);
+  parser.addOption(prepareUpdateOption);
   parser.addOption(unregisterStartupOption);
   parser.parse(QCoreApplication::arguments());
 
@@ -179,18 +191,38 @@ int main(int argc, char *argv[])
       return s_exitSuccess;
     }
 
-    // Ping the running instance to have it show itself
+    // Ask the running instance to show itself or exit cleanly for an update.
     QLocalSocket socket;
-    socket.connectToServer(shmId, QLocalSocket::ReadOnly);
-    if (!socket.waitForConnected()) {
+    socket.connectToServer(shmId, QLocalSocket::ReadWrite);
+    if (!socket.waitForConnected(2000)) {
+      if (parser.isSet(prepareUpdateOption)) {
+        return s_exitFailed;
+      }
       // If we can't connect to the other instance tell the user its running.
       // This should never happen but just incase we should show something
       QMessageBox::information(
           nullptr, productDisplayName(), QObject::tr("%1 is already running").arg(productDisplayName())
       );
+    } else {
+      const auto command =
+          parser.isSet(prepareUpdateOption) ? QByteArrayLiteral("prepare-update\n") : QByteArrayLiteral("show\n");
+      socket.write(command);
+      if (!socket.waitForBytesWritten(2000)) {
+        return parser.isSet(prepareUpdateOption) ? s_exitFailed : s_exitDuplicate;
+      }
+      if (parser.isSet(prepareUpdateOption)) {
+        if (!socket.waitForReadyRead(3000) || socket.readAll().trimmed() != QByteArrayLiteral("ok")) {
+          return s_exitFailed;
+        }
+      }
     }
     socket.disconnectFromServer();
-    return s_exitDuplicate;
+    return parser.isSet(prepareUpdateOption) ? s_exitSuccess : s_exitDuplicate;
+  }
+
+  // An installer may probe for a running instance when none exists.
+  if (parser.isSet(prepareUpdateOption)) {
+    return s_exitSuccess;
   }
 
   if (!deskflow::platform::isMac() && qEnvironmentVariable("XDG_CURRENT_DESKTOP") != QLatin1String("KDE")) {
@@ -219,6 +251,9 @@ int main(int argc, char *argv[])
   }
 #endif
 
+  const auto previousSession = diagnostic::beginSession();
+  QObject::connect(&app, &QCoreApplication::aboutToQuit, &app, [] { diagnostic::completeSession(); });
+
   // --no-reset
   if (parser.isSet(resetOption)) {
     diagnostic::clearSettings(false);
@@ -233,6 +268,12 @@ int main(int argc, char *argv[])
 
   MainWindow mainWindow;
   mainWindow.open(parser.isSet(showOption), parser.isSet(backgroundOption));
+
+  if (previousSession.unexpectedExit) {
+    QTimer::singleShot(0, &mainWindow, [&mainWindow, previousSession] {
+      messages::showUnexpectedExit(&mainWindow, previousSession);
+    });
+  }
 
 #if defined(Q_OS_MACOS)
   if (!parser.isSet(backgroundOption) && StartupManager::requiresApproval()) {
@@ -289,8 +330,14 @@ bool checkMacAssistiveDevices()
     QMessageBox dialog(QMessageBox::Warning, productDisplayName(), message, QMessageBox::NoButton);
     auto *checkButton =
         dialog.addButton(QCoreApplication::translate("MacAccessibility", "Check Again"), QMessageBox::AcceptRole);
+    auto *openSettingsButton = dialog.addButton(
+        QCoreApplication::translate("MacAccessibility", "Open Accessibility Settings"), QMessageBox::ActionRole
+    );
     auto *resetButton = dialog.addButton(
         QCoreApplication::translate("MacAccessibility", "Reset Previous Approval"), QMessageBox::ActionRole
+    );
+    auto *revealButton = dialog.addButton(
+        QCoreApplication::translate("MacAccessibility", "Show Ieum in Applications"), QMessageBox::HelpRole
     );
     auto *cancelButton = dialog.addButton(QMessageBox::Cancel);
     dialog.setDefaultButton(checkButton);
@@ -299,6 +346,14 @@ bool checkMacAssistiveDevices()
 
     if (dialog.clickedButton() == cancelButton || dialog.clickedButton() == nullptr) {
       return false;
+    }
+    if (dialog.clickedButton() == openSettingsButton) {
+      macOSOpenAccessibilitySettings();
+      continue;
+    }
+    if (dialog.clickedButton() == revealButton) {
+      macOSRevealCurrentApplication();
+      continue;
     }
     if (dialog.clickedButton() != resetButton) {
       continue;
@@ -315,6 +370,11 @@ bool checkMacAssistiveDevices()
       continue;
     }
 
+    // System Settings caches the TCC list. Open the exact pane first so the
+    // removal and the following registration are reflected in one place.
+    macOSOpenAccessibilitySettings();
+    waitForMacAccessibilityState(600);
+
     QString error;
     if (!resetMacAccessibility(error)) {
       QMessageBox::critical(
@@ -325,7 +385,10 @@ bool checkMacAssistiveDevices()
       continue;
     }
 
+    waitForMacAccessibilityState(800);
     requestMacAccessibility();
+    waitForMacAccessibilityState(300);
+    macOSOpenAccessibilitySettings();
   }
 
   return true;
