@@ -89,6 +89,8 @@ protected:
   bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
+  void handleDuplicateInstanceConnection();
+
   /**
    * @brief updateText Update all text not in the UI
    */
@@ -106,9 +108,9 @@ private:
 
   void clearSettings();
   void openAboutDialog();
-  void openHelpUrl() const;
+  void reportBug();
   void openSponsorUrl() const;
-  void openGetNewVersionUrl() const;
+  void openGetNewVersionUrl();
   void openSettings();
   void startCore();
   void autoStartCore();
@@ -191,6 +193,7 @@ private:
   inline static const auto m_nameRegEx = QRegularExpression(QStringLiteral("^[\\w\\-_\\.]{0,255}$"));
 
   VersionChecker m_versionChecker;
+  QString m_availableVersion;
   bool m_secureSocket = false;
   bool m_saveOnExit = true;
   bool m_clientErrorVisible = false;

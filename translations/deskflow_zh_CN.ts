@@ -401,8 +401,16 @@ If an older enabled Ieum entry remains but this version is still not trusted, ch
         <translation>再次检查</translation>
     </message>
     <message>
+        <source>Open Accessibility Settings</source>
+        <translation>打开“辅助功能”设置</translation>
+    </message>
+    <message>
         <source>Reset Previous Approval</source>
         <translation>重置旧授权</translation>
+    </message>
+    <message>
+        <source>Show Ieum in Applications</source>
+        <translation>在“应用程序”中显示 Ieum</translation>
     </message>
     <message>
         <source>Reset Ieum&apos;s previous Accessibility approval?
@@ -542,6 +550,42 @@ macOS 只会删除 Ieum 的“辅助功能”记录，不会更改其他应用�
 A bound IP is now invalid, you may need to restart the server.</source>
         <translation type="unfinished">
 绑定的IP地址现在无效，您可能需要重启服务器。</translation>
+    </message>
+    <message>
+        <source>The local report file could not be saved.</source>
+        <translation>无法保存本地报告文件。</translation>
+    </message>
+    <message>
+        <source>Diagnostic Ready</source>
+        <translation>诊断报告已就绪</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;A privacy-filtered diagnostic passport was copied to the clipboard and a prefilled GitHub issue was opened.&lt;/p&gt;&lt;p&gt;Nothing was uploaded automatically. GitHub requires an account to submit the issue; without one, you can share the copied report through another channel.&lt;/p&gt;&lt;p&gt;Local copy: &lt;code&gt;%1&lt;/code&gt;&lt;/p&gt;</source>
+        <translation>&lt;p&gt;已将经过隐私过滤的诊断护照复制到剪贴板，并打开已预填内容的 GitHub 问题。&lt;/p&gt;&lt;p&gt;没有自动上传任何内容。提交 GitHub 问题需要帐号；如果没有帐号，可以通过其他渠道分享已复制的报告。&lt;/p&gt;&lt;p&gt;本地副本：&lt;code&gt;%1&lt;/code&gt;&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>Ieum Update %1</source>
+        <translation>Ieum 更新 %1</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Ieum %1 is available for this Windows PC.&lt;/p&gt;&lt;p&gt;The installer now asks a running Ieum window to exit, stops the service core, replaces the package, and starts the service again. Keyboard and mouse sharing pauses briefly during that handoff; you do not need to close Ieum manually.&lt;/p&gt;&lt;p&gt;Silent installation remains disabled until production package signing and rollback verification are configured.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;此 Windows PC 可用 Ieum %1。&lt;/p&gt;&lt;p&gt;安装程序会请求正在运行的 Ieum 窗口正常退出，停止服务核心，替换软件包，然后重新启动服务。键盘和鼠标共享会在交接期间短暂暂停；您无需手动关闭 Ieum。&lt;/p&gt;&lt;p&gt;在正式软件包签名和回滚验证完成配置前，静默安装仍会保持禁用。&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Ieum %1 is available for this Mac.&lt;/p&gt;&lt;p&gt;Download the disk image and replace Ieum in Applications. Do not reset Accessibility approval unless Check Again still says this build is not trusted.&lt;/p&gt;&lt;p&gt;Fully automatic replacement is disabled while alpha packages use a temporary code identity. Stable Developer ID signing and notarization are required for reliable permission inheritance.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;此 Mac 可用 Ieum %1。&lt;/p&gt;&lt;p&gt;下载磁盘映像，并替换“应用程序”中的 Ieum。只有在点击“再次检查”后仍提示此构建不受信任时，才应重置“辅助功能”授权。&lt;/p&gt;&lt;p&gt;在 Alpha 软件包使用临时代码身份期间，完全自动替换会保持禁用。要可靠继承权限，必须配置稳定的 Developer ID 签名与 Apple 公证。&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Ieum %1 is available. Open the release to choose your Linux package.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Ieum %1 已发布。打开发布页以选择 Linux 软件包。&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>Download Installer</source>
+        <translation>下载安装程序</translation>
+    </message>
+    <message>
+        <source>View Release Notes</source>
+        <translation>查看发布说明</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -879,9 +923,41 @@ Client</source>
         <source>&lt;p&gt;Please &lt;a href=&quot;%1&quot;&gt;report a bug&lt;/a&gt; and copy/paste the following error:&lt;/p&gt;&lt;pre&gt;v%2
 %3
 %4&lt;/pre&gt;</source>
-        <translation>&lt;p&gt;请 &lt;a href=&quot;%1&quot;&gt;报告 Bug&lt;/a&gt; 并复制/粘贴以下错误：&lt;/p&gt;&lt;pre&gt;v%2
+        <translation type="vanished">&lt;p&gt;请 &lt;a href=&quot;%1&quot;&gt;报告 Bug&lt;/a&gt; 并复制/粘贴以下错误：&lt;/p&gt;&lt;pre&gt;v%2
 %3
 %4&lt;/pre&gt;</translation>
+    </message>
+    <message>
+        <source>unknown</source>
+        <translation>未知</translation>
+    </message>
+    <message>
+        <source>Ieum Previous Session Ended Unexpectedly</source>
+        <translation>Ieum 上一个会话异常结束</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;The previous Ieum session did not close normally. It may have crashed, lost power, or been ended from Task Manager/Force Quit.&lt;/p&gt;&lt;p&gt;A privacy-filtered report was saved locally. Nothing was uploaded automatically.&lt;/p&gt;&lt;p&gt;Report ID: &lt;code&gt;%1&lt;/code&gt;&lt;br&gt;Local copy: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Ieum 上一个会话未正常关闭。原因可能是崩溃、断电，或在任务管理器/强制退出中被结束。&lt;/p&gt;&lt;p&gt;经过隐私过滤的报告已保存在本地。没有自动上传任何内容。&lt;/p&gt;&lt;p&gt;报告 ID：&lt;code&gt;%1&lt;/code&gt;&lt;br&gt;本地副本：&lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>could not save the local file</source>
+        <translation>无法保存本地文件</translation>
+    </message>
+    <message>
+        <source>Copy Diagnostic</source>
+        <translation>复制诊断报告</translation>
+    </message>
+    <message>
+        <source>Open GitHub Issue</source>
+        <translation>打开 GitHub 问题</translation>
+    </message>
+    <message>
+        <source>Open macOS Crash Reports</source>
+        <translation>打开 macOS 崩溃报告</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Ieum created a privacy-filtered diagnostic passport for this error.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nothing was uploaded automatically.&lt;/b&gt; You can copy it or open a prefilled GitHub issue. Submitting on GitHub requires an account.&lt;/p&gt;&lt;p&gt;Report ID: &lt;code&gt;%1&lt;/code&gt;&lt;br&gt;Saved locally: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</source>
+        <translation>&lt;p&gt;Ieum 已为此错误创建经过隐私过滤的诊断护照。&lt;/p&gt;&lt;p&gt;&lt;b&gt;没有自动上传任何内容。&lt;/b&gt;您可以复制报告，或打开已预填内容的 GitHub 问题。在 GitHub 上提交需要帐号。&lt;/p&gt;&lt;p&gt;报告 ID：&lt;code&gt;%1&lt;/code&gt;&lt;br&gt;本地保存位置：&lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;On Linux systems using GNOME 3, the notification area might be disabled. You may need to &lt;a href=&quot;%1&quot;&gt;enable an extension&lt;/a&gt; to see the %2 tray icon.&lt;/p&gt;</source>

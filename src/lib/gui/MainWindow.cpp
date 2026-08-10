@@ -38,6 +38,7 @@
 #include <QCloseEvent>
 #include <QComboBox>
 #include <QDesktopServices>
+#include <QDir>
 #include <QFileDialog>
 #include <QLocalServer>
 #include <QLocalSocket>
@@ -300,7 +301,7 @@ void MainWindow::connectSlots()
 
   connect(m_actionAbout, &QAction::triggered, this, &MainWindow::openAboutDialog);
   connect(m_actionClearSettings, &QAction::triggered, this, &MainWindow::clearSettings);
-  connect(m_actionReportBug, &QAction::triggered, this, &MainWindow::openHelpUrl);
+  connect(m_actionReportBug, &QAction::triggered, this, &MainWindow::reportBug);
   connect(m_actionSponsor, &QAction::triggered, this, &MainWindow::openSponsorUrl);
   connect(m_actionMinimize, &QAction::triggered, this, &MainWindow::hide);
 
@@ -345,9 +346,12 @@ void MainWindow::connectSlots()
 
   connect(m_statusBar, &StatusBar::requestShowMyFingerprints, this, &MainWindow::showMyFingerprint);
   connect(m_statusBar, &StatusBar::requestUpdateVersion, this, &MainWindow::openGetNewVersionUrl);
-  connect(&m_versionChecker, &VersionChecker::updateFound, m_statusBar, &StatusBar::updateFound);
+  connect(&m_versionChecker, &VersionChecker::updateFound, this, [this](const QString &version) {
+    m_availableVersion = version;
+    m_statusBar->updateFound(version);
+  });
 
-  connect(m_guiDupeChecker, &QLocalServer::newConnection, this, &MainWindow::showAndActivate);
+  connect(m_guiDupeChecker, &QLocalServer::newConnection, this, &MainWindow::handleDuplicateInstanceConnection);
 
   connect(ui->btnEditName, &QPushButton::clicked, this, &MainWindow::showHostNameEditor);
 
@@ -605,6 +609,52 @@ void MainWindow::quitApplication()
   close();
 }
 
+void MainWindow::handleDuplicateInstanceConnection()
+{
+  while (m_guiDupeChecker->hasPendingConnections()) {
+    auto *socket = m_guiDupeChecker->nextPendingConnection();
+    socket->setParent(this);
+
+    const auto handleCommand = [this, socket] {
+      if (socket->property("ieumCommandHandled").toBool()) {
+        return;
+      }
+
+      const auto command = socket->readAll().trimmed();
+      if (command.isEmpty() && socket->state() == QLocalSocket::ConnectedState) {
+        return;
+      }
+      socket->setProperty("ieumCommandHandled", true);
+
+      if (command == QByteArrayLiteral("prepare-update")) {
+        socket->write(QByteArrayLiteral("ok\n"));
+        socket->flush();
+        socket->waitForBytesWritten(1000);
+        socket->disconnectFromServer();
+        QTimer::singleShot(0, this, &MainWindow::quitApplication);
+      } else {
+        showAndActivate();
+        socket->disconnectFromServer();
+      }
+      socket->deleteLater();
+    };
+
+    connect(socket, &QLocalSocket::readyRead, this, handleCommand);
+    connect(socket, &QLocalSocket::disconnected, this, handleCommand);
+    QTimer::singleShot(250, socket, [this, socket, handleCommand] {
+      if (!socket->property("ieumCommandHandled").toBool()) {
+        if (socket->bytesAvailable() == 0) {
+          socket->setProperty("ieumCommandHandled", true);
+          showAndActivate();
+          socket->deleteLater();
+          return;
+        }
+        handleCommand();
+      }
+    });
+  }
+}
+
 void MainWindow::clearSettings()
 {
   if (!messages::showClearSettings(this)) {
@@ -645,9 +695,21 @@ void MainWindow::openAboutDialog()
   about.exec();
 }
 
-void MainWindow::openHelpUrl() const
+void MainWindow::reportBug()
 {
-  QDesktopServices::openUrl(QUrl(kUrlHelp));
+  const auto report = diagnostic::createReport(diagnostic::ReportKind::UserInitiated);
+  diagnostic::copyToClipboard(report);
+  diagnostic::openIssue(report);
+
+  const auto savedPath = report.saved ? QDir::toNativeSeparators(report.filePath).toHtmlEscaped()
+                                      : tr("The local report file could not be saved.");
+  QMessageBox::information(
+      this, tr("Diagnostic Ready"),
+      tr("<p>A privacy-filtered diagnostic passport was copied to the clipboard and a prefilled GitHub issue was "
+         "opened.</p><p>Nothing was uploaded automatically. GitHub requires an account to submit the issue; without "
+         "one, you can share the copied report through another channel.</p><p>Local copy: <code>%1</code></p>")
+          .arg(savedPath)
+  );
 }
 
 void MainWindow::openSponsorUrl() const
@@ -655,9 +717,58 @@ void MainWindow::openSponsorUrl() const
   QDesktopServices::openUrl(QUrl(kUrlSponsor));
 }
 
-void MainWindow::openGetNewVersionUrl() const
+void MainWindow::openGetNewVersionUrl()
 {
-  QDesktopServices::openUrl(QUrl(kUrlDownload));
+  if (m_availableVersion.isEmpty()) {
+    QDesktopServices::openUrl(QUrl(kUrlDownload));
+    return;
+  }
+
+  const auto packageUrl = VersionChecker::packageDownloadUrl(m_availableVersion);
+  const auto releaseUrl = VersionChecker::releasePageUrl(m_availableVersion);
+  QMessageBox dialog(this);
+  dialog.setIcon(QMessageBox::Information);
+  dialog.setWindowTitle(tr("Ieum Update %1").arg(m_availableVersion));
+
+#if defined(Q_OS_WIN)
+  dialog.setText(
+      tr("<p>Ieum %1 is available for this Windows PC.</p>"
+         "<p>The installer now asks a running Ieum window to exit, stops the service core, replaces the package, "
+         "and starts the service again. Keyboard and mouse sharing pauses briefly during that handoff; you do not "
+         "need to close Ieum manually.</p>"
+         "<p>Silent installation remains disabled until production package signing and rollback verification are "
+         "configured.</p>")
+          .arg(m_availableVersion)
+  );
+#elif defined(Q_OS_MACOS)
+  dialog.setText(
+      tr("<p>Ieum %1 is available for this Mac.</p>"
+         "<p>Download the disk image and replace Ieum in Applications. Do not reset Accessibility approval unless "
+         "Check Again still says this build is not trusted.</p>"
+         "<p>Fully automatic replacement is disabled while alpha packages use a temporary code identity. Stable "
+         "Developer ID signing and notarization are required for reliable permission inheritance.</p>")
+          .arg(m_availableVersion)
+  );
+#else
+  dialog.setText(
+      tr("<p>Ieum %1 is available. Open the release to choose your Linux package.</p>").arg(m_availableVersion)
+  );
+#endif
+
+  QPushButton *downloadButton = nullptr;
+  if (packageUrl.isValid() && !packageUrl.isEmpty()) {
+    downloadButton = dialog.addButton(tr("Download Installer"), QMessageBox::AcceptRole);
+    dialog.setDefaultButton(downloadButton);
+  }
+  auto *releaseButton = dialog.addButton(tr("View Release Notes"), QMessageBox::ActionRole);
+  dialog.addButton(QMessageBox::Cancel);
+  dialog.exec();
+
+  if (dialog.clickedButton() == downloadButton) {
+    QDesktopServices::openUrl(packageUrl);
+  } else if (dialog.clickedButton() == releaseButton) {
+    QDesktopServices::openUrl(releaseUrl);
+  }
 }
 
 void MainWindow::openSettings()
@@ -851,8 +962,9 @@ void MainWindow::open(bool forceShow, bool forceBackground)
     Settings::setValue(Settings::Gui::AutoUpdateCheck, messages::showUpdateCheckOption(this));
   }
 
-  if (!forceBackground && Settings::value(Settings::Gui::AutoUpdateCheck).toBool()) {
-    m_versionChecker.checkLatest();
+  if (Settings::value(Settings::Gui::AutoUpdateCheck).toBool()) {
+    const auto delay = forceBackground ? 15000 : 0;
+    QTimer::singleShot(delay, &m_versionChecker, [this] { m_versionChecker.checkLatest(); });
   } else {
     qDebug() << "skipping check for new version, disabled";
   }

@@ -16,6 +16,8 @@ private Q_SLOTS:
   void cursorTransform_mapsBetweenDifferentResolutions();
   void cursorTransform_roundTripsMixedOrigins();
   void cursorTransform_mapsPhysicalEdgeDisplays();
+  void cursorTransform_mapsStackedEdgeDisplaysContinuously();
+  void cursorTransform_collapsesPhysicalEdgeGaps();
   void cursorTransform_preservesSubpixelMotion();
   void fullscreenGeometry_distinguishesFullscreenFromMaximized();
   void fullscreenGeometry_detectsPointerCapture();

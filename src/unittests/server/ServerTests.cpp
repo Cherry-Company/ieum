@@ -81,6 +81,81 @@ void ServerTests::cursorTransform_mapsPhysicalEdgeDisplays()
                .has_value());
 }
 
+void ServerTests::cursorTransform_mapsStackedEdgeDisplaysContinuously()
+{
+  using deskflow::DisplayGeometry;
+  using deskflow::DisplayLayout;
+  using deskflow::server::cursor::mapAcrossDisplayEdges;
+
+  const DisplayGeometry sourceDesktop{-2560, -720, 5120, 2160};
+  const DisplayLayout sourceDisplays{{-2560, 0, 2560, 1440}, {0, -720, 2560, 2160}};
+  const DisplayGeometry destinationDesktop{0, -1200, 1920, 2400};
+  const DisplayLayout destinationDisplays{{0, -1200, 1920, 1200}, {0, 0, 1920, 1200}};
+
+  QCOMPARE(
+      *mapAcrossDisplayEdges(
+          sourceDisplays, sourceDesktop, destinationDisplays, destinationDesktop, Direction::Right, -720, -1200
+      ),
+      -1200
+  );
+  QCOMPARE(
+      *mapAcrossDisplayEdges(
+          sourceDisplays, sourceDesktop, destinationDisplays, destinationDesktop, Direction::Right, 359, -1
+      ),
+      -1
+  );
+  QCOMPARE(
+      *mapAcrossDisplayEdges(
+          sourceDisplays, sourceDesktop, destinationDisplays, destinationDesktop, Direction::Right, 360, 0
+      ),
+      0
+  );
+  QCOMPARE(
+      *mapAcrossDisplayEdges(
+          sourceDisplays, sourceDesktop, destinationDisplays, destinationDesktop, Direction::Right, 1439, 1199
+      ),
+      1199
+  );
+
+  int previous = std::numeric_limits<int>::min();
+  for (int y = -720; y < 1440; ++y) {
+    const auto mapped = mapAcrossDisplayEdges(
+        sourceDisplays, sourceDesktop, destinationDisplays, destinationDesktop, Direction::Right, y, 0
+    );
+    QVERIFY(mapped.has_value());
+    QVERIFY(*mapped >= previous);
+    previous = *mapped;
+  }
+}
+
+void ServerTests::cursorTransform_collapsesPhysicalEdgeGaps()
+{
+  using deskflow::DisplayGeometry;
+  using deskflow::DisplayLayout;
+  using deskflow::server::cursor::mapAcrossDisplayEdges;
+
+  const DisplayGeometry sourceDesktop{0, -1200, 3840, 3000};
+  const DisplayLayout sourceDisplays{{1920, -1200, 1920, 1000}, {1920, 200, 1920, 1600}, {0, 0, 1920, 1080}};
+  const DisplayGeometry destinationDesktop{-1920, 0, 1920, 2000};
+  const DisplayLayout destinationDisplays{destinationDesktop};
+
+  const auto beforeGap = mapAcrossDisplayEdges(
+      sourceDisplays, sourceDesktop, destinationDisplays, destinationDesktop, Direction::Right, -201, 0
+  );
+  const auto afterGap = mapAcrossDisplayEdges(
+      sourceDisplays, sourceDesktop, destinationDisplays, destinationDesktop, Direction::Right, 200, 0
+  );
+  QVERIFY(beforeGap.has_value());
+  QVERIFY(afterGap.has_value());
+  QVERIFY(*afterGap - *beforeGap <= 1);
+
+  const auto inGap = mapAcrossDisplayEdges(
+      sourceDisplays, sourceDesktop, destinationDisplays, destinationDesktop, Direction::Right, 0, 0
+  );
+  QVERIFY(inGap.has_value());
+  QVERIFY(std::abs(*inGap - *beforeGap) <= 1 || std::abs(*inGap - *afterGap) <= 1);
+}
+
 void ServerTests::cursorTransform_preservesSubpixelMotion()
 {
   using namespace deskflow::server::cursor;

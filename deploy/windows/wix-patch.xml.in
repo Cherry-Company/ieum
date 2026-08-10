@@ -92,11 +92,18 @@
 
     <CustomAction
       Id="RunIeum"
-      ExeCommand="[INSTALL_ROOT]ieum.exe --show"
+      ExeCommand="&quot;[INSTALL_ROOT]ieum.exe&quot; --show"
       Directory="INSTALL_ROOT"
       Execute="immediate"
       Impersonate="yes"
       Return="asyncNoWait" />
+    <CustomAction
+      Id="PrepareIeumUpdate"
+      ExeCommand="&quot;[INSTALL_ROOT]ieum.exe&quot; --prepare-update"
+      Directory="INSTALL_ROOT"
+      Execute="immediate"
+      Impersonate="yes"
+      Return="ignore" />
     <CustomAction
       Id="RemoveIeumStartup"
       ExeCommand="&quot;[INSTALL_ROOT]ieum.exe&quot; --unregister-startup"
@@ -112,6 +119,10 @@
       -->
       <StartServices Sequence="6551" />
       <InstallExecuteAgain Sequence="6552" Condition="NOT REMOVE~=&quot;ALL&quot;" />
+      <Custom
+        Action="PrepareIeumUpdate"
+        Before="InstallInitialize"
+        Condition="(WIX_UPGRADE_DETECTED OR IEUM_LEGACY_UPGRADE_DETECTED) AND NOT REMOVE~=&quot;ALL&quot;" />
       <Custom
         Action="CheckVCRedist"
         Before="InstallInitialize"

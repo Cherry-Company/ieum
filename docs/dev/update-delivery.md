@@ -50,5 +50,16 @@ cannot be promised and must not be replayed blindly.
 - A successful update restores login startup, reconnects the core, and exposes the installed version in both
   GUI and diagnostics.
 
-Until these prerequisites are met, Ieum only notifies the user and opens the published release. This is a
-deliberate security boundary rather than a missing silent-update switch.
+## Current alpha behavior
+
+Until these prerequisites are met, Ieum deliberately stops before silent installation:
+
+- Update checks also run after a delayed background/login start when the user enabled update checks.
+- The update action selects the matching Windows or macOS architecture and opens its published installer directly.
+- A Windows MSI asks the running GUI to exit cleanly, stops the service-owned core, performs the major upgrade, and
+  starts the service again. The user no longer has to find and close those processes first.
+- macOS opens the disk image for a user-approved replacement. The app does not claim that an ad-hoc alpha identity
+  can preserve TCC permissions across every replacement.
+
+This is a deliberate security boundary rather than a missing silent-update switch. Downloading in the background
+would be safe once signed metadata exists; executing an unsigned package automatically would not be.

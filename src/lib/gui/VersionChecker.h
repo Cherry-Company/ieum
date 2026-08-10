@@ -8,6 +8,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QUrl>
 
 class QNetworkAccessManager;
 class QNetworkReply;
@@ -18,6 +19,8 @@ class VersionChecker : public QObject
 public:
   explicit VersionChecker(QObject *parent = nullptr);
   void checkLatest() const;
+  static QUrl releasePageUrl(const QString &version);
+  static QUrl packageDownloadUrl(const QString &version);
 public Q_SLOTS:
   void replyFinished(QNetworkReply *reply);
 Q_SIGNALS:
@@ -26,6 +29,8 @@ Q_SIGNALS:
 private:
   friend class VersionCheckerTests;
   static int compareVersions(const QString &left, const QString &right);
+  static QString
+  packageFileName(const QString &version, const QString &platform, const QString &architecture, bool korean);
 
   /**
    * \brief Converts a string stage to a integer value

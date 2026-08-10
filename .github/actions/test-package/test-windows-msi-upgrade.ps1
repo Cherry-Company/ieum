@@ -624,6 +624,8 @@ $currentProductVersion = [version] (Get-MsiProperty -Msi $currentMsi -Property '
 $previousUpgradeCode = Get-MsiProperty -Msi $previousMsi -Property 'UpgradeCode'
 $currentUpgradeCode = Get-MsiProperty -Msi $currentMsi -Property 'UpgradeCode'
 $upgradeCodes = @($previousUpgradeCode, $currentUpgradeCode) | Sort-Object -Unique
+$livePreviousGui = $null
+$livePreviousCore = $null
 
 if ($currentProductCode -eq $previousProductCode) {
   throw 'The release reused the previous MSI ProductCode'
@@ -656,11 +658,50 @@ try {
   }
   Write-Host "  Previous ProductCode=$previousProductCode"
 
+  $previousProduct = Get-InstalledProductInfo -ProductCode $previousProductCode
+  $previousGuiPath = Join-Path $previousProduct.InstallLocation 'ieum.exe'
+  if (-not (Test-Path -LiteralPath $previousGuiPath)) {
+    throw "Previous Ieum GUI was not found: $previousGuiPath"
+  }
+
+  Write-Host 'Starting the previous GUI and service core before the live upgrade'
+  $livePreviousGui = Start-Process -FilePath $previousGuiPath -ArgumentList '--background' -PassThru
+  Start-Sleep -Milliseconds 1000
+  $livePreviousGui.Refresh()
+  if ($livePreviousGui.HasExited) {
+    throw "Previous Ieum GUI exited before the upgrade with code $($livePreviousGui.ExitCode)"
+  }
+
+  Wait-ServiceRunning -Name 'Ieum'
+  Wait-NamedPipe -Name 'ieum-daemon-v1'
+  $liveUpgradeSettings = Join-Path $workDirectory 'ieum-live-upgrade.conf'
+  New-ClientSettings -Path $liveUpgradeSettings -ComputerName 'ieum-live-upgrade-ci'
+  $ipcSettingsPath = $liveUpgradeSettings.Replace('\', '/')
+  Invoke-IpcCommands -Name 'ieum-daemon-v1' -Messages @(
+    "configFile=$ipcSettingsPath",
+    'start'
+  )
+  $livePreviousCore = Wait-ProcessName -Name 'ieum-core'
+
   Write-Host "Upgrading with $($currentMsi.Name)"
   Invoke-MsiExec `
     -Operation '/i' `
     -Target $currentMsi.FullName `
     -Log (Join-Path $workDirectory 'current-install.log')
+
+  foreach ($oldProcess in @($livePreviousGui, $livePreviousCore)) {
+    $oldProcess.Refresh()
+    if (-not $oldProcess.HasExited) {
+      throw "Live upgrade left old process PID $($oldProcess.Id) running"
+    }
+  }
+  $livePreviousGui.Dispose()
+  $livePreviousGui = $null
+  $livePreviousCore.Dispose()
+  $livePreviousCore = $null
+  Wait-ServiceRunning -Name 'Ieum'
+  Wait-NamedPipe -Name 'ieum-daemon-v1'
+  Wait-ProcessName -Name 'ieum-core' | ForEach-Object { $_.Dispose() }
 
   $previousState = Get-ProductState -ProductCode $previousProductCode
   $currentState = Get-ProductState -ProductCode $currentProductCode
@@ -717,6 +758,16 @@ catch {
   throw
 }
 finally {
+  foreach ($oldProcess in @($livePreviousGui, $livePreviousCore)) {
+    if ($null -ne $oldProcess) {
+      $oldProcess.Refresh()
+      if (-not $oldProcess.HasExited) {
+        $oldProcess.Kill($true)
+        [void] $oldProcess.WaitForExit(5000)
+      }
+      $oldProcess.Dispose()
+    }
+  }
   foreach ($productCode in @($currentProductCode, $previousProductCode)) {
     if ((Get-ProductState -ProductCode $productCode) -ne -1) {
       Write-Host "Removing test product $productCode"
