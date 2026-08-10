@@ -9,7 +9,7 @@
 
 <p align="center"><strong>한글과 CJK 입력기를 키 매핑이 아닌 입력 상태로 다루는 IME 네이티브 소프트 KVM</strong></p>
 
-<p align="center">개발자 및 기여자 <strong>Heesang Kim (PhD)</strong> · 개발사 <strong>Cherry Inc.</strong></p>
+<p align="center"><strong>Cherry Inc.</strong>가 개발하고 유지관리합니다.</p>
 
 <p align="center">
   한국어 · <a href="README.en.md">English</a> · <a href="README.zh-CN.md">简体中文</a>
@@ -76,8 +76,8 @@ ARM64·Apple Silicon 실기 회귀 테스트와 안정적인 릴리스 유지**�
   장시간 이동은 패키지 설치 후 계속 확인할 실기 수용 항목이며, 확인 전에는 해결 완료로 표시하지
   않습니다.
 - 공개 저장소의 Apple Silicon CI와 DMG 패키징은 임시 GitHub-hosted `macos-15-arm64` 환경에서
-  수행합니다. 실제 MacBook Pro는 릴리스 패키징의 필수 러너가 아니라 별도의 실기 수용 테스트
-  장비이며, 그 시험 결과와 호스티드 빌드 결과를 구분해 표시합니다.
+  수행합니다. 실기 수용 테스트는 릴리스 패키징과 분리하며, 그 결과도 호스티드 빌드 검증과
+  구분해 표시합니다.
 
 ### alpha.17 입력 전환·재연결·화면 경계 안정성 변경
 
@@ -96,8 +96,8 @@ ARM64·Apple Silicon 실기 회귀 테스트와 안정적인 릴리스 유지**�
   네트워크·메뉴 막대 감시는 저정밀 타이머를 사용해 유휴 상태 UI 작업을 줄였습니다.
 - 입력기·CJK·원시 키·화면 진입·Mac 키 지연 설정은 **환경설정 → 입력**에 모았습니다. 서비스와
   명령 자동화는 **시스템**, 포인터와 클립보드 공유는 **포인터 및 공유**로 정리했습니다.
-- `alpha.17` Apple Silicon 패키지는 당시 실제 MacBook Pro에서 ARM64로 빌드하고
-  테스트·DMG 마운트·서명 구조 검증을 통과했습니다. 다만 Developer ID 서명과 Apple 공증은 아직
+- `alpha.17` Apple Silicon 패키지는 ARM64로 네이티브 빌드하고 테스트·DMG 마운트·서명 구조
+  검증을 통과했습니다. 다만 Developer ID 서명과 Apple 공증은 아직
   없으므로 프리릴리스의 macOS 설치에는 Gatekeeper 수동 승인이 필요할 수 있습니다.
 
 ### alpha.16 입력·창·업데이트 안정성 변경
