@@ -114,7 +114,7 @@ runs:
         cache: true
         cache-key-prefix: ${{runner.os}}-${{runner.arch}}-${{inputs.qt-version}}
         # setup-python expects a GitHub-hosted tool-cache layout. Self-hosted
-        # Apple runners already provide Python and must not write /Users/runner.
+        # Apple runners already provide Python.
         setup-python: ${{ runner.environment != 'self-hosted' }}
 
     - name: Build and cache vcpkg

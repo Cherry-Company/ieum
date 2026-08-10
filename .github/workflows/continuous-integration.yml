@@ -123,7 +123,7 @@ jobs:
 
           - name: "macos-arm64"
             # Public-repository packaging uses an ephemeral hosted Apple Silicon runner.
-            # The physical MacBook Pro remains a separate acceptance-test lane.
+            # Hardware acceptance testing remains separate from release packaging.
             runs-on: macos-15
             timeout: 60
             qt-version: 6.11.1

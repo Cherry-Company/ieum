@@ -16,11 +16,10 @@ Release: v0.1.0-alpha.18
 ## 빌드 및 실기 검증 범위 / Build and physical validation scope
 
 - 공개 저장소의 Apple Silicon 패키지는 임시 GitHub-hosted `macos-15-arm64` 환경에서 네이티브로
-  빌드하고 Intel DMG는 `macos-15-intel`에서 빌드합니다. 실제 MacBook Pro는 릴리스 패키징의 필수
-  경로가 아니라 별도의 실기 수용 테스트 장비입니다. / Apple Silicon packages for this public
-  repository are built natively on the ephemeral GitHub-hosted `macos-15-arm64` environment, while Intel DMGs
-  use `macos-15-intel`. The physical MacBook Pro is a separate acceptance-test device rather than a required
-  release-packaging lane.
+  빌드하고 Intel DMG는 `macos-15-intel`에서 빌드합니다. 실기 수용 테스트는 릴리스 패키징 경로와
+  분리합니다. / Apple Silicon packages for this public repository are built natively on the ephemeral
+  GitHub-hosted `macos-15-arm64` environment, while Intel DMGs use `macos-15-intel`. Hardware acceptance
+  testing remains separate from the release-packaging lane.
 - 릴리스 CI는 ARM64 컴파일과 CTest, DMG 생성·마운트, `codesign --verify --deep --strict`, ARM64 Mach-O
   확인과 아티팩트 업로드를 모두 통과한 경우에만 태그 자산을 게시합니다. Windows x64/ARM64도 빌드,
   MSI 구조, 교체 설치와 서비스 공존 검사를 통과해야 합니다. / Release CI publishes tagged assets only

@@ -88,7 +88,7 @@ project(
 
 # Define Additional "PROJECT" vars for packaging and metadata
 set(CMAKE_PROJECT_PROPER_NAME "Ieum")
-set(CMAKE_PROJECT_AUTHOR "Heesang Kim (PhD)")
+set(CMAKE_PROJECT_AUTHOR "Ieum Developers")
 set(CMAKE_PROJECT_VENDOR "Cherry Inc.")
 set(CMAKE_PROJECT_COPYRIGHT "(C) 2026 ${CMAKE_PROJECT_VENDOR}")
 set(CMAKE_PROJECT_CONTACT "${CMAKE_PROJECT_PROPER_NAME} <https://github.com/Cherry-Company/ieum/issues>")
