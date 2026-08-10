@@ -48,12 +48,20 @@ p, li { white-space: pre-wrap; }
         <translation>크레딧</translation>
     </message>
     <message>
+        <source>Project contributors:</source>
+        <translation>프로젝트 기여자:</translation>
+    </message>
+    <message>
+        <source>Maintained by:</source>
+        <translation>유지관리:</translation>
+    </message>
+    <message>
         <source>Developer and contributor:</source>
-        <translation>개발자 및 기여자:</translation>
+        <translation type="vanished">개발자 및 기여자:</translation>
     </message>
     <message>
         <source>Company:</source>
-        <translation>개발사:</translation>
+        <translation type="vanished">개발사:</translation>
     </message>
     <message>
         <source>Upstream contributors:</source>

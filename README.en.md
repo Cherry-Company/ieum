@@ -1,4 +1,4 @@
-<!-- SPDX-FileCopyrightText: (C) 2026 Cherry Inc. -->
+<!-- SPDX-FileCopyrightText: (C) 2026 Ieum contributors -->
 <!-- SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception -->
 
 <p align="center">
@@ -9,7 +9,7 @@
 
 <p align="center"><strong>Software KVM across Windows, macOS, and Linux</strong></p>
 
-<p align="center">Developed and maintained by <strong>Cherry Inc.</strong></p>
+<p align="center">Maintained by <strong>Cherry Company</strong></p>
 
 <p align="center">
   <a href="README.md">한국어</a> · English · <a href="README.zh-CN.md">简体中文</a>

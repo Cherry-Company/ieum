@@ -1,4 +1,4 @@
-<!-- SPDX-FileCopyrightText: (C) 2026 Cherry Inc. -->
+<!-- SPDX-FileCopyrightText: (C) 2026 Ieum contributors -->
 <!-- SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception -->
 
 <p align="center">
@@ -9,7 +9,7 @@
 
 <p align="center"><strong>한글과 CJK 입력기를 키 매핑이 아닌 입력 상태로 다루는 IME 네이티브 소프트 KVM</strong></p>
 
-<p align="center"><strong>Cherry Inc.</strong>가 개발하고 유지관리합니다.</p>
+<p align="center"><strong>Cherry Company</strong>가 유지관리합니다.</p>
 
 <p align="center">
   한국어 · <a href="README.en.md">English</a> · <a href="README.zh-CN.md">简体中文</a>

@@ -1,6 +1,6 @@
 /*
  * Deskflow -- mouse and keyboard sharing utility
- * SPDX-FileCopyrightText: (C) 2026 Cherry Inc.
+ * SPDX-FileCopyrightText: (C) 2026 Ieum contributors
  * SPDX-FileCopyrightText: (C) 2024 Chris Rizzitello <sithlord48@gmail.com>
  * SPDX-FileCopyrightText: (C) 2012 - 2016 Synergy App Ltd
  * SPDX-FileCopyrightText: (C) 2008 Volker Lanz <vl@fidra.de>
@@ -50,9 +50,9 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui{std::make_unique
   ui->lblImportantDevs->setTextFormat(Qt::RichText);
   ui->lblImportantDevs->setText(QStringLiteral("<b>%1</b> %2<br><b>%3</b> %4<br><br><b>%5</b><br>%6")
                                     .arg(
-                                        tr("Developer and contributor:"), QStringLiteral("Ieum&nbsp;Developers"),
-                                        tr("Company:"), QStringLiteral("Cherry Inc."), tr("Upstream contributors:"),
-                                        devsNbsp.join(QStringLiteral(", "))
+                                        tr("Project contributors:"), QStringLiteral("Ieum&nbsp;contributors"),
+                                        tr("Maintained by:"), QStringLiteral("Cherry&nbsp;Company"),
+                                        tr("Upstream contributors:"), devsNbsp.join(QStringLiteral(", "))
                                     ));
 
   ui->btnOk->setDefault(true);
@@ -62,7 +62,9 @@ AboutDialog::AboutDialog(QWidget *parent) : QDialog(parent), ui{std::make_unique
 void AboutDialog::copyVersionText() const
 {
   QString infoString =
-      QStringLiteral("%1: %2 (%3)\nDeveloper: Ieum Developers\nCompany: Cherry Inc.\nQt: %4\nSystem: %5")
+      QStringLiteral(
+          "%1: %2 (%3)\nProject contributors: Ieum contributors\nMaintained by: Cherry Company\nQt: %4\nSystem: %5"
+      )
           .arg(
               deskflow::gui::productDisplayName(), kVersion, kVersionGitSha, qVersion(), QSysInfo::prettyProductName()
           );

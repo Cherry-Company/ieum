@@ -1,6 +1,6 @@
 /*
  * Ieum -- IME-native software KVM
- * SPDX-FileCopyrightText: (C) 2026 Cherry Inc.
+ * SPDX-FileCopyrightText: (C) 2026 Ieum contributors
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: (C) 2024 Deskflow Developers
 # SPDX-License-Identifier: MIT
-# Maintainer: Ieum Developers, Cherry Inc.
+# Maintainer: Cherry Company <https://github.com/Cherry-Company/ieum/issues>
 
 _basename=ieum
 pkgname=${_basename}-git

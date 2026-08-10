@@ -1,4 +1,4 @@
-<!-- SPDX-FileCopyrightText: (C) 2026 Ieum Developers -->
+<!-- SPDX-FileCopyrightText: (C) 2026 Ieum contributors -->
 <!-- SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception -->
 
 # 이음 인터페이스 원칙

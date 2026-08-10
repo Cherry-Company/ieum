@@ -26,17 +26,97 @@ jobs:
   # Quality gate to allow PR merge, used in the branch protection rules.
   ci-passed:
     runs-on: ubuntu-latest
-    needs: [main-build, test-results, unix, flatpak]
+    needs: [privacy-guard, main-build, test-results, unix, flatpak]
     if: always()
 
     steps:
       - name: Check all steps passed
         run: |
-          if [[ ${{needs.main-build.result}} == 'success' && ${{needs.test-results.result}} == 'success' && ${{needs.unix.result}} == 'success' && ${{needs.flatpak.result}} == 'success' ]]; then
+          if [[ ${{needs.privacy-guard.result}} == 'success' && ${{needs.main-build.result}} == 'success' && ${{needs.test-results.result}} == 'success' && ${{needs.unix.result}} == 'success' && ${{needs.flatpak.result}} == 'success' ]]; then
             echo "✅ CI passed" > $GITHUB_STEP_SUMMARY
           else
             exit 1
           fi
+
+  privacy-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout complete history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Materialize private deny map
+        shell: bash
+        env:
+          DENY_MAP_B64: ${{ secrets.IEUM_PRIVATE_DENY_MAP_B64 }}
+          DENY_MAP_SHA256: ${{ secrets.IEUM_PRIVATE_DENY_MAP_SHA256 }}
+        run: |
+          set -euo pipefail
+          [[ -n "$DENY_MAP_B64" && "$DENY_MAP_SHA256" =~ ^[0-9a-f]{64}$ ]] || {
+            echo "::error::The private deny map and its frozen SHA-256 are required."
+            exit 1
+          }
+          deny_map="$RUNNER_TEMP/ieum-private-deny-map.json"
+          printf '%s' "$DENY_MAP_B64" | base64 --decode > "$deny_map"
+          chmod 600 "$deny_map"
+          printf 'IEUM_PRIVATE_DENY_MAP=%s\n' "$deny_map" >> "$GITHUB_ENV"
+          printf 'IEUM_PRIVATE_DENY_MAP_SHA256=%s\n' "$DENY_MAP_SHA256" >> "$GITHUB_ENV"
+
+      - name: Run synthetic guard and hook regressions
+        run: python3 -m unittest discover -s tools/privacy/tests -p 'test_*.py' -v
+
+      - name: Check exact upstream documentation link
+        run: python3 tools/privacy/check_public_links.py --online
+
+      - name: Resolve reviewed range baseline
+        id: privacy-baseline
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+          FROZEN_BASELINE_SHA: ${{ secrets.IEUM_PRIVACY_BASELINE_SHA }}
+        run: |
+          set -euo pipefail
+          baseline=""
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            baseline="$PR_BASE_SHA"
+          elif [[ -n "$PUSH_BEFORE_SHA" && ! "$PUSH_BEFORE_SHA" =~ ^0+$ ]]; then
+            baseline="$PUSH_BEFORE_SHA"
+          else
+            baseline="$FROZEN_BASELINE_SHA"
+          fi
+          [[ "$baseline" =~ ^[0-9a-f]{40}$|^[0-9a-f]{64}$ ]] || {
+            echo "::error::A reviewed clean baseline is required."
+            exit 1
+          }
+          git cat-file -e "$baseline^{commit}"
+          printf 'baseline=%s\n' "$baseline" >> "$GITHUB_OUTPUT"
+
+      - name: Scan exact candidate tree
+        run: |
+          python3 tools/privacy/public_privacy_guard.py tree \
+            --repo . \
+            --treeish HEAD \
+            --deny-map "$IEUM_PRIVATE_DENY_MAP" \
+            --deny-map-sha256 "$IEUM_PRIVATE_DENY_MAP_SHA256" \
+            --manifest-out "$RUNNER_TEMP/privacy-tree.json"
+
+      - name: Scan introduced commit range
+        run: |
+          python3 tools/privacy/public_privacy_guard.py range \
+            --repo . \
+            --baseline "${{ steps.privacy-baseline.outputs.baseline }}" \
+            --head HEAD \
+            --deny-map "$IEUM_PRIVATE_DENY_MAP" \
+            --deny-map-sha256 "$IEUM_PRIVATE_DENY_MAP_SHA256" \
+            --manifest-out "$RUNNER_TEMP/privacy-range.json"
 
   # Summary of test results, combined from test result artifacts.
   # Runs even if the tests fail to provide a summary of the failures.
@@ -623,6 +703,20 @@ jobs:
       - name: Fancy Checkout
         uses: sithlord48/fancy-checkout@v2
 
+      - name: Materialize private deny map
+        shell: bash
+        env:
+          DENY_MAP_B64: ${{ secrets.IEUM_PRIVATE_DENY_MAP_B64 }}
+          DENY_MAP_SHA256: ${{ secrets.IEUM_PRIVATE_DENY_MAP_SHA256 }}
+        run: |
+          set -euo pipefail
+          [[ -n "$DENY_MAP_B64" && "$DENY_MAP_SHA256" =~ ^[0-9a-f]{64}$ ]] || exit 1
+          deny_map="$RUNNER_TEMP/ieum-private-deny-map.json"
+          printf '%s' "$DENY_MAP_B64" | base64 --decode > "$deny_map"
+          chmod 600 "$deny_map"
+          printf 'IEUM_PRIVATE_DENY_MAP=%s\n' "$deny_map" >> "$GITHUB_ENV"
+          printf 'IEUM_PRIVATE_DENY_MAP_SHA256=%s\n' "$DENY_MAP_SHA256" >> "$GITHUB_ENV"
+
       - name: Get version
         uses: ./.github/actions/get-version
 
@@ -668,15 +762,211 @@ jobs:
             <(printf '%s\n' "${release_packages[@]}") \
             <(printf '%s\n' "${manifest_packages[@]}")
 
+      - name: Freeze release body, refs, source archives, and response identities
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/privacy-release-pre"
+          mkdir -p "$evidence"
+
+          gh api \
+            --method POST \
+            "repos/$GITHUB_REPOSITORY/releases/generate-notes" \
+            -f "tag_name=$GITHUB_REF_NAME" \
+            -f "target_commitish=$GITHUB_SHA" > "$evidence/generated-notes.json"
+          python3 - "$evidence/generated-notes.json" "$evidence/generated-notes.md" "$evidence/final-release-body.md" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          source, notes_path, body_path = map(pathlib.Path, sys.argv[1:])
+          payload = json.loads(source.read_text(encoding="utf-8"))
+          body = payload.get("body")
+          if not isinstance(body, str):
+              raise SystemExit("generated release notes body is missing")
+          notes_path.write_text(body, encoding="utf-8", newline="\n")
+          sponsorship = pathlib.Path("docs/release/sponsorship-impact.md").read_text(encoding="utf-8")
+          body_path.write_text(sponsorship.rstrip() + "\n\n" + body.lstrip(), encoding="utf-8", newline="\n")
+          PY
+
+          git ls-remote --refs "https://github.com/$GITHUB_REPOSITORY.git" |
+            LC_ALL=C sort -u > "$evidence/expected-refs.txt"
+          [[ -s "$evidence/expected-refs.txt" ]]
+
+          for kind in tar.gz zip; do
+            url="https://github.com/$GITHUB_REPOSITORY/archive/refs/tags/$GITHUB_REF_NAME.$kind"
+            curl --fail --silent --show-error --location \
+              --proto '=https' --proto-redir '=https' --retry 3 \
+              --dump-header "$evidence/source-$kind.headers" \
+              --write-out '%{json}\n' \
+              --output "$evidence/source-$kind" \
+              "$url" > "$evidence/source-$kind.response.json"
+          done
+
+      - name: Run exact release privacy gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/privacy-release-pre"
+          mapfile -t release_packages < <(
+            find . -maxdepth 1 -type f -name 'Ieum-*' -printf '%f\n' | LC_ALL=C sort
+          )
+          args=(
+            release
+            --deny-map "$IEUM_PRIVATE_DENY_MAP"
+            --deny-map-sha256 "$IEUM_PRIVATE_DENY_MAP_SHA256"
+            --manifest-out "$evidence/public-surface-manifest.json"
+            --body "$evidence/final-release-body.md"
+            --generated-notes "$evidence/generated-notes.md"
+            --checksum SHA256SUMS.txt
+            --source-archive "$evidence/source-tar.gz"
+            --source-archive "$evidence/source-zip"
+            --response-record "$evidence/source-tar.gz.headers"
+            --response-record "$evidence/source-tar.gz.response.json"
+            --response-record "$evidence/source-zip.headers"
+            --response-record "$evidence/source-zip.response.json"
+          )
+          for package in "${release_packages[@]}"; do
+            args+=(--package "$package")
+          done
+          python3 tools/privacy/public_privacy_guard.py "${args[@]}"
+
+      - name: Preserve pre-release privacy evidence for post-fetch
+        uses: actions/upload-artifact@v7
+        with:
+          name: privacy-release-pre-${{ github.run_id }}
+          path: ${{ runner.temp }}/privacy-release-pre
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Deploy release
         uses: softprops/action-gh-release@v3
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
           name: "이음 (Ieum) ${{ github.ref_name }}"
-          body_path: docs/release/sponsorship-impact.md
-          generate_release_notes: true
+          body_path: ${{ runner.temp }}/privacy-release-pre/final-release-body.md
+          generate_release_notes: false
           make_latest: ${{ !contains(github.ref_name, '-') }}
           prerelease: ${{ contains(github.ref_name, '-') }}
           files: |
             Ieum-*
             SHA256SUMS.txt
+
+  privacy-post-fetch:
+    needs: release
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout complete history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download frozen pre-release evidence
+        uses: actions/download-artifact@v8
+        with:
+          name: privacy-release-pre-${{ github.run_id }}
+          path: ${{ runner.temp }}/privacy-release-pre
+
+      - name: Materialize private deny map
+        shell: bash
+        env:
+          DENY_MAP_B64: ${{ secrets.IEUM_PRIVATE_DENY_MAP_B64 }}
+          DENY_MAP_SHA256: ${{ secrets.IEUM_PRIVATE_DENY_MAP_SHA256 }}
+        run: |
+          set -euo pipefail
+          [[ -n "$DENY_MAP_B64" && "$DENY_MAP_SHA256" =~ ^[0-9a-f]{64}$ ]] || exit 1
+          deny_map="$RUNNER_TEMP/ieum-private-deny-map.json"
+          printf '%s' "$DENY_MAP_B64" | base64 --decode > "$deny_map"
+          chmod 600 "$deny_map"
+          printf 'IEUM_PRIVATE_DENY_MAP=%s\n' "$deny_map" >> "$GITHUB_ENV"
+          printf 'IEUM_PRIVATE_DENY_MAP_SHA256=%s\n' "$DENY_MAP_SHA256" >> "$GITHUB_ENV"
+
+      - name: Download and bind live Release bytes
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          pre="$RUNNER_TEMP/privacy-release-pre"
+          live="$RUNNER_TEMP/privacy-release-live"
+          mkdir -p "$live/assets"
+
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$GITHUB_REF_NAME" > "$live/release.json"
+          gh api --include "repos/$GITHUB_REPOSITORY/releases/tags/$GITHUB_REF_NAME" > "$live/release.response.txt"
+          python3 - "$live/release.json" "$live/body.md" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          source, output = map(pathlib.Path, sys.argv[1:])
+          body = json.loads(source.read_text(encoding="utf-8")).get("body")
+          if not isinstance(body, str):
+              raise SystemExit("live Release body is missing")
+          output.write_text(body, encoding="utf-8", newline="\n")
+          PY
+          cmp -- "$pre/final-release-body.md" "$live/body.md"
+          gh release download "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --dir "$live/assets"
+
+          for kind in tar.gz zip; do
+            url="https://github.com/$GITHUB_REPOSITORY/archive/refs/tags/$GITHUB_REF_NAME.$kind"
+            curl --fail --silent --show-error --location \
+              --proto '=https' --proto-redir '=https' --retry 3 \
+              --dump-header "$live/source-$kind.headers" \
+              --write-out '%{json}\n' \
+              --output "$live/source-$kind" \
+              "$url" > "$live/source-$kind.response.json"
+          done
+
+      - name: Run post-fetch ref and byte verification
+        shell: bash
+        env:
+          FROZEN_BASELINE_SHA: ${{ secrets.IEUM_PRIVACY_BASELINE_SHA }}
+        run: |
+          set -euo pipefail
+          [[ "$FROZEN_BASELINE_SHA" =~ ^[0-9a-f]{40}$|^[0-9a-f]{64}$ ]] || exit 1
+          pre="$RUNNER_TEMP/privacy-release-pre"
+          live="$RUNNER_TEMP/privacy-release-live"
+          mapfile -t release_packages < <(
+            find "$live/assets" -maxdepth 1 -type f -name 'Ieum-*' -print | LC_ALL=C sort
+          )
+          [[ ${#release_packages[@]} -gt 0 ]]
+          args=(
+            post-fetch
+            --deny-map "$IEUM_PRIVATE_DENY_MAP"
+            --deny-map-sha256 "$IEUM_PRIVATE_DENY_MAP_SHA256"
+            --manifest-out "$live/public-surface-manifest.json"
+            --remote "https://github.com/$GITHUB_REPOSITORY.git"
+            --expected-ref-map "$pre/expected-refs.txt"
+            --ref "$GITHUB_REF"
+            --baseline "$FROZEN_BASELINE_SHA"
+            --body "$live/body.md"
+            --generated-notes "$pre/generated-notes.md"
+            --checksum "$live/assets/SHA256SUMS.txt"
+            --source-archive "$live/source-tar.gz"
+            --source-archive "$live/source-zip"
+            --response-record "$live/release.response.txt"
+            --response-record "$live/source-tar.gz.headers"
+            --response-record "$live/source-tar.gz.response.json"
+            --response-record "$live/source-zip.headers"
+            --response-record "$live/source-zip.response.json"
+          )
+          for package in "${release_packages[@]}"; do
+            args+=(--package "$package")
+          done
+          python3 tools/privacy/public_privacy_guard.py "${args[@]}"
+
+      - name: Preserve post-fetch privacy evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: privacy-release-post-${{ github.run_id }}
+          path: ${{ runner.temp }}/privacy-release-live
+          if-no-files-found: error
+          retention-days: 30

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SPDX-FileCopyrightText: (C) 2026 Ieum Developers
+# SPDX-FileCopyrightText: (C) 2026 Ieum contributors
 # SPDX-License-Identifier: MIT
 
 """Merge server, client, and CGEvent logs by wall-clock timestamp."""

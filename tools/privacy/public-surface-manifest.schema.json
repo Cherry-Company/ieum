@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Cherry-Company/ieum/blob/ieum/main/tools/privacy/public-surface-manifest.schema.json",
+  "title": "Ieum public-surface privacy scan manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "scanner_version",
+    "mode",
+    "private_deny_map",
+    "result",
+    "findings",
+    "coverage",
+    "details"
+  ],
+  "properties": {
+    "schema": { "const": "ieum.public-surface-manifest.v1" },
+    "scanner_version": { "type": "string", "minLength": 1 },
+    "mode": {
+      "enum": ["tree", "range", "release", "post-fetch", "rewrite"]
+    },
+    "private_deny_map": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "sha256"],
+      "properties": {
+        "version": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "result": { "enum": ["verified-clean", "affected", "unverified"] },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["rule_id", "target", "target_kind", "detector", "offset"],
+        "properties": {
+          "rule_id": { "type": "string" },
+          "target": { "type": "string" },
+          "target_kind": { "type": "string" },
+          "detector": { "type": "string" },
+          "offset": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["records", "record_count", "archive_member_count", "bytes_read"],
+      "properties": {
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["target", "kind", "size", "sha256"],
+            "properties": {
+              "target": { "type": "string" },
+              "kind": { "type": "string" },
+              "size": { "type": "integer", "minimum": 0 },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+            }
+          }
+        },
+        "record_count": { "type": "integer", "minimum": 0 },
+        "archive_member_count": { "type": "integer", "minimum": 0 },
+        "bytes_read": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "details": { "type": "object" },
+    "coverage_error": { "type": "string" }
+  }
+}

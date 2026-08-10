@@ -3,7 +3,7 @@
 
 version = 1
 SPDX-PackageName = "Ieum"
-SPDX-PackageSupplier = "Cherry Inc."
+SPDX-PackageSupplier = "NOASSERTION"
 SPDX-PackageDownloadLocation = "https://github.com/Cherry-Company/ieum"
 
 [[annotations]]
@@ -45,6 +45,7 @@ SPDX-License-Identifier = "GPL-2.0-only"
 path = [
    "artwork/*.png"
  , "artwork/screenshots/*.png"
+ , "artwork/screenshots/*.svg"
  , "deploy/mac/dmg-background.tiff"
  , "deploy/mac/ieum-volume.icns"
  , "deploy/linux/org.deskflow.deskflow.png"
@@ -55,7 +56,7 @@ path = [
  , "src/apps/res/ieum.ico"
  , "src/apps/res/icons/deskflow-**/apps/64/org.deskflow.deskflow*.png"
 ]
-SPDX-FileCopyrightText = "(C) 2026 Cherry Inc."
+SPDX-FileCopyrightText = "(C) 2026 Ieum contributors"
 SPDX-License-Identifier = "GPL-2.0-only"
 
 [[annotations]]
@@ -67,6 +68,15 @@ SPDX-License-Identifier = "LGPL-2.1-only"
 path = "src/apps/res/icons/deskflow-**/index.theme"
 SPDX-FileCopyrightText = "Chris Rizzitello <sithlord48@gmail.com>"
 SPDX-License-Identifier = "LGPL-2.1-only"
+
+[[annotations]]
+path = [
+   "docs/dev/public-privacy-guard.md"
+ , "tools/privacy/*.json"
+]
+precedence = "override"
+SPDX-FileCopyrightText = "(C) 2026 Ieum contributors"
+SPDX-License-Identifier = "MIT"
 
 [[annotations]]
 path = [

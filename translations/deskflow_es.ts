@@ -56,12 +56,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Developer and contributor:</source>
-        <translation type="unfinished"></translation>
+        <source>Project contributors:</source>
+        <translation>Colaboradores del proyecto:</translation>
     </message>
     <message>
-        <source>Company:</source>
-        <translation type="unfinished"></translation>
+        <source>Maintained by:</source>
+        <translation>Mantenido por:</translation>
     </message>
     <message>
         <source>Upstream contributors:</source>

@@ -1,0 +1,74 @@
+#!/bin/sh
+# SPDX-FileCopyrightText: (C) 2026 Ieum contributors
+# SPDX-License-Identifier: MIT
+
+set -eu
+
+die() {
+  printf '%s\n' "Ieum privacy pre-push gate: $*" >&2
+  exit 1
+}
+
+root=$(git rev-parse --show-toplevel) || die "not inside a Git worktree"
+scanner="$root/tools/privacy/public_privacy_guard.py"
+deny_map=${IEUM_PRIVATE_DENY_MAP:-}
+deny_map_sha256=${IEUM_PRIVATE_DENY_MAP_SHA256:-}
+
+run_scanner() {
+  env -i \
+    PATH="${PATH:-/usr/bin:/bin}" \
+    HOME="${HOME:-/tmp}" \
+    LC_ALL=C \
+    LANG=C \
+    TMPDIR="${TMPDIR:-/tmp}" \
+    python3 "$scanner" "$@"
+}
+
+[ -f "$scanner" ] || die "tracked scanner is missing"
+[ -n "$deny_map" ] || die "IEUM_PRIVATE_DENY_MAP is required"
+[ -n "$deny_map_sha256" ] || die "IEUM_PRIVATE_DENY_MAP_SHA256 is required"
+
+temporary=$(mktemp -d "${TMPDIR:-/tmp}/ieum-privacy-pre-push.XXXXXX") || die "cannot create temporary directory"
+trap 'rm -rf -- "$temporary"' EXIT HUP INT TERM
+
+index=0
+while IFS=' ' read -r local_ref local_oid remote_ref remote_oid; do
+  [ -n "${local_ref:-}" ] || continue
+  index=$((index + 1))
+  case "$local_oid:$remote_oid" in
+    *[!0-9a-f:]*|'') die "received malformed pre-push object ids" ;;
+  esac
+
+  case "$local_oid" in
+    0000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000)
+      printf '%s\n' "Ieum privacy pre-push gate: deletion $remote_ref introduces no public bytes"
+      continue
+      ;;
+  esac
+
+  run_scanner tree \
+    --repo "$root" \
+    --treeish "$local_oid" \
+    --deny-map "$deny_map" \
+    --deny-map-sha256 "$deny_map_sha256" \
+    --manifest-out "$temporary/tree-$index.json" || die "tree scan failed for $local_ref"
+
+  baseline=$remote_oid
+  case "$remote_oid" in
+    0000000000000000000000000000000000000000|0000000000000000000000000000000000000000000000000000000000000000)
+      baseline=${IEUM_PRIVACY_BASELINE:-}
+      [ -n "$baseline" ] || die "IEUM_PRIVACY_BASELINE is required for a new public ref"
+      ;;
+  esac
+
+  run_scanner range \
+    --repo "$root" \
+    --baseline "$baseline" \
+    --head "$local_oid" \
+    --deny-map "$deny_map" \
+    --deny-map-sha256 "$deny_map_sha256" \
+    --manifest-out "$temporary/range-$index.json" || die "range scan failed for $local_ref"
+done
+
+[ "$index" -gt 0 ] || die "received no pre-push ref updates"
+printf '%s\n' "Ieum privacy pre-push gate: verified $index ref update(s)"

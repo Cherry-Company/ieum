@@ -700,7 +700,7 @@ end
 
 ### AltGr key
 
-The following screen config allows the mapping for ''Alt'' to ''AltGr''. Although this may not work, see [https://github.com/victoriousian/ieum-core/issues/4411 bug #4411].
+The following screen config allows the mapping for ''Alt'' to ''AltGr''. This is a legacy option and may not work on current systems; see the [Deskflow Legacy FAQ](https://github.com/deskflow/deskflow/wiki/Legacy-FAQ) for current upstream guidance.
 ```
 section: screens
 	client1:

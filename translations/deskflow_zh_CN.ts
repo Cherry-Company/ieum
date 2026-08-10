@@ -56,12 +56,20 @@ p, li { white-space: pre-wrap; }
         <translation>制作人员</translation>
     </message>
     <message>
+        <source>Project contributors:</source>
+        <translation>项目贡献者：</translation>
+    </message>
+    <message>
+        <source>Maintained by:</source>
+        <translation>维护方：</translation>
+    </message>
+    <message>
         <source>Developer and contributor:</source>
-        <translation>开发者与贡献者：</translation>
+        <translation type="vanished">开发者与贡献者：</translation>
     </message>
     <message>
         <source>Company:</source>
-        <translation>公司：</translation>
+        <translation type="vanished">公司：</translation>
     </message>
     <message>
         <source>Upstream contributors:</source>
