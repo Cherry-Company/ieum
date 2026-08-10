@@ -464,6 +464,14 @@ function Assert-IeumServiceRuntime {
   }
   Wait-NamedPipe -Name 'ieum-daemon-v1'
 
+  # A live upgrade intentionally restores the previously persisted core. Stop
+  # that core before changing to this test's settings so Wait-ProcessName
+  # cannot mistake the asynchronously exiting process for the replacement.
+  if ($null -ne (Get-Process -Name 'ieum-core' -ErrorAction SilentlyContinue)) {
+    Invoke-IpcCommands -Name 'ieum-daemon-v1' -Messages @('stop')
+    Wait-ProcessExit -Name 'ieum-core'
+  }
+
   $ipcSettingsPath = $SettingsFile.Replace('\', '/')
   Invoke-IpcCommands -Name 'ieum-daemon-v1' -Messages @(
     "configFile=$ipcSettingsPath",
