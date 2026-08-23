@@ -26,6 +26,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   codeql:
     runs-on: ubuntu-latest
@@ -43,7 +46,7 @@ jobs:
           apt install -qqq git > /dev/null
 
       - name: Fancy Checkout
-        uses: sithlord48/fancy-checkout@v2
+        uses: sithlord48/fancy-checkout@8db15be361005e6d51b0a3b51b39bebd4cde170c # v2
 
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
@@ -51,12 +54,12 @@ jobs:
           like: "debian"
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+        uses: github/codeql-action/init@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
         with:
           languages: cpp
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v4
+        uses: github/codeql-action/autobuild@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
+        uses: github/codeql-action/analyze@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4

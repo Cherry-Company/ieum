@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   workflow_call:
 
+permissions:
+  contents: read
+
 jobs:
   valgrind-analysis:
     runs-on: ubuntu-latest
@@ -17,7 +20,7 @@ jobs:
           apt install -qqq git valgrind > /dev/null
 
       - name: Fancy Checkout
-        uses: sithlord48/fancy-checkout@v2
+        uses: sithlord48/fancy-checkout@8db15be361005e6d51b0a3b51b39bebd4cde170c # v2
 
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies

@@ -106,7 +106,7 @@ runs:
 
     - name: Install Qt
       if: ${{runner.os != 'Linux' }}
-      uses: jurplel/install-qt-action@v4
+      uses: jurplel/install-qt-action@48d3ad6db93f3627c8ee7a0454bc6f3744f7e730 # v4
       env:
         AQT_CONFIG: ${{ github.workspace }}/.github/actions/install-dependencies/aqt.ini
       with:
@@ -120,7 +120,7 @@ runs:
     - name: Build and cache vcpkg
       if: ${{ runner.os == 'Windows' }}
       id: vcpkg
-      uses: johnwason/vcpkg-action@v8
+      uses: johnwason/vcpkg-action@04c68c847bf5196ecaa72331ecf51208583916ef # v8
       with:
         pkgs: gtest openssl
         extra-args: --classic --host-triplet=${{inputs.vcpkg-triplet}}
@@ -131,7 +131,7 @@ runs:
     - name: Cache Chocolatey
       id: cache-choco
       if: (runner.os == 'Windows')
-      uses: actions/cache@v5
+      uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
       with:
         path: |
             C:/ProgramData/chocolatey/bin/
