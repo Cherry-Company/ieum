@@ -19,9 +19,9 @@
 #include "net/TSocketMultiplexerMethodJob.h"
 #include <net/SslLogger.h>
 
-#include <cstdlib>
 #include <cstring>
 #include <iterator>
+#include <limits>
 #include <memory>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
@@ -174,26 +174,20 @@ TCPSocket::JobResult SecureSocket::doRead()
 TCPSocket::JobResult SecureSocket::doWrite()
 {
   using enum JobResult;
-  static bool s_retry = false;
-  static int s_retrySize = 0;
-  static int s_staticBufferSize = 0;
-  static void *s_staticBuffer = nullptr;
 
   // write data
-  int bufferSize = 0;
+  uint32_t bufferSize = 0;
   int bytesWrote = 0;
   int status = 0;
 
-  if (s_retry) {
-    bufferSize = s_retrySize;
+  if (m_writeBuffer.retrying()) {
+    bufferSize = m_writeBuffer.size();
   } else {
     bufferSize = m_outputBuffer.getSize();
-    if (bufferSize != 0) {
-      if (bufferSize > s_staticBufferSize) {
-        s_staticBuffer = realloc(s_staticBuffer, bufferSize);
-        s_staticBufferSize = bufferSize;
-      }
-      memcpy(s_staticBuffer, m_outputBuffer.peek(bufferSize), bufferSize);
+    if (bufferSize != 0 && !m_writeBuffer.capture(m_outputBuffer.peek(bufferSize), bufferSize)) {
+      LOG_ERR("failed to allocate secure socket write buffer");
+      isFatal(true);
+      return Break;
     }
   }
 
@@ -201,15 +195,20 @@ TCPSocket::JobResult SecureSocket::doWrite()
     return Retry;
   }
 
+  if (bufferSize > static_cast<uint32_t>((std::numeric_limits<int>::max)())) {
+    LOG_ERR("secure socket write buffer exceeds the OpenSSL size limit");
+    isFatal(true);
+    return Break;
+  }
+
   if (isSecureReady()) {
-    status = secureWrite(s_staticBuffer, bufferSize, bytesWrote);
+    status = secureWrite(m_writeBuffer.data(), static_cast<int>(bufferSize), bytesWrote);
     if (status > 0) {
-      s_retry = false;
+      m_writeBuffer.clearRetry();
     } else if (status < 0) {
       return Break;
     } else if (status == 0) {
-      s_retry = true;
-      s_retrySize = bufferSize;
+      m_writeBuffer.markRetry();
       return New;
     }
   } else {
@@ -232,7 +231,7 @@ int SecureSocket::secureRead(void *buffer, int size, int &read)
     LOG_VERBOSE("reading secure socket");
     read = SSL_read(m_ssl->m_ssl, buffer, size);
 
-    static int retry;
+    int retry = 0;
 
     // Check result will cleanup the connection in the case of a fatal
     checkResult(read, retry);
@@ -260,7 +259,7 @@ int SecureSocket::secureWrite(const void *buffer, int size, int &wrote)
 
     wrote = SSL_write(m_ssl->m_ssl, buffer, size);
 
-    static int retry;
+    int retry = 0;
 
     // Check result will cleanup the connection in the case of a fatal
     checkResult(wrote, retry);
