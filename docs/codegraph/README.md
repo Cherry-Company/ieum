@@ -6,11 +6,11 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `bcd6a46f4b4fc42ea95d7c156523d349e129abb0`
-- Branch: `ci/default-branch-analysis`
-- Tracked files: 948
-- Represented files: 945
-- Source files / lines: 587 / 93,854
+- Revision: `90a3dea6c930c7ad2ee8b110bbed0cd2cfb1ca07`
+- Branch: `ci/valgrind-gate`
+- Tracked files: 949
+- Represented files: 946
+- Source files / lines: 588 / 93,947
 - Components / targets: 42 / 60
 - File include edges / component edges: 1,392 / 94
 
@@ -35,6 +35,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `app:deskflow-daemon` | process | `src/apps/deskflow-daemon/deskflow-daemon.cpp` |
 | `app:deskflow-gui` | process | `src/apps/deskflow-gui/deskflow-gui.cpp` |
 | `tool:cgtap-logger` | tool | `tools/cgtap-logger/main.swift` |
+| `tool:ci` | tool | `tools/ci/fixtures/valgrind-invalid-access.c` |
 | `tool:ci` | tool | `tools/ci/tests/test_analysis_workflows.py` |
 | `tool:generate-codegraph` | tool | `tools/generate-codegraph.py` |
 | `tool:merge-input-timeline` | tool | `tools/merge-input-timeline.py` |
@@ -55,7 +56,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `deploy:mac` | deployment | Packaging and deployment logic for `mac`. | 5 | 203 | — |
 | `deploy:root` | deployment | Packaging and deployment logic for `root`. | 1 | 39 | — |
 | `deploy:windows` | deployment | Packaging and deployment logic for `windows`. | 10 | 504 | `wix-custom` |
-| `lib:arch` | library | Operating-system abstraction for daemon, network, logging, and threading primitives. | 28 | 6,147 | `arch` |
+| `lib:arch` | library | Operating-system abstraction for daemon, network, logging, and threading primitives. | 28 | 6,167 | `arch` |
 | `lib:base` | library | Events, jobs, queues, logging, strings, Unicode, and timing primitives. | 32 | 3,665 | `base` |
 | `lib:client` | library | Connection to the server and dispatch of incoming KVM protocol messages. | 5 | 2,289 | `client` |
 | `lib:common` | library | Settings, network-interface selection, Tailscale integration, and shared product types. | 21 | 2,358 | `common` |
@@ -69,7 +70,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `support:artwork` | resource | Brand artwork and documentation screenshots. | 5 | 253 | — |
 | `support:cmake` | build | Shared dependency, coverage, packaging, and signing CMake modules. | 4 | 746 | — |
 | `support:docs` | documentation | User, developer, security, design, release, audit, and generated documentation. | 22 | 3,767 | — |
-| `support:github` | automation | GitHub Actions workflows, composite actions, templates, and repository automation. | 25 | 3,410 | — |
+| `support:github` | automation | GitHub Actions workflows, composite actions, templates, and repository automation. | 25 | 3,536 | — |
 | `support:root` | support | Repository support files rooted at `.`. | 20 | 2,892 | — |
 | `support:source-build` | build | Repository support files rooted at `src`. | 3 | 170 | — |
 | `support:translations` | localization | Qt translation catalogs and translation build rules. | 8 | 11,416 | — |
@@ -84,7 +85,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `test:platform` | test | Automated tests for the `platform` surface. | 11 | 668 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
 | `test:server` | test | Automated tests for the `server` surface. | 5 | 437 | `ServerConfigTests`, `ServerTests` |
 | `tool:cgtap-logger` | tool | Developer or diagnostic tool rooted at `tools/cgtap-logger`. | 1 | 108 | — |
-| `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 1 | 96 | — |
+| `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 2 | 169 | — |
 | `tool:codegraph` | tool | Developer or diagnostic tool rooted at `tools/codegraph.py`. | 1 | 945 | — |
 | `tool:generate-codegraph` | tool | Developer or diagnostic tool rooted at `tools/generate-codegraph.py`. | 1 | 64 | — |
 | `tool:merge-input-timeline` | tool | Developer or diagnostic tool rooted at `tools/merge-input-timeline.py`. | 1 | 67 | — |

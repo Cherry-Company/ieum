@@ -26,14 +26,38 @@ jobs:
   # Quality gate to allow PR merge, used in the branch protection rules.
   ci-passed:
     runs-on: ubuntu-latest
-    needs: [privacy-guard, workflow-policy, main-build, test-results, unix, flatpak]
+    needs: [privacy-guard, workflow-policy, analyze-valgrind, main-build, test-results, unix, flatpak]
     if: always()
 
     steps:
       - name: Check all steps passed
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PRIVACY_RESULT: ${{ needs.privacy-guard.result }}
+          WORKFLOW_POLICY_RESULT: ${{ needs.workflow-policy.result }}
+          VALGRIND_RESULT: ${{ needs.analyze-valgrind.result }}
+          MAIN_BUILD_RESULT: ${{ needs.main-build.result }}
+          TEST_RESULTS_RESULT: ${{ needs.test-results.result }}
+          UNIX_RESULT: ${{ needs.unix.result }}
+          FLATPAK_RESULT: ${{ needs.flatpak.result }}
         run: |
-          if [[ ${{needs.privacy-guard.result}} == 'success' && ${{needs.workflow-policy.result}} == 'success' && ${{needs.main-build.result}} == 'success' && ${{needs.test-results.result}} == 'success' && ${{needs.unix.result}} == 'success' && ${{needs.flatpak.result}} == 'success' ]]; then
-            echo "✅ CI passed" > $GITHUB_STEP_SUMMARY
+          set -euo pipefail
+
+          valgrind_ok=false
+          if [[ "$EVENT_NAME" == "pull_request" && "$VALGRIND_RESULT" == "success" ]]; then
+            valgrind_ok=true
+          elif [[ "$EVENT_NAME" != "pull_request" && "$VALGRIND_RESULT" == "skipped" ]]; then
+            valgrind_ok=true
+          fi
+
+          if [[ "$PRIVACY_RESULT" == "success" && \
+                "$WORKFLOW_POLICY_RESULT" == "success" && \
+                "$valgrind_ok" == "true" && \
+                "$MAIN_BUILD_RESULT" == "success" && \
+                "$TEST_RESULTS_RESULT" == "success" && \
+                "$UNIX_RESULT" == "success" && \
+                "$FLATPAK_RESULT" == "success" ]]; then
+            echo "✅ CI passed" > "$GITHUB_STEP_SUMMARY"
           else
             exit 1
           fi
