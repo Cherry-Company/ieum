@@ -55,6 +55,7 @@ void Settings::setStateFile(const QString &stateFile)
 
   instance()->m_stateSettings = new QSettings(stateFile, QSettings::IniFormat, instance());
   qInfo().noquote() << "state file changed:" << instance()->m_stateSettings->fileName();
+  instance()->cleanStateSettings();
 }
 
 Settings::Settings(QObject *parent) : QObject(parent)
@@ -156,13 +157,26 @@ void Settings::cleanSettings()
 
 void Settings::cleanStateSettings()
 {
-  const QStringList keys = m_stateKeys;
+  bool changed = false;
+  const QStringList keys = m_stateSettings->allKeys();
   for (const QString &key : keys) {
-    if (!m_stateKeys.contains(key))
+    if (!m_stateKeys.contains(key)) {
       m_stateSettings->remove(key);
-    if (m_stateSettings->value(key).toString().isEmpty() && !m_stateSettings->value(key).toRect().isValid())
+      changed = true;
+      continue;
+    }
+
+    const auto value = m_stateSettings->value(key);
+    const bool validValue = key == Settings::Gui::WindowGeometry ? value.toRect().isValid()
+                                                                 : value.isValid() && !value.toString().isEmpty();
+    if (!validValue) {
       m_stateSettings->remove(key);
+      changed = true;
+    }
   }
+
+  if (changed)
+    m_stateSettings->sync();
 }
 
 void Settings::setupComputerName()

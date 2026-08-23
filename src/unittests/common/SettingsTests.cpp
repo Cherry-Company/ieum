@@ -7,21 +7,30 @@
 
 #include "SettingsTests.h"
 
+#include <QDir>
 #include <QFile>
 #include <QSettings>
 #include <QSignalSpy>
 
 void SettingsTests::initTestCase()
 {
+  QVERIFY(QDir().mkpath(m_settingsPathTemp));
+
   QFile oldSettings(m_settingsFile);
   if (oldSettings.exists())
     oldSettings.remove();
+  QFile::remove(m_stateFile);
 
   QSettings legacySettings(m_settingsFile, QSettings::IniFormat);
   legacySettings.setValue(Settings::Client::ImeSyncLegacy, false);
   legacySettings.setValue(Settings::Client::EnterScreenLangLegacy, QStringLiteral("follow-server"));
   legacySettings.setValue(Settings::Security::Certificate, QStringLiteral("%1/deskflow.pem").arg(m_expectedTlsDir));
   legacySettings.sync();
+
+  QSettings stateSettings(m_stateFile, QSettings::IniFormat);
+  stateSettings.setValue(Settings::Gui::WindowGeometry, m_validWindowGeometry);
+  stateSettings.setValue(m_unknownStateKey, QStringLiteral("stale"));
+  stateSettings.sync();
 }
 
 void SettingsTests::setSettingsFile()
@@ -52,6 +61,47 @@ void SettingsTests::migratesLegacyCertificatePath()
 
 void SettingsTests::setStateFile()
 {
+  Settings::setStateFile(m_stateFile);
+}
+
+void SettingsTests::preservesKnownStateKeysAndRemovesUnknownKeys()
+{
+  Settings::save(false);
+  QSettings stateSettings(m_stateFile, QSettings::IniFormat);
+
+  QCOMPARE(stateSettings.value(Settings::Gui::WindowGeometry).toRect(), m_validWindowGeometry);
+  QVERIFY(!stateSettings.contains(m_unknownStateKey));
+}
+
+void SettingsTests::removesInvalidWindowGeometry_data()
+{
+  QTest::addColumn<QString>("suffix");
+  QTest::addColumn<QVariant>("geometry");
+
+  QTest::newRow("empty-string") << QStringLiteral("empty-string") << QVariant(QString());
+  QTest::newRow("empty-rectangle") << QStringLiteral("empty-rectangle") << QVariant(QRect());
+  QTest::newRow("non-rectangle") << QStringLiteral("non-rectangle") << QVariant(QStringLiteral("not-a-rectangle"));
+  QTest::newRow("zero-width") << QStringLiteral("zero-width") << QVariant(QRect(10, 20, 0, 600));
+}
+
+void SettingsTests::removesInvalidWindowGeometry()
+{
+  QFETCH(QString, suffix);
+  QFETCH(QVariant, geometry);
+  const auto invalidStateFile = QStringLiteral("%1/Invalid-%2.state").arg(m_settingsPathTemp, suffix);
+  QFile::remove(invalidStateFile);
+
+  QSettings invalidStateSettings(invalidStateFile, QSettings::IniFormat);
+  invalidStateSettings.setValue(Settings::Gui::WindowGeometry, geometry);
+  invalidStateSettings.sync();
+  QVERIFY(invalidStateSettings.contains(Settings::Gui::WindowGeometry));
+
+  Settings::setStateFile(invalidStateFile);
+  Settings::save(false);
+
+  QSettings cleanedStateSettings(invalidStateFile, QSettings::IniFormat);
+  QVERIFY(!cleanedStateSettings.contains(Settings::Gui::WindowGeometry));
+
   Settings::setStateFile(m_stateFile);
 }
 

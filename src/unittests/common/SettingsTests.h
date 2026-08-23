@@ -7,6 +7,7 @@
 
 #include "common/Settings.h"
 
+#include <QRect>
 #include <QTest>
 
 class SettingsTests : public QObject
@@ -19,6 +20,9 @@ private Q_SLOTS:
   void migratesImeSettingsToCore();
   void migratesLegacyCertificatePath();
   void setStateFile();
+  void preservesKnownStateKeysAndRemovesUnknownKeys();
+  void removesInvalidWindowGeometry_data();
+  void removesInvalidWindowGeometry();
   void settingsFile();
   void settingsPath();
   void tlsDir();
@@ -32,6 +36,8 @@ private:
   inline static const QString m_settingsPathTemp = QStringLiteral("tmp/test");
   inline static const QString m_settingsFile = QStringLiteral("%1/Deskflow.conf").arg(m_settingsPathTemp);
   inline static const QString m_stateFile = QStringLiteral("%1/Deskflow.state").arg(m_settingsPathTemp);
+  inline static const QString m_unknownStateKey = QStringLiteral("legacy/obsoleteState");
+  inline static const QRect m_validWindowGeometry = QRect(20, 30, 800, 600);
 
 // Gotcha: On Windows non-portable mode, additional config files such as TLS config are saved
 // in 'Program Data' and are not stored in the same place as the settings file.
