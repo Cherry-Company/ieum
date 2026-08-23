@@ -6,12 +6,12 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `2fe4f37a29320cae61d69be016a2850c1eb75b6b`
-- Branch: `roadmap/v1-reliability`
-- Tracked files: 947
-- Represented files: 944
-- Source files / lines: 586 / 93,758
-- Components / targets: 41 / 60
+- Revision: `bcd6a46f4b4fc42ea95d7c156523d349e129abb0`
+- Branch: `ci/default-branch-analysis`
+- Tracked files: 948
+- Represented files: 945
+- Source files / lines: 587 / 93,854
+- Components / targets: 42 / 60
 - File include edges / component edges: 1,392 / 94
 
 `docs/codegraph/`의 생성 산출물은 자기참조로 인한 비결정성을 막기 위해
@@ -35,6 +35,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `app:deskflow-daemon` | process | `src/apps/deskflow-daemon/deskflow-daemon.cpp` |
 | `app:deskflow-gui` | process | `src/apps/deskflow-gui/deskflow-gui.cpp` |
 | `tool:cgtap-logger` | tool | `tools/cgtap-logger/main.swift` |
+| `tool:ci` | tool | `tools/ci/tests/test_analysis_workflows.py` |
 | `tool:generate-codegraph` | tool | `tools/generate-codegraph.py` |
 | `tool:merge-input-timeline` | tool | `tools/merge-input-timeline.py` |
 | `tool:privacy` | tool | `tools/privacy/check_public_links.py` |
@@ -67,9 +68,9 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `lib:server` | library | Client proxies, input routing, screen topology, filters, and cursor transforms. | 42 | 9,537 | `server` |
 | `support:artwork` | resource | Brand artwork and documentation screenshots. | 5 | 253 | — |
 | `support:cmake` | build | Shared dependency, coverage, packaging, and signing CMake modules. | 4 | 746 | — |
-| `support:docs` | documentation | User, developer, security, design, release, audit, and generated documentation. | 22 | 3,751 | — |
-| `support:github` | automation | GitHub Actions workflows, composite actions, templates, and repository automation. | 25 | 3,363 | — |
-| `support:root` | support | Repository support files rooted at `.`. | 20 | 2,890 | — |
+| `support:docs` | documentation | User, developer, security, design, release, audit, and generated documentation. | 22 | 3,767 | — |
+| `support:github` | automation | GitHub Actions workflows, composite actions, templates, and repository automation. | 25 | 3,410 | — |
+| `support:root` | support | Repository support files rooted at `.`. | 20 | 2,892 | — |
 | `support:source-build` | build | Repository support files rooted at `src`. | 3 | 170 | — |
 | `support:translations` | localization | Qt translation catalogs and translation build rules. | 8 | 11,416 | — |
 | `test:base` | test | Automated tests for the `base` surface. | 11 | 417 | `BaseExceptionTests`, `EventQueueTests`, `LogTests`, `StringTests`, `UnicodeTests` |
@@ -83,6 +84,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `test:platform` | test | Automated tests for the `platform` surface. | 11 | 668 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
 | `test:server` | test | Automated tests for the `server` surface. | 5 | 437 | `ServerConfigTests`, `ServerTests` |
 | `tool:cgtap-logger` | tool | Developer or diagnostic tool rooted at `tools/cgtap-logger`. | 1 | 108 | — |
+| `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 1 | 96 | — |
 | `tool:codegraph` | tool | Developer or diagnostic tool rooted at `tools/codegraph.py`. | 1 | 945 | — |
 | `tool:generate-codegraph` | tool | Developer or diagnostic tool rooted at `tools/generate-codegraph.py`. | 1 | 64 | — |
 | `tool:merge-input-timeline` | tool | Developer or diagnostic tool rooted at `tools/merge-input-timeline.py`. | 1 | 67 | — |

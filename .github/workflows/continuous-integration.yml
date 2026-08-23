@@ -26,13 +26,13 @@ jobs:
   # Quality gate to allow PR merge, used in the branch protection rules.
   ci-passed:
     runs-on: ubuntu-latest
-    needs: [privacy-guard, main-build, test-results, unix, flatpak]
+    needs: [privacy-guard, workflow-policy, main-build, test-results, unix, flatpak]
     if: always()
 
     steps:
       - name: Check all steps passed
         run: |
-          if [[ ${{needs.privacy-guard.result}} == 'success' && ${{needs.main-build.result}} == 'success' && ${{needs.test-results.result}} == 'success' && ${{needs.unix.result}} == 'success' && ${{needs.flatpak.result}} == 'success' ]]; then
+          if [[ ${{needs.privacy-guard.result}} == 'success' && ${{needs.workflow-policy.result}} == 'success' && ${{needs.main-build.result}} == 'success' && ${{needs.test-results.result}} == 'success' && ${{needs.unix.result}} == 'success' && ${{needs.flatpak.result}} == 'success' ]]; then
             echo "✅ CI passed" > $GITHUB_STEP_SUMMARY
           else
             exit 1
@@ -127,6 +127,19 @@ jobs:
               python3 tools/privacy/report_public_manifest.py "$manifest"
             fi
           done
+
+  workflow-policy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run workflow policy regressions
+        run: python3 -m unittest discover -s tools/ci/tests -p 'test_*.py' -v
 
   # Summary of test results, combined from test result artifacts.
   # Runs even if the tests fail to provide a summary of the failures.

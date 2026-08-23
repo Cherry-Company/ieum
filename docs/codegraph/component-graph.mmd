@@ -36,10 +36,11 @@ flowchart LR
   end
   subgraph g03["Tools"]
     n036["tool:cgtap-logger"]
-    n037["tool:codegraph"]
-    n038["tool:generate-codegraph"]
-    n039["tool:merge-input-timeline"]
-    n040["tool:privacy"]
+    n037["tool:ci"]
+    n038["tool:codegraph"]
+    n039["tool:generate-codegraph"]
+    n040["tool:merge-input-timeline"]
+    n041["tool:privacy"]
   end
   subgraph g04["Deployment"]
     n004["deploy:linux"]
@@ -107,6 +108,7 @@ flowchart LR
   class n038 support
   class n039 support
   class n040 support
+  class n041 support
   n000 -->|"include + link"| n008
   n000 -->|"include + link"| n009
   n000 -->|"link"| n010
