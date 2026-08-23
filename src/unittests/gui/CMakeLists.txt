@@ -19,6 +19,14 @@ create_test(
 )
 
 create_test(
+  NAME FileTailTests
+  DEPENDS gui
+  LIBS base
+  SOURCE FileTailTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+create_test(
   NAME KeySequenceTests
   DEPENDS gui
   SOURCE KeySequenceTests.cpp

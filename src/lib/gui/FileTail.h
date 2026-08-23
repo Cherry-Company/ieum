@@ -7,10 +7,13 @@
 
 #pragma once
 
-#include <QFile>
+#include <QByteArray>
 #include <QObject>
+#include <QString>
 
+class QFile;
 class QFileSystemWatcher;
+class QTimer;
 
 namespace deskflow::gui {
 
@@ -26,12 +29,24 @@ Q_SIGNALS:
   void newLine(const QString &line);
 
 private Q_SLOTS:
-  void handleFileChanged(const QString &);
+  void handleFileChanged(const QString &filePath);
+  void handleDirectoryChanged(const QString &directoryPath);
+  void pollWatchedFile();
 
 private:
-  QFile m_file;
+  bool watchCurrentFile(bool startAtEnd);
+  void readNewLines();
+  bool hasFileIdentityChanged(QFile &file) const;
+  void updateFileIdentity(QFile &file);
+  void clearFileIdentity();
+
+  QString m_filePath;
+  QString m_directoryPath;
   QFileSystemWatcher *m_watcher = nullptr;
-  qint64 m_lastPos;
+  QTimer *m_pollTimer = nullptr;
+  QByteArray m_filePrefix;
+  qint64 m_fileBirthTime = -1;
+  qint64 m_lastPos = 0;
 };
 
 } // namespace deskflow::gui
