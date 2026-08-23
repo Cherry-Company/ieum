@@ -253,29 +253,19 @@ uint32_t Unicode::fromUTF8(const uint8_t *&data, uint32_t &n)
   if (data[0] < 0x80) {
     // 0xxxxxxx
     size = 1;
-  } else if (data[0] < 0xc0) {
-    // 10xxxxxx -- in the middle of a multibyte character.  counts
-    // as one invalid character.
-    --n;
-    ++data;
-    return s_invalid;
-  } else if (data[0] < 0xe0) {
+  } else if (data[0] >= 0xc2 && data[0] <= 0xdf) {
     // 110xxxxx
     size = 2;
-  } else if (data[0] < 0xf0) {
+  } else if (data[0] >= 0xe0 && data[0] <= 0xef) {
     // 1110xxxx
     size = 3;
-  } else if (data[0] < 0xf8) {
+  } else if (data[0] >= 0xf0 && data[0] <= 0xf4) {
     // 11110xxx
     size = 4;
-  } else if (data[0] < 0xfc) {
-    // 111110xx
-    size = 5;
-  } else if (data[0] < 0xfe) {
-    // 1111110x
-    size = 6;
   } else {
-    // invalid sequence.  dunno how many bytes to skip so skip one.
+    // Invalid leader, including continuation bytes, overlong C0/C1 leaders,
+    // and the F5-FF range forbidden by RFC 3629. Skip one byte because the
+    // sequence length is not valid.
     --n;
     ++data;
     return s_invalid;
@@ -309,18 +299,6 @@ uint32_t Unicode::fromUTF8(const uint8_t *&data, uint32_t &n)
         ((static_cast<uint32_t>(data[2]) & 0x3f) << 6) | (static_cast<uint32_t>(data[3]) & 0x3f);
     break;
 
-  case 5:
-    c = ((static_cast<uint32_t>(data[0]) & 0x03) << 24) | ((static_cast<uint32_t>(data[1]) & 0x3f) << 18) |
-        ((static_cast<uint32_t>(data[2]) & 0x3f) << 12) | ((static_cast<uint32_t>(data[3]) & 0x3f) << 6) |
-        (static_cast<uint32_t>(data[4]) & 0x3f);
-    break;
-
-  case 6:
-    c = ((static_cast<uint32_t>(data[0]) & 0x01) << 30) | ((static_cast<uint32_t>(data[1]) & 0x3f) << 24) |
-        ((static_cast<uint32_t>(data[2]) & 0x3f) << 18) | ((static_cast<uint32_t>(data[3]) & 0x3f) << 12) |
-        ((static_cast<uint32_t>(data[4]) & 0x3f) << 6) | (static_cast<uint32_t>(data[5]) & 0x3f);
-    break;
-
   default:
     assert(0 && "invalid size");
     return s_invalid;
@@ -330,20 +308,6 @@ uint32_t Unicode::fromUTF8(const uint8_t *&data, uint32_t &n)
   // truncated sequences are treated as a single malformed character.
   bool truncated = false;
   switch (size) {
-  case 6:
-    if ((data[5] & 0xc0) != 0x80) {
-      truncated = true;
-      size = 5;
-    }
-    [[fallthrough]];
-
-  case 5:
-    if ((data[4] & 0xc0) != 0x80) {
-      truncated = true;
-      size = 4;
-    }
-    [[fallthrough]];
-
   case 4:
     if ((data[3] & 0xc0) != 0x80) {
       truncated = true;
@@ -379,13 +343,16 @@ uint32_t Unicode::fromUTF8(const uint8_t *&data, uint32_t &n)
   }
 
   // check for characters that didn't use the smallest possible encoding
-  if (static uint32_t s_minChar[] = {0, 0x00000000, 0x00000080, 0x00000800, 0x00010000, 0x00200000, 0x04000000};
+  if (static constexpr uint32_t s_minChar[] = {0, 0x00000000, 0x00000080, 0x00000800, 0x00010000};
       c < s_minChar[size]) {
     return s_invalid;
   }
 
-  // check for characters not in ISO-10646
+  // Check for code points outside the Unicode scalar value range.
   if (c >= 0x0000d800 && c <= 0x0000dfff) {
+    return s_invalid;
+  }
+  if (c > 0x0010ffff) {
     return s_invalid;
   }
   if (c >= 0x0000fffe && c <= 0x0000ffff) {
@@ -397,10 +364,10 @@ uint32_t Unicode::fromUTF8(const uint8_t *&data, uint32_t &n)
 
 void Unicode::toUTF8(std::string &dst, uint32_t c, bool *errors)
 {
-  uint8_t data[6];
+  uint8_t data[4];
 
   // handle characters outside the valid range
-  if ((c >= 0x0000d800 && c <= 0x0000dfff) || c >= 0x80000000) {
+  if ((c >= 0x0000d800 && c <= 0x0000dfff) || c > 0x0010ffff) {
     setError(errors);
     c = s_replacement;
   }
@@ -418,28 +385,11 @@ void Unicode::toUTF8(std::string &dst, uint32_t c, bool *errors)
     data[1] = static_cast<uint8_t>(((c >> 6) & 0x0000003f) + 0x80);
     data[2] = static_cast<uint8_t>((c & 0x0000003f) + 0x80);
     dst.append(reinterpret_cast<char *>(data), 3);
-  } else if (c < 0x00200000) {
+  } else {
     data[0] = static_cast<uint8_t>(((c >> 18) & 0x00000007) + 0xf0);
     data[1] = static_cast<uint8_t>(((c >> 12) & 0x0000003f) + 0x80);
     data[2] = static_cast<uint8_t>(((c >> 6) & 0x0000003f) + 0x80);
     data[3] = static_cast<uint8_t>((c & 0x0000003f) + 0x80);
     dst.append(reinterpret_cast<char *>(data), 4);
-  } else if (c < 0x04000000) {
-    data[0] = static_cast<uint8_t>(((c >> 24) & 0x00000003) + 0xf8);
-    data[1] = static_cast<uint8_t>(((c >> 18) & 0x0000003f) + 0x80);
-    data[2] = static_cast<uint8_t>(((c >> 12) & 0x0000003f) + 0x80);
-    data[3] = static_cast<uint8_t>(((c >> 6) & 0x0000003f) + 0x80);
-    data[4] = static_cast<uint8_t>((c & 0x0000003f) + 0x80);
-    dst.append(reinterpret_cast<char *>(data), 5);
-  } else if (c < 0x80000000) {
-    data[0] = static_cast<uint8_t>(((c >> 30) & 0x00000001) + 0xfc);
-    data[1] = static_cast<uint8_t>(((c >> 24) & 0x0000003f) + 0x80);
-    data[2] = static_cast<uint8_t>(((c >> 18) & 0x0000003f) + 0x80);
-    data[3] = static_cast<uint8_t>(((c >> 12) & 0x0000003f) + 0x80);
-    data[4] = static_cast<uint8_t>(((c >> 6) & 0x0000003f) + 0x80);
-    data[5] = static_cast<uint8_t>((c & 0x0000003f) + 0x80);
-    dst.append(reinterpret_cast<char *>(data), 6);
-  } else {
-    assert(0 && "character out of range");
   }
 }
