@@ -1836,7 +1836,7 @@
         "cmake": 1,
         "template": 2
       },
-      "lineCount": 2358,
+      "lineCount": 2372,
       "path": "src/lib/common",
       "targets": [
         "common"
@@ -2095,7 +2095,7 @@
         "c/c++ header": 5,
         "cmake": 1
       },
-      "lineCount": 649,
+      "lineCount": 705,
       "path": "src/unittests/common",
       "targets": [
         "I18NTests",
@@ -2837,6 +2837,7 @@
         "src/lib/gui/dialogs/SettingsDialog.cpp",
         "src/unittests/base/LogOutputtersTests.cpp",
         "src/unittests/common/I18NTests.cpp",
+        "src/unittests/common/SettingsTests.cpp",
         "src/unittests/gui/DiagnosticTests.cpp",
         "src/unittests/gui/LoggerTests.cpp"
       ]
@@ -3410,7 +3411,8 @@
       "kind": "system-include",
       "name": "QRect",
       "sources": [
-        "src/lib/common/Settings.cpp"
+        "src/lib/common/Settings.cpp",
+        "src/unittests/common/SettingsTests.h"
       ]
     },
     {
@@ -16976,9 +16978,9 @@
       "binary": false,
       "component": "lib:common",
       "language": "c++",
-      "lineCount": 439,
+      "lineCount": 453,
       "path": "src/lib/common/Settings.cpp",
-      "sizeBytes": 13251
+      "sizeBytes": 13619
     },
     {
       "binary": false,
@@ -20488,17 +20490,17 @@
       "binary": false,
       "component": "test:common",
       "language": "c++",
-      "lineCount": 133,
+      "lineCount": 183,
       "path": "src/unittests/common/SettingsTests.cpp",
-      "sizeBytes": 4161
+      "sizeBytes": 6106
     },
     {
       "binary": false,
       "component": "test:common",
       "language": "c/c++ header",
-      "lineCount": 47,
+      "lineCount": 53,
       "path": "src/unittests/common/SettingsTests.h",
-      "sizeBytes": 1757
+      "sizeBytes": 2079
     },
     {
       "binary": false,
@@ -21342,8 +21344,8 @@
     }
   ],
   "revision": {
-    "branch": "fix/rfc3629-utf8",
-    "commit": "148462715466c478af0374e1607194624788e88f",
+    "branch": "fix/clean-state-settings",
+    "commit": "c1b1fcda8cf47f724f9f53c0bedb5dbf00975212",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
@@ -21354,7 +21356,7 @@
     "fileIncludeEdges": 1395,
     "representedFiles": 949,
     "sourceFiles": 590,
-    "sourceLines": 94588,
+    "sourceLines": 94658,
     "targets": 62,
     "trackedFiles": 952
   },
