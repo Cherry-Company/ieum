@@ -23,12 +23,12 @@ flowchart LR
     n018["lib:server<br/>server"]
   end
   subgraph g02["Tests"]
-    n026["test:base<br/>BaseExceptionTests, EventQueueTests, LogTests, StringTests, UnicodeTests"]
+    n026["test:base<br/>BaseExceptionTests, EventQueueTests, LogOutputtersTests, LogTests, StringTests, UnicodeTests"]
     n027["test:client<br/>ServerProxyTests"]
     n028["test:codegraph-tools"]
     n029["test:common<br/>I18NTests, LogLevelTests, NetworkInterfacesTests, SettingsTests, TailscaleIntegrationTests"]
     n030["test:deskflow<br/>CanonicalScancodeTests, ClientReconnectPolicyTests, ClipboardChunksTests, ClipboardTests, IKeyStateTests, IpcServerTests, KeyMapTests, KeyStateTests, KeyboardLayoutManagerTests, Protocol19Tests, X11LayoutParserTests"]
-    n031["test:gui<br/>DiagnosticTests, IpcClientTests, KeySequenceTests, LogWidgetTests, LoggerTests, NetworkMonitorTests, ScreenTests, StatusBarTests, StyleUtilsTests, VersionCheckerTests"]
+    n031["test:gui<br/>DiagnosticTests, FileTailTests, IpcClientTests, KeySequenceTests, LogWidgetTests, LoggerTests, NetworkMonitorTests, ScreenTests, StatusBarTests, StyleUtilsTests, VersionCheckerTests"]
     n032["test:legacytests<br/>legacytests"]
     n033["test:net<br/>FingerprintDatabaseTests, FingerprintTests, SecureSocketWriteBufferTests, SecureUtilsTests"]
     n034["test:platform<br/>ArchNetworkWinsockTests, MSWindowsClipboardTests, MSWindowsMouseInputTests, OSXClipboardTests, OSXKeyStateTests, XWindowsClipboardTests"]
@@ -191,6 +191,7 @@ flowchart LR
   n030 -->|"include"| n011
   n030 -->|"include"| n012
   n030 -->|"include"| n014
+  n031 -->|"include"| n009
   n031 -->|"include"| n011
   n031 -->|"include"| n013
   n032 -->|"include"| n008

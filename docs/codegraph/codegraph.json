@@ -1343,6 +1343,7 @@
       "evidence": [
         "src/unittests/base/BaseExceptionTests.cpp: #include \"base/BaseException.h\" -> src/lib/base/BaseException.h",
         "src/unittests/base/EventQueueTests.cpp: #include \"base/EventQueue.h\" -> src/lib/base/EventQueue.h",
+        "src/unittests/base/LogOutputtersTests.cpp: #include \"base/LogOutputters.h\" -> src/lib/base/LogOutputters.h",
         "src/unittests/base/LogTests.h: #include \"base/Log.h\" -> src/lib/base/Log.h",
         "src/unittests/base/StringTests.cpp: #include \"base/String.h\" -> src/lib/base/String.h",
         "src/unittests/base/UnicodeTests.cpp: #include \"base/Unicode.h\" -> src/lib/base/Unicode.h",
@@ -1497,6 +1498,16 @@
     },
     {
       "evidence": [
+        "src/unittests/gui/FileTailTests.cpp: #include \"base/LogOutputters.h\" -> src/lib/base/LogOutputters.h"
+      ],
+      "kinds": [
+        "include"
+      ],
+      "source": "test:gui",
+      "target": "lib:base"
+    },
+    {
+      "evidence": [
         "src/unittests/gui/IpcClientTests.cpp: #include \"common/VersionInfo.h\" -> src/lib/common/VersionInfo.h.in",
         "src/unittests/gui/LoggerTests.cpp: #include \"common/Settings.h\" -> src/lib/common/Settings.h",
         "src/unittests/gui/VersionCheckerTests.cpp: #include \"common/UrlConstants.h\" -> src/lib/common/UrlConstants.h",
@@ -1511,6 +1522,7 @@
     {
       "evidence": [
         "src/unittests/gui/DiagnosticTests.cpp: #include \"gui/Diagnostic.h\" -> src/lib/gui/Diagnostic.h",
+        "src/unittests/gui/FileTailTests.cpp: #include \"gui/FileTail.h\" -> src/lib/gui/FileTail.h",
         "src/unittests/gui/IpcClientTests.cpp: #include \"gui/ipc/IpcClient.h\" -> src/lib/gui/ipc/IpcClient.h",
         "src/unittests/gui/KeySequenceTests.cpp: #include \"gui/KeySequence.h\" -> src/lib/gui/KeySequence.h",
         "src/unittests/gui/LogWidgetTests.cpp: #include \"gui/widgets/LogWidget.h\" -> src/lib/gui/widgets/LogWidget.h",
@@ -1793,7 +1805,7 @@
         "c/c++ header": 21,
         "cmake": 1
       },
-      "lineCount": 3687,
+      "lineCount": 3690,
       "path": "src/lib/base",
       "targets": [
         "base"
@@ -1856,7 +1868,7 @@
         "objective-c++": 1,
         "qt-ui": 8
       },
-      "lineCount": 17002,
+      "lineCount": 17162,
       "path": "src/lib/gui",
       "targets": [
         "gui"
@@ -2029,19 +2041,20 @@
       "targets": []
     },
     {
-      "fileCount": 11,
+      "fileCount": 12,
       "id": "test:base",
       "kind": "test",
       "languageCounts": {
-        "c++": 5,
+        "c++": 6,
         "c/c++ header": 5,
         "cmake": 1
       },
-      "lineCount": 462,
+      "lineCount": 551,
       "path": "src/unittests/base",
       "targets": [
         "BaseExceptionTests",
         "EventQueueTests",
+        "LogOutputtersTests",
         "LogTests",
         "StringTests",
         "UnicodeTests"
@@ -2118,18 +2131,19 @@
       ]
     },
     {
-      "fileCount": 21,
+      "fileCount": 22,
       "id": "test:gui",
       "kind": "test",
       "languageCounts": {
-        "c++": 10,
+        "c++": 11,
         "c/c++ header": 8,
         "cmake": 3
       },
-      "lineCount": 777,
+      "lineCount": 937,
       "path": "src/unittests/gui",
       "targets": [
         "DiagnosticTests",
+        "FileTailTests",
         "IpcClientTests",
         "KeySequenceTests",
         "LogWidgetTests",
@@ -2620,6 +2634,7 @@
         "src/lib/base/BaseException.h",
         "src/lib/common/TailscaleIntegration.h",
         "src/lib/deskflow/ipc/IpcServer.h",
+        "src/lib/gui/FileTail.h",
         "src/lib/net/Fingerprint.h",
         "src/lib/net/SocketException.h",
         "src/lib/platform/PortalClipboard.h",
@@ -2819,6 +2834,7 @@
         "src/lib/gui/StyleUtils.h",
         "src/lib/gui/core/CoreProcess.cpp",
         "src/lib/gui/dialogs/SettingsDialog.cpp",
+        "src/unittests/base/LogOutputtersTests.cpp",
         "src/unittests/common/I18NTests.cpp",
         "src/unittests/gui/DiagnosticTests.cpp",
         "src/unittests/gui/LoggerTests.cpp"
@@ -2902,16 +2918,17 @@
         "src/lib/deskflow/unix/X11LayoutsParser.cpp",
         "src/lib/gui/Diagnostic.cpp",
         "src/lib/gui/FileTail.cpp",
-        "src/lib/gui/FileTail.h",
         "src/lib/gui/TlsUtility.cpp",
         "src/lib/gui/core/CoreProcess.cpp",
         "src/lib/net/FingerprintDatabase.cpp",
         "src/lib/net/SecureUtils.cpp",
         "src/lib/platform/PortalClipboard.cpp",
         "src/lib/platform/PortalInputCapture.cpp",
+        "src/unittests/base/LogOutputtersTests.cpp",
         "src/unittests/common/I18NTests.cpp",
         "src/unittests/common/LogLevelTests.cpp",
         "src/unittests/common/SettingsTests.cpp",
+        "src/unittests/gui/FileTailTests.cpp",
         "src/unittests/gui/LoggerTests.cpp"
       ]
     },
@@ -2935,7 +2952,9 @@
         "src/lib/deskflow/ClientApp.cpp",
         "src/lib/deskflow/ServerApp.cpp",
         "src/lib/gui/Diagnostic.cpp",
-        "src/lib/gui/Messages.cpp"
+        "src/lib/gui/FileTail.cpp",
+        "src/lib/gui/Messages.cpp",
+        "src/unittests/base/LogOutputtersTests.cpp"
       ]
     },
     {
@@ -3507,6 +3526,7 @@
         "src/unittests/common/LogLevelTests.cpp",
         "src/unittests/common/SettingsTests.cpp",
         "src/unittests/deskflow/IpcServerTests.cpp",
+        "src/unittests/gui/FileTailTests.cpp",
         "src/unittests/gui/IpcClientTests.cpp",
         "src/unittests/gui/LoggerTests.cpp",
         "src/unittests/gui/core/NetworkMonitorTests.cpp"
@@ -3567,6 +3587,7 @@
         "src/lib/deskflow/ipc/DaemonIpcServer.h",
         "src/lib/gui/Action.h",
         "src/lib/gui/Diagnostic.h",
+        "src/lib/gui/FileTail.h",
         "src/lib/gui/Hotkey.h",
         "src/lib/gui/KeySequence.h",
         "src/lib/gui/Messages.h",
@@ -3645,10 +3666,19 @@
     },
     {
       "kind": "system-include",
+      "name": "QTemporaryDir",
+      "sources": [
+        "src/unittests/base/LogOutputtersTests.cpp",
+        "src/unittests/gui/FileTailTests.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
       "name": "QTest",
       "sources": [
         "src/unittests/base/BaseExceptionTests.h",
         "src/unittests/base/EventQueueTests.cpp",
+        "src/unittests/base/LogOutputtersTests.cpp",
         "src/unittests/base/LogTests.h",
         "src/unittests/base/StringTests.h",
         "src/unittests/base/UnicodeTests.h",
@@ -3671,6 +3701,7 @@
         "src/unittests/deskflow/ServerAppTests.h",
         "src/unittests/deskflow/X11LayoutParserTests.h",
         "src/unittests/gui/DiagnosticTests.h",
+        "src/unittests/gui/FileTailTests.cpp",
         "src/unittests/gui/IpcClientTests.h",
         "src/unittests/gui/KeySequenceTests.h",
         "src/unittests/gui/LogWidgetTests.cpp",
@@ -3728,6 +3759,7 @@
       "name": "QTimer",
       "sources": [
         "src/apps/deskflow-gui/deskflow-gui.cpp",
+        "src/lib/gui/FileTail.cpp",
         "src/lib/gui/MainWindow.cpp",
         "src/lib/gui/core/CoreProcess.h",
         "src/lib/gui/core/NetworkMonitor.cpp",
@@ -5234,6 +5266,20 @@
       "name": "ClientReconnectPolicyTests.moc",
       "sources": [
         "src/unittests/deskflow/ClientReconnectPolicyTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
+      "name": "FileTailTests.moc",
+      "sources": [
+        "src/unittests/gui/FileTailTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
+      "name": "LogOutputtersTests.moc",
+      "sources": [
+        "src/unittests/base/LogOutputtersTests.cpp"
       ]
     },
     {
@@ -12812,6 +12858,12 @@
       "target": "src/lib/arch/Arch.h"
     },
     {
+      "evidence": "#include \"base/LogOutputters.h\"",
+      "kind": "include",
+      "source": "src/unittests/base/LogOutputtersTests.cpp",
+      "target": "src/lib/base/LogOutputters.h"
+    },
+    {
       "evidence": "#include \"LogTests.h\"",
       "kind": "include",
       "source": "src/unittests/base/LogTests.cpp",
@@ -13284,6 +13336,18 @@
       "kind": "include",
       "source": "src/unittests/gui/DiagnosticTests.cpp",
       "target": "src/unittests/gui/DiagnosticTests.h"
+    },
+    {
+      "evidence": "#include \"base/LogOutputters.h\"",
+      "kind": "include",
+      "source": "src/unittests/gui/FileTailTests.cpp",
+      "target": "src/lib/base/LogOutputters.h"
+    },
+    {
+      "evidence": "#include \"gui/FileTail.h\"",
+      "kind": "include",
+      "source": "src/unittests/gui/FileTailTests.cpp",
+      "target": "src/lib/gui/FileTail.h"
     },
     {
       "evidence": "#include \"common/VersionInfo.h\"",
@@ -16655,9 +16719,9 @@
       "binary": false,
       "component": "lib:base",
       "language": "c++",
-      "lineCount": 156,
+      "lineCount": 159,
       "path": "src/lib/base/LogOutputters.cpp",
-      "sizeBytes": 2876
+      "sizeBytes": 2950
     },
     {
       "binary": false,
@@ -17623,17 +17687,17 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 60,
+      "lineCount": 205,
       "path": "src/lib/gui/FileTail.cpp",
-      "sizeBytes": 1485
+      "sizeBytes": 5192
     },
     {
       "binary": false,
       "component": "lib:gui",
       "language": "c/c++ header",
-      "lineCount": 37,
+      "lineCount": 52,
       "path": "src/lib/gui/FileTail.h",
-      "sizeBytes": 753
+      "sizeBytes": 1211
     },
     {
       "binary": false,
@@ -20263,9 +20327,9 @@
       "binary": false,
       "component": "test:base",
       "language": "cmake",
-      "lineCount": 46,
+      "lineCount": 54,
       "path": "src/unittests/base/CMakeLists.txt",
-      "sizeBytes": 904
+      "sizeBytes": 1074
     },
     {
       "binary": false,
@@ -20282,6 +20346,14 @@
       "lineCount": 25,
       "path": "src/unittests/base/EventQueueTests.h",
       "sizeBytes": 552
+    },
+    {
+      "binary": false,
+      "component": "test:base",
+      "language": "c++",
+      "lineCount": 81,
+      "path": "src/unittests/base/LogOutputtersTests.cpp",
+      "sizeBytes": 2184
     },
     {
       "binary": false,
@@ -20655,9 +20727,9 @@
       "binary": false,
       "component": "test:gui",
       "language": "cmake",
-      "lineCount": 62,
+      "lineCount": 70,
       "path": "src/unittests/gui/CMakeLists.txt",
-      "sizeBytes": 1238
+      "sizeBytes": 1382
     },
     {
       "binary": false,
@@ -20674,6 +20746,14 @@
       "lineCount": 18,
       "path": "src/unittests/gui/DiagnosticTests.h",
       "sizeBytes": 454
+    },
+    {
+      "binary": false,
+      "component": "test:gui",
+      "language": "c++",
+      "lineCount": 152,
+      "path": "src/unittests/gui/FileTailTests.cpp",
+      "sizeBytes": 4828
     },
     {
       "binary": false,
@@ -21261,21 +21341,21 @@
     }
   ],
   "revision": {
-    "branch": "fix/formatting-boundaries",
-    "commit": "04317dc3ab6d25a049e4c680b9a5dfde3cdeedca",
+    "branch": "fix/log-rotation-tail",
+    "commit": "fd654ce186f59ed19e879c13c9b3755725d60bc7",
     "dirtyTrackedFiles": true
   },
   "schemaVersion": 1,
   "summary": {
-    "componentEdges": 94,
+    "componentEdges": 95,
     "components": 42,
     "excludedFiles": 3,
-    "fileIncludeEdges": 1392,
-    "representedFiles": 947,
-    "sourceFiles": 588,
-    "sourceLines": 94142,
-    "targets": 60,
-    "trackedFiles": 950
+    "fileIncludeEdges": 1395,
+    "representedFiles": 949,
+    "sourceFiles": 590,
+    "sourceLines": 94538,
+    "targets": 62,
+    "trackedFiles": 952
   },
   "targets": [
     {
@@ -21325,6 +21405,12 @@
       "kind": "test",
       "name": "EventQueueTests",
       "source": "src/unittests/base/CMakeLists.txt"
+    },
+    {
+      "component": "test:gui",
+      "kind": "test",
+      "name": "FileTailTests",
+      "source": "src/unittests/gui/CMakeLists.txt"
     },
     {
       "component": "test:net",
@@ -21391,6 +21477,12 @@
       "kind": "test",
       "name": "LogLevelTests",
       "source": "src/unittests/common/CMakeLists.txt"
+    },
+    {
+      "component": "test:base",
+      "kind": "test",
+      "name": "LogOutputtersTests",
+      "source": "src/unittests/base/CMakeLists.txt"
     },
     {
       "component": "test:base",
@@ -21677,8 +21769,16 @@
       "source": "src/lib/gui/dialogs/SettingsDialog.cpp"
     },
     {
+      "include": "LogOutputtersTests.moc",
+      "source": "src/unittests/base/LogOutputtersTests.cpp"
+    },
+    {
       "include": "ClientReconnectPolicyTests.moc",
       "source": "src/unittests/deskflow/ClientReconnectPolicyTests.cpp"
+    },
+    {
+      "include": "FileTailTests.moc",
+      "source": "src/unittests/gui/FileTailTests.cpp"
     },
     {
       "include": "LogWidgetTests.moc",
