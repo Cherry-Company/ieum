@@ -31,4 +31,23 @@ void StringTests::formatedString()
   QCOMPARE("answer=42", result);
 }
 
+void StringTests::formattedStringBoundary_data()
+{
+  QTest::addColumn<int>("length");
+
+  QTest::newRow("one-byte-below-capacity") << 1023;
+  QTest::newRow("exact-capacity") << 1024;
+  QTest::newRow("one-byte-above-capacity") << 1025;
+}
+
+void StringTests::formattedStringBoundary()
+{
+  QFETCH(int, length);
+  const std::string input(static_cast<size_t>(length), 'x');
+
+  const auto result = deskflow::string::sprintf("%s", input.c_str());
+
+  QCOMPARE(result, input);
+}
+
 QTEST_MAIN(StringTests)

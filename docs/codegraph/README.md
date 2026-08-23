@@ -6,11 +6,11 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `5469267c8ca87bebd7f4e9bd68fdfab11f2e0fef`
-- Branch: `ci/immutable-actions`
+- Revision: `04317dc3ab6d25a049e4c680b9a5dfde3cdeedca`
+- Branch: `fix/formatting-boundaries`
 - Tracked files: 950
 - Represented files: 947
-- Source files / lines: 588 / 94,059
+- Source files / lines: 588 / 94,142
 - Components / targets: 42 / 60
 - File include edges / component edges: 1,392 / 94
 
@@ -57,7 +57,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `deploy:root` | deployment | Packaging and deployment logic for `root`. | 1 | 39 | — |
 | `deploy:windows` | deployment | Packaging and deployment logic for `windows`. | 10 | 504 | `wix-custom` |
 | `lib:arch` | library | Operating-system abstraction for daemon, network, logging, and threading primitives. | 28 | 6,167 | `arch` |
-| `lib:base` | library | Events, jobs, queues, logging, strings, Unicode, and timing primitives. | 32 | 3,665 | `base` |
+| `lib:base` | library | Events, jobs, queues, logging, strings, Unicode, and timing primitives. | 32 | 3,687 | `base` |
 | `lib:client` | library | Connection to the server and dispatch of incoming KVM protocol messages. | 5 | 2,289 | `client` |
 | `lib:common` | library | Settings, network-interface selection, Tailscale integration, and shared product types. | 21 | 2,358 | `common` |
 | `lib:deskflow` | library | Shared KVM application, protocol, screen, key, clipboard, and IPC behavior. | 78 | 13,375 | `app` |
@@ -74,10 +74,10 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `support:root` | support | Repository support files rooted at `.`. | 20 | 2,892 | — |
 | `support:source-build` | build | Repository support files rooted at `src`. | 3 | 170 | — |
 | `support:translations` | localization | Qt translation catalogs and translation build rules. | 8 | 11,416 | — |
-| `test:base` | test | Automated tests for the `base` surface. | 11 | 417 | `BaseExceptionTests`, `EventQueueTests`, `LogTests`, `StringTests`, `UnicodeTests` |
+| `test:base` | test | Automated tests for the `base` surface. | 11 | 462 | `BaseExceptionTests`, `EventQueueTests`, `LogTests`, `StringTests`, `UnicodeTests` |
 | `test:client` | test | Automated tests for the `client` surface. | 3 | 398 | `ServerProxyTests` |
 | `test:codegraph-tools` | test | Automated tests for the `codegraph-tools` surface. | 1 | 461 | — |
-| `test:common` | test | Automated tests for the `common` surface. | 11 | 633 | `I18NTests`, `LogLevelTests`, `NetworkInterfacesTests`, `SettingsTests`, `TailscaleIntegrationTests` |
+| `test:common` | test | Automated tests for the `common` surface. | 11 | 649 | `I18NTests`, `LogLevelTests`, `NetworkInterfacesTests`, `SettingsTests`, `TailscaleIntegrationTests` |
 | `test:deskflow` | test | Automated tests for the `deskflow` surface. | 26 | 2,093 | `CanonicalScancodeTests`, `ClientReconnectPolicyTests`, `ClipboardChunksTests`, `ClipboardTests`, `IKeyStateTests`, `IpcServerTests`, `KeyMapTests`, `KeyStateTests`, `KeyboardLayoutManagerTests`, `Protocol19Tests`, `X11LayoutParserTests` |
 | `test:gui` | test | Automated tests for the `gui` surface. | 21 | 777 | `DiagnosticTests`, `IpcClientTests`, `KeySequenceTests`, `LogWidgetTests`, `LoggerTests`, `NetworkMonitorTests`, `ScreenTests`, `StatusBarTests`, `StyleUtilsTests`, `VersionCheckerTests` |
 | `test:legacytests` | test | Automated tests for the `legacytests` surface. | 10 | 888 | `legacytests` |

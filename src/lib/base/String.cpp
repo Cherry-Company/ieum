@@ -11,7 +11,9 @@
 #include <algorithm>
 #include <cstdarg>
 #include <cstdint>
+#include <cstdio>
 #include <cstring>
+#include <stdexcept>
 #include <vector>
 
 namespace deskflow::string {
@@ -105,38 +107,40 @@ std::string vformat(const char *fmt, va_list args)
 
 std::string sprintf(const char *fmt, ...)
 {
-  char tmp[1024];
-  char *buffer = tmp;
-  auto len = static_cast<int>(std::size(tmp));
+  std::vector<char> buffer(1024);
 
-  std::string result;
-  while (buffer != nullptr) {
-    // try printing into the buffer
+  while (true) {
     va_list args;
     va_start(args, fmt);
-    int n = vsnprintf(buffer, len, fmt, args);
+    const int n = vsnprintf(buffer.data(), buffer.size(), fmt, args);
     va_end(args);
 
-    // if the buffer wasn't big enough then make it bigger and try again
-    if (n < 0 || n > len) {
-      if (buffer != tmp) {
-        delete[] buffer;
-      }
-      len *= 2;
-      buffer = new char[len];
+    if (n >= 0 && static_cast<size_t>(n) < buffer.size()) {
+      return std::string(buffer.data(), static_cast<size_t>(n));
     }
 
-    // if it was big enough then save the string and don't try again
-    else {
-      result = buffer;
-      if (buffer != tmp) {
-        delete[] buffer;
+#if defined(_WIN32)
+    if (n < 0) {
+      va_list measureArgs;
+      va_start(measureArgs, fmt);
+      const int requiredLength = _vscprintf(fmt, measureArgs);
+      va_end(measureArgs);
+
+      if (requiredLength < 0 || static_cast<size_t>(requiredLength) < buffer.size()) {
+        throw std::runtime_error("failed to format string");
       }
-      buffer = nullptr;
+
+      buffer.resize(static_cast<size_t>(requiredLength) + 1);
+      continue;
     }
+#else
+    if (n < 0) {
+      throw std::runtime_error("failed to format string");
+    }
+#endif
+
+    buffer.resize(static_cast<size_t>(n) + 1);
   }
-
-  return result;
 }
 
 //

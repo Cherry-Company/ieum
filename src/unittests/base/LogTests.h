@@ -18,6 +18,8 @@ private Q_SLOTS:
   void printTestPrintLevel();
   void printTestWithArgs();
   void printTestLogString();
+  void printBoundaryString_data();
+  void printBoundaryString();
   void printLevelToHigh();
   void printInfoWithFileAndLine();
   void printErrWithFileAndLine();

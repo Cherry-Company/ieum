@@ -1793,7 +1793,7 @@
         "c/c++ header": 21,
         "cmake": 1
       },
-      "lineCount": 3665,
+      "lineCount": 3687,
       "path": "src/lib/base",
       "targets": [
         "base"
@@ -2037,7 +2037,7 @@
         "c/c++ header": 5,
         "cmake": 1
       },
-      "lineCount": 417,
+      "lineCount": 462,
       "path": "src/unittests/base",
       "targets": [
         "BaseExceptionTests",
@@ -2082,7 +2082,7 @@
         "c/c++ header": 5,
         "cmake": 1
       },
-      "lineCount": 633,
+      "lineCount": 649,
       "path": "src/unittests/common",
       "targets": [
         "I18NTests",
@@ -4297,7 +4297,8 @@
       "kind": "system-include",
       "name": "cstdio",
       "sources": [
-        "src/lib/base/Log.cpp"
+        "src/lib/base/Log.cpp",
+        "src/lib/base/String.cpp"
       ]
     },
     {
@@ -4953,6 +4954,8 @@
         "src/lib/arch/win32/ArchMiscWindows.cpp",
         "src/lib/base/BaseException.h",
         "src/lib/base/EventQueue.cpp",
+        "src/lib/base/Log.cpp",
+        "src/lib/base/String.cpp",
         "src/lib/deskflow/App.cpp",
         "src/lib/deskflow/App.h",
         "src/lib/deskflow/DisplayInvalidException.h",
@@ -16636,9 +16639,9 @@
       "binary": false,
       "component": "lib:base",
       "language": "c++",
-      "lineCount": 255,
+      "lineCount": 273,
       "path": "src/lib/base/Log.cpp",
-      "sizeBytes": 6138
+      "sizeBytes": 6624
     },
     {
       "binary": false,
@@ -16708,9 +16711,9 @@
       "binary": false,
       "component": "lib:base",
       "language": "c++",
-      "lineCount": 167,
+      "lineCount": 171,
       "path": "src/lib/base/String.cpp",
-      "sizeBytes": 4160
+      "sizeBytes": 4378
     },
     {
       "binary": false,
@@ -16854,7 +16857,7 @@
       "language": "c/c++ header",
       "lineCount": 101,
       "path": "src/lib/common/LogLevel.h",
-      "sizeBytes": 2568
+      "sizeBytes": 2570
     },
     {
       "binary": false,
@@ -20284,33 +20287,33 @@
       "binary": false,
       "component": "test:base",
       "language": "c++",
-      "lineCount": 123,
+      "lineCount": 145,
       "path": "src/unittests/base/LogTests.cpp",
-      "sizeBytes": 2911
+      "sizeBytes": 3478
     },
     {
       "binary": false,
       "component": "test:base",
       "language": "c/c++ header",
-      "lineCount": 27,
+      "lineCount": 29,
       "path": "src/unittests/base/LogTests.h",
-      "sizeBytes": 621
+      "sizeBytes": 686
     },
     {
       "binary": false,
       "component": "test:base",
       "language": "c++",
-      "lineCount": 34,
+      "lineCount": 53,
       "path": "src/unittests/base/StringTests.cpp",
-      "sizeBytes": 810
+      "sizeBytes": 1279
     },
     {
       "binary": false,
       "component": "test:base",
       "language": "c/c++ header",
-      "lineCount": 15,
+      "lineCount": 17,
       "path": "src/unittests/base/StringTests.h",
-      "sizeBytes": 345
+      "sizeBytes": 418
     },
     {
       "binary": false,
@@ -20380,17 +20383,17 @@
       "binary": false,
       "component": "test:common",
       "language": "c++",
-      "lineCount": 33,
+      "lineCount": 47,
       "path": "src/unittests/common/LogLevelTests.cpp",
-      "sizeBytes": 1298
+      "sizeBytes": 1676
     },
     {
       "binary": false,
       "component": "test:common",
       "language": "c/c++ header",
-      "lineCount": 14,
+      "lineCount": 16,
       "path": "src/unittests/common/LogLevelTests.h",
-      "sizeBytes": 360
+      "sizeBytes": 440
     },
     {
       "binary": false,
@@ -21258,8 +21261,8 @@
     }
   ],
   "revision": {
-    "branch": "ci/immutable-actions",
-    "commit": "5469267c8ca87bebd7f4e9bd68fdfab11f2e0fef",
+    "branch": "fix/formatting-boundaries",
+    "commit": "04317dc3ab6d25a049e4c680b9a5dfde3cdeedca",
     "dirtyTrackedFiles": true
   },
   "schemaVersion": 1,
@@ -21270,7 +21273,7 @@
     "fileIncludeEdges": 1392,
     "representedFiles": 947,
     "sourceFiles": 588,
-    "sourceLines": 94059,
+    "sourceLines": 94142,
     "targets": 60,
     "trackedFiles": 950
   },
