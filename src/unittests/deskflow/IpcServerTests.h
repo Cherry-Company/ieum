@@ -17,6 +17,8 @@ private Q_SLOTS:
   void refusesDuplicateWithoutDisruptingFirstServer();
   void preservesCommandArgumentBoundaryFromClient();
   void returnsVersionMismatchForDifferentClientVersion();
+  void correlatesDelayedDaemonCommandResults();
+  void acknowledgesLegacyDaemonCommandsAfterCompletion();
 
 private:
   Log m_log;

@@ -29,6 +29,7 @@
 
 #include <QCoreApplication>
 #include <QFileInfo>
+#include <QPointer>
 #include <QSettings>
 
 using namespace deskflow::core;
@@ -47,31 +48,41 @@ void DaemonApp::saveLogLevel(const QString &logLevel) const
   Settings::setValue(Settings::Daemon::LogLevel, logLevel);
 }
 
-void DaemonApp::setConfigFile(const QString &configFile)
+void DaemonApp::setConfigFile(const QString &requestId, const QString &configFile)
 {
+  if (const auto error = validateConfigFile(configFile); !error.isEmpty()) {
+    LOG_ERR("config file rejected: %s", qPrintable(error));
+    if (m_ipcServer != nullptr) {
+      m_ipcServer->completeCommand(requestId, false, error);
+    }
+    return;
+  }
+
   LOG_DEBUG("config file updated: %s", configFile.toUtf8().constData());
   m_configFile = configFile;
   Settings::setValue(Settings::Daemon::ConfigFile, configFile);
+  if (m_ipcServer != nullptr) {
+    m_ipcServer->completeCommand(requestId, true);
+  }
 }
 
-void DaemonApp::applyWatchdogCommand() const
+void DaemonApp::applyWatchdogCommand(const QString &requestId)
 {
 #if defined(Q_OS_WIN)
-  if (m_configFile.isEmpty()) {
-    LOG_ERR("cannot apply watchdog command: no config file set");
+  if (const auto error = validateConfigFile(m_configFile); !error.isEmpty()) {
+    LOG_ERR("cannot apply watchdog command: %s", qPrintable(error));
+    if (!requestId.isEmpty() && m_ipcServer != nullptr) {
+      m_ipcServer->completeCommand(requestId, false, error);
+    }
     return;
   }
 
-  // QFileInfo::exists on a UNC path triggers SMB auth from this SYSTEM-context
-  // process, leaking the machine NTLM hash to whoever controls the remote host.
-  // Any local user can reach this via the IPC pipe, so reject remote paths up front.
-  if (m_configFile.startsWith(QStringLiteral("\\\\")) || m_configFile.startsWith(QStringLiteral("//"))) {
-    LOG_ERR("cannot apply watchdog command: remote config file paths are not allowed: %s", qPrintable(m_configFile));
-    return;
-  }
-
-  if (!QFileInfo::exists(m_configFile)) {
-    LOG_ERR("cannot apply watchdog command: config file does not exist: %s", qPrintable(m_configFile));
+  if (m_pWatchdog == nullptr) {
+    const auto error = QStringLiteral("watchdog is not initialized");
+    LOG_ERR("cannot apply watchdog command: %s", qPrintable(error));
+    if (!requestId.isEmpty() && m_ipcServer != nullptr) {
+      m_ipcServer->completeCommand(requestId, false, error);
+    }
     return;
   }
 
@@ -85,7 +96,11 @@ void DaemonApp::applyWatchdogCommand() const
   } else if (coreMode == Settings::CoreMode::Client) {
     modeArg = QStringLiteral("client");
   } else {
-    LOG_ERR("cannot apply watchdog command: invalid core mode in config: %d", coreMode);
+    const auto error = QStringLiteral("invalid core mode in config: %1").arg(coreMode);
+    LOG_ERR("cannot apply watchdog command: %s", qPrintable(error));
+    if (!requestId.isEmpty() && m_ipcServer != nullptr) {
+      m_ipcServer->completeCommand(requestId, false, error);
+    }
     return;
   }
 
@@ -93,13 +108,40 @@ void DaemonApp::applyWatchdogCommand() const
   const auto command = QStringLiteral("\"%1\" %2 --settings \"%3\"").arg(corePath, modeArg, m_configFile).toStdString();
 
   LOG_DEBUG("applying watchdog command (elevate: %s)", elevate ? "yes" : "no");
-  m_pWatchdog->setProcessConfig(command, elevate);
+  if (requestId.isEmpty()) {
+    m_pWatchdog->setProcessConfig(command, elevate);
+  } else {
+    QPointer<ipc::DaemonIpcServer> ipcServer = m_ipcServer;
+    m_pWatchdog->setProcessConfig(
+        command, elevate,
+        [ipcServer, requestId](const bool success, const std::string detail) {
+          if (ipcServer.isNull()) {
+            return;
+          }
+
+          const auto resultDetail = QString::fromStdString(detail);
+          QMetaObject::invokeMethod(
+              ipcServer,
+              [ipcServer, requestId, success, resultDetail] {
+                if (!ipcServer.isNull()) {
+                  ipcServer->completeCommand(requestId, success, resultDetail);
+                }
+              },
+              Qt::QueuedConnection
+          );
+        }
+    );
+  }
 #else
-  LOG_ERR("applying watchdog command not implemented on this platform");
+  const auto error = QStringLiteral("applying watchdog command not implemented on this platform");
+  LOG_ERR("%s", qPrintable(error));
+  if (!requestId.isEmpty() && m_ipcServer != nullptr) {
+    m_ipcServer->completeCommand(requestId, false, error);
+  }
 #endif
 }
 
-void DaemonApp::clearWatchdogCommand()
+void DaemonApp::clearWatchdogCommand(const QString &requestId)
 {
   LOG_DEBUG("clearing watchdog command");
 
@@ -112,6 +154,29 @@ void DaemonApp::clearWatchdogCommand()
 #else
   LOG_ERR("clearing watchdog command not implemented on this platform");
 #endif
+
+  if (m_ipcServer != nullptr) {
+    m_ipcServer->completeCommand(requestId, true);
+  }
+}
+
+QString DaemonApp::validateConfigFile(const QString &configFile) const
+{
+  if (configFile.isEmpty()) {
+    return QStringLiteral("no config file set");
+  }
+
+  // QFileInfo::exists on a UNC path triggers SMB auth from this SYSTEM-context process.
+  // Reject remote paths before touching the filesystem.
+  if (configFile.startsWith(QStringLiteral("\\\\")) || configFile.startsWith(QStringLiteral("//"))) {
+    return QStringLiteral("remote config file paths are not allowed");
+  }
+
+  if (!QFileInfo::exists(configFile)) {
+    return QStringLiteral("config file does not exist: %1").arg(configFile);
+  }
+
+  return {};
 }
 
 void DaemonApp::clearSettings()
@@ -123,18 +188,19 @@ void DaemonApp::clearSettings()
   Settings::setValue(Settings::Daemon::LogLevel);
 }
 
-void DaemonApp::connectIpcServer(const ipc::DaemonIpcServer *ipcServer) const
+void DaemonApp::connectIpcServer(ipc::DaemonIpcServer *ipcServer)
 {
+  m_ipcServer = ipcServer;
   // Use direct connection as this object is on it's own thread,
   // and so is on a different event loop to the main Qt loop.
   connect(ipcServer, &ipc::DaemonIpcServer::logLevelChanged, this, &DaemonApp::saveLogLevel, Qt::DirectConnection);
-  connect(ipcServer, &ipc::DaemonIpcServer::configFileChanged, this, &DaemonApp::setConfigFile, Qt::DirectConnection);
+  connect(ipcServer, &ipc::DaemonIpcServer::configFileRequested, this, &DaemonApp::setConfigFile, Qt::DirectConnection);
   connect(
-      ipcServer, &ipc::DaemonIpcServer::startProcessRequested, this, &DaemonApp::applyWatchdogCommand,
+      ipcServer, &ipc::DaemonIpcServer::startCommandRequested, this, &DaemonApp::applyWatchdogCommand,
       Qt::DirectConnection
   );
   connect(
-      ipcServer, &ipc::DaemonIpcServer::stopProcessRequested, this, &DaemonApp::clearWatchdogCommand,
+      ipcServer, &ipc::DaemonIpcServer::stopCommandRequested, this, &DaemonApp::clearWatchdogCommand,
       Qt::DirectConnection
   );
   connect(

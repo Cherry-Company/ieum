@@ -36,7 +36,7 @@ public:
   void run(QThread &daemonThread);
   void setForeground();
   void initLogging();
-  void connectIpcServer(const deskflow::core::ipc::DaemonIpcServer *ipcServer) const;
+  void connectIpcServer(deskflow::core::ipc::DaemonIpcServer *ipcServer);
 
   static QString logFilename();
 
@@ -46,10 +46,11 @@ private:
   int mainLoop();
   int daemonLoop();
   void saveLogLevel(const QString &logLevel) const;
-  void setConfigFile(const QString &configFile);
-  void applyWatchdogCommand() const;
-  void clearWatchdogCommand();
+  void setConfigFile(const QString &requestId, const QString &configFile);
+  void applyWatchdogCommand(const QString &requestId = {});
+  void clearWatchdogCommand(const QString &requestId);
   void clearSettings();
+  QString validateConfigFile(const QString &configFile) const;
 
   static void showConsole();
 

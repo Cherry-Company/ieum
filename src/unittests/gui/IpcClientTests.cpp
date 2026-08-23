@@ -7,6 +7,7 @@
 #include "IpcClientTests.h"
 
 #include "common/VersionInfo.h"
+#include "gui/ipc/DaemonIpcClient.h"
 #include "gui/ipc/IpcClient.h"
 
 #include <QLocalServer>
@@ -40,6 +41,14 @@ protected:
 
 private:
   QList<QStringList> m_commands;
+};
+
+class TestDaemonIpcClient final : public deskflow::gui::ipc::DaemonIpcClient
+{
+public:
+  explicit TestDaemonIpcClient(const QString &socketName) : DaemonIpcClient(nullptr, socketName, 1, 0)
+  {
+  }
 };
 
 QString uniqueSocketName()
@@ -180,6 +189,62 @@ void IpcClientTests::acceptsVersionMismatchHandshake()
 
   QTRY_COMPARE_WITH_TIMEOUT(mismatchSpy.count(), 1, 1000);
   QVERIFY(client.isConnected());
+
+  client.disconnectFromServer();
+  server.close();
+  QLocalServer::removeServer(socketName);
+}
+
+void IpcClientTests::correlatesDaemonCommandResults()
+{
+  const auto socketName = uniqueSocketName();
+  QLocalServer::removeServer(socketName);
+
+  QLocalServer server;
+  QVERIFY(server.listen(socketName));
+
+  TestDaemonIpcClient client(socketName);
+  QSignalSpy connectedSpy(&client, &IpcClient::connected);
+  QSignalSpy resultSpy(&client, &deskflow::gui::ipc::DaemonIpcClient::commandResult);
+  QByteArray received;
+  QLocalSocket *serverSocket = nullptr;
+
+  connect(&server, &QLocalServer::newConnection, this, [&] {
+    serverSocket = server.nextPendingConnection();
+    QVERIFY(serverSocket != nullptr);
+    connect(serverSocket, &QLocalSocket::readyRead, this, [&] {
+      received.append(serverSocket->readAll());
+      if (received.startsWith("hello=") && received.contains('\n')) {
+        const auto versionId = QStringLiteral("%1+%2").arg(kVersion, kVersionGitSha);
+        serverSocket->write(QStringLiteral("hello=%1\n").arg(versionId).toUtf8());
+        serverSocket->flush();
+      }
+    });
+  });
+
+  client.connectToServer();
+  QTRY_COMPARE_WITH_TIMEOUT(connectedSpy.count(), 1, 1000);
+  received.clear();
+
+  const auto configFile = QStringLiteral("C:\\설정=이음.conf");
+  const auto requestId = client.sendConfigFile(configFile);
+  QTRY_VERIFY_WITH_TIMEOUT(received.contains("configFile="), 1000);
+  QCOMPARE(QString::fromUtf8(received), QStringLiteral("configFile=%1\t%2\n").arg(requestId, configFile));
+
+  serverSocket->write(QStringLiteral("commandResult=%1\tconfigFile\terror\tconfig rejected\n").arg(requestId).toUtf8());
+  serverSocket->flush();
+
+  QTRY_COMPARE_WITH_TIMEOUT(resultSpy.count(), 1, 1000);
+  const auto result = resultSpy.takeFirst();
+  QCOMPARE(result.at(0).toString(), requestId);
+  QCOMPARE(result.at(1).toString(), QStringLiteral("configFile"));
+  QCOMPARE(result.at(2).toBool(), false);
+  QCOMPARE(result.at(3).toString(), QStringLiteral("config rejected"));
+
+  received.clear();
+  const auto emptyRequestId = client.sendConfigFile({});
+  QTRY_VERIFY_WITH_TIMEOUT(received.contains("configFile="), 1000);
+  QCOMPARE(QString::fromUtf8(received), QStringLiteral("configFile=%1\t\n").arg(emptyRequestId));
 
   client.disconnectFromServer();
   server.close();

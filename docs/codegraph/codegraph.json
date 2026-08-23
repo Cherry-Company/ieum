@@ -1480,6 +1480,7 @@
         "src/unittests/deskflow/ClipboardChunksTests.cpp: #include \"deskflow/ProtocolUtil.h\" -> src/lib/deskflow/ProtocolUtil.h",
         "src/unittests/deskflow/ClipboardTests.cpp: #include \"deskflow/Clipboard.h\" -> src/lib/deskflow/Clipboard.h",
         "src/unittests/deskflow/IKeyStateTests.cpp: #include \"deskflow/IKeyState.h\" -> src/lib/deskflow/IKeyState.h",
+        "src/unittests/deskflow/IpcServerTests.cpp: #include \"deskflow/ipc/DaemonIpcServer.h\" -> src/lib/deskflow/ipc/DaemonIpcServer.h",
         "src/unittests/deskflow/IpcServerTests.cpp: #include \"deskflow/ipc/IpcServer.h\" -> src/lib/deskflow/ipc/IpcServer.h",
         "src/unittests/deskflow/KeyMapTests.cpp: #include \"deskflow/KeyMap.h\" -> src/lib/deskflow/KeyMap.h",
         "src/unittests/deskflow/KeyStateTests.cpp: #include \"deskflow/CanonicalScancode.h\" -> src/lib/deskflow/CanonicalScancode.h",
@@ -1538,10 +1539,12 @@
       "evidence": [
         "src/unittests/gui/DiagnosticTests.cpp: #include \"gui/Diagnostic.h\" -> src/lib/gui/Diagnostic.h",
         "src/unittests/gui/FileTailTests.cpp: #include \"gui/FileTail.h\" -> src/lib/gui/FileTail.h",
+        "src/unittests/gui/IpcClientTests.cpp: #include \"gui/ipc/DaemonIpcClient.h\" -> src/lib/gui/ipc/DaemonIpcClient.h",
         "src/unittests/gui/IpcClientTests.cpp: #include \"gui/ipc/IpcClient.h\" -> src/lib/gui/ipc/IpcClient.h",
         "src/unittests/gui/KeySequenceTests.cpp: #include \"gui/KeySequence.h\" -> src/lib/gui/KeySequence.h",
         "src/unittests/gui/LogWidgetTests.cpp: #include \"gui/widgets/LogWidget.h\" -> src/lib/gui/widgets/LogWidget.h",
         "src/unittests/gui/LoggerTests.cpp: #include \"gui/Logger.h\" -> src/lib/gui/Logger.h",
+        "src/unittests/gui/ServiceStartCoordinatorTests.cpp: #include \"gui/core/ServiceStartCoordinator.h\" -> src/lib/gui/core/ServiceStartCoordinator.h",
         "src/unittests/gui/StatusBarTests.cpp: #include \"gui/widgets/StatusBar.h\" -> src/lib/gui/widgets/StatusBar.h",
         "src/unittests/gui/StyleUtilsTests.cpp: #include \"gui/StyleUtils.h\" -> src/lib/gui/StyleUtils.h",
         "src/unittests/gui/VersionCheckerTests.cpp: #include \"gui/VersionChecker.h\" -> src/lib/gui/VersionChecker.h",
@@ -1716,7 +1719,7 @@
         "c/c++ header": 1,
         "cmake": 1
       },
-      "lineCount": 526,
+      "lineCount": 593,
       "path": "src/apps/deskflow-daemon",
       "targets": [
         "ieum-daemon"
@@ -1878,24 +1881,24 @@
         "c/c++ header": 45,
         "cmake": 1
       },
-      "lineCount": 13392,
+      "lineCount": 13500,
       "path": "src/lib/deskflow",
       "targets": [
         "app"
       ]
     },
     {
-      "fileCount": 109,
+      "fileCount": 111,
       "id": "lib:gui",
       "kind": "library",
       "languageCounts": {
-        "c++": 48,
-        "c/c++ header": 51,
+        "c++": 49,
+        "c/c++ header": 52,
         "cmake": 1,
         "objective-c++": 1,
         "qt-ui": 8
       },
-      "lineCount": 17163,
+      "lineCount": 17502,
       "path": "src/lib/gui",
       "targets": [
         "gui"
@@ -1958,7 +1961,7 @@
         "objective-c++": 2,
         "template": 1
       },
-      "lineCount": 28243,
+      "lineCount": 28290,
       "path": "src/lib/platform",
       "targets": [
         "platform"
@@ -2141,7 +2144,7 @@
         "c/c++ header": 14,
         "cmake": 1
       },
-      "lineCount": 2200,
+      "lineCount": 2335,
       "path": "src/unittests/deskflow",
       "targets": [
         "CanonicalScancodeTests",
@@ -2158,15 +2161,15 @@
       ]
     },
     {
-      "fileCount": 22,
+      "fileCount": 24,
       "id": "test:gui",
       "kind": "test",
       "languageCounts": {
-        "c++": 11,
-        "c/c++ header": 8,
+        "c++": 12,
+        "c/c++ header": 9,
         "cmake": 3
       },
-      "lineCount": 1038,
+      "lineCount": 1261,
       "path": "src/unittests/gui",
       "targets": [
         "DiagnosticTests",
@@ -2177,6 +2180,7 @@
         "LoggerTests",
         "NetworkMonitorTests",
         "ScreenTests",
+        "ServiceStartCoordinatorTests",
         "StatusBarTests",
         "StyleUtilsTests",
         "VersionCheckerTests"
@@ -3051,6 +3055,7 @@
       "kind": "system-include",
       "name": "QHash",
       "sources": [
+        "src/lib/deskflow/ipc/DaemonIpcServer.h",
         "src/lib/deskflow/ipc/IpcServer.h"
       ]
     },
@@ -3350,6 +3355,7 @@
         "src/lib/gui/VersionChecker.h",
         "src/lib/gui/core/CoreProcess.h",
         "src/lib/gui/core/NetworkMonitor.h",
+        "src/lib/gui/core/ServiceStartCoordinator.h",
         "src/lib/gui/ipc/CoreIpcClient.cpp",
         "src/lib/gui/ipc/CoreIpcClient.h",
         "src/lib/gui/ipc/DaemonIpcClient.h",
@@ -3396,6 +3402,8 @@
       "kind": "system-include",
       "name": "QPointer",
       "sources": [
+        "src/apps/deskflow-daemon/DaemonApp.cpp",
+        "src/lib/deskflow/ipc/DaemonIpcServer.h",
         "src/lib/gui/OSXHelpers.mm"
       ]
     },
@@ -3449,6 +3457,7 @@
       "sources": [
         "src/lib/common/NetworkInterfaces.cpp",
         "src/lib/common/Settings.cpp",
+        "src/lib/deskflow/ipc/DaemonIpcServer.cpp",
         "src/lib/gui/Diagnostic.cpp",
         "src/lib/gui/MainWindow.cpp",
         "src/lib/gui/MainWindow.h",
@@ -3560,6 +3569,7 @@
         "src/unittests/gui/FileTailTests.cpp",
         "src/unittests/gui/IpcClientTests.cpp",
         "src/unittests/gui/LoggerTests.cpp",
+        "src/unittests/gui/ServiceStartCoordinatorTests.cpp",
         "src/unittests/gui/core/NetworkMonitorTests.cpp"
       ]
     },
@@ -3738,6 +3748,7 @@
         "src/unittests/gui/KeySequenceTests.h",
         "src/unittests/gui/LogWidgetTests.cpp",
         "src/unittests/gui/LoggerTests.h",
+        "src/unittests/gui/ServiceStartCoordinatorTests.h",
         "src/unittests/gui/StatusBarTests.cpp",
         "src/unittests/gui/StyleUtilsTests.h",
         "src/unittests/gui/VersionCheckerTests.h",
@@ -3796,6 +3807,7 @@
         "src/lib/gui/MainWindow.cpp",
         "src/lib/gui/core/CoreProcess.h",
         "src/lib/gui/core/NetworkMonitor.cpp",
+        "src/lib/gui/core/ServiceStartCoordinator.h",
         "src/lib/gui/dialogs/ActionDialog.cpp",
         "src/lib/gui/ipc/IpcClient.cpp",
         "src/lib/gui/ipc/IpcClient.h",
@@ -3830,7 +3842,9 @@
       "kind": "system-include",
       "name": "QUuid",
       "sources": [
+        "src/lib/deskflow/ipc/DaemonIpcServer.cpp",
         "src/lib/gui/Diagnostic.cpp",
+        "src/lib/gui/ipc/DaemonIpcClient.cpp",
         "src/unittests/gui/IpcClientTests.cpp"
       ]
     },
@@ -4527,6 +4541,7 @@
         "src/lib/arch/win32/ArchDaemonWindows.h",
         "src/lib/arch/win32/ArchMiscWindows.h",
         "src/lib/base/IEventQueue.h",
+        "src/lib/platform/MSWindowsWatchdog.h",
         "src/unittests/client/ServerProxyTests.cpp"
       ]
     },
@@ -8445,6 +8460,12 @@
       "target": "src/lib/gui/core/CoreProcess.h"
     },
     {
+      "evidence": "#include \"gui/core/ServiceStartCoordinator.h\"",
+      "kind": "include",
+      "source": "src/lib/gui/core/CoreProcess.cpp",
+      "target": "src/lib/gui/core/ServiceStartCoordinator.h"
+    },
+    {
       "evidence": "#include \"gui/ipc/CoreIpcClient.h\"",
       "kind": "include",
       "source": "src/lib/gui/core/CoreProcess.cpp",
@@ -8491,6 +8512,12 @@
       "kind": "include",
       "source": "src/lib/gui/core/NetworkMonitor.cpp",
       "target": "src/lib/gui/core/NetworkMonitor.h"
+    },
+    {
+      "evidence": "#include \"ServiceStartCoordinator.h\"",
+      "kind": "include",
+      "source": "src/lib/gui/core/ServiceStartCoordinator.cpp",
+      "target": "src/lib/gui/core/ServiceStartCoordinator.h"
     },
     {
       "evidence": "#include \"common/Constants.h\"",
@@ -13221,6 +13248,12 @@
       "target": "src/lib/common/VersionInfo.h.in"
     },
     {
+      "evidence": "#include \"deskflow/ipc/DaemonIpcServer.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/IpcServerTests.cpp",
+      "target": "src/lib/deskflow/ipc/DaemonIpcServer.h"
+    },
+    {
       "evidence": "#include \"deskflow/ipc/IpcServer.h\"",
       "kind": "include",
       "source": "src/unittests/deskflow/IpcServerTests.cpp",
@@ -13455,6 +13488,12 @@
       "target": "src/lib/common/VersionInfo.h.in"
     },
     {
+      "evidence": "#include \"gui/ipc/DaemonIpcClient.h\"",
+      "kind": "include",
+      "source": "src/unittests/gui/IpcClientTests.cpp",
+      "target": "src/lib/gui/ipc/DaemonIpcClient.h"
+    },
+    {
       "evidence": "#include \"gui/ipc/IpcClient.h\"",
       "kind": "include",
       "source": "src/unittests/gui/IpcClientTests.cpp",
@@ -13501,6 +13540,18 @@
       "kind": "include",
       "source": "src/unittests/gui/LoggerTests.cpp",
       "target": "src/unittests/gui/LoggerTests.h"
+    },
+    {
+      "evidence": "#include \"gui/core/ServiceStartCoordinator.h\"",
+      "kind": "include",
+      "source": "src/unittests/gui/ServiceStartCoordinatorTests.cpp",
+      "target": "src/lib/gui/core/ServiceStartCoordinator.h"
+    },
+    {
+      "evidence": "#include \"ServiceStartCoordinatorTests.h\"",
+      "kind": "include",
+      "source": "src/unittests/gui/ServiceStartCoordinatorTests.cpp",
+      "target": "src/unittests/gui/ServiceStartCoordinatorTests.h"
     },
     {
       "evidence": "#include \"gui/widgets/StatusBar.h\"",
@@ -14732,17 +14783,17 @@
       "binary": false,
       "component": "app:deskflow-daemon",
       "language": "c++",
-      "lineCount": 275,
+      "lineCount": 341,
       "path": "src/apps/deskflow-daemon/DaemonApp.cpp",
-      "sizeBytes": 8779
+      "sizeBytes": 10874
     },
     {
       "binary": false,
       "component": "app:deskflow-daemon",
       "language": "c/c++ header",
-      "lineCount": 65,
+      "lineCount": 66,
       "path": "src/apps/deskflow-daemon/DaemonApp.h",
-      "sizeBytes": 1431
+      "sizeBytes": 1555
     },
     {
       "binary": false,
@@ -17668,17 +17719,17 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "c++",
-      "lineCount": 92,
+      "lineCount": 178,
       "path": "src/lib/deskflow/ipc/DaemonIpcServer.cpp",
-      "sizeBytes": 3154
+      "sizeBytes": 6390
     },
     {
       "binary": false,
       "component": "lib:deskflow",
       "language": "c/c++ header",
-      "lineCount": 34,
+      "lineCount": 56,
       "path": "src/lib/deskflow/ipc/DaemonIpcServer.h",
-      "sizeBytes": 831
+      "sizeBytes": 1631
     },
     {
       "binary": false,
@@ -17788,9 +17839,9 @@
       "binary": false,
       "component": "lib:gui",
       "language": "cmake",
-      "lineCount": 145,
+      "lineCount": 147,
       "path": "src/lib/gui/CMakeLists.txt",
-      "sizeBytes": 3303
+      "sizeBytes": 3371
     },
     {
       "binary": false,
@@ -18076,17 +18127,17 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 851,
+      "lineCount": 955,
       "path": "src/lib/gui/core/CoreProcess.cpp",
-      "sizeBytes": 26347
+      "sizeBytes": 30418
     },
     {
       "binary": false,
       "component": "lib:gui",
       "language": "c/c++ header",
-      "lineCount": 149,
+      "lineCount": 159,
       "path": "src/lib/gui/core/CoreProcess.h",
-      "sizeBytes": 4665
+      "sizeBytes": 5105
     },
     {
       "binary": false,
@@ -18103,6 +18154,22 @@
       "lineCount": 82,
       "path": "src/lib/gui/core/NetworkMonitor.h",
       "sizeBytes": 2058
+    },
+    {
+      "binary": false,
+      "component": "lib:gui",
+      "language": "c++",
+      "lineCount": 123,
+      "path": "src/lib/gui/core/ServiceStartCoordinator.cpp",
+      "sizeBytes": 2688
+    },
+    {
+      "binary": false,
+      "component": "lib:gui",
+      "language": "c/c++ header",
+      "lineCount": 57,
+      "path": "src/lib/gui/core/ServiceStartCoordinator.h",
+      "sizeBytes": 1344
     },
     {
       "binary": false,
@@ -18308,17 +18375,17 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 56,
+      "lineCount": 93,
       "path": "src/lib/gui/ipc/DaemonIpcClient.cpp",
-      "sizeBytes": 1274
+      "sizeBytes": 2749
     },
     {
       "binary": false,
       "component": "lib:gui",
       "language": "c/c++ header",
-      "lineCount": 35,
+      "lineCount": 41,
       "path": "src/lib/gui/ipc/DaemonIpcClient.h",
-      "sizeBytes": 792
+      "sizeBytes": 1156
     },
     {
       "binary": false,
@@ -19468,17 +19535,17 @@
       "binary": false,
       "component": "lib:platform",
       "language": "c++",
-      "lineCount": 562,
+      "lineCount": 603,
       "path": "src/lib/platform/MSWindowsWatchdog.cpp",
-      "sizeBytes": 17590
+      "sizeBytes": 19124
     },
     {
       "binary": false,
       "component": "lib:platform",
       "language": "c/c++ header",
-      "lineCount": 150,
+      "lineCount": 156,
       "path": "src/lib/platform/MSWindowsWatchdog.h",
-      "sizeBytes": 4141
+      "sizeBytes": 4366
     },
     {
       "binary": false,
@@ -20724,17 +20791,17 @@
       "binary": false,
       "component": "test:deskflow",
       "language": "c++",
-      "lineCount": 141,
+      "lineCount": 274,
       "path": "src/unittests/deskflow/IpcServerTests.cpp",
-      "sizeBytes": 4450
+      "sizeBytes": 10195
     },
     {
       "binary": false,
       "component": "test:deskflow",
       "language": "c/c++ header",
-      "lineCount": 23,
+      "lineCount": 25,
       "path": "src/unittests/deskflow/IpcServerTests.h",
-      "sizeBytes": 509
+      "sizeBytes": 615
     },
     {
       "binary": false,
@@ -20852,9 +20919,9 @@
       "binary": false,
       "component": "test:gui",
       "language": "cmake",
-      "lineCount": 70,
+      "lineCount": 77,
       "path": "src/unittests/gui/CMakeLists.txt",
-      "sizeBytes": 1382
+      "sizeBytes": 1544
     },
     {
       "binary": false,
@@ -20884,17 +20951,17 @@
       "binary": false,
       "component": "test:gui",
       "language": "c++",
-      "lineCount": 189,
+      "lineCount": 254,
       "path": "src/unittests/gui/IpcClientTests.cpp",
-      "sizeBytes": 5419
+      "sizeBytes": 7903
     },
     {
       "binary": false,
       "component": "test:gui",
       "language": "c/c++ header",
-      "lineCount": 19,
+      "lineCount": 20,
       "path": "src/unittests/gui/IpcClientTests.h",
-      "sizeBytes": 482
+      "sizeBytes": 523
     },
     {
       "binary": false,
@@ -20935,6 +21002,22 @@
       "lineCount": 24,
       "path": "src/unittests/gui/LoggerTests.h",
       "sizeBytes": 746
+    },
+    {
+      "binary": false,
+      "component": "test:gui",
+      "language": "c++",
+      "lineCount": 128,
+      "path": "src/unittests/gui/ServiceStartCoordinatorTests.cpp",
+      "sizeBytes": 4291
+    },
+    {
+      "binary": false,
+      "component": "test:gui",
+      "language": "c/c++ header",
+      "lineCount": 22,
+      "path": "src/unittests/gui/ServiceStartCoordinatorTests.h",
+      "sizeBytes": 536
     },
     {
       "binary": false,
@@ -21474,21 +21557,21 @@
     }
   ],
   "revision": {
-    "branch": "fix/ipc-preserve-equals",
-    "commit": "757f8d4b045517474666cb1fc0e9573f53eece8a",
-    "dirtyTrackedFiles": false
+    "branch": "fix/daemon-start-ack",
+    "commit": "399b873cb08699f0720ae4fc7463dbd1a701a2ff",
+    "dirtyTrackedFiles": true
   },
   "schemaVersion": 1,
   "summary": {
     "componentEdges": 97,
     "components": 42,
     "excludedFiles": 3,
-    "fileIncludeEdges": 1405,
-    "representedFiles": 951,
-    "sourceFiles": 592,
-    "sourceLines": 95334,
-    "targets": 63,
-    "trackedFiles": 954
+    "fileIncludeEdges": 1411,
+    "representedFiles": 955,
+    "sourceFiles": 596,
+    "sourceLines": 96244,
+    "targets": 64,
+    "trackedFiles": 958
   },
   "targets": [
     {
@@ -21718,6 +21801,12 @@
       "kind": "test",
       "name": "ServerTests",
       "source": "src/unittests/server/CMakeLists.txt"
+    },
+    {
+      "component": "test:gui",
+      "kind": "test",
+      "name": "ServiceStartCoordinatorTests",
+      "source": "src/unittests/gui/CMakeLists.txt"
     },
     {
       "component": "test:common",

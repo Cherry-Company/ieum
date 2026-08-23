@@ -8,6 +8,7 @@
 #include "CoreProcess.h"
 
 #include "common/ExitCodes.h"
+#include "gui/core/ServiceStartCoordinator.h"
 #include "gui/ipc/CoreIpcClient.h"
 #include "gui/ipc/DaemonIpcClient.h"
 
@@ -30,6 +31,7 @@
 namespace deskflow::gui {
 
 const int kRetryDelay = 1000;
+const int kServiceStartTimeout = 15000;
 const auto kLineSplitRegex = QRegularExpression("\r|\n|\r\n");
 
 QString CoreProcess::processModeToString(const Settings::ProcessMode mode)
@@ -101,6 +103,7 @@ QString CoreProcess::wrapIpv6(const QString &address)
 
 CoreProcess::CoreProcess(const ServerConfig &serverConfig)
     : m_serverConfig(serverConfig),
+      m_serviceStartCoordinator{new ServiceStartCoordinator(this, kServiceStartTimeout)},
       m_daemonIpcClient{new ipc::DaemonIpcClient(this)}
 {
   m_appPath = QStringLiteral("%1/%2").arg(QCoreApplication::applicationDirPath(), kCoreBinName);
@@ -110,10 +113,37 @@ CoreProcess::CoreProcess(const ServerConfig &serverConfig)
   }
 
   connect(m_daemonIpcClient, &ipc::DaemonIpcClient::connected, this, &CoreProcess::daemonIpcClientConnected);
-  connect(
-      m_daemonIpcClient, &ipc::DaemonIpcClient::connectionFailed, this, &CoreProcess::daemonIpcClientConnectionFailed
-  );
+  connect(m_daemonIpcClient, &ipc::DaemonIpcClient::connectionFailed, this, [this] {
+    Q_EMIT daemonIpcClientConnectionFailed();
+    m_serviceStartCoordinator->transportFailed(m_coreStartGeneration);
+  });
   connect(m_daemonIpcClient, &ipc::DaemonIpcClient::logPathReceived, this, &CoreProcess::setupDaemonLogTail);
+  connect(m_daemonIpcClient, &ipc::DaemonIpcClient::commandResult, this, &CoreProcess::handleDaemonCommandResult);
+
+  connect(m_serviceStartCoordinator, &ServiceStartCoordinator::configRequested, this, [this](quint64 generation) {
+    if (generation != m_coreStartGeneration || m_processState != ProcessState::Starting) {
+      return;
+    }
+    m_daemonConfigRequestId = m_daemonIpcClient->sendConfigFile(m_serviceConfigFile);
+  });
+  connect(m_serviceStartCoordinator, &ServiceStartCoordinator::startRequested, this, [this](quint64 generation) {
+    if (generation != m_coreStartGeneration || m_processState != ProcessState::Starting) {
+      return;
+    }
+    m_daemonStartRequestId = m_daemonIpcClient->sendStartProcess();
+  });
+  connect(
+      m_serviceStartCoordinator, &ServiceStartCoordinator::coreConnectionRequested, this,
+      [this](quint64 generation) { connectCoreIpc(generation); }
+  );
+  connect(m_serviceStartCoordinator, &ServiceStartCoordinator::succeeded, this, [this](quint64 generation) {
+    if (generation != m_coreStartGeneration || m_processState != ProcessState::Starting) {
+      return;
+    }
+    clearServiceStartRequests();
+    setProcessState(ProcessState::Started);
+  });
+  connect(m_serviceStartCoordinator, &ServiceStartCoordinator::failed, this, &CoreProcess::handleServiceStartFailure);
 
   connect(&m_retryTimer, &QTimer::timeout, this, [this] {
     if (m_processState == ProcessState::RetryPending) {
@@ -142,6 +172,7 @@ void CoreProcess::daemonIpcClientConnected()
 {
   applyLogLevel();
   m_daemonIpcClient->requestLogPath();
+  m_serviceStartCoordinator->daemonConnected(m_coreStartGeneration);
 }
 
 void CoreProcess::checkExistingProcess()
@@ -258,7 +289,8 @@ void CoreProcess::scheduleRestart(int delayMs)
 
 void CoreProcess::connectCoreIpc(quint64 startGeneration)
 {
-  if (startGeneration != m_coreStartGeneration || m_processState != ProcessState::Started) {
+  if (startGeneration != m_coreStartGeneration ||
+      (m_processState != ProcessState::Starting && m_processState != ProcessState::Started)) {
     return;
   }
 
@@ -270,18 +302,30 @@ void CoreProcess::connectCoreIpc(quint64 startGeneration)
   auto *client = new ipc::CoreIpcClient(this);
   m_coreIpcClient = client;
   connect(client, &ipc::CoreIpcClient::commandReceived, this, &CoreProcess::onCoreIpcMessageReceived);
-  connect(client, &ipc::CoreIpcClient::connected, this, [this] {
+  connect(client, &ipc::CoreIpcClient::connected, this, [this, client, startGeneration] {
+    if (m_coreIpcClient != client || startGeneration != m_coreStartGeneration) {
+      return;
+    }
     m_duplicateRecoveryAttempts = 0;
     qDebug("connected to core ipc server");
+    if (m_processState == ProcessState::Starting) {
+      m_serviceStartCoordinator->coreConnected(startGeneration);
+    }
   });
 
   auto reconnect = [this, client, startGeneration] {
     if (m_coreIpcClient != client) {
       return;
     }
+    const auto wasStarting = m_processState == ProcessState::Starting;
     m_coreIpcClient = nullptr;
     client->deleteLater();
-    if (startGeneration == m_coreStartGeneration && m_processState == ProcessState::Started) {
+    if (startGeneration != m_coreStartGeneration) {
+      return;
+    }
+    if (wasStarting) {
+      m_serviceStartCoordinator->coreConnectionFailed(startGeneration);
+    } else if (m_processState == ProcessState::Started) {
       QTimer::singleShot(kRetryDelay, this, [this, startGeneration] { connectCoreIpc(startGeneration); });
     }
   };
@@ -345,29 +389,82 @@ void CoreProcess::startProcessFromDaemon()
     qFatal("core process must be in starting state");
   }
 
-  const auto configFile = Settings::settingsFile();
-  const auto commandGeneration = ++m_daemonCommandGeneration;
-  qInfo("sending start to daemon (config file: %s)", qPrintable(configFile));
+  ++m_daemonCommandGeneration;
+  clearServiceStartRequests();
+  m_serviceConfigFile = Settings::settingsFile();
+  qInfo("sending start to daemon (config file: %s)", qPrintable(m_serviceConfigFile));
+  m_serviceStartCoordinator->begin(m_coreStartGeneration);
 
-  auto sendStart = [this, configFile, commandGeneration] {
-    if (commandGeneration != m_daemonCommandGeneration || m_processState != ProcessState::Starting) {
-      qDebug("discarding stale daemon start command");
+  if (m_daemonIpcClient->isConnected()) {
+    m_serviceStartCoordinator->daemonConnected(m_coreStartGeneration);
+  } else {
+    m_daemonIpcClient->connectToServer();
+  }
+}
+
+void CoreProcess::handleDaemonCommandResult(
+    const QString &requestId, const QString &command, const bool success, const QString &detail
+)
+{
+  if (!success && !detail.isEmpty()) {
+    qWarning().noquote() << QStringLiteral("daemon rejected %1 command: %2").arg(command, detail);
+  }
+
+  if (requestId == m_daemonConfigRequestId && command == QStringLiteral("configFile")) {
+    m_daemonConfigRequestId.clear();
+    m_serviceStartCoordinator->configResult(m_coreStartGeneration, success);
+  } else if (requestId == m_daemonStartRequestId && command == QStringLiteral("start")) {
+    m_daemonStartRequestId.clear();
+    m_serviceStartCoordinator->startResult(m_coreStartGeneration, success);
+  }
+}
+
+void CoreProcess::handleServiceStartFailure(const quint64 startGeneration)
+{
+  if (startGeneration != m_coreStartGeneration || m_processState != ProcessState::Starting) {
+    return;
+  }
+
+  qWarning("service-managed core failed to become ready");
+  clearServiceStartRequests();
+  if (m_coreIpcClient) {
+    m_coreIpcClient->disconnectFromServer();
+    m_coreIpcClient->deleteLater();
+    m_coreIpcClient = nullptr;
+  }
+  requestDaemonStop();
+  setProcessState(ProcessState::Stopped);
+  setConnectionState(ConnectionState::Disconnected);
+  Q_EMIT error(Error::StartFailed);
+}
+
+void CoreProcess::requestDaemonStop()
+{
+  const auto commandGeneration = ++m_daemonCommandGeneration;
+  auto sendStop = [this, commandGeneration] {
+    if (commandGeneration != m_daemonCommandGeneration) {
+      qDebug("discarding stale daemon stop command");
       return;
     }
-    m_daemonIpcClient->sendConfigFile(configFile);
-    m_daemonIpcClient->sendStartProcess();
-    setProcessState(ProcessState::Started);
+    m_daemonIpcClient->sendStopProcess();
   };
 
   if (m_daemonIpcClient->isConnected()) {
-    sendStart();
+    sendStop();
   } else {
     connect(
-        m_daemonIpcClient, &ipc::DaemonIpcClient::connected, this, sendStart,
+        m_daemonIpcClient, &ipc::DaemonIpcClient::connected, this, sendStop,
         static_cast<Qt::ConnectionType>(Qt::SingleShotConnection | Qt::QueuedConnection)
     );
     m_daemonIpcClient->connectToServer();
   }
+}
+
+void CoreProcess::clearServiceStartRequests()
+{
+  m_daemonConfigRequestId.clear();
+  m_daemonStartRequestId.clear();
+  m_serviceConfigFile.clear();
 }
 
 void CoreProcess::stopForegroundProcess() const
@@ -536,15 +633,15 @@ void CoreProcess::start(std::optional<ProcessMode> processModeOption)
     qInfo().noquote() << "log file:" << logFile;
   }
 
-  // Wired before the start calls so it catches Started from both sync (desktop) and async (service) paths.
+  // Desktop mode reports process start synchronously. Service mode connects core IPC before reporting Started.
   if (m_coreStartConnection) {
     disconnect(m_coreStartConnection);
   }
   const auto startGeneration = ++m_coreStartGeneration;
   m_coreStartConnection = connect(
       this, &CoreProcess::processStateChanged, this,
-      [this, startGeneration](ProcessState state) {
-        if (state != ProcessState::Started) {
+      [this, startGeneration, processMode](ProcessState state) {
+        if (state != ProcessState::Started || processMode != ProcessMode::Desktop) {
           return;
         }
 
@@ -573,6 +670,7 @@ void CoreProcess::stop(std::optional<ProcessMode> processModeOption, bool restar
   QMutexLocker locker(&m_processMutex);
 
   m_restartRequested = restartRequested;
+  const auto cancelledStartGeneration = m_coreStartGeneration;
   ++m_coreStartGeneration;
   if (m_retryTimer.isActive()) {
     m_retryTimer.stop();
@@ -604,7 +702,13 @@ void CoreProcess::stop(std::optional<ProcessMode> processModeOption, bool restar
     qDebug("core process is already stopping");
   } else if (m_processState == ProcessState::Starting) {
     qDebug("core process is starting, cancelling");
-    ++m_daemonCommandGeneration;
+    m_serviceStartCoordinator->cancel(cancelledStartGeneration);
+    clearServiceStartRequests();
+    if (processMode == ProcessMode::Service) {
+      requestDaemonStop();
+    } else {
+      ++m_daemonCommandGeneration;
+    }
     setProcessState(ProcessState::Stopped);
     if (m_restartRequested) {
       m_restartRequested = false;

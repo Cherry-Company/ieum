@@ -41,6 +41,13 @@ create_test(
 )
 
 create_test(
+  NAME ServiceStartCoordinatorTests
+  DEPENDS gui
+  SOURCE ServiceStartCoordinatorTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+create_test(
   NAME StyleUtilsTests
   DEPENDS gui
   SOURCE StyleUtilsTests.cpp
