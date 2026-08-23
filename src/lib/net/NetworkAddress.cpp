@@ -12,6 +12,7 @@
 #include "net/SocketException.h"
 
 #include <algorithm>
+#include <charconv>
 #include <cstdlib>
 
 //
@@ -36,15 +37,27 @@ NetworkAddress::NetworkAddress(const std::string &hostname, int port) : m_hostna
 {
   // detect internet protocol version with colon count
   auto isColon = [](char c) { return c == ':'; };
+  auto parsePortSuffix = [this](const std::string &portSuffix) {
+    const bool isDecimal =
+        !portSuffix.empty() && std::all_of(portSuffix.begin(), portSuffix.end(), [](unsigned char character) {
+          return character >= '0' && character <= '9';
+        });
+    if (!isDecimal) {
+      throw SocketAddressException(SocketAddressException::SocketError::BadPort, m_hostname, m_port);
+    }
+
+    const auto *begin = portSuffix.data();
+    const auto *end = begin + portSuffix.size();
+    const auto [parsedEnd, error] = std::from_chars(begin, end, m_port);
+    if (error != std::errc{} || parsedEnd != end) {
+      throw SocketAddressException(SocketAddressException::SocketError::BadPort, m_hostname, m_port);
+    }
+  };
 
   if (auto colonCount = std::count_if(m_hostname.begin(), m_hostname.end(), isColon); colonCount == 1) {
     // ipv4 with port part
     auto hostIt = m_hostname.find(':');
-    try {
-      m_port = std::stoi(m_hostname.substr(hostIt + 1));
-    } catch (...) {
-      throw SocketAddressException(SocketAddressException::SocketError::BadPort, m_hostname, m_port);
-    }
+    parsePortSuffix(m_hostname.substr(hostIt + 1));
 
     auto endHostnameIt = static_cast<int>(hostIt);
     m_hostname = m_hostname.substr(0, endHostnameIt > 0 ? endHostnameIt : 0);
@@ -65,12 +78,7 @@ NetworkAddress::NetworkAddress(const std::string &hostname, int port) : m_hostna
       if (portSuffix.empty()) {
         throw SocketAddressException(SocketAddressException::SocketError::BadPort, m_hostname, m_port);
       }
-      try {
-        m_port = std::stoi(portSuffix);
-      } catch (...) {
-        // port is not a number
-        throw SocketAddressException(SocketAddressException::SocketError::BadPort, m_hostname, m_port);
-      }
+      parsePortSuffix(portSuffix);
 
       auto endHostnameIt = static_cast<int>(hostIt) - 1;
       m_hostname = m_hostname.substr(1, endHostnameIt > 0 ? endHostnameIt : 0);
@@ -172,7 +180,13 @@ size_t NetworkAddress::resolve(size_t index)
 
 bool NetworkAddress::operator==(const NetworkAddress &addr) const
 {
-  return m_address == addr.m_address || ARCH->isEqualAddr(m_address, addr.m_address);
+  if (m_address == addr.m_address) {
+    return true;
+  }
+  if (m_address == nullptr || addr.m_address == nullptr) {
+    return false;
+  }
+  return ARCH->isEqualAddr(m_address, addr.m_address);
 }
 
 bool NetworkAddress::isValid() const
