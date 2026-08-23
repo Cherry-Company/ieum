@@ -30,4 +30,18 @@ void LogLevelTests::checkLogLevels_Invalid()
   QCOMPARE(LogLevel::fromOption(QStringLiteral("warn")), LogLevel::Level::Info);
 }
 
+void LogLevelTests::checkLogLevelOption_UpperBound()
+{
+  const int optionCount = static_cast<int>(LogLevel::logLevelOptions().size());
+
+  QVERIFY(LogLevel::toOption(optionCount).isEmpty());
+}
+
+void LogLevelTests::checkLogLevelName_UpperBound()
+{
+  const int nameCount = static_cast<int>(LogLevel::logLevelNames().size());
+
+  QVERIFY(LogLevel::toString(nameCount).isEmpty());
+}
+
 QTEST_MAIN(LogLevelTests)

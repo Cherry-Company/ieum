@@ -37,8 +37,8 @@ public:
 
   static QString toOption(const int &level)
   {
-    if (level < 0 || level > m_levelOptions.size())
-      return "";
+    if (level < 0 || level >= m_levelOptions.size())
+      return {};
     return m_levelOptions.at(level);
   }
 
@@ -57,8 +57,8 @@ public:
 
   static QString toString(const int &level)
   {
-    if (level < 0 || level > m_levelNames.size())
-      return "";
+    if (level < 0 || level >= m_levelNames.size())
+      return {};
     return tr(m_levelNames.at(level).toUtf8());
   }
 

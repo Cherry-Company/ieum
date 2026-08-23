@@ -15,6 +15,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <stdexcept>
 
 #if HAVE_FORMAT
 #include <format>
@@ -143,7 +144,6 @@ Log *Log::getInstance()
 void Log::print(const char *file, int line, const char *fmt, ...)
 {
   const int initBufferSize = 1024;
-  const int bufferResizeScale = 2;
 
   const auto priority = getPriority(fmt);
   fmt += kPriorityPrefixLength;
@@ -153,20 +153,38 @@ void Log::print(const char *file, int line, const char *fmt, ...)
   }
 
   std::vector<char> buffer(initBufferSize);
-  auto length = static_cast<int>(buffer.size());
 
   while (true) {
     va_list args;
     va_start(args, fmt);
-    int n = vsnprintf(buffer.data(), length, fmt, args);
+    const int n = vsnprintf(buffer.data(), buffer.size(), fmt, args);
     va_end(args);
 
-    if (n < 0 || n > length) {
-      length *= bufferResizeScale;
-      buffer.resize(length);
-    } else {
+    if (n >= 0 && static_cast<size_t>(n) < buffer.size()) {
       break;
     }
+
+#if defined(_WIN32)
+    if (n < 0) {
+      va_list measureArgs;
+      va_start(measureArgs, fmt);
+      const int requiredLength = _vscprintf(fmt, measureArgs);
+      va_end(measureArgs);
+
+      if (requiredLength < 0 || static_cast<size_t>(requiredLength) < buffer.size()) {
+        throw std::runtime_error("failed to format log message");
+      }
+
+      buffer.resize(static_cast<size_t>(requiredLength) + 1);
+      continue;
+    }
+#else
+    if (n < 0) {
+      throw std::runtime_error("failed to format log message");
+    }
+#endif
+
+    buffer.resize(static_cast<size_t>(n) + 1);
   }
 
   if (priority == LogLevel::Level::Print) {

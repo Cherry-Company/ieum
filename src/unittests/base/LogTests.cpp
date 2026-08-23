@@ -81,6 +81,28 @@ void LogTests::printTestLogString()
   QCOMPARE(string, QString("INFO: %1").arg(longString));
 }
 
+void LogTests::printBoundaryString_data()
+{
+  QTest::addColumn<int>("length");
+
+  QTest::newRow("one-byte-below-capacity") << 1023;
+  QTest::newRow("exact-capacity") << 1024;
+  QTest::newRow("one-byte-above-capacity") << 1025;
+}
+
+void LogTests::printBoundaryString()
+{
+  QFETCH(int, length);
+  const std::string input(static_cast<size_t>(length), 'x');
+  std::stringstream buffer;
+  std::streambuf *old = std::cout.rdbuf(buffer.rdbuf());
+
+  m_log.print(nullptr, 0, LEVEL_PRINT "%s", input.c_str());
+
+  std::cout.rdbuf(old);
+  QCOMPARE(buffer.str(), input + '\n');
+}
+
 void LogTests::printLevelToHigh()
 {
   std::stringstream buffer;
