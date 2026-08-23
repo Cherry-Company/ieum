@@ -1,0 +1,203 @@
+flowchart LR
+  classDef application fill:#dbeafe,stroke:#2563eb,color:#172554
+  classDef library fill:#dcfce7,stroke:#16a34a,color:#052e16
+  classDef test fill:#fef3c7,stroke:#d97706,color:#451a03
+  classDef support fill:#f3e8ff,stroke:#9333ea,color:#3b0764
+  subgraph g00["Applications"]
+    n000["app:deskflow-core<br/>ieum-core"]
+    n001["app:deskflow-daemon<br/>ieum-daemon"]
+    n002["app:deskflow-gui<br/>ieum"]
+    n003["app:res"]
+  end
+  subgraph g01["Libraries"]
+    n008["lib:arch<br/>arch"]
+    n009["lib:base<br/>base"]
+    n010["lib:client<br/>client"]
+    n011["lib:common<br/>common"]
+    n012["lib:deskflow<br/>app"]
+    n013["lib:gui<br/>gui"]
+    n014["lib:io<br/>io"]
+    n015["lib:mt<br/>mt"]
+    n016["lib:net<br/>net"]
+    n017["lib:platform<br/>platform"]
+    n018["lib:server<br/>server"]
+  end
+  subgraph g02["Tests"]
+    n026["test:base<br/>BaseExceptionTests, EventQueueTests, LogTests, StringTests, UnicodeTests"]
+    n027["test:client<br/>ServerProxyTests"]
+    n028["test:codegraph-tools"]
+    n029["test:common<br/>I18NTests, LogLevelTests, NetworkInterfacesTests, SettingsTests, TailscaleIntegrationTests"]
+    n030["test:deskflow<br/>CanonicalScancodeTests, ClientReconnectPolicyTests, ClipboardChunksTests, ClipboardTests, IKeyStateTests, IpcServerTests, KeyMapTests, KeyStateTests, KeyboardLayoutManagerTests, Protocol19Tests, X11LayoutParserTests"]
+    n031["test:gui<br/>DiagnosticTests, IpcClientTests, KeySequenceTests, LogWidgetTests, LoggerTests, NetworkMonitorTests, ScreenTests, StatusBarTests, StyleUtilsTests, VersionCheckerTests"]
+    n032["test:legacytests<br/>legacytests"]
+    n033["test:net<br/>FingerprintDatabaseTests, FingerprintTests, SecureUtilsTests"]
+    n034["test:platform<br/>MSWindowsClipboardTests, MSWindowsMouseInputTests, OSXClipboardTests, OSXKeyStateTests, XWindowsClipboardTests"]
+    n035["test:server<br/>ServerConfigTests, ServerTests"]
+  end
+  subgraph g03["Tools"]
+    n036["tool:cgtap-logger"]
+    n037["tool:codegraph"]
+    n038["tool:generate-codegraph"]
+    n039["tool:merge-input-timeline"]
+    n040["tool:privacy"]
+  end
+  subgraph g04["Deployment"]
+    n004["deploy:linux"]
+    n005["deploy:mac"]
+    n006["deploy:root"]
+    n007["deploy:windows<br/>wix-custom"]
+  end
+  subgraph g05["Automation"]
+    n022["support:github"]
+  end
+  subgraph g06["Localization"]
+    n025["support:translations"]
+  end
+  subgraph g07["Documentation"]
+    n021["support:docs"]
+  end
+  subgraph g08["Build support"]
+    n020["support:cmake"]
+    n024["support:source-build"]
+  end
+  subgraph g09["Resources"]
+    n019["support:artwork"]
+  end
+  subgraph g10["Other support"]
+    n023["support:root"]
+  end
+  class n000 application
+  class n001 application
+  class n002 application
+  class n003 application
+  class n004 support
+  class n005 support
+  class n006 support
+  class n007 support
+  class n008 library
+  class n009 library
+  class n010 library
+  class n011 library
+  class n012 library
+  class n013 library
+  class n014 library
+  class n015 library
+  class n016 library
+  class n017 library
+  class n018 library
+  class n019 support
+  class n020 support
+  class n021 support
+  class n022 support
+  class n023 support
+  class n024 support
+  class n025 support
+  class n026 test
+  class n027 test
+  class n028 test
+  class n029 test
+  class n030 test
+  class n031 test
+  class n032 test
+  class n033 test
+  class n034 test
+  class n035 test
+  class n036 support
+  class n037 support
+  class n038 support
+  class n039 support
+  class n040 support
+  n000 -->|"include + link"| n008
+  n000 -->|"include + link"| n009
+  n000 -->|"link"| n010
+  n000 -->|"include"| n011
+  n000 -->|"include + link"| n012
+  n000 -->|"link"| n014
+  n000 -->|"link"| n015
+  n000 -->|"link"| n016
+  n000 -->|"link"| n017
+  n000 -->|"link"| n018
+  n001 -->|"include + link"| n008
+  n001 -->|"include + link"| n009
+  n001 -->|"include + link"| n011
+  n001 -->|"include + link"| n012
+  n001 -->|"link"| n014
+  n001 -->|"link"| n015
+  n001 -->|"link"| n016
+  n001 -->|"include + link"| n017
+  n002 -->|"include + link"| n011
+  n002 -->|"include + link"| n013
+  n002 -->|"include"| n017
+  n008 -->|"include"| n009
+  n008 -->|"include + link"| n011
+  n009 -->|"include + link"| n008
+  n009 -->|"include"| n011
+  n009 -->|"include"| n015
+  n010 -->|"include"| n008
+  n010 -->|"include"| n009
+  n010 -->|"include + link"| n011
+  n010 -->|"include + link"| n012
+  n010 -->|"include + link"| n014
+  n010 -->|"include"| n016
+  n012 -->|"include + link"| n008
+  n012 -->|"include + link"| n009
+  n012 -->|"include + link"| n010
+  n012 -->|"include + link"| n011
+  n012 -->|"include"| n014
+  n012 -->|"include + link"| n015
+  n012 -->|"include + link"| n016
+  n012 -->|"include + link"| n017
+  n012 -->|"include + link"| n018
+  n013 -->|"link"| n008
+  n013 -->|"link"| n009
+  n013 -->|"include + link"| n011
+  n013 -->|"include + link"| n016
+  n013 -->|"link"| n017
+  n014 -->|"include"| n009
+  n014 -->|"link"| n011
+  n015 -->|"include"| n008
+  n015 -->|"include + link"| n009
+  n016 -->|"include"| n008
+  n016 -->|"include"| n009
+  n016 -->|"include + link"| n011
+  n016 -->|"include"| n012
+  n016 -->|"include + link"| n014
+  n016 -->|"include + link"| n015
+  n017 -->|"include"| n008
+  n017 -->|"include"| n009
+  n017 -->|"include + link"| n010
+  n017 -->|"include"| n011
+  n017 -->|"include + link"| n012
+  n017 -->|"link"| n014
+  n017 -->|"include"| n015
+  n017 -->|"link"| n016
+  n018 -->|"include"| n008
+  n018 -->|"include"| n009
+  n018 -->|"include + link"| n011
+  n018 -->|"include + link"| n012
+  n018 -->|"include"| n014
+  n018 -->|"include"| n016
+  n026 -->|"include"| n008
+  n026 -->|"include"| n009
+  n027 -->|"include"| n009
+  n027 -->|"include"| n010
+  n027 -->|"include"| n012
+  n027 -->|"include"| n014
+  n029 -->|"include"| n011
+  n030 -->|"include"| n008
+  n030 -->|"include"| n009
+  n030 -->|"include"| n011
+  n030 -->|"include"| n012
+  n030 -->|"include"| n014
+  n031 -->|"include"| n011
+  n031 -->|"include"| n013
+  n032 -->|"include"| n008
+  n032 -->|"include"| n009
+  n032 -->|"link"| n011
+  n032 -->|"include"| n012
+  n033 -->|"include"| n016
+  n034 -->|"include"| n008
+  n034 -->|"include"| n009
+  n034 -->|"include"| n017
+  n035 -->|"include"| n011
+  n035 -->|"include"| n018

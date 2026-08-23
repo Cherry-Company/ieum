@@ -25,6 +25,7 @@ SCANNER = ROOT / "tools/privacy/public_privacy_guard.py"
 HOOK = ROOT / ".githooks/pre-push"
 INSTALLER = ROOT / "tools/privacy/install_hook.sh"
 LINK_CHECKER = ROOT / "tools/privacy/check_public_links.py"
+MANIFEST_REPORTER = ROOT / "tools/privacy/report_public_manifest.py"
 WORKFLOW = ROOT / ".github/workflows/continuous-integration.yml"
 
 
@@ -117,6 +118,45 @@ class PublicPrivacyGuardTests(unittest.TestCase):
 
     def tearDown(self):
         self.temporary.cleanup()
+
+    def test_manifest_reporter_exposes_actionable_ids_without_private_targets(self):
+        private_value = "OwnerPrivateValue"
+        blob_oid = "a" * 40
+        manifest = self.root / "affected.json"
+        manifest.write_text(
+            json.dumps(
+                {
+                    "schema": "ieum.public-surface-manifest.v1",
+                    "result": "affected",
+                    "findings": [
+                        {
+                            "rule_id": "private-owner",
+                            "target": f"git-blob:{blob_oid}:docs/{private_value}.md",
+                            "target_kind": "blob",
+                            "detector": "utf-8",
+                            "offset": 42,
+                        }
+                    ],
+                    "details": {"private_canary": private_value},
+                    "coverage": {
+                        "records": [{"target": private_value}],
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        result = run(["python3", MANIFEST_REPORTER, manifest], ROOT, check=False)
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("result=affected findings=1", result.stdout)
+        self.assertIn("rule_id=private-owner", result.stdout)
+        self.assertIn(f"object={blob_oid}", result.stdout)
+        self.assertIn("target_kind=blob", result.stdout)
+        self.assertIn("detector=utf-8", result.stdout)
+        self.assertIn("offset=42", result.stdout)
+        self.assertNotIn(private_value, result.stdout)
+        self.assertNotIn(private_value, result.stderr)
 
     def test_tree_allows_upstream_provenance_and_hosted_ci_counterexamples(self):
         repo = init_repo(self.root)

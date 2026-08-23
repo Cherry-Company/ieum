@@ -118,6 +118,16 @@ jobs:
             --deny-map-sha256 "$IEUM_PRIVATE_DENY_MAP_SHA256" \
             --manifest-out "$RUNNER_TEMP/privacy-range.json"
 
+      - name: Report safe privacy finding metadata
+        if: failure()
+        shell: bash
+        run: |
+          for manifest in "$RUNNER_TEMP/privacy-tree.json" "$RUNNER_TEMP/privacy-range.json"; do
+            if [[ -f "$manifest" ]]; then
+              python3 tools/privacy/report_public_manifest.py "$manifest"
+            fi
+          done
+
   # Summary of test results, combined from test result artifacts.
   # Runs even if the tests fail to provide a summary of the failures.
   test-results:
