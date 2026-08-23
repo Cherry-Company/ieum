@@ -22,6 +22,17 @@ private Q_SLOTS:
 
     QVERIFY(socket.m_pollWrite);
   }
+
+  void reArmsHintAfterPollerConsumedIt()
+  {
+    ArchNetworkWinsock network;
+    ArchSocketImpl socket{INVALID_SOCKET, 1, WSA_INVALID_EVENT, true};
+    socket.m_pollWrite = false;
+
+    network.resetPollWriteOnSocket(&socket);
+
+    QVERIFY(socket.m_pollWrite);
+  }
 };
 
 QTEST_GUILESS_MAIN(ArchNetworkWinsockTests)
