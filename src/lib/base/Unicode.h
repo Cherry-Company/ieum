@@ -61,6 +61,8 @@ public:
   //@}
 
 private:
+  friend class UnicodeTests;
+
   // internal conversion to UTF8
   static std::string doUCS2ToUTF8(const uint8_t *src, uint32_t n, bool *errors);
   static std::string doUTF16ToUTF8(const uint8_t *src, uint32_t n, bool *errors);

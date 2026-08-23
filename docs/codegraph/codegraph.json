@@ -1805,7 +1805,7 @@
         "c/c++ header": 21,
         "cmake": 1
       },
-      "lineCount": 3690,
+      "lineCount": 3642,
       "path": "src/lib/base",
       "targets": [
         "base"
@@ -2049,7 +2049,7 @@
         "c/c++ header": 5,
         "cmake": 1
       },
-      "lineCount": 551,
+      "lineCount": 649,
       "path": "src/unittests/base",
       "targets": [
         "BaseExceptionTests",
@@ -2640,7 +2640,8 @@
         "src/lib/platform/PortalClipboard.h",
         "src/lib/platform/PortalInputCapture.cpp",
         "src/lib/platform/PortalInputCapture.h",
-        "src/lib/platform/PortalRemoteDesktop.h"
+        "src/lib/platform/PortalRemoteDesktop.h",
+        "src/unittests/base/UnicodeTests.cpp"
       ]
     },
     {
@@ -16799,17 +16800,17 @@
       "binary": false,
       "component": "lib:base",
       "language": "c++",
-      "lineCount": 445,
+      "lineCount": 395,
       "path": "src/lib/base/Unicode.cpp",
-      "sizeBytes": 11374
+      "sizeBytes": 9490
     },
     {
       "binary": false,
       "component": "lib:base",
       "language": "c/c++ header",
-      "lineCount": 75,
+      "lineCount": 77,
       "path": "src/lib/base/Unicode.h",
-      "sizeBytes": 2269
+      "sizeBytes": 2299
     },
     {
       "binary": false,
@@ -20391,17 +20392,17 @@
       "binary": false,
       "component": "test:base",
       "language": "c++",
-      "lineCount": 26,
+      "lineCount": 118,
       "path": "src/unittests/base/UnicodeTests.cpp",
-      "sizeBytes": 625
+      "sizeBytes": 3988
     },
     {
       "binary": false,
       "component": "test:base",
       "language": "c/c++ header",
-      "lineCount": 20,
+      "lineCount": 26,
       "path": "src/unittests/base/UnicodeTests.h",
-      "sizeBytes": 387
+      "sizeBytes": 604
     },
     {
       "binary": false,
@@ -21341,9 +21342,9 @@
     }
   ],
   "revision": {
-    "branch": "fix/log-rotation-tail",
-    "commit": "fd654ce186f59ed19e879c13c9b3755725d60bc7",
-    "dirtyTrackedFiles": true
+    "branch": "fix/rfc3629-utf8",
+    "commit": "148462715466c478af0374e1607194624788e88f",
+    "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
   "summary": {
@@ -21353,7 +21354,7 @@
     "fileIncludeEdges": 1395,
     "representedFiles": 949,
     "sourceFiles": 590,
-    "sourceLines": 94538,
+    "sourceLines": 94588,
     "targets": 62,
     "trackedFiles": 952
   },

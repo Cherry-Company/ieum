@@ -14,6 +14,12 @@ class UnicodeTests : public QObject
 private Q_SLOTS:
   void initTestCase();
   void UTF16ToUTF8();
+  void acceptsRFC3629Boundaries();
+  void rejectsInvalidUTF8_data();
+  void rejectsInvalidUTF8();
+  void maximumScalarRoundTrips();
+  void encoderRejectsNonScalarValues_data();
+  void encoderRejectsNonScalarValues();
 
 private:
   Log m_log;
