@@ -1971,7 +1971,7 @@
         "cmake": 3,
         "markdown": 19
       },
-      "lineCount": 3751,
+      "lineCount": 3767,
       "path": "docs",
       "targets": []
     },
@@ -1985,7 +1985,7 @@
         "powershell": 2,
         "yaml": 18
       },
-      "lineCount": 3363,
+      "lineCount": 3410,
       "path": ".github",
       "targets": []
     },
@@ -2001,7 +2001,7 @@
         "text": 4,
         "toml": 1
       },
-      "lineCount": 2890,
+      "lineCount": 2892,
       "path": ".",
       "targets": []
     },
@@ -2223,6 +2223,17 @@
     },
     {
       "fileCount": 1,
+      "id": "tool:ci",
+      "kind": "tool",
+      "languageCounts": {
+        "python": 1
+      },
+      "lineCount": 96,
+      "path": "tools/ci",
+      "targets": []
+    },
+    {
+      "fileCount": 1,
       "id": "tool:codegraph",
       "kind": "tool",
       "languageCounts": {
@@ -2288,6 +2299,11 @@
       "component": "tool:cgtap-logger",
       "kind": "tool",
       "path": "tools/cgtap-logger/main.swift"
+    },
+    {
+      "component": "tool:ci",
+      "kind": "tool",
+      "path": "tools/ci/tests/test_analysis_workflows.py"
     },
     {
       "component": "tool:generate-codegraph",
@@ -13856,23 +13872,23 @@
       "language": "yaml",
       "lineCount": 62,
       "path": ".github/workflows/codeql-analysis.yml",
-      "sizeBytes": 1531
+      "sizeBytes": 1536
     },
     {
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 982,
+      "lineCount": 995,
       "path": ".github/workflows/continuous-integration.yml",
-      "sizeBytes": 36782
+      "sizeBytes": 37151
     },
     {
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 100,
+      "lineCount": 134,
       "path": ".github/workflows/sonarcloud-analysis.yml",
-      "sizeBytes": 2937
+      "sizeBytes": 4568
     },
     {
       "binary": false,
@@ -13886,9 +13902,9 @@
       "binary": false,
       "component": "support:root",
       "language": "other",
-      "lineCount": 51,
+      "lineCount": 53,
       "path": ".gitignore",
-      "sizeBytes": 842
+      "sizeBytes": 865
     },
     {
       "binary": false,
@@ -14310,9 +14326,9 @@
       "binary": false,
       "component": "support:docs",
       "language": "markdown",
-      "lineCount": 13,
+      "lineCount": 29,
       "path": "docs/dev/contributing.md",
-      "sizeBytes": 600
+      "sizeBytes": 1285
     },
     {
       "binary": false,
@@ -21060,6 +21076,14 @@
     },
     {
       "binary": false,
+      "component": "tool:ci",
+      "language": "python",
+      "lineCount": 96,
+      "path": "tools/ci/tests/test_analysis_workflows.py",
+      "sizeBytes": 3601
+    },
+    {
+      "binary": false,
       "component": "tool:codegraph",
       "language": "python",
       "lineCount": 945,
@@ -21204,21 +21228,21 @@
     }
   ],
   "revision": {
-    "branch": "roadmap/v1-reliability",
-    "commit": "2fe4f37a29320cae61d69be016a2850c1eb75b6b",
-    "dirtyTrackedFiles": false
+    "branch": "ci/default-branch-analysis",
+    "commit": "bcd6a46f4b4fc42ea95d7c156523d349e129abb0",
+    "dirtyTrackedFiles": true
   },
   "schemaVersion": 1,
   "summary": {
     "componentEdges": 94,
-    "components": 41,
+    "components": 42,
     "excludedFiles": 3,
     "fileIncludeEdges": 1392,
-    "representedFiles": 944,
-    "sourceFiles": 586,
-    "sourceLines": 93758,
+    "representedFiles": 945,
+    "sourceFiles": 587,
+    "sourceLines": 93854,
     "targets": 60,
-    "trackedFiles": 947
+    "trackedFiles": 948
   },
   "targets": [
     {

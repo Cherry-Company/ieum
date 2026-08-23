@@ -14,9 +14,10 @@ on:
       - '!src/res/**'
       - '!src/unittests/**'
   push:
-    branches: [master]
+    branches: ["ieum/main"]
     paths:
-      - '.github/workflows/codeql-analysis.yml'
+      - '.github/workflows/sonarcloud-analysis.yml'
+      - 'sonar-project.properties'
       - 'cmake/Libraries.cmake'
       - 'CMakeLists.txt'
       - 'src/**'
@@ -29,10 +30,6 @@ concurrency:
 
 jobs:
   sonar:
-    # This job would fail for contributors who open PRs as the workflow runs outside of our repo
-    # in this scenario. Having a var that only we set to true prevents this job from running.
-    if: ${{ vars.SONAR_SCANNER_ENABLED }}
-
     runs-on: ubuntu-latest
     container: debian:trixie-slim
     timeout-minutes: 20
@@ -41,23 +38,56 @@ jobs:
       CPU_CORE_COUNT: 4
 
     steps:
+      - name: Check SonarCloud configuration
+        id: configuration
+        shell: bash
+        env:
+          SONAR_SCANNER_ENABLED: ${{ vars.SONAR_SCANNER_ENABLED }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          run_analysis=false
+          if [[ "$SONAR_SCANNER_ENABLED" != "true" ]]; then
+            reason="repository variable SONAR_SCANNER_ENABLED is not true"
+          elif [[ -z "$SONAR_TOKEN" ]]; then
+            reason="repository secret SONAR_TOKEN is not configured for this event"
+          else
+            run_analysis=true
+            reason="repository variable and secret are configured"
+          fi
+
+          printf 'run_analysis=%s\n' "$run_analysis" >> "$GITHUB_OUTPUT"
+          if [[ "$run_analysis" == "true" ]]; then
+            echo "::notice title=SonarCloud analysis enabled::$reason"
+            printf '### SonarCloud analysis\n\nEnabled: %s.\n' "$reason" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::notice title=SonarCloud analysis skipped::$reason"
+            printf '### SonarCloud analysis\n\nSkipped intentionally: %s.\n' "$reason" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Install container dependencies
+        if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
         run: |
           apt update -qqq > /dev/null
           apt install -qqq git curl unzip gcovr dirmngr gpg > /dev/null
 
       - name: Fancy Checkout
+        if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
         uses: sithlord48/fancy-checkout@v2
 
       - name: Install project dependencies
+        if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
         uses: ./.github/actions/install-dependencies
         with:
           like: "debian"
 
       - name: Install Build Wrapper
+        if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
         uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v8
 
       - name: Configure
+        if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
         run: |
           cmake -B build \
             -G "Ninja" \
@@ -67,10 +97,12 @@ jobs:
             -DENABLE_COVERAGE=ON
 
       - name: Build
+        if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
         run: |
           build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build -j${CPU_CORE_COUNT}
 
       - name: Test coverage
+        if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
         shell: bash
         env:
           QT_QPA_PLATFORM: offscreen
@@ -81,6 +113,7 @@ jobs:
           done
 
       - name: Get coverage report paths
+        if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
         id: coverage-paths
         run: |
           paths=$(ls -w 0 -m build/coverage-*.xml | sed 's/ //g')
@@ -91,6 +124,7 @@ jobs:
           echo "csv=$paths" >> $GITHUB_OUTPUT
 
       - name: SonarQube Scan
+        if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
         uses: SonarSource/sonarqube-scan-action@v8
         with:
           args: >

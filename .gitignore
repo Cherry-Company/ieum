@@ -24,6 +24,8 @@ deskflow-config.toml
 /scripts/*.egg-info
 /*.user
 *.ui.autosave
+__pycache__/
+*.py[cod]
 
 #Qt creator 18 user files
 /.qtcreator

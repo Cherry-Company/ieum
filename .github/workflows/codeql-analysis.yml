@@ -13,7 +13,7 @@ on:
       - '!src/res/**'
       - '!src/unittests/**'
   push:
-    branches: [master]
+    branches: ["ieum/main"]
     paths:
       - '.github/workflows/codeql-analysis.yml'
       - 'cmake/Libraries.cmake'
