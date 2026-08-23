@@ -14,6 +14,14 @@ create_test(
 )
 
 create_test(
+  NAME SecureSocketWriteBufferTests
+  DEPENDS net
+  LIBS base arch mt io ${extra_libs}
+  SOURCE SecureSocketWriteBufferTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/net"
+)
+
+create_test(
   NAME FingerprintTests
   DEPENDS net
   LIBS base arch mt io ${extra_libs}
@@ -28,5 +36,4 @@ create_test(
   SOURCE FingerprintDatabaseTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/net"
 )
-
 
