@@ -20,6 +20,15 @@ private Q_SLOTS:
   void handleData_incompleteMessage_queuesDisconnectRequest();
   void handleData_largeBurst_queuesBoundedContinuation();
   void parseHandshakeMessage_protocolError_queuesRefusalRequest();
+  void handleData_truncatedHandshakePayload_queuesDisconnectRequest();
+  void parseMessage_truncatedPayload_data();
+  void parseMessage_truncatedPayload();
+  void parseHandshakeMessage_truncatedLanguagePayload_throws();
+  void parseMessage_allocationFailure_throwsBeforeSideEffects();
+  void clientProxy_truncatedInitialInfo_disconnects();
+  void clientProxy_allocationFailure_disconnects();
+  void clientProxy_truncatedRuntimePayload_disconnects_data();
+  void clientProxy_truncatedRuntimePayload_disconnects();
 
 private:
   Log m_log;

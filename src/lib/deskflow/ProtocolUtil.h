@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "deskflow/DeskflowException.h"
 #include "io/IOException.h"
 
 #include <cstdint>
@@ -63,6 +64,19 @@ public:
   - \%s   -- reads bytes;  argument must be a std::string*, \b not a char*
   */
   static bool readf(deskflow::IStream *, const char *fmt, ...);
+
+  //! Read formatted data or reject the peer message
+  /*!
+  Calls readf() and throws BadClientException if the complete format cannot
+  be decoded. Receive handlers should use this when continuing after a short
+  read or allocation failure would make the current message boundary unsafe.
+  */
+  template <typename... Args> static void readfOrThrow(deskflow::IStream *stream, const char *fmt, Args... args)
+  {
+    if (!readf(stream, fmt, args...)) {
+      throw BadClientException("failed to decode protocol message");
+    }
+  }
 
 private:
   static void vwritef(deskflow::IStream *, const char *fmt, uint32_t size, va_list);

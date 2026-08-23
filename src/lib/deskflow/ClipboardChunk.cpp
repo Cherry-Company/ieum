@@ -82,7 +82,9 @@ TransferState ClipboardChunk::assemble(
 )
 {
   using enum TransferState;
-  uint8_t mark;
+  id = 0;
+  sequence = 0;
+  uint8_t mark = 0;
   std::string data;
   auto reset = [&]() {
     state = {};

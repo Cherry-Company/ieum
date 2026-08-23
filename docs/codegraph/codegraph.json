@@ -1381,6 +1381,7 @@
     {
       "evidence": [
         "src/unittests/client/ServerProxyTests.cpp: #include \"deskflow/AppUtil.h\" -> src/lib/deskflow/AppUtil.h",
+        "src/unittests/client/ServerProxyTests.cpp: #include \"deskflow/DeskflowException.h\" -> src/lib/deskflow/DeskflowException.h",
         "src/unittests/client/ServerProxyTests.cpp: #include \"deskflow/ProtocolTypes.h\" -> src/lib/deskflow/ProtocolTypes.h"
       ],
       "kinds": [
@@ -1398,6 +1399,18 @@
       ],
       "source": "test:client",
       "target": "lib:io"
+    },
+    {
+      "evidence": [
+        "src/unittests/client/ServerProxyTests.cpp: #include \"server/ClientProxy1_0.h\" -> src/lib/server/ClientProxy1_0.h",
+        "src/unittests/client/ServerProxyTests.cpp: #include \"server/ClientProxy1_11.h\" -> src/lib/server/ClientProxy1_11.h",
+        "src/unittests/client/ServerProxyTests.cpp: #include \"server/Server.h\" -> src/lib/server/Server.h"
+      ],
+      "kinds": [
+        "include"
+      ],
+      "source": "test:client",
+      "target": "lib:server"
     },
     {
       "evidence": [
@@ -1832,7 +1845,7 @@
         "c/c++ header": 2,
         "cmake": 1
       },
-      "lineCount": 2289,
+      "lineCount": 2295,
       "path": "src/lib/client",
       "targets": [
         "client"
@@ -1863,7 +1876,7 @@
         "c/c++ header": 45,
         "cmake": 1
       },
-      "lineCount": 13375,
+      "lineCount": 13391,
       "path": "src/lib/deskflow",
       "targets": [
         "app"
@@ -1958,7 +1971,7 @@
         "c/c++ header": 21,
         "cmake": 1
       },
-      "lineCount": 9537,
+      "lineCount": 9539,
       "path": "src/lib/server",
       "targets": [
         "server"
@@ -2081,7 +2094,7 @@
         "c/c++ header": 1,
         "cmake": 1
       },
-      "lineCount": 398,
+      "lineCount": 601,
       "path": "src/unittests/client",
       "targets": [
         "ServerProxyTests"
@@ -2126,7 +2139,7 @@
         "c/c++ header": 14,
         "cmake": 1
       },
-      "lineCount": 2093,
+      "lineCount": 2139,
       "path": "src/unittests/deskflow",
       "targets": [
         "CanonicalScancodeTests",
@@ -4837,6 +4850,14 @@
     },
     {
       "kind": "system-include",
+      "name": "new",
+      "sources": [
+        "src/unittests/client/ServerProxyTests.cpp",
+        "src/unittests/deskflow/ClipboardChunksTests.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
       "name": "openssl/err.h",
       "sources": [
         "src/lib/net/SecureSocket.cpp",
@@ -4895,7 +4916,8 @@
         "src/lib/platform/MSWindowsWatchdog.h",
         "src/lib/platform/OSXKeyState.h",
         "src/lib/platform/OSXScreen.h",
-        "src/lib/server/CursorTransform.h"
+        "src/lib/server/CursorTransform.h",
+        "src/unittests/client/ServerProxyTests.cpp"
       ]
     },
     {
@@ -7380,6 +7402,12 @@
       "kind": "include",
       "source": "src/lib/deskflow/ProtocolUtil.cpp",
       "target": "src/lib/io/IStream.h"
+    },
+    {
+      "evidence": "#include \"deskflow/DeskflowException.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/ProtocolUtil.h",
+      "target": "src/lib/deskflow/DeskflowException.h"
     },
     {
       "evidence": "#include \"io/IOException.h\"",
@@ -12968,6 +12996,12 @@
       "target": "src/lib/deskflow/AppUtil.h"
     },
     {
+      "evidence": "#include \"deskflow/DeskflowException.h\"",
+      "kind": "include",
+      "source": "src/unittests/client/ServerProxyTests.cpp",
+      "target": "src/lib/deskflow/DeskflowException.h"
+    },
+    {
       "evidence": "#include \"deskflow/ProtocolTypes.h\"",
       "kind": "include",
       "source": "src/unittests/client/ServerProxyTests.cpp",
@@ -12978,6 +13012,24 @@
       "kind": "include",
       "source": "src/unittests/client/ServerProxyTests.cpp",
       "target": "src/lib/io/IStream.h"
+    },
+    {
+      "evidence": "#include \"server/ClientProxy1_0.h\"",
+      "kind": "include",
+      "source": "src/unittests/client/ServerProxyTests.cpp",
+      "target": "src/lib/server/ClientProxy1_0.h"
+    },
+    {
+      "evidence": "#include \"server/ClientProxy1_11.h\"",
+      "kind": "include",
+      "source": "src/unittests/client/ServerProxyTests.cpp",
+      "target": "src/lib/server/ClientProxy1_11.h"
+    },
+    {
+      "evidence": "#include \"server/Server.h\"",
+      "kind": "include",
+      "source": "src/unittests/client/ServerProxyTests.cpp",
+      "target": "src/lib/server/Server.h"
     },
     {
       "evidence": "#include \"ServerProxyTests.h\"",
@@ -16873,9 +16925,9 @@
       "binary": false,
       "component": "lib:client",
       "language": "c++",
-      "lineCount": 782,
+      "lineCount": 788,
       "path": "src/lib/client/Client.cpp",
-      "sizeBytes": 21358
+      "sizeBytes": 21566
     },
     {
       "binary": false,
@@ -16891,7 +16943,7 @@
       "language": "c++",
       "lineCount": 1067,
       "path": "src/lib/client/ServerProxy.cpp",
-      "sizeBytes": 30844
+      "sizeBytes": 31280
     },
     {
       "binary": false,
@@ -17185,9 +17237,9 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "c++",
-      "lineCount": 195,
+      "lineCount": 197,
       "path": "src/lib/deskflow/ClipboardChunk.cpp",
-      "sizeBytes": 5195
+      "sizeBytes": 5225
     },
     {
       "binary": false,
@@ -17489,9 +17541,9 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "c/c++ header",
-      "lineCount": 107,
+      "lineCount": 121,
       "path": "src/lib/deskflow/ProtocolUtil.h",
-      "sizeBytes": 3710
+      "sizeBytes": 4281
     },
     {
       "binary": false,
@@ -20075,7 +20127,7 @@
       "language": "c++",
       "lineCount": 440,
       "path": "src/lib/server/ClientProxy1_0.cpp",
-      "sizeBytes": 12324
+      "sizeBytes": 12382
     },
     {
       "binary": false,
@@ -20203,7 +20255,7 @@
       "language": "c++",
       "lineCount": 85,
       "path": "src/lib/server/ClientProxy1_6.cpp",
-      "sizeBytes": 2540
+      "sizeBytes": 2548
     },
     {
       "binary": false,
@@ -20249,9 +20301,9 @@
       "binary": false,
       "component": "lib:server",
       "language": "c++",
-      "lineCount": 59,
+      "lineCount": 61,
       "path": "src/lib/server/ClientProxy1_9.cpp",
-      "sizeBytes": 2130
+      "sizeBytes": 2159
     },
     {
       "binary": false,
@@ -20267,7 +20319,7 @@
       "language": "c++",
       "lineCount": 277,
       "path": "src/lib/server/ClientProxyUnknown.cpp",
-      "sizeBytes": 7964
+      "sizeBytes": 7972
     },
     {
       "binary": false,
@@ -20465,17 +20517,17 @@
       "binary": false,
       "component": "test:client",
       "language": "c++",
-      "lineCount": 358,
+      "lineCount": 552,
       "path": "src/unittests/client/ServerProxyTests.cpp",
-      "sizeBytes": 8505
+      "sizeBytes": 14967
     },
     {
       "binary": false,
       "component": "test:client",
       "language": "c/c++ header",
-      "lineCount": 26,
+      "lineCount": 35,
       "path": "src/unittests/client/ServerProxyTests.h",
-      "sizeBytes": 617
+      "sizeBytes": 1130
     },
     {
       "binary": false,
@@ -20601,17 +20653,17 @@
       "binary": false,
       "component": "test:deskflow",
       "language": "c++",
-      "lineCount": 288,
+      "lineCount": 332,
       "path": "src/unittests/deskflow/ClipboardChunksTests.cpp",
-      "sizeBytes": 7108
+      "sizeBytes": 8298
     },
     {
       "binary": false,
       "component": "test:deskflow",
       "language": "c/c++ header",
-      "lineCount": 26,
+      "lineCount": 28,
       "path": "src/unittests/deskflow/ClipboardChunksTests.h",
-      "sizeBytes": 638
+      "sizeBytes": 751
     },
     {
       "binary": false,
@@ -21399,19 +21451,19 @@
     }
   ],
   "revision": {
-    "branch": "fix/network-address-hardening",
-    "commit": "9bdd1d3988d62208d05743e337f287aacfc0d365",
+    "branch": "fix/protocol-readf-failures",
+    "commit": "52e8d97027277adb3d1b7b9b2cf0b3d67ca08c04",
     "dirtyTrackedFiles": true
   },
   "schemaVersion": 1,
   "summary": {
-    "componentEdges": 96,
+    "componentEdges": 97,
     "components": 42,
     "excludedFiles": 3,
-    "fileIncludeEdges": 1398,
+    "fileIncludeEdges": 1403,
     "representedFiles": 950,
     "sourceFiles": 591,
-    "sourceLines": 94789,
+    "sourceLines": 95062,
     "targets": 63,
     "trackedFiles": 953
   },
