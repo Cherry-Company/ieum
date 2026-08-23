@@ -126,10 +126,10 @@ void ClientProxy1_0::handleData()
             (CLOG_ERR "invalid message from client \"%s\": %c%c%c%c", getName().c_str(), code[0], code[1], code[2],
              code[3])
         );
-        // not possible to determine message boundaries
-        // read the whole stream to discard unkonwn data
-        while (getStream()->read(nullptr, 4))
-          ;
+        // The message boundary is no longer trustworthy. Closing the stream
+        // prevents any trailing bytes from being treated as another message.
+        disconnect();
+        return;
       }
     } catch (const BadClientException &e) {
       LOG_ERR("protocol error from client \"%s\": %s", getName().c_str(), e.what());
@@ -374,13 +374,13 @@ void ClientProxy1_0::setOptions(const OptionsList &options)
 bool ClientProxy1_0::recvInfo()
 {
   // parse the message
-  int16_t x;
-  int16_t y;
-  int16_t w;
-  int16_t h;
-  int16_t dummy1;
-  int16_t mx;
-  int16_t my;
+  int16_t x = 0;
+  int16_t y = 0;
+  int16_t w = 0;
+  int16_t h = 0;
+  int16_t dummy1 = 0;
+  int16_t mx = 0;
+  int16_t my = 0;
   if (!ProtocolUtil::readf(getStream(), kMsgDInfo + 4, &x, &y, &w, &h, &dummy1, &mx, &my)) {
     return false;
   }
@@ -418,8 +418,8 @@ bool ClientProxy1_0::recvClipboard()
 bool ClientProxy1_0::recvGrabClipboard()
 {
   // parse message
-  ClipboardID id;
-  uint32_t seqNum;
+  ClipboardID id = 0;
+  uint32_t seqNum = 0;
   if (!ProtocolUtil::readf(getStream(), kMsgCClipboard + 4, &id, &seqNum)) {
     return false;
   }

@@ -11,8 +11,12 @@
 #include "client/Client.h"
 #include "client/ServerProxy.h"
 #include "deskflow/AppUtil.h"
+#include "deskflow/DeskflowException.h"
 #include "deskflow/ProtocolTypes.h"
 #include "io/IStream.h"
+#include "server/ClientProxy1_0.h"
+#include "server/ClientProxy1_11.h"
+#include "server/Server.h"
 
 #include <QTest>
 
@@ -22,6 +26,8 @@
 #include <deque>
 #include <functional>
 #include <map>
+#include <new>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -58,14 +64,28 @@ public:
     m_chunks.push_back(bytes);
   }
 
+  void failReadAfter(size_t successfulReads)
+  {
+    m_readsBeforeFailure = successfulReads;
+  }
+
   void close() override
   {
     m_chunks.clear();
     m_inputShutdown = true;
+    m_closed = true;
   }
 
   uint32_t read(void *buffer, uint32_t size) override
   {
+    if (m_readsBeforeFailure.has_value()) {
+      if (*m_readsBeforeFailure == 0) {
+        m_readsBeforeFailure.reset();
+        throw std::bad_alloc();
+      }
+      --*m_readsBeforeFailure;
+    }
+
     if (m_inputShutdown || m_chunks.empty() || size == 0) {
       return 0;
     }
@@ -119,9 +139,16 @@ public:
     return static_cast<uint32_t>(std::min<size_t>(total, UINT32_MAX));
   }
 
+  bool closed() const
+  {
+    return m_closed;
+  }
+
 private:
   std::deque<std::string> m_chunks;
+  std::optional<size_t> m_readsBeforeFailure;
   bool m_inputShutdown = false;
+  bool m_closed = false;
 };
 
 class RecordingEventQueue : public IEventQueue
@@ -129,9 +156,15 @@ class RecordingEventQueue : public IEventQueue
 public:
   ~RecordingEventQueue() override
   {
+    clearAddedEvents();
+  }
+
+  void clearAddedEvents()
+  {
     for (const auto &event : m_addedEvents) {
       Event::deleteData(event);
     }
+    m_addedEvents.clear();
   }
 
   int loop() override
@@ -251,7 +284,48 @@ public:
   {
     return parseHandshakeMessage(code) == ConnectionResult::Disconnect;
   }
+
+  void parseHandshake(const QByteArray &code)
+  {
+    (void)parseHandshakeMessage(reinterpret_cast<const uint8_t *>(code.constData()));
+  }
+
+  void parseNormal(const QByteArray &code)
+  {
+    (void)parseMessage(reinterpret_cast<const uint8_t *>(code.constData()));
+  }
 };
+
+std::string codeOnly(const char *message)
+{
+  return {message, 4};
+}
+
+void appendU16(std::string &bytes, uint16_t value)
+{
+  bytes.push_back(static_cast<char>((value >> 8) & 0xff));
+  bytes.push_back(static_cast<char>(value & 0xff));
+}
+
+std::string validInfoMessage()
+{
+  std::string message = codeOnly(kMsgDInfo);
+  appendU16(message, 0);
+  appendU16(message, 0);
+  appendU16(message, 100);
+  appendU16(message, 100);
+  appendU16(message, 0);
+  appendU16(message, 50);
+  appendU16(message, 50);
+  return message;
+}
+
+void verifyClientProxyDisconnected(const RecordingEventQueue &events, const FakeStream &stream)
+{
+  QVERIFY(stream.closed());
+  QCOMPARE(events.addedEvents().size(), static_cast<size_t>(1));
+  QVERIFY(events.addedEvents().front().getType() == EventTypes::ClientProxyDisconnected);
+}
 
 Client *undereferenceableClient()
 {
@@ -353,6 +427,126 @@ void ServerProxyTests::parseHandshakeMessage_protocolError_queuesRefusalRequest(
   QVERIFY(request->kind() == Client::DisconnectRequest::Kind::Refuse);
   QVERIFY(request->refusalReason() == deskflow::core::ConnectionRefusal::ProtocolError);
   QCOMPARE(QString::fromUtf8(request->message()), QStringLiteral("server reported a protocol error"));
+}
+
+void ServerProxyTests::handleData_truncatedHandshakePayload_queuesDisconnectRequest()
+{
+  RecordingEventQueue events;
+  FakeStream stream;
+  stream.push(codeOnly(kMsgEIncompatible));
+  TestServerProxy proxy(undereferenceableClient(), &stream, &events);
+
+  QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, stream.getEventTarget())));
+
+  const auto *request = disconnectRequest(events);
+  QVERIFY(request != nullptr);
+  QVERIFY(request->kind() == Client::DisconnectRequest::Kind::Disconnect);
+  QCOMPARE(QString::fromUtf8(request->message()), QStringLiteral("invalid message from server"));
+}
+
+void ServerProxyTests::parseMessage_truncatedPayload_data()
+{
+  QTest::addColumn<QByteArray>("code");
+
+  QTest::newRow("absolute mouse motion") << QByteArray(kMsgDMouseMove, 4);
+  QTest::newRow("relative mouse motion") << QByteArray(kMsgDMouseRelMove, 4);
+  QTest::newRow("mouse wheel") << QByteArray(kMsgDMouseWheel, 4);
+  QTest::newRow("key down") << QByteArray(kMsgDKeyDown, 4);
+  QTest::newRow("key down with language") << QByteArray(kMsgDKeyDownLang, 4);
+  QTest::newRow("key repeat") << QByteArray(kMsgDKeyRepeat, 4);
+  QTest::newRow("key up") << QByteArray(kMsgDKeyUp, 4);
+  QTest::newRow("mouse down") << QByteArray(kMsgDMouseDown, 4);
+  QTest::newRow("mouse up") << QByteArray(kMsgDMouseUp, 4);
+  QTest::newRow("enter") << QByteArray(kMsgCEnter, 4);
+  QTest::newRow("clipboard ownership") << QByteArray(kMsgCClipboard, 4);
+  QTest::newRow("screen saver") << QByteArray(kMsgCScreenSaver, 4);
+  QTest::newRow("options") << QByteArray(kMsgDSetOptions, 4);
+  QTest::newRow("secure input") << QByteArray(kMsgDSecureInputNotification, 4);
+  QTest::newRow("input language control") << QByteArray(kMsgDInputLangControl, 4);
+}
+
+void ServerProxyTests::parseMessage_truncatedPayload()
+{
+  QFETCH(QByteArray, code);
+
+  RecordingEventQueue events;
+  FakeStream stream;
+  TestServerProxy proxy(undereferenceableClient(), &stream, &events);
+
+  QVERIFY_THROWS_EXCEPTION(BadClientException, proxy.parseNormal(code));
+  QVERIFY(events.addedEvents().empty());
+}
+
+void ServerProxyTests::parseHandshakeMessage_truncatedLanguagePayload_throws()
+{
+  RecordingEventQueue events;
+  FakeStream stream;
+  TestServerProxy proxy(undereferenceableClient(), &stream, &events);
+
+  QVERIFY_THROWS_EXCEPTION(BadClientException, proxy.parseHandshake(QByteArray(kMsgDLanguageSynchronisation, 4)));
+  QVERIFY(events.addedEvents().empty());
+}
+
+void ServerProxyTests::parseMessage_allocationFailure_throwsBeforeSideEffects()
+{
+  RecordingEventQueue events;
+  FakeStream stream;
+  stream.failReadAfter(0);
+  TestServerProxy proxy(undereferenceableClient(), &stream, &events);
+
+  QVERIFY_THROWS_EXCEPTION(BadClientException, proxy.parseNormal(QByteArray(kMsgDSecureInputNotification, 4)));
+  QVERIFY(events.addedEvents().empty());
+}
+
+void ServerProxyTests::clientProxy_truncatedInitialInfo_disconnects()
+{
+  RecordingEventQueue events;
+  auto *stream = new FakeStream;
+  ClientProxy1_0 proxy("secondary", stream, &events);
+  stream->push(codeOnly(kMsgDInfo));
+
+  QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, stream->getEventTarget())));
+  verifyClientProxyDisconnected(events, *stream);
+}
+
+void ServerProxyTests::clientProxy_allocationFailure_disconnects()
+{
+  RecordingEventQueue events;
+  auto *stream = new FakeStream;
+  ClientProxy1_0 proxy("secondary", stream, &events);
+  stream->push(codeOnly(kMsgDInfo));
+  stream->failReadAfter(1);
+
+  QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, stream->getEventTarget())));
+  verifyClientProxyDisconnected(events, *stream);
+}
+
+void ServerProxyTests::clientProxy_truncatedRuntimePayload_disconnects_data()
+{
+  QTest::addColumn<QByteArray>("code");
+
+  QTest::newRow("clipboard ownership") << QByteArray(kMsgCClipboard, 4);
+  QTest::newRow("input language status") << QByteArray(kMsgCInputLangStatus, 4);
+  QTest::newRow("display layout") << QByteArray(kMsgCDisplayLayout, 4);
+  QTest::newRow("foreground fullscreen") << QByteArray(kMsgCForegroundFullscreen, 4);
+}
+
+void ServerProxyTests::clientProxy_truncatedRuntimePayload_disconnects()
+{
+  QFETCH(QByteArray, code);
+
+  RecordingEventQueue events;
+  auto *stream = new FakeStream;
+  ClientProxy1_11 proxy("secondary", stream, reinterpret_cast<Server *>(0x1), &events);
+
+  stream->push(validInfoMessage());
+  QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, stream->getEventTarget())));
+  QVERIFY(!stream->closed());
+  events.clearAddedEvents();
+
+  stream->push({code.constData(), static_cast<size_t>(code.size())});
+  QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, stream->getEventTarget())));
+  verifyClientProxyDisconnected(events, *stream);
 }
 
 QTEST_MAIN(ServerProxyTests)

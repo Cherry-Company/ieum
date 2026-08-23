@@ -209,9 +209,9 @@ ServerProxy::ConnectionResult ServerProxy::parseHandshakeMessage(const uint8_t *
   }
 
   else if (memcmp(code, kMsgEIncompatible, 4) == 0) {
-    int32_t major;
-    int32_t minor;
-    ProtocolUtil::readf(m_stream, kMsgEIncompatible + 4, &major, &minor);
+    int32_t major = 0;
+    int32_t minor = 0;
+    ProtocolUtil::readfOrThrow(m_stream, kMsgEIncompatible + 4, &major, &minor);
     LOG_ERR("server has incompatible version %d.%d", major, minor);
     requestRefuseConnection(IncompatibleVersion, "server has incompatible version");
     return Disconnect;
@@ -262,7 +262,7 @@ ServerProxy::ConnectionResult ServerProxy::parseMessage(const uint8_t *code)
     uint16_t id = 0;
     uint16_t mask = 0;
     uint16_t button = 0;
-    ProtocolUtil::readf(m_stream, kMsgDKeyDown + 4, &id, &mask, &button);
+    ProtocolUtil::readfOrThrow(m_stream, kMsgDKeyDown + 4, &id, &mask, &button);
     LOG_VERBOSE("recv key down id=0x%08x, mask=0x%04x, button=0x%04x", id, mask, button);
 
     keyDown(id, mask, button, "");
@@ -278,7 +278,7 @@ ServerProxy::ConnectionResult ServerProxy::parseMessage(const uint8_t *code)
     uint16_t mask = 0;
     uint16_t button = 0;
 
-    ProtocolUtil::readf(m_stream, kMsgDKeyDownLang + 4, &id, &mask, &button, &lang);
+    ProtocolUtil::readfOrThrow(m_stream, kMsgDKeyDownLang + 4, &id, &mask, &button, &lang);
     LOG_VERBOSE("recv key down id=0x%08x, mask=0x%04x, button=0x%04x, lang=\"%s\"", id, mask, button, lang.c_str());
 
     keyDown(id, mask, button, lang);
@@ -593,11 +593,11 @@ KeyModifierMask ServerProxy::translateModifierMask(KeyModifierMask mask) const
 void ServerProxy::enter()
 {
   // parse
-  int16_t x;
-  int16_t y;
-  uint16_t mask;
-  uint32_t seqNum;
-  ProtocolUtil::readf(m_stream, kMsgCEnter + 4, &x, &y, &seqNum, &mask);
+  int16_t x = 0;
+  int16_t y = 0;
+  uint16_t mask = 0;
+  uint32_t seqNum = 0;
+  ProtocolUtil::readfOrThrow(m_stream, kMsgCEnter + 4, &x, &y, &seqNum, &mask);
   LOG_VERBOSE("recv enter, %d,%d %d %04x", x, y, seqNum, mask);
 
   // discard old compressed mouse motion, if any
@@ -636,8 +636,8 @@ void ServerProxy::leave()
 void ServerProxy::setClipboard()
 {
   // parse
-  ClipboardID id;
-  uint32_t seq;
+  ClipboardID id = 0;
+  uint32_t seq = 0;
 
   auto r = ClipboardChunk::assemble(
       m_stream, m_clipboardDataCached, id, seq, m_clipboardChunkState, m_client->getMaximumClipboardReceiveSizeBytes()
@@ -658,16 +658,16 @@ void ServerProxy::setClipboard()
 
     LOG_INFO("clipboard was updated");
   } else if (r == TransferState::Error) {
-    requestDisconnect("invalid clipboard data from server");
+    throw BadClientException("invalid clipboard data from server");
   }
 }
 
 void ServerProxy::grabClipboard()
 {
   // parse
-  ClipboardID id;
-  uint32_t seqNum;
-  ProtocolUtil::readf(m_stream, kMsgCClipboard + 4, &id, &seqNum);
+  ClipboardID id = 0;
+  uint32_t seqNum = 0;
+  ProtocolUtil::readfOrThrow(m_stream, kMsgCClipboard + 4, &id, &seqNum);
   LOG_DEBUG("recv grab clipboard %d", id);
 
   // validate
@@ -708,16 +708,16 @@ void ServerProxy::keyDown(uint16_t id, uint16_t mask, uint16_t button, const std
 
 void ServerProxy::keyRepeat()
 {
-  // get mouse up to date
-  flushCompressedMouse();
-
   // parse
-  uint16_t id;
-  uint16_t mask;
-  uint16_t count;
-  uint16_t button;
+  uint16_t id = 0;
+  uint16_t mask = 0;
+  uint16_t count = 0;
+  uint16_t button = 0;
   std::string lang;
-  ProtocolUtil::readf(m_stream, kMsgDKeyRepeat + 4, &id, &mask, &count, &button, &lang);
+  ProtocolUtil::readfOrThrow(m_stream, kMsgDKeyRepeat + 4, &id, &mask, &count, &button, &lang);
+
+  // get mouse up to date only after the whole message is valid
+  flushCompressedMouse();
   LOG(
       (CLOG_VERBOSE "recv key repeat id=0x%08x, mask=0x%04x, count=%d, "
                     "button=0x%04x, lang=\"%s\"",
@@ -741,14 +741,14 @@ void ServerProxy::keyRepeat()
 
 void ServerProxy::keyUp()
 {
-  // get mouse up to date
-  flushCompressedMouse();
-
   // parse
-  uint16_t id;
-  uint16_t mask;
-  uint16_t button;
-  ProtocolUtil::readf(m_stream, kMsgDKeyUp + 4, &id, &mask, &button);
+  uint16_t id = 0;
+  uint16_t mask = 0;
+  uint16_t button = 0;
+  ProtocolUtil::readfOrThrow(m_stream, kMsgDKeyUp + 4, &id, &mask, &button);
+
+  // get mouse up to date only after the whole message is valid
+  flushCompressedMouse();
   LOG_VERBOSE("recv key up id=0x%08x, mask=0x%04x, button=0x%04x", id, mask, button);
 
   if (m_rawScancodeButtons.erase(button) != 0) {
@@ -768,12 +768,12 @@ void ServerProxy::keyUp()
 
 void ServerProxy::mouseDown()
 {
-  // get mouse up to date
-  flushCompressedMouse();
-
   // parse
-  int8_t id;
-  ProtocolUtil::readf(m_stream, kMsgDMouseDown + 4, &id);
+  int8_t id = 0;
+  ProtocolUtil::readfOrThrow(m_stream, kMsgDMouseDown + 4, &id);
+
+  // get mouse up to date only after the whole message is valid
+  flushCompressedMouse();
   LOG_VERBOSE("recv mouse down id=%d", id);
 
   // forward
@@ -782,12 +782,12 @@ void ServerProxy::mouseDown()
 
 void ServerProxy::mouseUp()
 {
-  // get mouse up to date
-  flushCompressedMouse();
-
   // parse
-  int8_t id;
-  ProtocolUtil::readf(m_stream, kMsgDMouseUp + 4, &id);
+  int8_t id = 0;
+  ProtocolUtil::readfOrThrow(m_stream, kMsgDMouseUp + 4, &id);
+
+  // get mouse up to date only after the whole message is valid
+  flushCompressedMouse();
   LOG_VERBOSE("recv mouse up id=%d", id);
 
   // forward
@@ -797,10 +797,10 @@ void ServerProxy::mouseUp()
 void ServerProxy::mouseMove()
 {
   // parse
-  bool ignore;
-  int16_t x;
-  int16_t y;
-  ProtocolUtil::readf(m_stream, kMsgDMouseMove + 4, &x, &y);
+  bool ignore = false;
+  int16_t x = 0;
+  int16_t y = 0;
+  ProtocolUtil::readfOrThrow(m_stream, kMsgDMouseMove + 4, &x, &y);
 
   // note if we should ignore the move
   ignore = m_ignoreMouse;
@@ -831,10 +831,10 @@ void ServerProxy::mouseMove()
 void ServerProxy::mouseRelativeMove()
 {
   // parse
-  bool ignore;
-  int16_t dx;
-  int16_t dy;
-  ProtocolUtil::readf(m_stream, kMsgDMouseRelMove + 4, &dx, &dy);
+  bool ignore = false;
+  int16_t dx = 0;
+  int16_t dy = 0;
+  ProtocolUtil::readfOrThrow(m_stream, kMsgDMouseRelMove + 4, &dx, &dy);
 
   // note if we should ignore the move
   ignore = m_ignoreMouse;
@@ -861,13 +861,13 @@ void ServerProxy::mouseRelativeMove()
 
 void ServerProxy::mouseWheel()
 {
-  // get mouse up to date
-  flushCompressedMouse();
-
   // parse
-  int16_t xDelta;
-  int16_t yDelta;
-  ProtocolUtil::readf(m_stream, kMsgDMouseWheel + 4, &xDelta, &yDelta);
+  int16_t xDelta = 0;
+  int16_t yDelta = 0;
+  ProtocolUtil::readfOrThrow(m_stream, kMsgDMouseWheel + 4, &xDelta, &yDelta);
+
+  // get mouse up to date only after the whole message is valid
+  flushCompressedMouse();
   LOG_VERBOSE("recv mouse wheel %+d,%+d", xDelta, yDelta);
 
   // forward
@@ -877,8 +877,8 @@ void ServerProxy::mouseWheel()
 void ServerProxy::screensaver()
 {
   // parse
-  int8_t on;
-  ProtocolUtil::readf(m_stream, kMsgCScreenSaver + 4, &on);
+  int8_t on = 0;
+  ProtocolUtil::readfOrThrow(m_stream, kMsgCScreenSaver + 4, &on);
   LOG_VERBOSE("recv screen saver on=%d", on);
 
   // forward
@@ -908,7 +908,7 @@ void ServerProxy::setOptions()
 {
   // parse
   OptionsList options;
-  ProtocolUtil::readf(m_stream, kMsgDSetOptions + 4, &options);
+  ProtocolUtil::readfOrThrow(m_stream, kMsgDSetOptions + 4, &options);
   LOG_VERBOSE("recv set options size=%d", options.size());
 
   if (options.size() % 2 != 0) {
@@ -965,14 +965,14 @@ void ServerProxy::infoAcknowledgment()
 void ServerProxy::secureInputNotification()
 {
   std::string app;
-  ProtocolUtil::readf(m_stream, kMsgDSecureInputNotification + 4, &app);
+  ProtocolUtil::readfOrThrow(m_stream, kMsgDSecureInputNotification + 4, &app);
   LOG_INFO("application \"%s\" is blocking the keyboard", app.c_str());
 }
 
 void ServerProxy::setServerLanguages()
 {
   std::string serverLayout;
-  ProtocolUtil::readf(m_stream, kMsgDLanguageSynchronisation + 4, &serverLayout);
+  ProtocolUtil::readfOrThrow(m_stream, kMsgDLanguageSynchronisation + 4, &serverLayout);
   m_layoutManager.setRemoteLayouts(serverLayout);
 }
 
@@ -980,7 +980,7 @@ void ServerProxy::inputLanguageControl()
 {
   int8_t action = 0;
   std::string target;
-  ProtocolUtil::readf(m_stream, kMsgDInputLangControl + 4, &action, &target);
+  ProtocolUtil::readfOrThrow(m_stream, kMsgDInputLangControl + 4, &action, &target);
   if (action < static_cast<int8_t>(deskflow::InputLanguageAction::Toggle) ||
       action > static_cast<int8_t>(deskflow::InputLanguageAction::Query)) {
     LOG_WARN("server sent invalid input language action %d", action);

@@ -41,7 +41,9 @@ bool ClientProxy1_9::parseMessage(const uint8_t *code)
   std::string sourceId;
   int8_t category = static_cast<int8_t>(deskflow::InputLanguageCategory::Unknown);
   int8_t composing = 0;
-  ProtocolUtil::readf(getStream(), kMsgCInputLangStatus + 4, &sourceId, &category, &composing);
+  if (!ProtocolUtil::readf(getStream(), kMsgCInputLangStatus + 4, &sourceId, &category, &composing)) {
+    return false;
+  }
 
   if (category < static_cast<int8_t>(deskflow::InputLanguageCategory::KeyLayout) ||
       category > static_cast<int8_t>(deskflow::InputLanguageCategory::Unknown)) {

@@ -217,8 +217,8 @@ void ClientProxyUnknown::handleData()
     }
 
     // parse the reply to hello
-    int16_t major;
-    int16_t minor;
+    int16_t major = 0;
+    int16_t minor = 0;
     if (std::string protocolName; !ProtocolUtil::readf(m_stream, kMsgHelloBack, &protocolName, &major, &minor, &name)) {
       throw BadClientException();
     }

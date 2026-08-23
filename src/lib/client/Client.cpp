@@ -686,15 +686,21 @@ void Client::handleClipboardGrabbed(const Event &event)
 
 void Client::handleHello()
 {
-  int16_t serverMajor;
-  int16_t serverMinor;
+  int16_t serverMajor = 0;
+  int16_t serverMinor = 0;
 
   // as luck would have it, both "Synergy" and "Barrier" are 7 chars,
   // so we eat 7 chars and then test for either protocol name.
   // we cannot re-use `readf` to check for various hello messages,
   // as `readf` eats bytes (advances the stream position reference).
   std::string protocolName;
-  ProtocolUtil::readf(m_stream, kMsgHello, &protocolName, &serverMajor, &serverMinor);
+  if (!ProtocolUtil::readf(m_stream, kMsgHello, &protocolName, &serverMajor, &serverMinor)) {
+    LOG_WARN("failed to decode hello message from server");
+    sendConnectionFailedEvent("got invalid hello message from server");
+    cleanupTimer();
+    cleanupConnection();
+    return;
+  }
 
   if (const auto proto = networkProtocolFromString(QString::fromStdString(protocolName));
       proto == NetworkProtocol::Unknown) {

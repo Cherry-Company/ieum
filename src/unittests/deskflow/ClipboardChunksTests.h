@@ -20,6 +20,8 @@ private Q_SLOTS:
   void assembleAllowsDataAtExpectedSizeAndLimit();
   void assembleRejectsDataBeyondExpectedSize();
   void assembleRejectsExpectedSizeBeyondLimit();
+  void assembleRejectsTruncatedPayloadAndResetsState();
+  void assembleRejectsAllocationFailureAndResetsState();
 
 private:
   Log m_log;

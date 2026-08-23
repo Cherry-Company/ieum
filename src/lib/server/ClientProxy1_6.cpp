@@ -51,8 +51,8 @@ void ClientProxy1_6::setClipboard(ClipboardID id, const IClipboard *clipboard)
 bool ClientProxy1_6::recvClipboard()
 {
   // parse message
-  ClipboardID id;
-  uint32_t seq;
+  ClipboardID id = 0;
+  uint32_t seq = 0;
 
   auto r = ClipboardChunk::assemble(
       getStream(), m_clipboardDataCached, id, seq, m_clipboardChunkState, m_server->getMaximumClipboardSizeBytes()

@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <cstring>
 #include <deque>
+#include <new>
 
 namespace {
 
@@ -26,6 +27,11 @@ public:
     m_queue.push_back(bytes);
   }
 
+  void failNextRead()
+  {
+    m_failNextRead = true;
+  }
+
   void close() override
   {
     m_queue.clear();
@@ -34,6 +40,11 @@ public:
 
   uint32_t read(void *buffer, uint32_t n) override
   {
+    if (m_failNextRead) {
+      m_failNextRead = false;
+      throw std::bad_alloc();
+    }
+
     if (m_inputShutdown || m_queue.empty() || n == 0) {
       return 0;
     }
@@ -91,6 +102,7 @@ public:
 private:
   std::deque<std::string> m_queue;
   bool m_inputShutdown = false;
+  bool m_failNextRead = false;
 };
 
 class BufferWriteStream : public deskflow::IStream
@@ -280,6 +292,38 @@ void ClipboardChunksTests::assembleRejectsExpectedSizeBeyondLimit()
   ClipboardChunkAssemblyState state;
 
   QCOMPARE(ClipboardChunk::assemble(&stream, cached, id, seq, state, 4), TransferState::Error);
+  QVERIFY(cached.empty());
+  QCOMPARE(ClipboardChunk::getExpectedSize(state), static_cast<size_t>(0));
+  QVERIFY(!state.active);
+}
+
+void ClipboardChunksTests::assembleRejectsTruncatedPayloadAndResetsState()
+{
+  MemoryStream stream;
+  stream.push(std::string(1, '\0'));
+
+  std::string cached = "stale";
+  ClipboardID id = kClipboardEnd;
+  uint32_t seq = 0;
+  ClipboardChunkAssemblyState state{5, true};
+
+  QCOMPARE(ClipboardChunk::assemble(&stream, cached, id, seq, state, 1024), TransferState::Error);
+  QVERIFY(cached.empty());
+  QCOMPARE(ClipboardChunk::getExpectedSize(state), static_cast<size_t>(0));
+  QVERIFY(!state.active);
+}
+
+void ClipboardChunksTests::assembleRejectsAllocationFailureAndResetsState()
+{
+  MemoryStream stream;
+  stream.failNextRead();
+
+  std::string cached = "stale";
+  ClipboardID id = kClipboardEnd;
+  uint32_t seq = 0;
+  ClipboardChunkAssemblyState state{5, true};
+
+  QCOMPARE(ClipboardChunk::assemble(&stream, cached, id, seq, state, 1024), TransferState::Error);
   QVERIFY(cached.empty());
   QCOMPARE(ClipboardChunk::getExpectedSize(state), static_cast<size_t>(0));
   QVERIFY(!state.active);
