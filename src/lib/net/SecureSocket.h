@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "net/SecureSocketWriteBuffer.h"
 #include "net/SecurityLevel.h"
 #include "net/TCPSocket.h"
 
@@ -96,4 +97,5 @@ private:
   bool m_secureReady = false;
   bool m_fatal = false;
   SecurityLevel m_securityLevel = SecurityLevel::Encrypted;
+  SecureSocketWriteBuffer m_writeBuffer;
 };

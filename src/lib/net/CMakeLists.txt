@@ -31,6 +31,8 @@ add_library(net STATIC
   SecurityLevel.h
   SecureSocket.cpp
   SecureSocket.h
+  SecureSocketWriteBuffer.cpp
+  SecureSocketWriteBuffer.h
   SocketException.cpp
   SocketException.h
   SocketMultiplexer.cpp

@@ -1578,6 +1578,7 @@
         "src/unittests/net/FingerprintDatabaseTests.cpp: #include \"net/Fingerprint.h\" -> src/lib/net/Fingerprint.h",
         "src/unittests/net/FingerprintDatabaseTests.cpp: #include \"net/FingerprintDatabase.h\" -> src/lib/net/FingerprintDatabase.h",
         "src/unittests/net/FingerprintTests.cpp: #include \"net/Fingerprint.h\" -> src/lib/net/Fingerprint.h",
+        "src/unittests/net/SecureSocketWriteBufferTests.cpp: #include \"net/SecureSocketWriteBuffer.h\" -> src/lib/net/SecureSocketWriteBuffer.h",
         "src/unittests/net/SecureUtilsTests.cpp: #include \"net/SecureUtils.h\" -> src/lib/net/SecureUtils.h"
       ],
       "kinds": [
@@ -1588,6 +1589,7 @@
     },
     {
       "evidence": [
+        "src/unittests/platform/ArchNetworkWinsockTests.cpp: #include \"arch/win32/ArchNetworkWinsock.h\" -> src/lib/arch/win32/ArchNetworkWinsock.h",
         "src/unittests/platform/OSXKeyStateTests.h: #include \"arch/Arch.h\" -> src/lib/arch/Arch.h"
       ],
       "kinds": [
@@ -1776,7 +1778,7 @@
         "c/c++ header": 16,
         "cmake": 1
       },
-      "lineCount": 6130,
+      "lineCount": 6147,
       "path": "src/lib/arch",
       "targets": [
         "arch"
@@ -1891,15 +1893,15 @@
       ]
     },
     {
-      "fileCount": 33,
+      "fileCount": 35,
       "id": "lib:net",
       "kind": "library",
       "languageCounts": {
-        "c++": 13,
-        "c/c++ header": 19,
+        "c++": 14,
+        "c/c++ header": 20,
         "cmake": 1
       },
-      "lineCount": 4059,
+      "lineCount": 4166,
       "path": "src/lib/net",
       "targets": [
         "net"
@@ -1962,14 +1964,14 @@
       "targets": []
     },
     {
-      "fileCount": 20,
+      "fileCount": 22,
       "id": "support:docs",
       "kind": "documentation",
       "languageCounts": {
         "cmake": 3,
-        "markdown": 17
+        "markdown": 19
       },
-      "lineCount": 2987,
+      "lineCount": 3751,
       "path": "docs",
       "targets": []
     },
@@ -2155,34 +2157,36 @@
       ]
     },
     {
-      "fileCount": 7,
+      "fileCount": 8,
       "id": "test:net",
       "kind": "test",
       "languageCounts": {
-        "c++": 3,
+        "c++": 4,
         "c/c++ header": 3,
         "cmake": 1
       },
-      "lineCount": 403,
+      "lineCount": 495,
       "path": "src/unittests/net",
       "targets": [
         "FingerprintDatabaseTests",
         "FingerprintTests",
+        "SecureSocketWriteBufferTests",
         "SecureUtilsTests"
       ]
     },
     {
-      "fileCount": 10,
+      "fileCount": 11,
       "id": "test:platform",
       "kind": "test",
       "languageCounts": {
-        "c++": 5,
+        "c++": 6,
         "c/c++ header": 4,
         "cmake": 1
       },
-      "lineCount": 621,
+      "lineCount": 668,
       "path": "src/unittests/platform",
       "targets": [
+        "ArchNetworkWinsockTests",
         "MSWindowsClipboardTests",
         "MSWindowsMouseInputTests",
         "OSXClipboardTests",
@@ -3656,7 +3660,9 @@
         "src/unittests/gui/core/NetworkMonitorTests.h",
         "src/unittests/net/FingerprintDatabaseTests.h",
         "src/unittests/net/FingerprintTests.h",
+        "src/unittests/net/SecureSocketWriteBufferTests.cpp",
         "src/unittests/net/SecureUtilsTests.h",
+        "src/unittests/platform/ArchNetworkWinsockTests.cpp",
         "src/unittests/platform/MSWindowsClipboardTests.h",
         "src/unittests/platform/MSWindowsMouseInputTests.cpp",
         "src/unittests/platform/OSXClipboardTests.h",
@@ -4225,6 +4231,7 @@
       "name": "cstddef",
       "sources": [
         "src/lib/deskflow/ClipboardChunk.h",
+        "src/lib/net/SecureSocketWriteBuffer.h",
         "src/lib/platform/EiKeyState.cpp",
         "src/lib/platform/XWindowsKeyState.cpp"
       ]
@@ -4254,6 +4261,7 @@
         "src/lib/deskflow/ProtocolUtil.h",
         "src/lib/io/IStream.h",
         "src/lib/io/StreamBuffer.h",
+        "src/lib/net/SecureSocketWriteBuffer.h",
         "src/lib/platform/MSWindowsMouseInput.h",
         "src/lib/platform/PortalInputCapture.h",
         "src/lib/platform/XDGKeyUtil.h",
@@ -4280,13 +4288,14 @@
         "src/lib/deskflow/IPrimaryScreen.cpp",
         "src/lib/deskflow/KeyMap.cpp",
         "src/lib/net/NetworkAddress.cpp",
-        "src/lib/net/SecureSocket.cpp",
+        "src/lib/net/SecureSocketWriteBuffer.h",
         "src/lib/net/TCPSocket.cpp",
         "src/lib/platform/EiScreen.cpp",
         "src/lib/platform/XWindowsScreen.cpp",
         "src/lib/server/Config.cpp",
         "src/lib/server/InputFilter.cpp",
-        "src/lib/server/Server.cpp"
+        "src/lib/server/Server.cpp",
+        "src/unittests/net/SecureSocketWriteBufferTests.cpp"
       ]
     },
     {
@@ -4307,6 +4316,7 @@
         "src/lib/deskflow/ProtocolUtil.cpp",
         "src/lib/deskflow/ipc/IpcServer.cpp",
         "src/lib/net/SecureSocket.cpp",
+        "src/lib/net/SecureSocketWriteBuffer.cpp",
         "src/lib/net/TCPSocket.cpp",
         "src/lib/platform/EiScreen.cpp",
         "src/lib/platform/OSXInputSourceController.mm",
@@ -4323,7 +4333,8 @@
         "src/lib/server/Server.cpp",
         "src/unittests/client/ServerProxyTests.cpp",
         "src/unittests/deskflow/ClipboardChunksTests.cpp",
-        "src/unittests/deskflow/Protocol19Tests.cpp"
+        "src/unittests/deskflow/Protocol19Tests.cpp",
+        "src/unittests/net/SecureSocketWriteBufferTests.cpp"
       ]
     },
     {
@@ -4545,6 +4556,7 @@
       "name": "limits",
       "sources": [
         "src/lib/deskflow/ClipboardChunk.cpp",
+        "src/lib/net/SecureSocket.cpp",
         "src/lib/platform/PortalInputCapture.cpp",
         "src/lib/server/CursorTransform.h"
       ]
@@ -5179,6 +5191,13 @@
     },
     {
       "kind": "unresolved-quoted-include",
+      "name": "ArchNetworkWinsockTests.moc",
+      "sources": [
+        "src/unittests/platform/ArchNetworkWinsockTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
       "name": "ClientReconnectPolicyTests.moc",
       "sources": [
         "src/unittests/deskflow/ClientReconnectPolicyTests.cpp"
@@ -5196,6 +5215,13 @@
       "name": "MSWindowsMouseInputTests.moc",
       "sources": [
         "src/unittests/platform/MSWindowsMouseInputTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
+      "name": "SecureSocketWriteBufferTests.moc",
+      "sources": [
+        "src/unittests/net/SecureSocketWriteBufferTests.cpp"
       ]
     },
     {
@@ -9315,6 +9341,12 @@
       "target": "src/lib/net/TSocketMultiplexerMethodJob.h"
     },
     {
+      "evidence": "#include \"net/SecureSocketWriteBuffer.h\"",
+      "kind": "include",
+      "source": "src/lib/net/SecureSocket.h",
+      "target": "src/lib/net/SecureSocketWriteBuffer.h"
+    },
+    {
       "evidence": "#include \"net/SecurityLevel.h\"",
       "kind": "include",
       "source": "src/lib/net/SecureSocket.h",
@@ -9325,6 +9357,12 @@
       "kind": "include",
       "source": "src/lib/net/SecureSocket.h",
       "target": "src/lib/net/TCPSocket.h"
+    },
+    {
+      "evidence": "#include \"net/SecureSocketWriteBuffer.h\"",
+      "kind": "include",
+      "source": "src/lib/net/SecureSocketWriteBuffer.cpp",
+      "target": "src/lib/net/SecureSocketWriteBuffer.h"
     },
     {
       "evidence": "#include \"base/FinalAction.h\"",
@@ -13449,6 +13487,12 @@
       "target": "src/unittests/net/FingerprintTests.h"
     },
     {
+      "evidence": "#include \"net/SecureSocketWriteBuffer.h\"",
+      "kind": "include",
+      "source": "src/unittests/net/SecureSocketWriteBufferTests.cpp",
+      "target": "src/lib/net/SecureSocketWriteBuffer.h"
+    },
+    {
       "evidence": "#include \"net/SecureUtils.h\"",
       "kind": "include",
       "source": "src/unittests/net/SecureUtilsTests.cpp",
@@ -13459,6 +13503,12 @@
       "kind": "include",
       "source": "src/unittests/net/SecureUtilsTests.cpp",
       "target": "src/unittests/net/SecureUtilsTests.h"
+    },
+    {
+      "evidence": "#include \"arch/win32/ArchNetworkWinsock.h\"",
+      "kind": "include",
+      "source": "src/unittests/platform/ArchNetworkWinsockTests.cpp",
+      "target": "src/lib/arch/win32/ArchNetworkWinsock.h"
     },
     {
       "evidence": "#include \"platform/MSWindowsClipboard.h\"",
@@ -14316,9 +14366,25 @@
       "binary": false,
       "component": "support:docs",
       "language": "markdown",
+      "lineCount": 525,
+      "path": "docs/superpowers/plans/2026-08-23-secure-socket-write-reliability.md",
+      "sizeBytes": 18000
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
       "lineCount": 210,
       "path": "docs/superpowers/specs/2026-08-19-repository-audit-codegraph-design.md",
       "sizeBytes": 9680
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 239,
+      "path": "docs/superpowers/specs/2026-08-23-production-commercialization-roadmap-design.md",
+      "sizeBytes": 12273
     },
     {
       "binary": false,
@@ -16220,9 +16286,9 @@
       "binary": false,
       "component": "lib:arch",
       "language": "c/c++ header",
-      "lineCount": 292,
+      "lineCount": 302,
       "path": "src/lib/arch/IArchNetwork.h",
-      "sizeBytes": 8646
+      "sizeBytes": 8990
     },
     {
       "binary": false,
@@ -16356,17 +16422,17 @@
       "binary": false,
       "component": "lib:arch",
       "language": "c++",
-      "lineCount": 917,
+      "lineCount": 923,
       "path": "src/lib/arch/win32/ArchNetworkWinsock.cpp",
-      "sizeBytes": 26925
+      "sizeBytes": 27041
     },
     {
       "binary": false,
       "component": "lib:arch",
       "language": "c/c++ header",
-      "lineCount": 102,
+      "lineCount": 103,
       "path": "src/lib/arch/win32/ArchNetworkWinsock.h",
-      "sizeBytes": 3167
+      "sizeBytes": 3221
     },
     {
       "binary": false,
@@ -18508,9 +18574,9 @@
       "binary": false,
       "component": "lib:net",
       "language": "cmake",
-      "lineCount": 62,
+      "lineCount": 64,
       "path": "src/lib/net/CMakeLists.txt",
-      "sizeBytes": 1591
+      "sizeBytes": 1649
     },
     {
       "binary": false,
@@ -18628,17 +18694,33 @@
       "binary": false,
       "component": "lib:net",
       "language": "c++",
-      "lineCount": 743,
+      "lineCount": 742,
       "path": "src/lib/net/SecureSocket.cpp",
-      "sizeBytes": 18398
+      "sizeBytes": 18435
     },
     {
       "binary": false,
       "component": "lib:net",
       "language": "c/c++ header",
-      "lineCount": 99,
+      "lineCount": 101,
       "path": "src/lib/net/SecureSocket.h",
-      "sizeBytes": 2698
+      "sizeBytes": 2780
+    },
+    {
+      "binary": false,
+      "component": "lib:net",
+      "language": "c++",
+      "lineCount": 65,
+      "path": "src/lib/net/SecureSocketWriteBuffer.cpp",
+      "sizeBytes": 1237
+    },
+    {
+      "binary": false,
+      "component": "lib:net",
+      "language": "c/c++ header",
+      "lineCount": 39,
+      "path": "src/lib/net/SecureSocketWriteBuffer.h",
+      "sizeBytes": 1108
     },
     {
       "binary": false,
@@ -20780,9 +20862,9 @@
       "binary": false,
       "component": "test:net",
       "language": "cmake",
-      "lineCount": 32,
+      "lineCount": 39,
       "path": "src/unittests/net/CMakeLists.txt",
-      "sizeBytes": 674
+      "sizeBytes": 872
     },
     {
       "binary": false,
@@ -20820,6 +20902,14 @@
       "binary": false,
       "component": "test:net",
       "language": "c++",
+      "lineCount": 85,
+      "path": "src/unittests/net/SecureSocketWriteBufferTests.cpp",
+      "sizeBytes": 2258
+    },
+    {
+      "binary": false,
+      "component": "test:net",
+      "language": "c++",
       "lineCount": 49,
       "path": "src/unittests/net/SecureUtilsTests.cpp",
       "sizeBytes": 1979
@@ -20835,10 +20925,18 @@
     {
       "binary": false,
       "component": "test:platform",
+      "language": "c++",
+      "lineCount": 40,
+      "path": "src/unittests/platform/ArchNetworkWinsockTests.cpp",
+      "sizeBytes": 900
+    },
+    {
+      "binary": false,
+      "component": "test:platform",
       "language": "cmake",
-      "lineCount": 44,
+      "lineCount": 51,
       "path": "src/unittests/platform/CMakeLists.txt",
-      "sizeBytes": 1116
+      "sizeBytes": 1306
     },
     {
       "binary": false,
@@ -21106,8 +21204,8 @@
     }
   ],
   "revision": {
-    "branch": "audit/codegraph-main",
-    "commit": "647b928efd775d7e00db53adf29de6d1fbdc66cf",
+    "branch": "roadmap/v1-reliability",
+    "commit": "2fe4f37a29320cae61d69be016a2850c1eb75b6b",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
@@ -21115,14 +21213,20 @@
     "componentEdges": 94,
     "components": 41,
     "excludedFiles": 3,
-    "fileIncludeEdges": 1388,
-    "representedFiles": 938,
-    "sourceFiles": 582,
-    "sourceLines": 93511,
-    "targets": 58,
-    "trackedFiles": 941
+    "fileIncludeEdges": 1392,
+    "representedFiles": 944,
+    "sourceFiles": 586,
+    "sourceLines": 93758,
+    "targets": 60,
+    "trackedFiles": 947
   },
   "targets": [
+    {
+      "component": "test:platform",
+      "kind": "test",
+      "name": "ArchNetworkWinsockTests",
+      "source": "src/unittests/platform/CMakeLists.txt"
+    },
     {
       "component": "test:base",
       "kind": "test",
@@ -21296,6 +21400,12 @@
       "kind": "test",
       "name": "ScreenTests",
       "source": "src/unittests/gui/config/CMakeLists.txt"
+    },
+    {
+      "component": "test:net",
+      "kind": "test",
+      "name": "SecureSocketWriteBufferTests",
+      "source": "src/unittests/net/CMakeLists.txt"
     },
     {
       "component": "test:net",
@@ -21520,6 +21630,14 @@
     {
       "include": "StatusBarTests.moc",
       "source": "src/unittests/gui/StatusBarTests.cpp"
+    },
+    {
+      "include": "SecureSocketWriteBufferTests.moc",
+      "source": "src/unittests/net/SecureSocketWriteBufferTests.cpp"
+    },
+    {
+      "include": "ArchNetworkWinsockTests.moc",
+      "source": "src/unittests/platform/ArchNetworkWinsockTests.cpp"
     },
     {
       "include": "MSWindowsMouseInputTests.moc",

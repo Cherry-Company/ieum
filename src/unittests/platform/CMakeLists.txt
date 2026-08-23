@@ -3,6 +3,13 @@
 
 if (WIN32)
   create_test(
+    NAME ArchNetworkWinsockTests
+    DEPENDS arch
+    LIBS base mt version
+    SOURCE ArchNetworkWinsockTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/arch"
+  )
+  create_test(
     NAME MSWindowsMouseInputTests
     DEPENDS platform
     LIBS base arch
