@@ -2229,7 +2229,7 @@
         "c": 1,
         "python": 1
       },
-      "lineCount": 169,
+      "lineCount": 170,
       "path": "tools/ci",
       "targets": []
     },
@@ -13822,7 +13822,7 @@
       "language": "yaml",
       "lineCount": 84,
       "path": ".github/actions/run-valgrind/action.yml",
-      "sizeBytes": 2592
+      "sizeBytes": 2601
     },
     {
       "binary": false,
@@ -21100,9 +21100,9 @@
       "binary": false,
       "component": "tool:ci",
       "language": "python",
-      "lineCount": 149,
+      "lineCount": 150,
       "path": "tools/ci/tests/test_analysis_workflows.py",
-      "sizeBytes": 5999
+      "sizeBytes": 6048
     },
     {
       "binary": false,
@@ -21251,7 +21251,7 @@
   ],
   "revision": {
     "branch": "ci/valgrind-gate",
-    "commit": "90a3dea6c930c7ad2ee8b110bbed0cd2cfb1ca07",
+    "commit": "bf1ce9c7cde87ddba931221624d77433a6c60802",
     "dirtyTrackedFiles": true
   },
   "schemaVersion": 1,
@@ -21262,7 +21262,7 @@
     "fileIncludeEdges": 1392,
     "representedFiles": 946,
     "sourceFiles": 588,
-    "sourceLines": 93947,
+    "sourceLines": 93948,
     "targets": 60,
     "trackedFiles": 949
   },

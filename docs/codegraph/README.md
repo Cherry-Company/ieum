@@ -6,11 +6,11 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `90a3dea6c930c7ad2ee8b110bbed0cd2cfb1ca07`
+- Revision: `bf1ce9c7cde87ddba931221624d77433a6c60802`
 - Branch: `ci/valgrind-gate`
 - Tracked files: 949
 - Represented files: 946
-- Source files / lines: 588 / 93,947
+- Source files / lines: 588 / 93,948
 - Components / targets: 42 / 60
 - File include edges / component edges: 1,392 / 94
 
@@ -85,7 +85,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `test:platform` | test | Automated tests for the `platform` surface. | 11 | 668 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
 | `test:server` | test | Automated tests for the `server` surface. | 5 | 437 | `ServerConfigTests`, `ServerTests` |
 | `tool:cgtap-logger` | tool | Developer or diagnostic tool rooted at `tools/cgtap-logger`. | 1 | 108 | — |
-| `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 2 | 169 | — |
+| `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 2 | 170 | — |
 | `tool:codegraph` | tool | Developer or diagnostic tool rooted at `tools/codegraph.py`. | 1 | 945 | — |
 | `tool:generate-codegraph` | tool | Developer or diagnostic tool rooted at `tools/generate-codegraph.py`. | 1 | 64 | — |
 | `tool:merge-input-timeline` | tool | Developer or diagnostic tool rooted at `tools/merge-input-timeline.py`. | 1 | 67 | — |

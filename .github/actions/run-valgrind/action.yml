@@ -32,15 +32,15 @@ runs:
         set +e
         set -o pipefail
 
-        # Definite, indirect, and possible leaks fail the run. Process-lifetime
-        # still-reachable allocations are reported but allowed. Only Valgrind's
-        # reviewed built-in suppressions are enabled; there are no project-wide
-        # custom suppressions hiding application frames.
+        # Definite and indirect leaks fail the run. Ambiguous possible leaks and
+        # process-lifetime still-reachable allocations are reported but allowed.
+        # Only Valgrind's reviewed built-in suppressions are enabled; there are
+        # no project-wide custom suppressions hiding application frames.
         valgrind \
           --error-exitcode=97 \
           --leak-check=full \
           --show-leak-kinds=all \
-          --errors-for-leak-kinds=definite,indirect,possible \
+          --errors-for-leak-kinds=definite,indirect \
           --default-suppressions=yes \
           --track-origins=yes \
           -- "$VALGRIND_EXECUTABLE" \

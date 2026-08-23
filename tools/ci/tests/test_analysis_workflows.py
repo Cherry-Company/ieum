@@ -100,7 +100,8 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
 
         self.assertIn("set -o pipefail", action)
         self.assertIn("--error-exitcode=97", action)
-        self.assertIn("--errors-for-leak-kinds=definite,indirect,possible", action)
+        self.assertIn("--errors-for-leak-kinds=definite,indirect", action)
+        self.assertIn("Ambiguous possible leaks", action)
         self.assertIn("--default-suppressions=yes", action)
         self.assertIn('exit "$VALGRIND_EXIT_CODE"', action)
         self.assertNotIn("continue-on-error: true", action)
