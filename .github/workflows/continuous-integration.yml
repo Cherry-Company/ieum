@@ -16,6 +16,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   GIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
   PACKAGE_PREFIX: "Ieum"
@@ -70,7 +73,7 @@ jobs:
 
     steps:
       - name: Checkout complete history
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -160,7 +163,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Run workflow policy regressions
         run: python3 -m unittest discover -s tools/ci/tests -p 'test_*.py' -v
@@ -176,7 +179,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Test summary
         uses: ./.github/actions/test-summary
@@ -186,10 +189,10 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: REUSE Compliance Check
-        uses: fsfe/reuse-action@v5
+        uses: fsfe/reuse-action@bb774aa972c2a89ff34781233d275075cbddf542 # v5
 
       - name: Validate sponsorship transparency note
         if: startsWith(github.ref, 'refs/tags/v')
@@ -207,7 +210,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
 
       - name: Lint Checker
         uses: ./.github/actions/lint-clang
@@ -221,8 +224,6 @@ jobs:
     needs: lint-clang
     name: ${{ matrix.target.name }}
     runs-on: ${{ matrix.target.runs-on }}
-    permissions:
-      contents: write
     container: ${{ matrix.target.container }}
     timeout-minutes: ${{ matrix.target.timeout }}
     strategy:
@@ -394,13 +395,13 @@ jobs:
       # Fancy checkout gets all the tags
       # it also makes sure we can use git --describe correctly
       - name: Fancy Checkout
-        uses: sithlord48/fancy-checkout@v2
+        uses: sithlord48/fancy-checkout@8db15be361005e6d51b0a3b51b39bebd4cde170c # v2
 
       # This effectively runs `vcvarsall.bat`, etc. It's not actually installing
       # VC++ as that's already pre-installed on the Windows runner.
       - name: Setup VC++ environment
         if: ${{ runner.os == 'Windows' }}
-        uses: TheMrMilchmann/setup-msvc-dev@v4
+        uses: TheMrMilchmann/setup-msvc-dev@368ef7d1ee4d1171b31d4a7f67f4d954f903f5a9 # v4
         with:
           arch: ${{matrix.target.arch}}
           spectre: true
@@ -636,16 +637,17 @@ jobs:
             -CurrentPackageVersion $env:IEUM_PACKAGE_VERSION `
             -Repository '${{ github.repository }}'
 
-      - name: Update Development Documentation
-        if: matrix.target.like == 'arch' && github.ref == 'refs/heads/ieum/main'
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload development documentation
+        if: matrix.target.like == 'arch' && github.event_name == 'push' && github.ref == 'refs/heads/ieum/main'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/docs/dev/html
-          force_orphan: true
+          name: development-documentation
+          path: build/docs/dev/html
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Upload
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: package-${{ env.PACKAGE_PREFIX }}-${{ matrix.target.name }}
           path: ${{github.workspace}}/build/Ieum[-_]*.*
@@ -654,6 +656,33 @@ jobs:
         if: always() && runner.os == 'macOS' && env.IEUM_MACOS_KEYCHAIN != ''
         shell: bash
         run: security delete-keychain "$IEUM_MACOS_KEYCHAIN"
+
+  publish-development-docs:
+    needs: main-build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/ieum/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+
+    steps:
+      - name: Checkout without persisted write credentials
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Download development documentation
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: development-documentation
+          path: build/docs/dev/html
+
+      - name: Publish development documentation
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/docs/dev/html
+          force_orphan: true
 
   # Technically, "unix" is a misnomer, but we use it here to mean "Unix-like BSD-derived".
   unix:
@@ -673,10 +702,10 @@ jobs:
       # Fancy checkout gets all the tags
       # it also makes sure we can use git --describe correctly
       - name: Fancy Checkout
-        uses: sithlord48/fancy-checkout@v2
+        uses: sithlord48/fancy-checkout@8db15be361005e6d51b0a3b51b39bebd4cde170c # v2
       - name: Build on FreeBSD
         if: ${{ matrix.distro.name == 'freebsd' }}
-        uses: vmactions/freebsd-vm@v1
+        uses: vmactions/freebsd-vm@d0518f912576ae759075aa00fb9fe27037940271 # v1
         with:
           usesh: true
 
@@ -708,7 +737,7 @@ jobs:
             arch: aarch64
     steps:
       - name: Check out repository
-        uses: sithlord48/fancy-checkout@v2
+        uses: sithlord48/fancy-checkout@8db15be361005e6d51b0a3b51b39bebd4cde170c # v2
 
       - run: git config --global protocol.file.allow always
 
@@ -722,7 +751,7 @@ jobs:
         run: flatpak-builder-lint manifest deploy/linux/flatpak/org.deskflow.deskflow.yml
 
       - name: Build
-        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        uses: flatpak/flatpak-github-actions/flatpak-builder@401fe28a8384095fc1531b9d320b292f0ee45adb # v6
         with:
           bundle: Ieum-${{env.IEUM_PACKAGE_VERSION}}-linux-${{matrix.flatpak.arch}}.flatpak
           manifest-path: deploy/linux/flatpak/org.deskflow.deskflow.yml
@@ -734,7 +763,7 @@ jobs:
         run: flatpak-builder-lint --exceptions --user-exceptions deploy/linux/flatpak/ci-build-lint-exceptions.json repo repo
 
       - name: Upload
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: package-${{ env.PACKAGE_PREFIX }}-flatpak-${{matrix.flatpak.arch}}
           path: ${{github.workspace}}/Ieum[-_]*.flatpak
@@ -748,7 +777,7 @@ jobs:
 
     steps:
       - name: Fancy Checkout
-        uses: sithlord48/fancy-checkout@v2
+        uses: sithlord48/fancy-checkout@8db15be361005e6d51b0a3b51b39bebd4cde170c # v2
 
       - name: Materialize private deny map
         shell: bash
@@ -768,7 +797,7 @@ jobs:
         uses: ./.github/actions/get-version
 
       - name: Download artifacts
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
 
       - name: Generate package checksums
         shell: bash
@@ -881,7 +910,7 @@ jobs:
           python3 tools/privacy/public_privacy_guard.py "${args[@]}"
 
       - name: Preserve pre-release privacy evidence for post-fetch
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: privacy-release-pre-${{ github.run_id }}
           path: ${{ runner.temp }}/privacy-release-pre
@@ -889,7 +918,7 @@ jobs:
           retention-days: 30
 
       - name: Deploy release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
           name: "이음 (Ieum) ${{ github.ref_name }}"
@@ -911,13 +940,13 @@ jobs:
 
     steps:
       - name: Checkout complete history
-        uses: actions/checkout@v6
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Download frozen pre-release evidence
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: privacy-release-pre-${{ github.run_id }}
           path: ${{ runner.temp }}/privacy-release-pre
@@ -1011,7 +1040,7 @@ jobs:
           python3 tools/privacy/public_privacy_guard.py "${args[@]}"
 
       - name: Preserve post-fetch privacy evidence
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: privacy-release-post-${{ github.run_id }}
           path: ${{ runner.temp }}/privacy-release-live

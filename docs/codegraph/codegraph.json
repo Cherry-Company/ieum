@@ -1976,16 +1976,16 @@
       "targets": []
     },
     {
-      "fileCount": 25,
+      "fileCount": 26,
       "id": "support:github",
       "kind": "automation",
       "languageCounts": {
         "markdown": 3,
         "other": 2,
         "powershell": 2,
-        "yaml": 18
+        "yaml": 19
       },
-      "lineCount": 3536,
+      "lineCount": 3588,
       "path": ".github",
       "targets": []
     },
@@ -2229,7 +2229,7 @@
         "c": 1,
         "python": 1
       },
-      "lineCount": 170,
+      "lineCount": 281,
       "path": "tools/ci",
       "targets": []
     },
@@ -13790,7 +13790,7 @@
       "language": "yaml",
       "lineCount": 154,
       "path": ".github/actions/install-dependencies/action.yml",
-      "sizeBytes": 5850
+      "sizeBytes": 5979
     },
     {
       "binary": false,
@@ -13806,7 +13806,7 @@
       "language": "yaml",
       "lineCount": 91,
       "path": ".github/actions/lint-clang/action.yml",
-      "sizeBytes": 2424
+      "sizeBytes": 2510
     },
     {
       "binary": false,
@@ -13814,7 +13814,7 @@
       "language": "yaml",
       "lineCount": 84,
       "path": ".github/actions/run-tests/action.yml",
-      "sizeBytes": 2339
+      "sizeBytes": 2382
     },
     {
       "binary": false,
@@ -13854,7 +13854,15 @@
       "language": "yaml",
       "lineCount": 93,
       "path": ".github/actions/test-summary/action.yml",
-      "sizeBytes": 2322
+      "sizeBytes": 2408
+    },
+    {
+      "binary": false,
+      "component": "support:github",
+      "language": "yaml",
+      "lineCount": 10,
+      "path": ".github/dependabot.yml",
+      "sizeBytes": 220
     },
     {
       "binary": false,
@@ -13876,41 +13884,41 @@
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 105,
+      "lineCount": 109,
       "path": ".github/workflows/ci-comment.yml",
-      "sizeBytes": 3898
+      "sizeBytes": 4123
     },
     {
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 62,
+      "lineCount": 65,
       "path": ".github/workflows/codeql-analysis.yml",
-      "sizeBytes": 1536
+      "sizeBytes": 1739
     },
     {
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 1019,
+      "lineCount": 1048,
       "path": ".github/workflows/continuous-integration.yml",
-      "sizeBytes": 38048
+      "sizeBytes": 39945
     },
     {
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 134,
+      "lineCount": 137,
       "path": ".github/workflows/sonarcloud-analysis.yml",
-      "sizeBytes": 4568
+      "sizeBytes": 4728
     },
     {
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 111,
+      "lineCount": 114,
       "path": ".github/workflows/valgrind-analysis.yml",
-      "sizeBytes": 3686
+      "sizeBytes": 3760
     },
     {
       "binary": false,
@@ -21100,9 +21108,9 @@
       "binary": false,
       "component": "tool:ci",
       "language": "python",
-      "lineCount": 150,
+      "lineCount": 261,
       "path": "tools/ci/tests/test_analysis_workflows.py",
-      "sizeBytes": 6048
+      "sizeBytes": 10914
     },
     {
       "binary": false,
@@ -21250,8 +21258,8 @@
     }
   ],
   "revision": {
-    "branch": "ci/valgrind-gate",
-    "commit": "bf1ce9c7cde87ddba931221624d77433a6c60802",
+    "branch": "ci/immutable-actions",
+    "commit": "5469267c8ca87bebd7f4e9bd68fdfab11f2e0fef",
     "dirtyTrackedFiles": true
   },
   "schemaVersion": 1,
@@ -21260,11 +21268,11 @@
     "components": 42,
     "excludedFiles": 3,
     "fileIncludeEdges": 1392,
-    "representedFiles": 946,
+    "representedFiles": 947,
     "sourceFiles": 588,
-    "sourceLines": 93948,
+    "sourceLines": 94059,
     "targets": 60,
-    "trackedFiles": 949
+    "trackedFiles": 950
   },
   "targets": [
     {

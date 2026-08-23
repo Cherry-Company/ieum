@@ -28,6 +28,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   sonar:
     runs-on: ubuntu-latest
@@ -74,7 +77,7 @@ jobs:
 
       - name: Fancy Checkout
         if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
-        uses: sithlord48/fancy-checkout@v2
+        uses: sithlord48/fancy-checkout@8db15be361005e6d51b0a3b51b39bebd4cde170c # v2
 
       - name: Install project dependencies
         if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
@@ -84,7 +87,7 @@ jobs:
 
       - name: Install Build Wrapper
         if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
-        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v8
+        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@22918119ff8e1ca75a623e15c8296b6ea4fbe28f # v8
 
       - name: Configure
         if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
@@ -125,7 +128,7 @@ jobs:
 
       - name: SonarQube Scan
         if: ${{ steps.configuration.outputs.run_analysis == 'true' }}
-        uses: SonarSource/sonarqube-scan-action@v8
+        uses: SonarSource/sonarqube-scan-action@22918119ff8e1ca75a623e15c8296b6ea4fbe28f # v8
         with:
           args: >
             -Dsonar.coverageReportPaths=${{ steps.coverage-paths.outputs.csv }}
