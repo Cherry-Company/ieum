@@ -8,7 +8,7 @@ jobs:
   valgrind-analysis:
     runs-on: ubuntu-latest
     container: debian:trixie-slim
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - name: Install container dependencies
@@ -30,23 +30,82 @@ jobs:
       - name: Build
         run: cmake --build build -j8
 
-      - name: Valgrind unit tests
+      - name: Build invalid-access fixture
+        run: |
+          cc -O0 -g \
+            tools/ci/fixtures/valgrind-invalid-access.c \
+            -o "$RUNNER_TEMP/valgrind-invalid-access"
+
+      # This invocation is expected to fail. The following assertion turns an
+      # unexpected success into a job failure, proving the action is fail-closed.
+      - name: Prove invalid access fails
+        id: invalid-access
+        continue-on-error: true
+        uses: ./.github/actions/run-valgrind
+        with:
+          executable: ${{ runner.temp }}/valgrind-invalid-access
+          log-file: valgrind-invalid-access.log
+
+      - name: Verify invalid-access outcome
+        if: ${{ always() }}
+        env:
+          INVALID_ACCESS_OUTCOME: ${{ steps.invalid-access.outcome }}
+        run: |
+          if [[ "$INVALID_ACCESS_OUTCOME" != "failure" ]]; then
+            echo "::error::The invalid-access fixture did not fail the Valgrind action"
+            exit 1
+          fi
+
+      - name: Valgrind secure write buffer tests
+        id: secure_buffer
+        uses: ./.github/actions/run-valgrind
+        with:
+          executable: ./build/src/unittests/net/SecureSocketWriteBufferTests
+          log-file: valgrind-secure-buffer.log
+
+      - name: Valgrind protocol tests
+        id: protocol19
+        uses: ./.github/actions/run-valgrind
+        with:
+          executable: ./build/src/unittests/deskflow/Protocol19Tests
+          log-file: valgrind-protocol19.log
+
+      - name: Valgrind server configuration tests
+        id: server_config
+        uses: ./.github/actions/run-valgrind
+        with:
+          executable: ./build/src/unittests/server/ServerConfigTests
+          log-file: valgrind-server-config.log
+
+      - name: Valgrind legacy tests
         id: legacytests
         uses: ./.github/actions/run-valgrind
         with:
           executable: ./build/bin/legacytests
+          log-file: valgrind-legacytests.log
 
       - name: Set job summary
+        if: ${{ always() }}
+        shell: bash
+        env:
+          SECURE_BUFFER_SUMMARY: ${{ steps.secure_buffer.outputs.summary }}
+          PROTOCOL19_SUMMARY: ${{ steps.protocol19.outputs.summary }}
+          SERVER_CONFIG_SUMMARY: ${{ steps.server_config.outputs.summary }}
+          LEGACY_SUMMARY: ${{ steps.legacytests.outputs.summary }}
         run: |
-          backticks='```'
-          message=$(cat <<EOF
-          ## Valgrind summary
+          write_summary() {
+            local title=$1
+            local summary=$2
+            # The single-quoted backticks below are an intentional Markdown fence.
+            # shellcheck disable=SC2016
+            printf '### %s\n\n```text\n%s\n```\n\n' "$title" "${summary:-not run}"
+          }
 
-          ### legacytests Unit tests
-          $backticks
-          ${{ steps.legacytests.outputs.summary }}
-          $backticks
-          EOF
-          )
-
-          echo "$message" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## Valgrind summary"
+            echo
+            write_summary "SecureSocketWriteBufferTests" "$SECURE_BUFFER_SUMMARY"
+            write_summary "Protocol19Tests" "$PROTOCOL19_SUMMARY"
+            write_summary "ServerConfigTests" "$SERVER_CONFIG_SUMMARY"
+            write_summary "legacytests" "$LEGACY_SUMMARY"
+          } >> "$GITHUB_STEP_SUMMARY"

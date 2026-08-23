@@ -15,6 +15,10 @@ def read_workflow(name: str) -> str:
     return (WORKFLOW_DIRECTORY / name).read_text(encoding="utf-8")
 
 
+def read_repository_file(path: str) -> str:
+    return (REPOSITORY_ROOT / path).read_text(encoding="utf-8")
+
+
 def event_block(workflow: str, event: str) -> str:
     lines = workflow.splitlines()
     marker = f"  {event}:"
@@ -90,6 +94,56 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
         self.assertIn("SONAR_SCANNER_ENABLED", documentation)
         self.assertIn("SONAR_TOKEN", documentation)
         self.assertIn("workflow_dispatch", documentation)
+
+    def test_valgrind_action_preserves_failures_and_defines_leak_policy(self) -> None:
+        action = read_repository_file(".github/actions/run-valgrind/action.yml")
+
+        self.assertIn("set -o pipefail", action)
+        self.assertIn("--error-exitcode=97", action)
+        self.assertIn("--errors-for-leak-kinds=definite,indirect", action)
+        self.assertIn("Ambiguous possible leaks", action)
+        self.assertIn("--default-suppressions=yes", action)
+        self.assertIn('exit "$VALGRIND_EXIT_CODE"', action)
+        self.assertNotIn("continue-on-error: true", action)
+
+    def test_valgrind_is_part_of_the_required_ci_result(self) -> None:
+        workflow = read_workflow("continuous-integration.yml")
+
+        self.assertRegex(workflow, r"needs:\s*\[[^]]*analyze-valgrind[^]]*\]")
+        self.assertIn("needs.analyze-valgrind.result", workflow)
+
+    def test_valgrind_workflow_proves_invalid_access_fails(self) -> None:
+        workflow = read_workflow("valgrind-analysis.yml")
+        fixture_path = "tools/ci/fixtures/valgrind-invalid-access.c"
+
+        self.assertIn(fixture_path, workflow)
+        self.assertIn("id: invalid-access", workflow)
+        self.assertIn("continue-on-error: true", workflow)
+        self.assertIn(
+            "INVALID_ACCESS_OUTCOME: ${{ steps.invalid-access.outcome }}", workflow
+        )
+        self.assertIn('[[ "$INVALID_ACCESS_OUTCOME" != "failure" ]]', workflow)
+
+        fixture = REPOSITORY_ROOT / fixture_path
+        self.assertTrue(fixture.is_file(), f"missing Valgrind fixture: {fixture_path}")
+        fixture_source = fixture.read_text(encoding="utf-8")
+        self.assertIn("volatile", fixture_source)
+        self.assertIn("free(", fixture_source)
+
+    def test_valgrind_workflow_runs_selected_core_tests(self) -> None:
+        workflow = read_workflow("valgrind-analysis.yml")
+
+        selected_executables = (
+            "./build/bin/legacytests",
+            "./build/src/unittests/net/SecureSocketWriteBufferTests",
+            "./build/src/unittests/deskflow/Protocol19Tests",
+            "./build/src/unittests/server/ServerConfigTests",
+        )
+        for executable in selected_executables:
+            with self.subTest(executable=executable):
+                self.assertIn(executable, workflow)
+
+        self.assertIn("if: ${{ always() }}", workflow)
 
 
 if __name__ == "__main__":

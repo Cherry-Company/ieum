@@ -14,6 +14,7 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <time.h>
+#include <unistd.h>
 
 #define SIGWAKEUP SIGUSR1
 
@@ -34,6 +35,7 @@ class ArchThreadImpl
 {
 public:
   ArchThreadImpl() = default;
+  ~ArchThreadImpl();
 
 public:
   int m_refCount = 1;
@@ -47,6 +49,17 @@ public:
   void *m_result = nullptr;
   void *m_networkData = nullptr;
 };
+
+ArchThreadImpl::~ArchThreadImpl()
+{
+  // ArchNetworkBSD stores its owned per-thread unblock pipe here.
+  auto *unblockPipe = static_cast<int *>(m_networkData);
+  if (unblockPipe != nullptr) {
+    ::close(unblockPipe[0]);
+    ::close(unblockPipe[1]);
+    delete[] unblockPipe;
+  }
+}
 
 //
 // ArchMultithreadPosix
@@ -101,6 +114,13 @@ ArchMultithreadPosix::ArchMultithreadPosix()
 ArchMultithreadPosix::~ArchMultithreadPosix()
 {
   assert(s_instance != nullptr);
+
+  for (auto *thread : m_threadList) {
+    delete thread;
+  }
+  m_threadList.clear();
+  m_mainThread = nullptr;
+
   s_instance = nullptr;
 }
 
