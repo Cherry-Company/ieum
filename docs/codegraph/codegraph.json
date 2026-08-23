@@ -1587,9 +1587,21 @@
     },
     {
       "evidence": [
+        "src/unittests/net/NetworkAddressTests.cpp: #include \"arch/Arch.h\" -> src/lib/arch/Arch.h"
+      ],
+      "kinds": [
+        "include"
+      ],
+      "source": "test:net",
+      "target": "lib:arch"
+    },
+    {
+      "evidence": [
         "src/unittests/net/FingerprintDatabaseTests.cpp: #include \"net/Fingerprint.h\" -> src/lib/net/Fingerprint.h",
         "src/unittests/net/FingerprintDatabaseTests.cpp: #include \"net/FingerprintDatabase.h\" -> src/lib/net/FingerprintDatabase.h",
         "src/unittests/net/FingerprintTests.cpp: #include \"net/Fingerprint.h\" -> src/lib/net/Fingerprint.h",
+        "src/unittests/net/NetworkAddressTests.cpp: #include \"net/NetworkAddress.h\" -> src/lib/net/NetworkAddress.h",
+        "src/unittests/net/NetworkAddressTests.cpp: #include \"net/SocketException.h\" -> src/lib/net/SocketException.h",
         "src/unittests/net/SecureSocketWriteBufferTests.cpp: #include \"net/SecureSocketWriteBuffer.h\" -> src/lib/net/SecureSocketWriteBuffer.h",
         "src/unittests/net/SecureUtilsTests.cpp: #include \"net/SecureUtils.h\" -> src/lib/net/SecureUtils.h"
       ],
@@ -1913,7 +1925,7 @@
         "c/c++ header": 20,
         "cmake": 1
       },
-      "lineCount": 4166,
+      "lineCount": 4180,
       "path": "src/lib/net",
       "targets": [
         "net"
@@ -2171,19 +2183,20 @@
       ]
     },
     {
-      "fileCount": 8,
+      "fileCount": 9,
       "id": "test:net",
       "kind": "test",
       "languageCounts": {
-        "c++": 4,
+        "c++": 5,
         "c/c++ header": 3,
         "cmake": 1
       },
-      "lineCount": 495,
+      "lineCount": 595,
       "path": "src/unittests/net",
       "targets": [
         "FingerprintDatabaseTests",
         "FingerprintTests",
+        "NetworkAddressTests",
         "SecureSocketWriteBufferTests",
         "SecureUtilsTests"
       ]
@@ -2197,7 +2210,7 @@
         "c/c++ header": 4,
         "cmake": 1
       },
-      "lineCount": 668,
+      "lineCount": 692,
       "path": "src/unittests/platform",
       "targets": [
         "ArchNetworkWinsockTests",
@@ -3716,6 +3729,7 @@
         "src/unittests/gui/core/NetworkMonitorTests.h",
         "src/unittests/net/FingerprintDatabaseTests.h",
         "src/unittests/net/FingerprintTests.h",
+        "src/unittests/net/NetworkAddressTests.cpp",
         "src/unittests/net/SecureSocketWriteBufferTests.cpp",
         "src/unittests/net/SecureUtilsTests.h",
         "src/unittests/platform/ArchNetworkWinsockTests.cpp",
@@ -4191,6 +4205,13 @@
       "sources": [
         "src/lib/arch/unix/ArchMultithreadPosix.cpp",
         "src/lib/deskflow/ipc/IpcServer.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
+      "name": "charconv",
+      "sources": [
+        "src/lib/net/NetworkAddress.cpp"
       ]
     },
     {
@@ -4732,7 +4753,8 @@
         "src/lib/server/ClientListener.h",
         "src/unittests/base/EventQueueTests.cpp",
         "src/unittests/legacytests/legacytests/arch/unix/ArchNetworkBSDTests.cpp",
-        "src/unittests/legacytests/shared/ExitTimeout.cpp"
+        "src/unittests/legacytests/shared/ExitTimeout.cpp",
+        "src/unittests/net/NetworkAddressTests.cpp"
       ]
     },
     {
@@ -5297,6 +5319,13 @@
       "name": "MSWindowsMouseInputTests.moc",
       "sources": [
         "src/unittests/platform/MSWindowsMouseInputTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
+      "name": "NetworkAddressTests.moc",
+      "sources": [
+        "src/unittests/net/NetworkAddressTests.cpp"
       ]
     },
     {
@@ -13587,6 +13616,24 @@
       "target": "src/unittests/net/FingerprintTests.h"
     },
     {
+      "evidence": "#include \"arch/Arch.h\"",
+      "kind": "include",
+      "source": "src/unittests/net/NetworkAddressTests.cpp",
+      "target": "src/lib/arch/Arch.h"
+    },
+    {
+      "evidence": "#include \"net/NetworkAddress.h\"",
+      "kind": "include",
+      "source": "src/unittests/net/NetworkAddressTests.cpp",
+      "target": "src/lib/net/NetworkAddress.h"
+    },
+    {
+      "evidence": "#include \"net/SocketException.h\"",
+      "kind": "include",
+      "source": "src/unittests/net/NetworkAddressTests.cpp",
+      "target": "src/lib/net/SocketException.h"
+    },
+    {
       "evidence": "#include \"net/SecureSocketWriteBuffer.h\"",
       "kind": "include",
       "source": "src/unittests/net/SecureSocketWriteBufferTests.cpp",
@@ -16532,7 +16579,7 @@
       "language": "c++",
       "lineCount": 923,
       "path": "src/lib/arch/win32/ArchNetworkWinsock.cpp",
-      "sizeBytes": 27041
+      "sizeBytes": 27042
     },
     {
       "binary": false,
@@ -18770,9 +18817,9 @@
       "binary": false,
       "component": "lib:net",
       "language": "c++",
-      "lineCount": 204,
+      "lineCount": 218,
       "path": "src/lib/net/NetworkAddress.cpp",
-      "sizeBytes": 5928
+      "sizeBytes": 6461
     },
     {
       "binary": false,
@@ -20986,9 +21033,9 @@
       "binary": false,
       "component": "test:net",
       "language": "cmake",
-      "lineCount": 39,
+      "lineCount": 46,
       "path": "src/unittests/net/CMakeLists.txt",
-      "sizeBytes": 872
+      "sizeBytes": 1052
     },
     {
       "binary": false,
@@ -21026,6 +21073,14 @@
       "binary": false,
       "component": "test:net",
       "language": "c++",
+      "lineCount": 93,
+      "path": "src/unittests/net/NetworkAddressTests.cpp",
+      "sizeBytes": 2831
+    },
+    {
+      "binary": false,
+      "component": "test:net",
+      "language": "c++",
       "lineCount": 85,
       "path": "src/unittests/net/SecureSocketWriteBufferTests.cpp",
       "sizeBytes": 2258
@@ -21050,9 +21105,9 @@
       "binary": false,
       "component": "test:platform",
       "language": "c++",
-      "lineCount": 40,
+      "lineCount": 64,
       "path": "src/unittests/platform/ArchNetworkWinsockTests.cpp",
-      "sizeBytes": 900
+      "sizeBytes": 1515
     },
     {
       "binary": false,
@@ -21344,21 +21399,21 @@
     }
   ],
   "revision": {
-    "branch": "fix/clean-state-settings",
-    "commit": "c1b1fcda8cf47f724f9f53c0bedb5dbf00975212",
-    "dirtyTrackedFiles": false
+    "branch": "fix/network-address-hardening",
+    "commit": "9bdd1d3988d62208d05743e337f287aacfc0d365",
+    "dirtyTrackedFiles": true
   },
   "schemaVersion": 1,
   "summary": {
-    "componentEdges": 95,
+    "componentEdges": 96,
     "components": 42,
     "excludedFiles": 3,
-    "fileIncludeEdges": 1395,
-    "representedFiles": 949,
-    "sourceFiles": 590,
-    "sourceLines": 94658,
-    "targets": 62,
-    "trackedFiles": 952
+    "fileIncludeEdges": 1398,
+    "representedFiles": 950,
+    "sourceFiles": 591,
+    "sourceLines": 94789,
+    "targets": 63,
+    "trackedFiles": 953
   },
   "targets": [
     {
@@ -21516,6 +21571,12 @@
       "kind": "test",
       "name": "MSWindowsMouseInputTests",
       "source": "src/unittests/platform/CMakeLists.txt"
+    },
+    {
+      "component": "test:net",
+      "kind": "test",
+      "name": "NetworkAddressTests",
+      "source": "src/unittests/net/CMakeLists.txt"
     },
     {
       "component": "test:common",
@@ -21790,6 +21851,10 @@
     {
       "include": "StatusBarTests.moc",
       "source": "src/unittests/gui/StatusBarTests.cpp"
+    },
+    {
+      "include": "NetworkAddressTests.moc",
+      "source": "src/unittests/net/NetworkAddressTests.cpp"
     },
     {
       "include": "SecureSocketWriteBufferTests.moc",

@@ -33,6 +33,30 @@ private Q_SLOTS:
 
     QVERIFY(socket.m_pollWrite);
   }
+
+  void recognizesIpv4AnyAddress()
+  {
+    ArchNetworkWinsock network;
+    const auto address = network.newAnyAddr(IArchNetwork::AddressFamily::INet);
+    QVERIFY(address != nullptr);
+
+    const bool isAnyAddress = network.isAnyAddr(address);
+    network.closeAddr(address);
+
+    QVERIFY(isAnyAddress);
+  }
+
+  void recognizesIpv6AnyAddress()
+  {
+    ArchNetworkWinsock network;
+    const auto address = network.newAnyAddr(IArchNetwork::AddressFamily::INet6);
+    QVERIFY(address != nullptr);
+
+    const bool isAnyAddress = network.isAnyAddr(address);
+    network.closeAddr(address);
+
+    QVERIFY(isAnyAddress);
+  }
 };
 
 QTEST_GUILESS_MAIN(ArchNetworkWinsockTests)

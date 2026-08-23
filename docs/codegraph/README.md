@@ -6,13 +6,13 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `c1b1fcda8cf47f724f9f53c0bedb5dbf00975212`
-- Branch: `fix/clean-state-settings`
-- Tracked files: 952
-- Represented files: 949
-- Source files / lines: 590 / 94,658
-- Components / targets: 42 / 62
-- File include edges / component edges: 1,395 / 95
+- Revision: `9bdd1d3988d62208d05743e337f287aacfc0d365`
+- Branch: `fix/network-address-hardening`
+- Tracked files: 953
+- Represented files: 950
+- Source files / lines: 591 / 94,789
+- Components / targets: 42 / 63
+- File include edges / component edges: 1,398 / 96
 
 `docs/codegraph/`의 생성 산출물은 자기참조로 인한 비결정성을 막기 위해
 파일 인벤토리에서 명시적으로 제외됩니다.
@@ -64,7 +64,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `lib:gui` | library | Qt windows, dialogs, widgets, validators, startup, diagnostics, updates, and IPC clients. | 109 | 17,162 | `gui` |
 | `lib:io` | library | Stream interfaces, buffers, filters, and framed I/O support. | 8 | 570 | `io` |
 | `lib:mt` | library | Thread, mutex, lock, and condition-variable wrappers. | 12 | 892 | `mt` |
-| `lib:net` | library | TCP/TLS sockets, multiplexing, addresses, certificates, and fingerprint persistence. | 35 | 4,166 | `net` |
+| `lib:net` | library | TCP/TLS sockets, multiplexing, addresses, certificates, and fingerprint persistence. | 35 | 4,180 | `net` |
 | `lib:platform` | library | Windows, macOS, X11, libei, and portal input/clipboard adapters. | 126 | 28,243 | `platform` |
 | `lib:server` | library | Client proxies, input routing, screen topology, filters, and cursor transforms. | 42 | 9,537 | `server` |
 | `support:artwork` | resource | Brand artwork and documentation screenshots. | 5 | 253 | — |
@@ -81,8 +81,8 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `test:deskflow` | test | Automated tests for the `deskflow` surface. | 26 | 2,093 | `CanonicalScancodeTests`, `ClientReconnectPolicyTests`, `ClipboardChunksTests`, `ClipboardTests`, `IKeyStateTests`, `IpcServerTests`, `KeyMapTests`, `KeyStateTests`, `KeyboardLayoutManagerTests`, `Protocol19Tests`, `X11LayoutParserTests` |
 | `test:gui` | test | Automated tests for the `gui` surface. | 22 | 937 | `DiagnosticTests`, `FileTailTests`, `IpcClientTests`, `KeySequenceTests`, `LogWidgetTests`, `LoggerTests`, `NetworkMonitorTests`, `ScreenTests`, `StatusBarTests`, `StyleUtilsTests`, `VersionCheckerTests` |
 | `test:legacytests` | test | Automated tests for the `legacytests` surface. | 10 | 888 | `legacytests` |
-| `test:net` | test | Automated tests for the `net` surface. | 8 | 495 | `FingerprintDatabaseTests`, `FingerprintTests`, `SecureSocketWriteBufferTests`, `SecureUtilsTests` |
-| `test:platform` | test | Automated tests for the `platform` surface. | 11 | 668 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
+| `test:net` | test | Automated tests for the `net` surface. | 9 | 595 | `FingerprintDatabaseTests`, `FingerprintTests`, `NetworkAddressTests`, `SecureSocketWriteBufferTests`, `SecureUtilsTests` |
+| `test:platform` | test | Automated tests for the `platform` surface. | 11 | 692 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
 | `test:server` | test | Automated tests for the `server` surface. | 5 | 437 | `ServerConfigTests`, `ServerTests` |
 | `tool:cgtap-logger` | tool | Developer or diagnostic tool rooted at `tools/cgtap-logger`. | 1 | 108 | — |
 | `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 2 | 281 | — |
