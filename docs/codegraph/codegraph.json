@@ -1971,7 +1971,7 @@
         "c/c++ header": 21,
         "cmake": 1
       },
-      "lineCount": 9539,
+      "lineCount": 9555,
       "path": "src/lib/server",
       "targets": [
         "server"
@@ -2094,7 +2094,7 @@
         "c/c++ header": 1,
         "cmake": 1
       },
-      "lineCount": 601,
+      "lineCount": 670,
       "path": "src/unittests/client",
       "targets": [
         "ServerProxyTests"
@@ -20125,9 +20125,9 @@
       "binary": false,
       "component": "lib:server",
       "language": "c++",
-      "lineCount": 440,
+      "lineCount": 456,
       "path": "src/lib/server/ClientProxy1_0.cpp",
-      "sizeBytes": 12382
+      "sizeBytes": 12798
     },
     {
       "binary": false,
@@ -20517,17 +20517,17 @@
       "binary": false,
       "component": "test:client",
       "language": "c++",
-      "lineCount": 552,
+      "lineCount": 620,
       "path": "src/unittests/client/ServerProxyTests.cpp",
-      "sizeBytes": 14967
+      "sizeBytes": 17298
     },
     {
       "binary": false,
       "component": "test:client",
       "language": "c/c++ header",
-      "lineCount": 35,
+      "lineCount": 36,
       "path": "src/unittests/client/ServerProxyTests.h",
-      "sizeBytes": 1130
+      "sizeBytes": 1192
     },
     {
       "binary": false,
@@ -21451,9 +21451,9 @@
     }
   ],
   "revision": {
-    "branch": "fix/protocol-readf-failures",
-    "commit": "52e8d97027277adb3d1b7b9b2cf0b3d67ca08c04",
-    "dirtyTrackedFiles": true
+    "branch": "fix/server-dispatch-fairness",
+    "commit": "ba435992ce4cf279d42919b570eb8e5998068034",
+    "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
   "summary": {
@@ -21463,7 +21463,7 @@
     "fileIncludeEdges": 1403,
     "representedFiles": 950,
     "sourceFiles": 591,
-    "sourceLines": 95062,
+    "sourceLines": 95147,
     "targets": 63,
     "trackedFiles": 953
   },

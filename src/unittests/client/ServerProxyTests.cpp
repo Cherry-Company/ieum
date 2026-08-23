@@ -205,6 +205,7 @@ public:
 
   EventQueueTimer *newOneShotTimer(double, void *) override
   {
+    ++m_oneShotTimerCreations;
     return timer();
   }
 
@@ -252,6 +253,24 @@ public:
     return m_addedEvents;
   }
 
+  bool dispatchNextAddedEvent()
+  {
+    if (m_addedEvents.empty()) {
+      return false;
+    }
+
+    Event event = std::move(m_addedEvents.front());
+    m_addedEvents.erase(m_addedEvents.begin());
+    const bool handled = dispatchEvent(event);
+    Event::deleteData(event);
+    return handled;
+  }
+
+  size_t oneShotTimerCreations() const
+  {
+    return m_oneShotTimerCreations;
+  }
+
 private:
   struct HandlerKey
   {
@@ -268,6 +287,7 @@ private:
   };
 
   int m_timerStorage = 0;
+  size_t m_oneShotTimerCreations = 0;
   std::map<HandlerKey, EventHandler> m_handlers;
   std::vector<Event> m_addedEvents;
 };
@@ -547,6 +567,54 @@ void ServerProxyTests::clientProxy_truncatedRuntimePayload_disconnects()
   stream->push({code.constData(), static_cast<size_t>(code.size())});
   QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, stream->getEventTarget())));
   verifyClientProxyDisconnected(events, *stream);
+}
+
+void ServerProxyTests::clientProxy_largeBurst_yieldsToTimerAndSecondClient()
+{
+  RecordingEventQueue events;
+  auto *busyStream = new FakeStream;
+  auto *otherStream = new FakeStream;
+  ClientProxy1_0 busyProxy("busy", busyStream, &events);
+  ClientProxy1_0 otherProxy("other", otherStream, &events);
+
+  busyProxy.setOptions({kOptionHeartbeat, 1000});
+  otherProxy.setOptions({kOptionHeartbeat, 1000});
+  const size_t heartbeatTimersAfterSetup = events.oneShotTimerCreations();
+  QCOMPARE(heartbeatTimersAfterSetup, static_cast<size_t>(2));
+
+  std::string burst;
+  for (int i = 0; i < 64; ++i) {
+    burst.append(kMsgCNoop, 4);
+  }
+  busyStream->push(burst);
+  otherStream->push(codeOnly(kMsgCNoop));
+
+  bool timerHandled = false;
+  int timerTarget = 0;
+  events.addHandler(EventTypes::Timer, &timerTarget, [&](const auto &) { timerHandled = true; });
+  events.addEvent(Event(EventTypes::StreamInputReady, busyStream->getEventTarget()));
+  events.addEvent(Event(EventTypes::Timer, &timerTarget));
+  events.addEvent(Event(EventTypes::StreamInputReady, otherStream->getEventTarget()));
+
+  QVERIFY(events.dispatchNextAddedEvent());
+  QCOMPARE(busyStream->getSize(), uint32_t{32 * 4});
+  QCOMPARE(events.oneShotTimerCreations(), heartbeatTimersAfterSetup + 1);
+  QCOMPARE(events.addedEvents().size(), static_cast<size_t>(3));
+
+  QVERIFY(events.dispatchNextAddedEvent());
+  QVERIFY(timerHandled);
+  QCOMPARE(otherStream->getSize(), uint32_t{4});
+
+  QVERIFY(events.dispatchNextAddedEvent());
+  QCOMPARE(otherStream->getSize(), uint32_t{0});
+  QCOMPARE(events.oneShotTimerCreations(), heartbeatTimersAfterSetup + 2);
+
+  QVERIFY(events.dispatchNextAddedEvent());
+  QCOMPARE(busyStream->getSize(), uint32_t{0});
+  QCOMPARE(events.oneShotTimerCreations(), heartbeatTimersAfterSetup + 3);
+  QVERIFY(events.addedEvents().empty());
+
+  events.removeHandler(EventTypes::Timer, &timerTarget);
 }
 
 QTEST_MAIN(ServerProxyTests)
