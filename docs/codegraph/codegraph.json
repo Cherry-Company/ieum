@@ -542,6 +542,7 @@
         "src/lib/deskflow/ipc/CoreIpc.h: #include \"common/Enums.h\" -> src/lib/common/Enums.h",
         "src/lib/deskflow/ipc/CoreIpcServer.cpp: #include \"common/Constants.h\" -> src/lib/common/Constants.h.in",
         "src/lib/deskflow/ipc/DaemonIpcServer.cpp: #include \"common/Constants.h\" -> src/lib/common/Constants.h.in",
+        "src/lib/deskflow/ipc/IpcServer.cpp: #include \"common/IpcMessage.h\" -> src/lib/common/IpcMessage.h",
         "src/lib/deskflow/ipc/IpcServer.cpp: #include \"common/VersionInfo.h\" -> src/lib/common/VersionInfo.h.in",
         "src/lib/deskflow/unix/AppUtilUnix.cpp: #include \"common/PlatformInfo.h\" -> src/lib/common/PlatformInfo.h",
         "src/lib/deskflow/win32/AppUtilWindows.cpp: #include \"common/Constants.h\" -> src/lib/common/Constants.h.in"
@@ -705,6 +706,7 @@
         "src/lib/gui/dialogs/SettingsDialog.h: #include \"common/TailscaleIntegration.h\" -> src/lib/common/TailscaleIntegration.h",
         "src/lib/gui/ipc/CoreIpcClient.cpp: #include \"common/Constants.h\" -> src/lib/common/Constants.h.in",
         "src/lib/gui/ipc/DaemonIpcClient.cpp: #include \"common/Constants.h\" -> src/lib/common/Constants.h.in",
+        "src/lib/gui/ipc/IpcClient.cpp: #include \"common/IpcMessage.h\" -> src/lib/common/IpcMessage.h",
         "src/lib/gui/ipc/IpcClient.cpp: #include \"common/VersionInfo.h\" -> src/lib/common/VersionInfo.h.in",
         "src/lib/gui/widgets/FingerprintPreview.cpp: #include \"common/PlatformInfo.h\" -> src/lib/common/PlatformInfo.h",
         "src/lib/gui/widgets/StatusBar.cpp: #include \"common/Constants.h\" -> src/lib/common/Constants.h.in",
@@ -1852,16 +1854,16 @@
       ]
     },
     {
-      "fileCount": 21,
+      "fileCount": 22,
       "id": "lib:common",
       "kind": "library",
       "languageCounts": {
         "c++": 5,
-        "c/c++ header": 13,
+        "c/c++ header": 14,
         "cmake": 1,
         "template": 2
       },
-      "lineCount": 2372,
+      "lineCount": 2396,
       "path": "src/lib/common",
       "targets": [
         "common"
@@ -1876,7 +1878,7 @@
         "c/c++ header": 45,
         "cmake": 1
       },
-      "lineCount": 13391,
+      "lineCount": 13392,
       "path": "src/lib/deskflow",
       "targets": [
         "app"
@@ -1893,7 +1895,7 @@
         "objective-c++": 1,
         "qt-ui": 8
       },
-      "lineCount": 17162,
+      "lineCount": 17163,
       "path": "src/lib/gui",
       "targets": [
         "gui"
@@ -2139,7 +2141,7 @@
         "c/c++ header": 14,
         "cmake": 1
       },
-      "lineCount": 2139,
+      "lineCount": 2200,
       "path": "src/unittests/deskflow",
       "targets": [
         "CanonicalScancodeTests",
@@ -2164,7 +2166,7 @@
         "c/c++ header": 8,
         "cmake": 3
       },
-      "lineCount": 937,
+      "lineCount": 1038,
       "path": "src/unittests/gui",
       "targets": [
         "DiagnosticTests",
@@ -3648,6 +3650,7 @@
       "kind": "system-include",
       "name": "QStringList",
       "sources": [
+        "src/lib/common/IpcMessage.h",
         "src/lib/common/NetworkInterfaces.h",
         "src/lib/common/TailscaleIntegration.h",
         "src/lib/gui/Action.h",
@@ -7788,6 +7791,12 @@
       "target": "src/lib/base/Log.h"
     },
     {
+      "evidence": "#include \"common/IpcMessage.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/ipc/IpcServer.cpp",
+      "target": "src/lib/common/IpcMessage.h"
+    },
+    {
       "evidence": "#include \"common/VersionInfo.h\"",
       "kind": "include",
       "source": "src/lib/deskflow/ipc/IpcServer.cpp",
@@ -8794,6 +8803,12 @@
       "kind": "include",
       "source": "src/lib/gui/ipc/DaemonIpcClient.h",
       "target": "src/lib/gui/ipc/IpcClient.h"
+    },
+    {
+      "evidence": "#include \"common/IpcMessage.h\"",
+      "kind": "include",
+      "source": "src/lib/gui/ipc/IpcClient.cpp",
+      "target": "src/lib/common/IpcMessage.h"
     },
     {
       "evidence": "#include \"common/VersionInfo.h\"",
@@ -16957,9 +16972,9 @@
       "binary": false,
       "component": "lib:common",
       "language": "cmake",
-      "lineCount": 41,
+      "lineCount": 42,
       "path": "src/lib/common/CMakeLists.txt",
-      "sizeBytes": 949
+      "sizeBytes": 964
     },
     {
       "binary": false,
@@ -17016,6 +17031,14 @@
       "lineCount": 85,
       "path": "src/lib/common/I18N.h",
       "sizeBytes": 2364
+    },
+    {
+      "binary": false,
+      "component": "lib:common",
+      "language": "c/c++ header",
+      "lineCount": 23,
+      "path": "src/lib/common/IpcMessage.h",
+      "sizeBytes": 517
     },
     {
       "binary": false,
@@ -17661,9 +17684,9 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "c++",
-      "lineCount": 337,
+      "lineCount": 338,
       "path": "src/lib/deskflow/ipc/IpcServer.cpp",
-      "sizeBytes": 11049
+      "sizeBytes": 11107
     },
     {
       "binary": false,
@@ -18301,9 +18324,9 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 219,
+      "lineCount": 220,
       "path": "src/lib/gui/ipc/IpcClient.cpp",
-      "sizeBytes": 6742
+      "sizeBytes": 6800
     },
     {
       "binary": false,
@@ -20701,17 +20724,17 @@
       "binary": false,
       "component": "test:deskflow",
       "language": "c++",
-      "lineCount": 82,
+      "lineCount": 141,
       "path": "src/unittests/deskflow/IpcServerTests.cpp",
-      "sizeBytes": 2384
+      "sizeBytes": 4450
     },
     {
       "binary": false,
       "component": "test:deskflow",
       "language": "c/c++ header",
-      "lineCount": 21,
+      "lineCount": 23,
       "path": "src/unittests/deskflow/IpcServerTests.h",
-      "sizeBytes": 398
+      "sizeBytes": 509
     },
     {
       "binary": false,
@@ -20861,17 +20884,17 @@
       "binary": false,
       "component": "test:gui",
       "language": "c++",
-      "lineCount": 90,
+      "lineCount": 189,
       "path": "src/unittests/gui/IpcClientTests.cpp",
-      "sizeBytes": 2460
+      "sizeBytes": 5419
     },
     {
       "binary": false,
       "component": "test:gui",
       "language": "c/c++ header",
-      "lineCount": 17,
+      "lineCount": 19,
       "path": "src/unittests/gui/IpcClientTests.h",
-      "sizeBytes": 387
+      "sizeBytes": 482
     },
     {
       "binary": false,
@@ -21451,8 +21474,8 @@
     }
   ],
   "revision": {
-    "branch": "fix/server-dispatch-fairness",
-    "commit": "ba435992ce4cf279d42919b570eb8e5998068034",
+    "branch": "fix/ipc-preserve-equals",
+    "commit": "757f8d4b045517474666cb1fc0e9573f53eece8a",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
@@ -21460,12 +21483,12 @@
     "componentEdges": 97,
     "components": 42,
     "excludedFiles": 3,
-    "fileIncludeEdges": 1403,
-    "representedFiles": 950,
-    "sourceFiles": 591,
-    "sourceLines": 95147,
+    "fileIncludeEdges": 1405,
+    "representedFiles": 951,
+    "sourceFiles": 592,
+    "sourceLines": 95334,
     "targets": 63,
-    "trackedFiles": 953
+    "trackedFiles": 954
   },
   "targets": [
     {

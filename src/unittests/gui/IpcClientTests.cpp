@@ -26,6 +26,20 @@ public:
       : IpcClient(nullptr, socketName, QStringLiteral("test"), retryLimit, retryDelayMs)
   {
   }
+
+  const QList<QStringList> &commands() const
+  {
+    return m_commands;
+  }
+
+protected:
+  void processCommand(const QString &, const QStringList &parts) override
+  {
+    m_commands.append(parts);
+  }
+
+private:
+  QList<QStringList> m_commands;
 };
 
 QString uniqueSocketName()
@@ -85,6 +99,91 @@ void IpcClientTests::emitsFailureAfterRetryLimit()
 
   QTRY_COMPARE_WITH_TIMEOUT(failureSpy.count(), 1, 1000);
   QVERIFY(!client.isConnected());
+}
+
+void IpcClientTests::preservesCommandArgumentBoundaryFromServer()
+{
+  const auto socketName = uniqueSocketName();
+  QLocalServer::removeServer(socketName);
+
+  QLocalServer server;
+  QVERIFY(server.listen(socketName));
+
+  TestIpcClient client(socketName, 1, 0);
+  const auto value = QStringLiteral("/tmp/이음=로그=현재.log");
+  QByteArray received;
+  bool responseSent = false;
+
+  connect(&server, &QLocalServer::newConnection, this, [&] {
+    auto *socket = server.nextPendingConnection();
+    QVERIFY(socket != nullptr);
+    connect(socket, &QLocalSocket::readyRead, this, [&, socket] {
+      received.append(socket->readAll());
+      if (responseSent || !received.contains('\n')) {
+        return;
+      }
+
+      responseSent = true;
+      const auto versionId = QStringLiteral("%1+%2").arg(kVersion, kVersionGitSha);
+      const auto response = QStringLiteral("hello=%1\nnoArgs\nempty=\nlogPath=%2\n").arg(versionId, value).toUtf8();
+      QCOMPARE(socket->write(response), response.size());
+      socket->flush();
+    });
+  });
+
+  client.connectToServer();
+
+  QTRY_VERIFY_WITH_TIMEOUT(client.isConnected(), 1000);
+  QTRY_COMPARE_WITH_TIMEOUT(client.commands().size(), static_cast<qsizetype>(3), 1000);
+
+  const auto &commands = client.commands();
+  QCOMPARE(commands.at(0), QStringList{QStringLiteral("noArgs")});
+  QCOMPARE(commands.at(1).size(), static_cast<qsizetype>(2));
+  QCOMPARE(commands.at(1).at(0), QStringLiteral("empty"));
+  QVERIFY(commands.at(1).at(1).isEmpty());
+  QCOMPARE(commands.at(2).size(), static_cast<qsizetype>(2));
+  QCOMPARE(commands.at(2).at(0), QStringLiteral("logPath"));
+  QCOMPARE(commands.at(2).at(1), value);
+
+  client.disconnectFromServer();
+  server.close();
+  QLocalServer::removeServer(socketName);
+}
+
+void IpcClientTests::acceptsVersionMismatchHandshake()
+{
+  const auto socketName = uniqueSocketName();
+  QLocalServer::removeServer(socketName);
+
+  QLocalServer server;
+  QVERIFY(server.listen(socketName));
+
+  TestIpcClient client(socketName, 1, 0);
+  QSignalSpy mismatchSpy(&client, &IpcClient::versionMismatch);
+  QByteArray received;
+
+  connect(&server, &QLocalServer::newConnection, this, [&] {
+    auto *socket = server.nextPendingConnection();
+    QVERIFY(socket != nullptr);
+    connect(socket, &QLocalSocket::readyRead, this, [&, socket] {
+      received.append(socket->readAll());
+      if (!received.contains('\n')) {
+        return;
+      }
+
+      socket->write("versionMismatch=server-version\n");
+      socket->flush();
+    });
+  });
+
+  client.connectToServer();
+
+  QTRY_COMPARE_WITH_TIMEOUT(mismatchSpy.count(), 1, 1000);
+  QVERIFY(client.isConnected());
+
+  client.disconnectFromServer();
+  server.close();
+  QLocalServer::removeServer(socketName);
 }
 
 QTEST_MAIN(IpcClientTests)

@@ -7,6 +7,7 @@
 #include "IpcServer.h"
 
 #include "base/Log.h"
+#include "common/IpcMessage.h"
 #include "common/VersionInfo.h"
 
 #include <QDir>
@@ -249,7 +250,7 @@ void IpcServer::handleErrorOccurred()
 void IpcServer::processMessage(QLocalSocket *clientSocket, const QString &message)
 {
   LOG_VERBOSE("%s ipc server got message: %s", m_typeName.constData(), message.toUtf8().constData());
-  const auto parts = message.split('=');
+  const auto parts = ::deskflow::ipc::splitCommandMessage(message);
   if (parts.isEmpty()) {
     LOG_ERR("%s ipc server got invalid message: %s", m_typeName.constData(), message.toUtf8().constData());
     writeToClientSocket(clientSocket, QStringLiteral("error"));
