@@ -16,6 +16,12 @@
 
 #include <cstring>
 
+namespace {
+
+constexpr uint32_t kMaxMessagesPerDispatch = 32;
+
+} // namespace
+
 //
 // ClientProxy1_0
 //
@@ -107,10 +113,12 @@ void ClientProxy1_0::setHeartbeatRate(double, double alarm)
 
 void ClientProxy1_0::handleData()
 {
-  // handle messages until there are no more.  first read message code.
+  // Handle a bounded slice so one continuously ready client cannot starve
+  // timers or other clients in the shared event loop.
   uint8_t code[4];
   uint32_t n = getStream()->read(code, 4);
-  while (n != 0) {
+  uint32_t messageCount = 0;
+  while (n != 0 && messageCount < kMaxMessagesPerDispatch) {
     // verify we got an entire code
     if (n != 4) {
       LOG_ERR("incomplete message from \"%s\": %d bytes", getName().c_str(), n);
@@ -137,12 +145,20 @@ void ClientProxy1_0::handleData()
       return;
     }
 
+    ++messageCount;
+
     // next message
-    n = getStream()->read(code, 4);
+    if (messageCount < kMaxMessagesPerDispatch) {
+      n = getStream()->read(code, 4);
+    }
   }
 
   // restart heartbeat timer
   resetHeartbeatTimer();
+
+  if (getStream()->isReady()) {
+    m_events->addEvent(Event(EventTypes::StreamInputReady, getStream()->getEventTarget()));
+  }
 }
 
 bool ClientProxy1_0::parseHandshakeMessage(const uint8_t *code)

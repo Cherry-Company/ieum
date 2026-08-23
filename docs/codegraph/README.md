@@ -6,11 +6,11 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `52e8d97027277adb3d1b7b9b2cf0b3d67ca08c04`
-- Branch: `fix/protocol-readf-failures`
+- Revision: `ba435992ce4cf279d42919b570eb8e5998068034`
+- Branch: `fix/server-dispatch-fairness`
 - Tracked files: 953
 - Represented files: 950
-- Source files / lines: 591 / 95,062
+- Source files / lines: 591 / 95,147
 - Components / targets: 42 / 63
 - File include edges / component edges: 1,403 / 97
 
@@ -66,7 +66,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `lib:mt` | library | Thread, mutex, lock, and condition-variable wrappers. | 12 | 892 | `mt` |
 | `lib:net` | library | TCP/TLS sockets, multiplexing, addresses, certificates, and fingerprint persistence. | 35 | 4,180 | `net` |
 | `lib:platform` | library | Windows, macOS, X11, libei, and portal input/clipboard adapters. | 126 | 28,243 | `platform` |
-| `lib:server` | library | Client proxies, input routing, screen topology, filters, and cursor transforms. | 42 | 9,539 | `server` |
+| `lib:server` | library | Client proxies, input routing, screen topology, filters, and cursor transforms. | 42 | 9,555 | `server` |
 | `support:artwork` | resource | Brand artwork and documentation screenshots. | 5 | 253 | — |
 | `support:cmake` | build | Shared dependency, coverage, packaging, and signing CMake modules. | 4 | 746 | — |
 | `support:docs` | documentation | User, developer, security, design, release, audit, and generated documentation. | 22 | 3,767 | — |
@@ -75,7 +75,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `support:source-build` | build | Repository support files rooted at `src`. | 3 | 170 | — |
 | `support:translations` | localization | Qt translation catalogs and translation build rules. | 8 | 11,416 | — |
 | `test:base` | test | Automated tests for the `base` surface. | 12 | 649 | `BaseExceptionTests`, `EventQueueTests`, `LogOutputtersTests`, `LogTests`, `StringTests`, `UnicodeTests` |
-| `test:client` | test | Automated tests for the `client` surface. | 3 | 601 | `ServerProxyTests` |
+| `test:client` | test | Automated tests for the `client` surface. | 3 | 670 | `ServerProxyTests` |
 | `test:codegraph-tools` | test | Automated tests for the `codegraph-tools` surface. | 1 | 461 | — |
 | `test:common` | test | Automated tests for the `common` surface. | 11 | 705 | `I18NTests`, `LogLevelTests`, `NetworkInterfacesTests`, `SettingsTests`, `TailscaleIntegrationTests` |
 | `test:deskflow` | test | Automated tests for the `deskflow` surface. | 26 | 2,139 | `CanonicalScancodeTests`, `ClientReconnectPolicyTests`, `ClipboardChunksTests`, `ClipboardTests`, `IKeyStateTests`, `IpcServerTests`, `KeyMapTests`, `KeyStateTests`, `KeyboardLayoutManagerTests`, `Protocol19Tests`, `X11LayoutParserTests` |

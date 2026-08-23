@@ -29,6 +29,7 @@ private Q_SLOTS:
   void clientProxy_allocationFailure_disconnects();
   void clientProxy_truncatedRuntimePayload_disconnects_data();
   void clientProxy_truncatedRuntimePayload_disconnects();
+  void clientProxy_largeBurst_yieldsToTimerAndSecondClient();
 
 private:
   Log m_log;
