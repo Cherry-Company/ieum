@@ -6,13 +6,13 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `ba435992ce4cf279d42919b570eb8e5998068034`
-- Branch: `fix/server-dispatch-fairness`
-- Tracked files: 953
-- Represented files: 950
-- Source files / lines: 591 / 95,147
+- Revision: `757f8d4b045517474666cb1fc0e9573f53eece8a`
+- Branch: `fix/ipc-preserve-equals`
+- Tracked files: 954
+- Represented files: 951
+- Source files / lines: 592 / 95,334
 - Components / targets: 42 / 63
-- File include edges / component edges: 1,403 / 97
+- File include edges / component edges: 1,405 / 97
 
 `docs/codegraph/`의 생성 산출물은 자기참조로 인한 비결정성을 막기 위해
 파일 인벤토리에서 명시적으로 제외됩니다.
@@ -59,9 +59,9 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `lib:arch` | library | Operating-system abstraction for daemon, network, logging, and threading primitives. | 28 | 6,167 | `arch` |
 | `lib:base` | library | Events, jobs, queues, logging, strings, Unicode, and timing primitives. | 32 | 3,642 | `base` |
 | `lib:client` | library | Connection to the server and dispatch of incoming KVM protocol messages. | 5 | 2,295 | `client` |
-| `lib:common` | library | Settings, network-interface selection, Tailscale integration, and shared product types. | 21 | 2,372 | `common` |
-| `lib:deskflow` | library | Shared KVM application, protocol, screen, key, clipboard, and IPC behavior. | 78 | 13,391 | `app` |
-| `lib:gui` | library | Qt windows, dialogs, widgets, validators, startup, diagnostics, updates, and IPC clients. | 109 | 17,162 | `gui` |
+| `lib:common` | library | Settings, network-interface selection, Tailscale integration, and shared product types. | 22 | 2,396 | `common` |
+| `lib:deskflow` | library | Shared KVM application, protocol, screen, key, clipboard, and IPC behavior. | 78 | 13,392 | `app` |
+| `lib:gui` | library | Qt windows, dialogs, widgets, validators, startup, diagnostics, updates, and IPC clients. | 109 | 17,163 | `gui` |
 | `lib:io` | library | Stream interfaces, buffers, filters, and framed I/O support. | 8 | 570 | `io` |
 | `lib:mt` | library | Thread, mutex, lock, and condition-variable wrappers. | 12 | 892 | `mt` |
 | `lib:net` | library | TCP/TLS sockets, multiplexing, addresses, certificates, and fingerprint persistence. | 35 | 4,180 | `net` |
@@ -78,8 +78,8 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `test:client` | test | Automated tests for the `client` surface. | 3 | 670 | `ServerProxyTests` |
 | `test:codegraph-tools` | test | Automated tests for the `codegraph-tools` surface. | 1 | 461 | — |
 | `test:common` | test | Automated tests for the `common` surface. | 11 | 705 | `I18NTests`, `LogLevelTests`, `NetworkInterfacesTests`, `SettingsTests`, `TailscaleIntegrationTests` |
-| `test:deskflow` | test | Automated tests for the `deskflow` surface. | 26 | 2,139 | `CanonicalScancodeTests`, `ClientReconnectPolicyTests`, `ClipboardChunksTests`, `ClipboardTests`, `IKeyStateTests`, `IpcServerTests`, `KeyMapTests`, `KeyStateTests`, `KeyboardLayoutManagerTests`, `Protocol19Tests`, `X11LayoutParserTests` |
-| `test:gui` | test | Automated tests for the `gui` surface. | 22 | 937 | `DiagnosticTests`, `FileTailTests`, `IpcClientTests`, `KeySequenceTests`, `LogWidgetTests`, `LoggerTests`, `NetworkMonitorTests`, `ScreenTests`, `StatusBarTests`, `StyleUtilsTests`, `VersionCheckerTests` |
+| `test:deskflow` | test | Automated tests for the `deskflow` surface. | 26 | 2,200 | `CanonicalScancodeTests`, `ClientReconnectPolicyTests`, `ClipboardChunksTests`, `ClipboardTests`, `IKeyStateTests`, `IpcServerTests`, `KeyMapTests`, `KeyStateTests`, `KeyboardLayoutManagerTests`, `Protocol19Tests`, `X11LayoutParserTests` |
+| `test:gui` | test | Automated tests for the `gui` surface. | 22 | 1,038 | `DiagnosticTests`, `FileTailTests`, `IpcClientTests`, `KeySequenceTests`, `LogWidgetTests`, `LoggerTests`, `NetworkMonitorTests`, `ScreenTests`, `StatusBarTests`, `StyleUtilsTests`, `VersionCheckerTests` |
 | `test:legacytests` | test | Automated tests for the `legacytests` surface. | 10 | 888 | `legacytests` |
 | `test:net` | test | Automated tests for the `net` surface. | 9 | 595 | `FingerprintDatabaseTests`, `FingerprintTests`, `NetworkAddressTests`, `SecureSocketWriteBufferTests`, `SecureUtilsTests` |
 | `test:platform` | test | Automated tests for the `platform` surface. | 11 | 692 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |

@@ -15,6 +15,8 @@ class IpcServerTests : public QObject
   Q_OBJECT
 private Q_SLOTS:
   void refusesDuplicateWithoutDisruptingFirstServer();
+  void preservesCommandArgumentBoundaryFromClient();
+  void returnsVersionMismatchForDifferentClientVersion();
 
 private:
   Log m_log;

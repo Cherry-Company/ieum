@@ -6,6 +6,7 @@
 
 #include "IpcClient.h"
 
+#include "common/IpcMessage.h"
 #include "common/VersionInfo.h"
 
 #include <QDebug>
@@ -142,7 +143,7 @@ void IpcClient::handleReadyRead()
     data.remove(0, index + 1);
 
     qDebug().noquote() << QStringLiteral("%1 ipc client message: %2").arg(m_typeName, message);
-    const auto parts = message.split('=');
+    const auto parts = ::deskflow::ipc::splitCommandMessage(message);
     if (parts.isEmpty()) {
       qWarning().noquote() << QStringLiteral("%1 ipc client got invalid message: %2").arg(m_typeName, message);
       continue;

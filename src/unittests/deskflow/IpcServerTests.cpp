@@ -25,10 +25,18 @@ public:
   {
   }
 
-private:
-  void processCommand(QLocalSocket *, const QString &, const QStringList &) override
+  const QList<QStringList> &commands() const
   {
+    return m_commands;
   }
+
+private:
+  void processCommand(QLocalSocket *, const QString &, const QStringList &parts) override
+  {
+    m_commands.append(parts);
+  }
+
+  QList<QStringList> m_commands;
 };
 
 QString uniqueSocketName()
@@ -77,6 +85,57 @@ void IpcServerTests::refusesDuplicateWithoutDisruptingFirstServer()
   secondClient.connectToServer(socketName);
   QVERIFY(secondClient.waitForConnected(1000));
   QCOMPARE(firstClient.state(), QLocalSocket::ConnectedState);
+}
+
+void IpcServerTests::preservesCommandArgumentBoundaryFromClient()
+{
+  const auto socketName = uniqueSocketName();
+  QLocalServer::removeServer(socketName);
+
+  TestIpcServer server(socketName);
+  QVERIFY(server.listen());
+
+  QLocalSocket client;
+  client.connectToServer(socketName);
+  QVERIFY(client.waitForConnected(1000));
+
+  const auto versionId = QStringLiteral("%1+%2").arg(kVersion, kVersionGitSha);
+  const auto value = QStringLiteral("C:\\경로=설정\\이음=공유.conf");
+  const auto request = QStringLiteral("hello=%1\nnoArgs\nempty=\nconfigFile=%2\n").arg(versionId, value).toUtf8();
+  QCOMPARE(client.write(request), request.size());
+  client.flush();
+
+  QTRY_COMPARE_WITH_TIMEOUT(server.commands().size(), static_cast<qsizetype>(3), 1000);
+
+  const auto &commands = server.commands();
+  QCOMPARE(commands.at(0), QStringList{QStringLiteral("noArgs")});
+  QCOMPARE(commands.at(1).size(), static_cast<qsizetype>(2));
+  QCOMPARE(commands.at(1).at(0), QStringLiteral("empty"));
+  QVERIFY(commands.at(1).at(1).isEmpty());
+  QCOMPARE(commands.at(2).size(), static_cast<qsizetype>(2));
+  QCOMPARE(commands.at(2).at(0), QStringLiteral("configFile"));
+  QCOMPARE(commands.at(2).at(1), value);
+}
+
+void IpcServerTests::returnsVersionMismatchForDifferentClientVersion()
+{
+  const auto socketName = uniqueSocketName();
+  QLocalServer::removeServer(socketName);
+
+  TestIpcServer server(socketName);
+  QVERIFY(server.listen());
+
+  QLocalSocket client;
+  client.connectToServer(socketName);
+  QVERIFY(client.waitForConnected(1000));
+  QSignalSpy readyReadSpy(&client, &QLocalSocket::readyRead);
+
+  QCOMPARE(client.write("hello=different-version\n"), 24);
+  client.flush();
+
+  QTRY_VERIFY_WITH_TIMEOUT(!readyReadSpy.isEmpty(), 1000);
+  const auto versionId = QStringLiteral("%1+%2").arg(kVersion, kVersionGitSha);
+  QCOMPARE(QString::fromUtf8(client.readAll()), QStringLiteral("versionMismatch=%1\n").arg(versionId));
 }
 
 QTEST_GUILESS_MAIN(IpcServerTests)

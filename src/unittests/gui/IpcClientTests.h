@@ -14,4 +14,6 @@ class IpcClientTests : public QObject
 private Q_SLOTS:
   void connectsWhenServerStartsDuringRetryWindow();
   void emitsFailureAfterRetryLimit();
+  void preservesCommandArgumentBoundaryFromServer();
+  void acceptsVersionMismatchHandshake();
 };

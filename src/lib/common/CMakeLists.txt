@@ -16,6 +16,7 @@ add_library(common STATIC
   FullscreenGeometry.h
   I18N.h
   I18N.cpp
+  IpcMessage.h
   LogLevel.h
   NetworkInterfaces.cpp
   NetworkInterfaces.h
