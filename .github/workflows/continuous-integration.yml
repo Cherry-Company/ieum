@@ -651,6 +651,7 @@ jobs:
         with:
           name: package-${{ env.PACKAGE_PREFIX }}-${{ matrix.target.name }}
           path: ${{github.workspace}}/build/Ieum[-_]*.*
+          retention-days: 1
 
       - name: Clean up macOS signing keychain
         if: always() && runner.os == 'macOS' && env.IEUM_MACOS_KEYCHAIN != ''
@@ -767,6 +768,7 @@ jobs:
         with:
           name: package-${{ env.PACKAGE_PREFIX }}-flatpak-${{matrix.flatpak.arch}}
           path: ${{github.workspace}}/Ieum[-_]*.flatpak
+          retention-days: 1
 
   release:
     needs: ci-passed
