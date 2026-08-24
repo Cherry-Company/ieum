@@ -19,17 +19,23 @@ class DaemonIpcClient : public IpcClient
 public:
   explicit DaemonIpcClient(QObject *parent = nullptr);
   void sendLogLevel(const QString &logLevel);
-  void sendConfigFile(const QString &configFile);
-  void sendStartProcess();
-  void sendStopProcess();
+  QString sendConfigFile(const QString &configFile);
+  QString sendStartProcess();
+  QString sendStopProcess();
   void sendClearSettings();
   void requestLogPath();
 
 Q_SIGNALS:
   void logPathReceived(const QString &logPath);
+  void commandResult(const QString &requestId, const QString &command, bool success, const QString &detail);
 
 protected:
+  DaemonIpcClient(QObject *parent, const QString &socketName, int retryLimit, int retryDelayMs);
   void processCommand(const QString &command, const QStringList &parts) override;
+
+private:
+  QString sendCorrelatedCommand(const QString &command);
+  QString sendCorrelatedCommand(const QString &command, const QString &argument);
 };
 
 } // namespace deskflow::gui::ipc

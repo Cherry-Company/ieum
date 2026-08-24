@@ -24,6 +24,8 @@ class CoreIpcClient;
 class DaemonIpcClient;
 } // namespace ipc
 
+class ServiceStartCoordinator;
+
 class CoreProcess : public QObject
 {
   using ConnectionState = deskflow::core::ConnectionState;
@@ -112,6 +114,10 @@ private:
   void stopProcessFromDaemon();
   void scheduleRestart(int delayMs);
   void connectCoreIpc(quint64 startGeneration);
+  void handleDaemonCommandResult(const QString &requestId, const QString &command, bool success, const QString &detail);
+  void handleServiceStartFailure(quint64 startGeneration);
+  void requestDaemonStop();
+  void clearServiceStartRequests();
   QPair<bool, QString> persistServerConfig() const;
   void setConnectionState(ConnectionState state);
   void setProcessState(ProcessState state);
@@ -126,12 +132,16 @@ private:
   static QString wrapIpv6(const QString &address);
 
   const ServerConfig &m_serverConfig;
+  ServiceStartCoordinator *m_serviceStartCoordinator = nullptr;
   QString m_address;
   ProcessState m_processState = ProcessState::Stopped;
   ConnectionState m_connectionState = ConnectionState::Disconnected;
   Settings::CoreMode m_mode = Settings::CoreMode::None;
   QMutex m_processMutex;
   QString m_secureSocketVersion;
+  QString m_serviceConfigFile;
+  QString m_daemonConfigRequestId;
+  QString m_daemonStartRequestId;
   std::optional<ProcessMode> m_lastProcessMode = std::nullopt;
   QTimer m_retryTimer;
   bool m_restartRequested = false;

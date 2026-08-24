@@ -54,6 +54,8 @@ add_library(${target} STATIC
   core/CoreProcess.h
   core/NetworkMonitor.cpp
   core/NetworkMonitor.h
+  core/ServiceStartCoordinator.cpp
+  core/ServiceStartCoordinator.h
   dialogs/AboutDialog.cpp
   dialogs/AboutDialog.h
   dialogs/AboutDialog.ui

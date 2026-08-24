@@ -172,6 +172,10 @@ void MSWindowsWatchdog::mainLoop(const void *)
 
   LOG_DEBUG("starting watchdog main loop");
   while (m_running) {
+    ProcessConfigCallback startResultCallback;
+    bool startSucceeded = false;
+    std::string startDetail;
+
     LOG_VERBOSE("locking process state mutex in watchdog main loop");
     std::unique_lock lock(m_processStateMutex);
 
@@ -200,10 +204,16 @@ void MSWindowsWatchdog::mainLoop(const void *)
         startProcess();
         m_startFailures = 0;
         m_processState = Running;
+        startSucceeded = true;
+        startResultCallback = std::move(m_startResultCallback);
       } catch (std::exception &e) { // NOSONAR - Catching all exceptions
         m_processState = handleStartError(e.what());
+        startDetail = e.what();
+        startResultCallback = std::move(m_startResultCallback);
       } catch (...) { // NOSONAR - Catching remaining exceptions
         m_processState = handleStartError();
+        startDetail = "unknown process start error";
+        startResultCallback = std::move(m_startResultCallback);
       }
     } break;
 
@@ -230,6 +240,10 @@ void MSWindowsWatchdog::mainLoop(const void *)
 
     LOG_VERBOSE("unlocking process state mutex in watchdog main loop");
     lock.unlock();
+
+    if (startResultCallback) {
+      startResultCallback(startSucceeded, startDetail);
+    }
 
     // Sleep for only 100ms rather than 1 second so that the service can shut down faster.
     LOG_VERBOSE("watchdog main loop sleeping");
@@ -296,9 +310,13 @@ void MSWindowsWatchdog::startProcess()
     DWORD exitCode = 0;
     if (GetExitCodeProcess(m_process->info().hProcess, &exitCode)) {
       LOG_ERR("daemon failed to run command, exit code: %d", exitCode);
+      m_process.reset();
+      throw std::runtime_error("process creation failed with exit code " + std::to_string(exitCode));
     } else {
-      LOG_ERR("daemon failed to run command, unknown exit code");
-      throw std::runtime_error(windowsErrorToString(GetLastError()));
+      const auto error = windowsErrorToString(GetLastError());
+      LOG_ERR("daemon failed to run command, error: %s", error.c_str());
+      m_process.reset();
+      throw std::runtime_error(error);
     }
   } else {
     // Wait for program to fail. This needs to be 1 second, as the process may take some time to fail.
@@ -318,38 +336,61 @@ void MSWindowsWatchdog::startProcess()
   }
 }
 
-void MSWindowsWatchdog::setProcessConfig(const std::string_view &command, bool elevate)
+void MSWindowsWatchdog::setProcessConfig(
+    const std::string_view &command, const bool elevate, ProcessConfigCallback callback
+)
 {
   LOG_VERBOSE("locking process state mutex for watchdog config change");
-  std::scoped_lock lock{m_processStateMutex};
+  ProcessConfigCallback supersededCallback;
+  ProcessConfigCallback immediateCallback;
 
-  const auto newCommand = std::wstring(command.begin(), command.end());
-  if (m_command == newCommand && m_elevateProcess == elevate) {
-    if (!newCommand.empty() && m_processState == ProcessState::Idle) {
-      LOG_DEBUG("unchanged watchdog command is idle, queueing process start");
-      m_processState = ProcessState::StartPending;
-      m_nextStartTime.reset();
+  {
+    std::scoped_lock lock{m_processStateMutex};
+    supersededCallback = std::move(m_startResultCallback);
+
+    const auto newCommand = std::wstring(command.begin(), command.end());
+    if (m_command == newCommand && m_elevateProcess == elevate) {
+      if (!newCommand.empty() && m_processState == ProcessState::Running) {
+        LOG_DEBUG("unchanged watchdog command is already running");
+        immediateCallback = std::move(callback);
+      } else {
+        m_startResultCallback = std::move(callback);
+        if (!newCommand.empty() && m_processState == ProcessState::Idle) {
+          LOG_DEBUG("unchanged watchdog command is idle, queueing process start");
+          m_processState = ProcessState::StartPending;
+          m_nextStartTime.reset();
+        } else {
+          LOG_DEBUG("watchdog process config is unchanged, keeping current process state");
+        }
+      }
     } else {
-      LOG_DEBUG("watchdog process config is unchanged, keeping current process");
+      LOG_DEBUG("setting watchdog process config");
+      m_command = newCommand;
+      m_elevateProcess = elevate;
+      if (!m_command.empty()) {
+        m_startResultCallback = std::move(callback);
+      }
+
+      if (m_command.empty()) {
+        LOG_DEBUG("command cleared, queueing process stop");
+        m_processState = ProcessState::StopPending;
+      } else if (m_processState == ProcessState::Running || m_processState == ProcessState::StopPending) {
+        LOG_DEBUG("command changed while process is active, queueing process replacement");
+        m_processState = ProcessState::StopPending;
+        m_nextStartTime.reset();
+      } else {
+        LOG_DEBUG("command changed, queueing process start");
+        m_processState = ProcessState::StartPending;
+        m_nextStartTime.reset();
+      }
     }
-    return;
   }
 
-  LOG_DEBUG("setting watchdog process config");
-  m_command = newCommand;
-  m_elevateProcess = elevate;
-
-  if (m_command.empty()) {
-    LOG_DEBUG("command cleared, queueing process stop");
-    m_processState = ProcessState::StopPending;
-  } else if (m_processState == ProcessState::Running || m_processState == ProcessState::StopPending) {
-    LOG_DEBUG("command changed while process is active, queueing process replacement");
-    m_processState = ProcessState::StopPending;
-    m_nextStartTime.reset();
-  } else {
-    LOG_DEBUG("command changed, queueing process start");
-    m_processState = ProcessState::StartPending;
-    m_nextStartTime.reset();
+  if (supersededCallback) {
+    supersededCallback(false, "process start request was superseded");
+  }
+  if (immediateCallback) {
+    immediateCallback(true, {});
   }
 }
 

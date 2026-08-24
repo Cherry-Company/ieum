@@ -16,4 +16,5 @@ private Q_SLOTS:
   void emitsFailureAfterRetryLimit();
   void preservesCommandArgumentBoundaryFromServer();
   void acceptsVersionMismatchHandshake();
+  void correlatesDaemonCommandResults();
 };

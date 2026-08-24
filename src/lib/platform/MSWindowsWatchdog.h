@@ -13,6 +13,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -37,6 +38,8 @@ class MSWindowsWatchdog
   };
 
 public:
+  using ProcessConfigCallback = std::function<void(bool success, std::string detail)>;
+
   explicit MSWindowsWatchdog(bool foreground, FileLogOutputter &fileLogOutputter);
   ~MSWindowsWatchdog() = default;
 
@@ -48,7 +51,9 @@ public:
   /**
    * @brief Set the command to run and whether to elevate the process.
    */
-  void setProcessConfig(const std::string_view &command, bool elevate);
+  void setProcessConfig(
+      const std::string_view &command, bool elevate, ProcessConfigCallback callback = ProcessConfigCallback{}
+  );
 
   /**
    * @brief Stop the main loop and output loop threads.
@@ -145,6 +150,7 @@ private:
   std::optional<double> m_nextStartTime = std::nullopt;
   ProcessState m_processState = ProcessState::Idle;
   std::wstring m_command = {};
+  ProcessConfigCallback m_startResultCallback;
   SendSas m_sendSasFunc = nullptr;
   std::mutex m_processStateMutex;
 };
