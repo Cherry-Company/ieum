@@ -77,6 +77,37 @@ def action_metadata_files() -> list[Path]:
     return sorted(files)
 
 
+def upload_artifact_blocks(source: str) -> list[str]:
+    """Return each upload-artifact step, independent of its YAML nesting depth."""
+    lines = source.splitlines()
+    blocks: list[str] = []
+    for index, line in enumerate(lines):
+        if "uses: actions/upload-artifact@" not in line:
+            continue
+        action_indent = len(line) - len(line.lstrip())
+        step_indent = action_indent - 2
+        block_start = index
+        while block_start > 0:
+            candidate = lines[block_start - 1]
+            if (
+                candidate.strip()
+                and len(candidate) - len(candidate.lstrip()) <= step_indent
+            ):
+                break
+            block_start -= 1
+        block_end = index + 1
+        while block_end < len(lines):
+            candidate = lines[block_end]
+            if (
+                candidate.strip()
+                and len(candidate) - len(candidate.lstrip()) <= step_indent
+            ):
+                break
+            block_end += 1
+        blocks.append("\n".join(lines[block_start:block_end]))
+    return blocks
+
+
 class AnalysisWorkflowPolicyTests(unittest.TestCase):
     def test_codeql_push_targets_default_branch(self) -> None:
         push = event_block(read_workflow("codeql-analysis.yml"), "push")
@@ -216,6 +247,20 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
                     )
 
         self.assertEqual(violations, [], "\n".join(violations))
+
+    def test_artifact_uploads_have_bounded_purpose_specific_retention(self) -> None:
+        violations: list[str] = []
+        for path in action_metadata_files():
+            source = path.read_text(encoding="utf-8")
+            for block in upload_artifact_blocks(source):
+                expected = 30 if "name: privacy-release-" in block else 1
+                if f"retention-days: {expected}" not in block:
+                    violations.append(
+                        f"{path.relative_to(REPOSITORY_ROOT)}: expected "
+                        f"retention-days: {expected}\n{block}"
+                    )
+
+        self.assertEqual(violations, [], "\n\n".join(violations))
 
     def test_workflows_declare_explicit_default_permissions(self) -> None:
         for path in sorted(WORKFLOW_DIRECTORY.glob("*.yml")):

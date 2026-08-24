@@ -91,3 +91,4 @@ runs:
         name: ${{ inputs.upload-name }}
         path: ${{ steps.summary.outputs.file }}
         if-no-files-found: error
+        retention-days: 1

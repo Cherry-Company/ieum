@@ -75,6 +75,7 @@ runs:
       with:
         name: test-result-${{ inputs.job }}
         path: ${{ steps.row.outputs.file }}
+        retention-days: 1
 
     - name: Check test outcome
       if: (steps.unit-tests.outcome != 'success' || steps.legacy-tests.outcome != 'success')

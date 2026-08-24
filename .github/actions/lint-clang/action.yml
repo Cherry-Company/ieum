@@ -41,6 +41,7 @@ runs:
         name: clang-format-diff
         path: ${{ steps.changes.outputs.file }}
         if-no-files-found: error
+        retention-days: 1
 
     - name: Set summary
       id: summary
@@ -84,6 +85,7 @@ runs:
         name: summary-clang-format
         path: ${{ steps.summary.outputs.file }}
         if-no-files-found: error
+        retention-days: 1
 
     - name: Fail if diff exists
       if: steps.changes.outputs.diff
