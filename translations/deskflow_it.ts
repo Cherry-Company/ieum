@@ -1392,6 +1392,10 @@ L&apos;abilitazione di questa impostazione disabiliterà l&apos;interfaccia graf
         <translation>Cerca un file di configurazione</translation>
     </message>
     <message>
+        <source>Select an existing configuration file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable lock to computer at startup</source>
         <translation type="unfinished">Abilita il blocco al computer all&apos;avvio</translation>
     </message>

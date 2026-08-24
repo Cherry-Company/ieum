@@ -1526,6 +1526,7 @@
       "evidence": [
         "src/unittests/gui/IpcClientTests.cpp: #include \"common/VersionInfo.h\" -> src/lib/common/VersionInfo.h.in",
         "src/unittests/gui/LoggerTests.cpp: #include \"common/Settings.h\" -> src/lib/common/Settings.h",
+        "src/unittests/gui/ServerConfigDialogTests.cpp: #include \"common/Settings.h\" -> src/lib/common/Settings.h",
         "src/unittests/gui/VersionCheckerTests.cpp: #include \"common/UrlConstants.h\" -> src/lib/common/UrlConstants.h",
         "src/unittests/gui/config/ScreenTests.cpp: #include \"common/Settings.h\" -> src/lib/common/Settings.h"
       ],
@@ -1544,6 +1545,8 @@
         "src/unittests/gui/KeySequenceTests.cpp: #include \"gui/KeySequence.h\" -> src/lib/gui/KeySequence.h",
         "src/unittests/gui/LogWidgetTests.cpp: #include \"gui/widgets/LogWidget.h\" -> src/lib/gui/widgets/LogWidget.h",
         "src/unittests/gui/LoggerTests.cpp: #include \"gui/Logger.h\" -> src/lib/gui/Logger.h",
+        "src/unittests/gui/ServerConfigDialogTests.cpp: #include \"gui/config/ServerConfig.h\" -> src/lib/gui/config/ServerConfig.h",
+        "src/unittests/gui/ServerConfigDialogTests.cpp: #include \"gui/dialogs/ServerConfigDialog.h\" -> src/lib/gui/dialogs/ServerConfigDialog.h",
         "src/unittests/gui/ServiceStartCoordinatorTests.cpp: #include \"gui/core/ServiceStartCoordinator.h\" -> src/lib/gui/core/ServiceStartCoordinator.h",
         "src/unittests/gui/StatusBarTests.cpp: #include \"gui/widgets/StatusBar.h\" -> src/lib/gui/widgets/StatusBar.h",
         "src/unittests/gui/StyleUtilsTests.cpp: #include \"gui/StyleUtils.h\" -> src/lib/gui/StyleUtils.h",
@@ -1898,7 +1901,7 @@
         "objective-c++": 1,
         "qt-ui": 8
       },
-      "lineCount": 17502,
+      "lineCount": 17539,
       "path": "src/lib/gui",
       "targets": [
         "gui"
@@ -2161,15 +2164,15 @@
       ]
     },
     {
-      "fileCount": 24,
+      "fileCount": 25,
       "id": "test:gui",
       "kind": "test",
       "languageCounts": {
-        "c++": 12,
+        "c++": 13,
         "c/c++ header": 9,
         "cmake": 3
       },
-      "lineCount": 1261,
+      "lineCount": 1468,
       "path": "src/unittests/gui",
       "targets": [
         "DiagnosticTests",
@@ -2180,6 +2183,7 @@
         "LoggerTests",
         "NetworkMonitorTests",
         "ScreenTests",
+        "ServerConfigDialogTests",
         "ServiceStartCoordinatorTests",
         "StatusBarTests",
         "StyleUtilsTests",
@@ -2848,7 +2852,8 @@
       "kind": "system-include",
       "name": "QDialogButtonBox",
       "sources": [
-        "src/lib/gui/dialogs/FingerprintDialog.h"
+        "src/lib/gui/dialogs/FingerprintDialog.h",
+        "src/unittests/gui/ServerConfigDialogTests.cpp"
       ]
     },
     {
@@ -2963,7 +2968,8 @@
         "src/unittests/common/LogLevelTests.cpp",
         "src/unittests/common/SettingsTests.cpp",
         "src/unittests/gui/FileTailTests.cpp",
-        "src/unittests/gui/LoggerTests.cpp"
+        "src/unittests/gui/LoggerTests.cpp",
+        "src/unittests/gui/ServerConfigDialogTests.cpp"
       ]
     },
     {
@@ -2988,6 +2994,7 @@
         "src/lib/gui/Diagnostic.cpp",
         "src/lib/gui/FileTail.cpp",
         "src/lib/gui/Messages.cpp",
+        "src/lib/gui/dialogs/ServerConfigDialog.cpp",
         "src/unittests/base/LogOutputtersTests.cpp"
       ]
     },
@@ -3032,6 +3039,13 @@
       "name": "QFrame",
       "sources": [
         "src/lib/gui/widgets/FingerprintPreview.h"
+      ]
+    },
+    {
+      "kind": "system-include",
+      "name": "QGroupBox",
+      "sources": [
+        "src/unittests/gui/ServerConfigDialogTests.cpp"
       ]
     },
     {
@@ -3144,7 +3158,8 @@
         "src/lib/gui/validators/AliasValidator.cpp",
         "src/lib/gui/validators/LineEditValidator.cpp",
         "src/lib/gui/validators/ScreenNameValidator.cpp",
-        "src/lib/gui/widgets/SearchWidget.cpp"
+        "src/lib/gui/widgets/SearchWidget.cpp",
+        "src/unittests/gui/ServerConfigDialogTests.cpp"
       ]
     },
     {
@@ -3243,7 +3258,6 @@
         "src/lib/gui/MainWindow.cpp",
         "src/lib/gui/Messages.cpp",
         "src/lib/gui/dialogs/ScreenSettingsDialog.cpp",
-        "src/lib/gui/dialogs/ServerConfigDialog.cpp",
         "src/lib/gui/dialogs/SettingsDialog.cpp"
       ]
     },
@@ -3440,7 +3454,8 @@
         "src/lib/gui/widgets/KeySequenceWidget.h",
         "src/lib/gui/widgets/LogDock.cpp",
         "src/lib/gui/widgets/SearchWidget.cpp",
-        "src/lib/gui/widgets/StatusBar.cpp"
+        "src/lib/gui/widgets/StatusBar.cpp",
+        "src/unittests/gui/ServerConfigDialogTests.cpp"
       ]
     },
     {
@@ -3673,6 +3688,7 @@
       "kind": "system-include",
       "name": "QStyle",
       "sources": [
+        "src/lib/gui/dialogs/ServerConfigDialog.cpp",
         "src/lib/gui/validators/LineEditValidator.cpp"
       ]
     },
@@ -3711,7 +3727,8 @@
       "name": "QTemporaryDir",
       "sources": [
         "src/unittests/base/LogOutputtersTests.cpp",
-        "src/unittests/gui/FileTailTests.cpp"
+        "src/unittests/gui/FileTailTests.cpp",
+        "src/unittests/gui/ServerConfigDialogTests.cpp"
       ]
     },
     {
@@ -3748,6 +3765,7 @@
         "src/unittests/gui/KeySequenceTests.h",
         "src/unittests/gui/LogWidgetTests.cpp",
         "src/unittests/gui/LoggerTests.h",
+        "src/unittests/gui/ServerConfigDialogTests.cpp",
         "src/unittests/gui/ServiceStartCoordinatorTests.h",
         "src/unittests/gui/StatusBarTests.cpp",
         "src/unittests/gui/StyleUtilsTests.h",
@@ -5255,7 +5273,8 @@
         "src/lib/base/FinalAction.h",
         "src/lib/common/NetworkInterfaces.cpp",
         "src/lib/deskflow/InputLanguageTypes.h",
-        "src/lib/platform/PortalInputCapture.h"
+        "src/lib/platform/PortalInputCapture.h",
+        "src/unittests/gui/ServerConfigDialogTests.cpp"
       ]
     },
     {
@@ -5373,6 +5392,13 @@
       "name": "SecureSocketWriteBufferTests.moc",
       "sources": [
         "src/unittests/net/SecureSocketWriteBufferTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
+      "name": "ServerConfigDialogTests.moc",
+      "sources": [
+        "src/unittests/gui/ServerConfigDialogTests.cpp"
       ]
     },
     {
@@ -13542,6 +13568,24 @@
       "target": "src/unittests/gui/LoggerTests.h"
     },
     {
+      "evidence": "#include \"common/Settings.h\"",
+      "kind": "include",
+      "source": "src/unittests/gui/ServerConfigDialogTests.cpp",
+      "target": "src/lib/common/Settings.h"
+    },
+    {
+      "evidence": "#include \"gui/config/ServerConfig.h\"",
+      "kind": "include",
+      "source": "src/unittests/gui/ServerConfigDialogTests.cpp",
+      "target": "src/lib/gui/config/ServerConfig.h"
+    },
+    {
+      "evidence": "#include \"gui/dialogs/ServerConfigDialog.h\"",
+      "kind": "include",
+      "source": "src/unittests/gui/ServerConfigDialogTests.cpp",
+      "target": "src/lib/gui/dialogs/ServerConfigDialog.h"
+    },
+    {
       "evidence": "#include \"gui/core/ServiceStartCoordinator.h\"",
       "kind": "include",
       "source": "src/unittests/gui/ServiceStartCoordinatorTests.cpp",
@@ -18311,17 +18355,17 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 579,
+      "lineCount": 612,
       "path": "src/lib/gui/dialogs/ServerConfigDialog.cpp",
-      "sizeBytes": 21410
+      "sizeBytes": 22526
     },
     {
       "binary": false,
       "component": "lib:gui",
       "language": "c/c++ header",
-      "lineCount": 124,
+      "lineCount": 128,
       "path": "src/lib/gui/dialogs/ServerConfigDialog.h",
-      "sizeBytes": 3127
+      "sizeBytes": 3320
     },
     {
       "binary": false,
@@ -20919,9 +20963,9 @@
       "binary": false,
       "component": "test:gui",
       "language": "cmake",
-      "lineCount": 77,
+      "lineCount": 85,
       "path": "src/unittests/gui/CMakeLists.txt",
-      "sizeBytes": 1544
+      "sizeBytes": 1792
     },
     {
       "binary": false,
@@ -21002,6 +21046,14 @@
       "lineCount": 24,
       "path": "src/unittests/gui/LoggerTests.h",
       "sizeBytes": 746
+    },
+    {
+      "binary": false,
+      "component": "test:gui",
+      "language": "c++",
+      "lineCount": 199,
+      "path": "src/unittests/gui/ServerConfigDialogTests.cpp",
+      "sizeBytes": 6388
     },
     {
       "binary": false,
@@ -21557,21 +21609,21 @@
     }
   ],
   "revision": {
-    "branch": "fix/daemon-start-ack",
-    "commit": "399b873cb08699f0720ae4fc7463dbd1a701a2ff",
-    "dirtyTrackedFiles": true
+    "branch": "fix/typed-server-config-path",
+    "commit": "848d94ce6541eaa32e8f6481d4eab8d458945f16",
+    "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
   "summary": {
     "componentEdges": 97,
     "components": 42,
     "excludedFiles": 3,
-    "fileIncludeEdges": 1411,
-    "representedFiles": 955,
-    "sourceFiles": 596,
-    "sourceLines": 96244,
-    "targets": 64,
-    "trackedFiles": 958
+    "fileIncludeEdges": 1414,
+    "representedFiles": 956,
+    "sourceFiles": 597,
+    "sourceLines": 96480,
+    "targets": 65,
+    "trackedFiles": 959
   },
   "targets": [
     {
@@ -21783,6 +21835,12 @@
       "kind": "test",
       "name": "SecureUtilsTests",
       "source": "src/unittests/net/CMakeLists.txt"
+    },
+    {
+      "component": "test:gui",
+      "kind": "test",
+      "name": "ServerConfigDialogTests",
+      "source": "src/unittests/gui/CMakeLists.txt"
     },
     {
       "component": "test:server",
@@ -22011,6 +22069,10 @@
     {
       "include": "LogWidgetTests.moc",
       "source": "src/unittests/gui/LogWidgetTests.cpp"
+    },
+    {
+      "include": "ServerConfigDialogTests.moc",
+      "source": "src/unittests/gui/ServerConfigDialogTests.cpp"
     },
     {
       "include": "StatusBarTests.moc",

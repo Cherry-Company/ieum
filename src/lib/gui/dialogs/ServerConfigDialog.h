@@ -77,6 +77,7 @@ protected:
 
   void toggleExternalConfig(bool enable = false);
   bool browseConfigFile();
+  virtual QString chooseConfigFile(const QString &filter);
 
   ServerConfig &serverConfig()
   {
@@ -92,8 +93,11 @@ protected:
   }
 
 private:
+  bool isExternalConfigFileValid() const;
   void loadFromConfig();
   void initConnections() const;
+  void setServerConfigFile(const QString &path);
+  void updateConfigFileValidation() const;
   std::unique_ptr<Ui::ServerConfigDialog> ui;
   QString m_message = "";
   int m_columns;
