@@ -883,7 +883,22 @@ jobs:
               "$url" > "$evidence/source-$kind.response.json"
           done
 
+      - name: Prepare package privacy inspection tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v 7z >/dev/null
+          command -v zstd >/dev/null
+          if ! command -v flatpak >/dev/null || ! command -v ostree >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends flatpak ostree
+          fi
+          command -v flatpak >/dev/null
+          command -v ostree >/dev/null
+
       - name: Run exact release privacy gate
+        id: release_privacy_gate
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
@@ -912,12 +927,23 @@ jobs:
           python3 tools/privacy/public_privacy_guard.py "${args[@]}"
 
       - name: Preserve pre-release privacy evidence for post-fetch
+        if: ${{ always() && steps.release_privacy_gate.outcome != 'skipped' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: privacy-release-pre-${{ github.run_id }}
           path: ${{ runner.temp }}/privacy-release-pre
           if-no-files-found: error
           retention-days: 30
+
+      - name: Enforce pre-release privacy gate
+        if: ${{ always() && steps.release_privacy_gate.outcome != 'skipped' }}
+        shell: bash
+        run: |
+          manifest="$RUNNER_TEMP/privacy-release-pre/public-surface-manifest.json"
+          if [[ -f "$manifest" ]]; then
+            python3 tools/privacy/report_public_manifest.py "$manifest"
+          fi
+          [[ "${{ steps.release_privacy_gate.outcome }}" == "success" ]]
 
       - name: Deploy release
         uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3
@@ -967,6 +993,19 @@ jobs:
           printf 'IEUM_PRIVATE_DENY_MAP=%s\n' "$deny_map" >> "$GITHUB_ENV"
           printf 'IEUM_PRIVATE_DENY_MAP_SHA256=%s\n' "$DENY_MAP_SHA256" >> "$GITHUB_ENV"
 
+      - name: Prepare package privacy inspection tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v 7z >/dev/null
+          command -v zstd >/dev/null
+          if ! command -v flatpak >/dev/null || ! command -v ostree >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends flatpak ostree
+          fi
+          command -v flatpak >/dev/null
+          command -v ostree >/dev/null
+
       - name: Download and bind live Release bytes
         shell: bash
         env:
@@ -1004,6 +1043,8 @@ jobs:
           done
 
       - name: Run post-fetch ref and byte verification
+        id: post_fetch_privacy_gate
+        continue-on-error: true
         shell: bash
         env:
           FROZEN_BASELINE_SHA: ${{ secrets.IEUM_PRIVACY_BASELINE_SHA }}
@@ -1042,9 +1083,20 @@ jobs:
           python3 tools/privacy/public_privacy_guard.py "${args[@]}"
 
       - name: Preserve post-fetch privacy evidence
+        if: ${{ always() && steps.post_fetch_privacy_gate.outcome != 'skipped' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: privacy-release-post-${{ github.run_id }}
           path: ${{ runner.temp }}/privacy-release-live
           if-no-files-found: error
           retention-days: 30
+
+      - name: Enforce post-fetch privacy gate
+        if: ${{ always() && steps.post_fetch_privacy_gate.outcome != 'skipped' }}
+        shell: bash
+        run: |
+          manifest="$RUNNER_TEMP/privacy-release-live/public-surface-manifest.json"
+          if [[ -f "$manifest" ]]; then
+            python3 tools/privacy/report_public_manifest.py "$manifest"
+          fi
+          [[ "${{ steps.post_fetch_privacy_gate.outcome }}" == "success" ]]

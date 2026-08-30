@@ -6,12 +6,14 @@ from __future__ import annotations
 
 import base64
 import hashlib
+import importlib.util
 import io
 import json
 import os
 import shutil
 import stat
 import subprocess
+import sys
 import tarfile
 import tempfile
 import unicodedata
@@ -110,6 +112,16 @@ def tar_gz_bytes(members):
     return buffer.getvalue()
 
 
+def load_scanner_module():
+    spec = importlib.util.spec_from_file_location("ieum_public_privacy_guard", SCANNER)
+    if spec is None or spec.loader is None:
+        raise AssertionError("privacy guard module could not be loaded")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 class PublicPrivacyGuardTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="ieum-privacy-test-")
@@ -118,6 +130,130 @@ class PublicPrivacyGuardTests(unittest.TestCase):
 
     def tearDown(self):
         self.temporary.cleanup()
+
+    def test_release_package_formats_dispatch_to_bounded_extractors(self):
+        scanner = load_scanner_module()
+        cases = (
+            ("package.pkg.tar.zst", b"\x28\xb5\x2f\xfdpayload", "zstd"),
+            ("package.deb", b"!<arch>\npayload", "sevenzip"),
+            ("package.rpm", b"\xed\xab\xee\xdbpayload", "sevenzip"),
+            ("package.7z", b"7z\xbc\xaf'\x1cpayload", "sevenzip"),
+            ("package.msi", b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1payload", "sevenzip"),
+            ("package.dmg", b"opaque disk image", "sevenzip"),
+            ("package.flatpak", b"flatpak\x00payload", "flatpak"),
+        )
+
+        for name, data, expected in cases:
+            with self.subTest(name=name):
+                self.assertEqual(
+                    scanner.external_package_kind(Path(name), data), expected
+                )
+
+    def test_external_extraction_tree_is_scanned_under_the_package_identity(self):
+        scanner = load_scanner_module()
+        extracted = self.root / "extracted"
+        (extracted / "nested").mkdir(parents=True)
+        (extracted / "nested" / "payload.txt").write_text(
+            "SecretOwner", encoding="utf-8"
+        )
+        state = scanner.ScanState(
+            [scanner.Rule("private-owner", "SecretOwner", "owner identity")],
+            scanner.Limits(1024 * 1024, 8 * 1024 * 1024, 4),
+        )
+
+        scanner.scan_extracted_tree(state, extracted, "release.pkg", depth=0)
+
+        self.assertGreaterEqual(len(state.findings), 1)
+        self.assertEqual(
+            {finding.target for finding in state.findings},
+            {"release.pkg!/nested/payload.txt"},
+        )
+
+    def test_flatpak_export_allows_only_resolved_internal_tar_links(self):
+        scanner = load_scanner_module()
+        archive_bytes = io.BytesIO()
+        with tarfile.open(fileobj=archive_bytes, mode="w") as archive:
+            payload = b"clean"
+            regular = tarfile.TarInfo("files/lib/libexample.so.1")
+            regular.size = len(payload)
+            archive.addfile(regular, io.BytesIO(payload))
+            link = tarfile.TarInfo("files/lib/libexample.so")
+            link.type = tarfile.SYMTYPE
+            link.linkname = "libexample.so.1"
+            archive.addfile(link)
+
+        state = scanner.ScanState(
+            [], scanner.Limits(1024 * 1024, 8 * 1024 * 1024, 4)
+        )
+        self.assertTrue(
+            scanner.scan_archive(
+                state,
+                archive_bytes.getvalue(),
+                "bundle.flatpak!/ostree-export.tar",
+                allow_safe_links=True,
+            )
+        )
+
+        source_zip = io.BytesIO()
+        with zipfile.ZipFile(source_zip, "w") as archive:
+            archive.writestr("source/target.txt", "clean")
+            link = zipfile.ZipInfo("source/link.txt")
+            link.create_system = 3
+            link.external_attr = (stat.S_IFLNK | 0o777) << 16
+            archive.writestr(link, "target.txt")
+        self.assertTrue(
+            scanner.scan_archive(
+                state,
+                source_zip.getvalue(),
+                "source.zip",
+                allow_safe_links=True,
+            )
+        )
+
+        escaping = io.BytesIO()
+        with tarfile.open(fileobj=escaping, mode="w") as archive:
+            link = tarfile.TarInfo("files/lib/escape")
+            link.type = tarfile.SYMTYPE
+            link.linkname = "../../../outside"
+            archive.addfile(link)
+        with self.assertRaises(scanner.CoverageError):
+            scanner.scan_archive(
+                state,
+                escaping.getvalue(),
+                "bundle.flatpak!/escaping.tar",
+                allow_safe_links=True,
+            )
+
+    @unittest.skipIf(os.name == "nt", "Windows symlink creation requires elevation")
+    def test_dmg_extraction_allows_only_resolved_internal_filesystem_links(self):
+        scanner = load_scanner_module()
+        extracted = self.root / "dmg"
+        extracted.mkdir()
+        (extracted / "target.txt").write_text("clean", encoding="utf-8")
+        (extracted / "safe-link").symlink_to("target.txt")
+        state = scanner.ScanState(
+            [], scanner.Limits(1024 * 1024, 8 * 1024 * 1024, 4)
+        )
+
+        scanner.scan_extracted_tree(
+            state,
+            extracted,
+            "release.dmg",
+            depth=0,
+            allow_safe_links=True,
+        )
+
+        outside = self.root / "outside.txt"
+        outside.write_text("clean", encoding="utf-8")
+        (extracted / "escaping-link").symlink_to(outside)
+        with self.assertRaises(scanner.CoverageError):
+            scanner.scan_extracted_tree(
+                state,
+                extracted,
+                "release.dmg",
+                depth=0,
+                allow_safe_links=True,
+            )
 
     def test_manifest_reporter_exposes_actionable_ids_without_private_targets(self):
         private_value = "OwnerPrivateValue"
@@ -344,8 +480,25 @@ class PublicPrivacyGuardTests(unittest.TestCase):
         else:
             add_zip(package, [("payload.txt", b"clean package")])
         checksum.write_text(f"{sha256(package)}  {package.name}\n", encoding="utf-8")
-        add_zip(source_zip, [("source/file.txt", b"clean source")])
-        source_tar.write_bytes(tar_gz_bytes([("source/file.txt", b"clean source")]))
+        with zipfile.ZipFile(
+            source_zip, "w", compression=zipfile.ZIP_DEFLATED
+        ) as archive:
+            archive.writestr("source/file.txt", b"clean source")
+            link = zipfile.ZipInfo("source/file-link.txt")
+            link.create_system = 3
+            link.external_attr = (stat.S_IFLNK | 0o777) << 16
+            archive.writestr(link, "file.txt")
+        source_buffer = io.BytesIO()
+        with tarfile.open(fileobj=source_buffer, mode="w:gz") as archive:
+            payload = b"clean source"
+            regular = tarfile.TarInfo("source/file.txt")
+            regular.size = len(payload)
+            archive.addfile(regular, io.BytesIO(payload))
+            link = tarfile.TarInfo("source/file-link.txt")
+            link.type = tarfile.SYMTYPE
+            link.linkname = "file.txt"
+            archive.addfile(link)
+        source_tar.write_bytes(source_buffer.getvalue())
         return body, notes, package, checksum, source_zip, source_tar
 
     def release_command(self, manifest, inputs, *extra):

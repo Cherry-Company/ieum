@@ -2091,7 +2091,7 @@
         "cmake": 3,
         "markdown": 29
       },
-      "lineCount": 4973,
+      "lineCount": 4980,
       "path": "docs",
       "targets": []
     },
@@ -2105,7 +2105,7 @@
         "powershell": 2,
         "yaml": 20
       },
-      "lineCount": 3946,
+      "lineCount": 4050,
       "path": ".github",
       "targets": []
     },
@@ -2368,7 +2368,7 @@
         "c": 1,
         "python": 1
       },
-      "lineCount": 363,
+      "lineCount": 388,
       "path": "tools/ci",
       "targets": []
     },
@@ -2414,7 +2414,7 @@
         "python": 4,
         "shell": 1
       },
-      "lineCount": 1737,
+      "lineCount": 2443,
       "path": "tools/privacy",
       "targets": []
     }
@@ -15390,17 +15390,17 @@
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 1050,
+      "lineCount": 1102,
       "path": ".github/workflows/continuous-integration.yml",
-      "sizeBytes": 40115
+      "sizeBytes": 42259
     },
     {
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 340,
+      "lineCount": 392,
       "path": ".github/workflows/release-existing-run.yml",
-      "sizeBytes": 13649
+      "sizeBytes": 15789
     },
     {
       "binary": false,
@@ -15870,9 +15870,9 @@
       "binary": false,
       "component": "support:docs",
       "language": "markdown",
-      "lineCount": 57,
+      "lineCount": 64,
       "path": "docs/dev/public-privacy-guard.md",
-      "sizeBytes": 2575
+      "sizeBytes": 3127
     },
     {
       "binary": false,
@@ -23182,9 +23182,9 @@
       "binary": false,
       "component": "tool:ci",
       "language": "python",
-      "lineCount": 343,
+      "lineCount": 368,
       "path": "tools/ci/tests/test_analysis_workflows.py",
-      "sizeBytes": 14609
+      "sizeBytes": 16340
     },
     {
       "binary": false,
@@ -23238,9 +23238,9 @@
       "binary": false,
       "component": "tool:privacy",
       "language": "python",
-      "lineCount": 865,
+      "lineCount": 1418,
       "path": "tools/privacy/public_privacy_guard.py",
-      "sizeBytes": 36592
+      "sizeBytes": 55685
     },
     {
       "binary": false,
@@ -23254,9 +23254,9 @@
       "binary": false,
       "component": "tool:privacy",
       "language": "python",
-      "lineCount": 614,
+      "lineCount": 767,
       "path": "tools/privacy/tests/test_public_privacy_guard.py",
-      "sizeBytes": 23625
+      "sizeBytes": 29579
     },
     {
       "binary": false,
@@ -23332,8 +23332,8 @@
     }
   ],
   "revision": {
-    "branch": "fix/release-job-skip",
-    "commit": "a8e9281462284a2182e4ebf7a9de63d3cd8c8ce4",
+    "branch": "fix/release-privacy-evidence",
+    "commit": "e89024e1b00c85957fd433fe0475816de0155c62",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
@@ -23344,7 +23344,7 @@
     "fileIncludeEdges": 1534,
     "representedFiles": 1020,
     "sourceFiles": 650,
-    "sourceLines": 107082,
+    "sourceLines": 107813,
     "targets": 79,
     "trackedFiles": 1023
   },

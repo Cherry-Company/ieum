@@ -6,11 +6,11 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `a8e9281462284a2182e4ebf7a9de63d3cd8c8ce4`
-- Branch: `fix/release-job-skip`
+- Revision: `e89024e1b00c85957fd433fe0475816de0155c62`
+- Branch: `fix/release-privacy-evidence`
 - Tracked files: 1,023
 - Represented files: 1,020
-- Source files / lines: 650 / 107,082
+- Source files / lines: 650 / 107,813
 - Components / targets: 42 / 79
 - File include edges / component edges: 1,534 / 98
 
@@ -69,8 +69,8 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `lib:server` | library | Client proxies, input routing, screen topology, filters, and cursor transforms. | 46 | 9,891 | `server` |
 | `support:artwork` | resource | Brand artwork and documentation screenshots. | 5 | 253 | — |
 | `support:cmake` | build | Shared dependency, coverage, packaging, and signing CMake modules. | 4 | 746 | — |
-| `support:docs` | documentation | User, developer, security, design, release, audit, and generated documentation. | 32 | 4,973 | — |
-| `support:github` | automation | GitHub Actions workflows, composite actions, templates, and repository automation. | 27 | 3,946 | — |
+| `support:docs` | documentation | User, developer, security, design, release, audit, and generated documentation. | 32 | 4,980 | — |
+| `support:github` | automation | GitHub Actions workflows, composite actions, templates, and repository automation. | 27 | 4,050 | — |
 | `support:root` | support | Repository support files rooted at `.`. | 20 | 3,041 | — |
 | `support:source-build` | build | Repository support files rooted at `src`. | 3 | 170 | — |
 | `support:translations` | localization | Qt translation catalogs and translation build rules. | 8 | 11,704 | — |
@@ -85,11 +85,11 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `test:platform` | test | Automated tests for the `platform` surface. | 14 | 1,832 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsFileDropExtractorTests`, `MSWindowsFileTransferIoTests`, `MSWindowsFileTransferSourceTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
 | `test:server` | test | Automated tests for the `server` surface. | 5 | 437 | `ServerConfigTests`, `ServerTests` |
 | `tool:cgtap-logger` | tool | Developer or diagnostic tool rooted at `tools/cgtap-logger`. | 1 | 108 | — |
-| `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 2 | 363 | — |
+| `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 2 | 388 | — |
 | `tool:codegraph` | tool | Developer or diagnostic tool rooted at `tools/codegraph.py`. | 1 | 945 | — |
 | `tool:generate-codegraph` | tool | Developer or diagnostic tool rooted at `tools/generate-codegraph.py`. | 1 | 64 | — |
 | `tool:merge-input-timeline` | tool | Developer or diagnostic tool rooted at `tools/merge-input-timeline.py`. | 1 | 67 | — |
-| `tool:privacy` | tool | Developer or diagnostic tool rooted at `tools/privacy`. | 6 | 1,737 | — |
+| `tool:privacy` | tool | Developer or diagnostic tool rooted at `tools/privacy`. | 6 | 2,443 | — |
 
 ## Graph semantics
 

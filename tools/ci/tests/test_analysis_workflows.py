@@ -165,6 +165,7 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
         self.assertIn("Run exact release privacy gate", workflow)
         self.assertIn("Run post-fetch ref and byte verification", workflow)
         self.assertIn('--ref "refs/tags/$RELEASE_TAG"', workflow)
+        self.assertGreaterEqual(workflow.count("ref: ${{ github.sha }}"), 2)
         self.assertIn("persist-credentials: false", workflow)
 
     def test_contributor_docs_explain_sonarcloud_configuration(self) -> None:
@@ -203,6 +204,30 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
         post_fetch = job_block(workflow, "privacy-post-fetch")
         self.assertIn("always() && needs.release.result == 'success'", post_fetch)
         self.assertIn("startsWith(github.ref, 'refs/tags/v')", post_fetch)
+
+    def test_release_privacy_failures_preserve_actionable_evidence(self) -> None:
+        for name in ("continuous-integration.yml", "release-existing-run.yml"):
+            with self.subTest(workflow=name, phase="pre-release"):
+                release = job_block(read_workflow(name), "release")
+                self.assertIn("id: release_privacy_gate", release)
+                self.assertIn("continue-on-error: true", release)
+                self.assertIn("steps.release_privacy_gate.outcome", release)
+                self.assertIn("tools/privacy/report_public_manifest.py", release)
+                self.assertIn("Enforce pre-release privacy gate", release)
+                self.assertIn("Prepare package privacy inspection tools", release)
+                self.assertIn("command -v zstd", release)
+                self.assertIn("--no-install-recommends flatpak ostree", release)
+
+            with self.subTest(workflow=name, phase="post-fetch"):
+                post_fetch = job_block(read_workflow(name), "privacy-post-fetch")
+                self.assertIn("id: post_fetch_privacy_gate", post_fetch)
+                self.assertIn("continue-on-error: true", post_fetch)
+                self.assertIn("steps.post_fetch_privacy_gate.outcome", post_fetch)
+                self.assertIn("tools/privacy/report_public_manifest.py", post_fetch)
+                self.assertIn("Enforce post-fetch privacy gate", post_fetch)
+                self.assertIn("Prepare package privacy inspection tools", post_fetch)
+                self.assertIn("command -v zstd", post_fetch)
+                self.assertIn("--no-install-recommends flatpak ostree", post_fetch)
 
     def test_windows_upgrade_uses_the_previous_published_release(self) -> None:
         script = read_repository_file(

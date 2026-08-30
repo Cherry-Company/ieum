@@ -45,9 +45,16 @@ The CI workflow materializes the deny map from a private secret into a temporary
 mode-0600 file and runs synthetic tests plus the tree/range gates. The release
 job scans the exact final body, generated notes, checksum manifest, every
 package, and both provider-generated source archives before it creates a Release
-object. Unsupported, encrypted, linked, unreadable, traversing, nested beyond
-the declared limit, or oversized archive material is `unverified` and blocks
-publication.
+object. ZIP and tar-family archives use the standard-library decoder. Release
+packages additionally use bounded `zstd` and 7-Zip processes; Flatpak bundles
+are imported into a temporary OSTree repository and exported as a tar stream.
+Those helpers run with an isolated home, a 120-second deadline, the configured
+per-file limit, and no inherited Git controls. Flatpak, DMG, and
+provider-generated source archive links are accepted only when they resolve
+inside the extracted package or archive; their link text is scanned as release
+data. Unsupported, encrypted, unsafe or unresolved linked,
+unreadable, traversing, nested beyond the declared limit, or oversized archive
+material is `unverified` and blocks publication.
 
 The post-fetch job compares the complete advertised ref map with the frozen
 pre-release map, scans the exact remote tip/range and downloaded public bytes,
