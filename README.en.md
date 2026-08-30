@@ -396,40 +396,55 @@ requirement.
 
 See the [IME guide](docs/user/ime.md) for input behavior and platform permissions.
 
-## Open source and paid product direction
+## Community and Pro plan
 
-The local KVM core and current distribution are published under
-`GPL-2.0-only WITH LicenseRef-OpenSSL-Exception`. Ieum will not place closed-source core features inside the same
-GPL-covered executable.
+Ieum's local KVM, IME synchronization, clipboard, protocol, and desktop app remain published under
+`GPL-2.0-only WITH LicenseRef-OpenSSL-Exception`. Ieum will not turn core functionality into closed code inside
+the same executable.
 
-The following commercial areas are **planned directions**, not products currently for sale.
+Pro adds official distribution and new connectivity and administration features. It does not remove features from
+Community. The following items are **implementation plans**, not products currently for sale.
 
-| Area | Open/paid direction |
+| Product | Scope |
 | --- | --- |
-| Community | Local-network KVM, IME synchronization, clipboard, and protocol core remain GPL-licensed |
-| Official distribution | Signed and notarized builds, stable update channels, easier onboarding, and verified binaries may be paid conveniences |
-| Teams/Cloud | Hosted relay and discovery, team policy, SSO, audit history, and a management console may be separate services |
-| Support | Priority support, deployment assistance, enterprise integration, and maintenance contracts may be paid |
+| Community | Local-network KVM, IME synchronization, clipboard, and the public protocol |
+| Pro | Official signed and notarized builds, stable updates, device registration, drag-and-drop file transfer, and remote connectivity |
+| Teams | Organization and device policies, roles, audit history, SSO, and a management console |
+| Support | Priority support, deployment assistance, enterprise integration, and maintenance contracts |
+
+The first Pro implementation target is **drag-and-drop file transfer between computers**. Desktop transfer code
+and protocol changes remain GPL-licensed in this repository. Paid value sits at the official Pro distribution,
+hosted relay, device management, and support boundaries. The exact drag behavior, transfer approval, conflict
+handling, and security limits will be fixed in a separate design before implementation.
 
 GPL binaries may be sold, but recipients retain the right to receive corresponding source and redistribute their
-copies. Sustainable paid value therefore comes from **official trust, operational convenience, hosted services,
-and support**, not from restricting source access. Any proprietary component must remain at a defensible separate
-process or network-service boundary and receive a license review before release. See the
-[GNU GPL v2 FAQ](https://www.gnu.org/licenses/old-licenses/gpl-2.0-faq.en.html) for the underlying distribution
-rules. This project direction is not legal advice; commercial distribution requires a separate copyright,
-trademark, and service-boundary review.
+copies. If a paid server becomes necessary, it will be developed from scratch in a separate repository rather than
+moving existing GPL source, and it will communicate with the desktop through a public network API. See the
+[product and commercialization roadmap](docs/product/commercialization-roadmap.md) and the
+[GNU GPL FAQ](https://www.gnu.org/licenses/gpl-faq.en.html). This direction is not legal advice; commercial
+distribution still requires a copyright, trademark, and service-boundary review.
 
-## Roadmap
+## Implementation roadmap
 
-- [x] Fork bootstrap and full Ieum branding
-- [x] Input-source control protocol and platform controllers
-- [x] IME raw-scancode path, macOS event path, and NFC normalization
-- [x] Automated Windows, macOS, and Linux packages
-- [x] Windows pre-login service core and Windows/macOS login startup
-- [ ] Publish the physical Windows ↔ macOS input matrix
-- [ ] Code signing, Apple notarization, and a stable update channel
-- [ ] Define the product boundary for hosted relay and device discovery
-- [ ] Finalize `v1.0.0` acceptance criteria
+Ieum is currently in phase 1. Fifteen of the 33 audit issues are closed, with 18 remaining.
+
+```mermaid
+flowchart LR
+  P1["1. v1 reliability<br/>Audit issues 15/33"] --> P2["2. Official distribution<br/>Signing, notarization, stable updates"]
+  P2 --> P3["3. Pro foundation<br/>Accounts, devices, billing, file transfer"]
+  P3 --> P4["4. Pro connectivity<br/>Discovery and encrypted relay"]
+  P4 --> P5["5. Teams<br/>Organizations, policy, audit history"]
+  P5 --> P6["6. Enterprise<br/>SSO, SCIM, SLOs"]
+```
+
+| Phase | Exit condition | Status |
+| --- | --- | --- |
+| 1. v1 reliability | Audit issues #6–#38, required CI, and platform acceptance evidence | **In progress — 15/33** |
+| 2. Official distribution | Windows signing, Apple notarization, stable updates, and rollback | Waiting |
+| 3. Pro foundation | Accounts, devices, subscriptions, and a file-transfer beta | Design starting |
+| 4. Pro connectivity | Device discovery, end-to-end encrypted relay, and local fallback | Waiting |
+| 5. Teams | Organizations, roles, device policy, and audit export | Waiting |
+| 6. Enterprise | SSO, SCIM, disaster recovery, and contractual SLOs | Waiting |
 
 ## Build and test
 
