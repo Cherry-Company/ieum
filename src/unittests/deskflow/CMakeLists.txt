@@ -62,6 +62,14 @@ create_test(
 )
 
 create_test(
+  NAME FileTransferSourceManifestTests
+  DEPENDS app
+  LIBS arch base ${extra_libs}
+  SOURCE FileTransferSourceManifestTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+)
+
+create_test(
   NAME IKeyStateTests
   DEPENDS app
   LIBS arch base ${extra_libs}

@@ -44,6 +44,8 @@ if(WIN32)
     MSWindowsEventQueueBuffer.h
     MSWindowsFileDropExtractor.cpp
     MSWindowsFileDropExtractor.h
+    MSWindowsFileTransferSource.cpp
+    MSWindowsFileTransferSource.h
     MSWindowsHook.cpp
     MSWindowsHook.h
     MSWindowsImeController.cpp

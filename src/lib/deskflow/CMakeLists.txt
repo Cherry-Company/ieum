@@ -48,6 +48,8 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   EdgeHandoffDecision.h
   FileTransferOfferValidator.cpp
   FileTransferOfferValidator.h
+  FileTransferSourceManifest.cpp
+  FileTransferSourceManifest.h
   FileTransferTypes.h
   IApp.h
   IClient.h
