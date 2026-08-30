@@ -85,6 +85,14 @@ create_test(
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
 )
 
+create_test(
+  NAME FileTransferSessionStateTests
+  DEPENDS app
+  LIBS arch base ${extra_libs}
+  SOURCE FileTransferSessionStateTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+)
+
 if(WIN32)
   create_test(
     NAME MSWindowsEdgeDropTargetTests

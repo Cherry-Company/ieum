@@ -61,6 +61,8 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   FileTransferOfferValidator.h
   FileTransferSourceManifest.cpp
   FileTransferSourceManifest.h
+  FileTransferSessionState.cpp
+  FileTransferSessionState.h
   FileTransferTypes.h
   IApp.h
   IClient.h
