@@ -10,6 +10,8 @@ if(WIN32)
   set(PLATFORM_CODE
     win32/AppUtilWindows.cpp
     win32/AppUtilWindows.h
+    win32/MSWindowsEdgeDropTarget.cpp
+    win32/MSWindowsEdgeDropTarget.h
   )
 elseif(UNIX)
   set(PLATFORM_CODE

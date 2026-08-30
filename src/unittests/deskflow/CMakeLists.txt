@@ -69,6 +69,16 @@ create_test(
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
 )
 
+if(WIN32)
+  create_test(
+    NAME MSWindowsEdgeDropTargetTests
+    DEPENDS app
+    LIBS arch base ${extra_libs}
+    SOURCE MSWindowsEdgeDropTargetTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+  )
+endif()
+
 create_test(
   NAME IKeyStateTests
   DEPENDS app
