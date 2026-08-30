@@ -24,12 +24,8 @@ void NewScreenWidget::mousePressEvent(QMouseEvent *)
   //: Used as the hostname. Translation may not contain spaces
   Screen newScreen(tr("Unnamed"));
 
-  QByteArray itemData;
-  QDataStream dataStream(&itemData, QIODevice::WriteOnly);
-  dataStream << -1 << -1 << newScreen;
-
   auto *pMimeData = new QMimeData;
-  pMimeData->setData(ScreenSetupModel::mimeType(), itemData);
+  pMimeData->setData(ScreenSetupModel::mimeType(), ScreenSetupModel::encodeScreenDrag(-1, -1, newScreen));
 
   auto *pDrag = new QDrag(this);
   pDrag->setMimeData(pMimeData);

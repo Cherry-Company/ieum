@@ -8,6 +8,7 @@
 #pragma once
 
 #include <QAbstractTableModel>
+#include <QByteArray>
 #include <QList>
 #include <QString>
 #include <QStringList>
@@ -31,6 +32,8 @@ public:
   {
     return m_MimeType;
   }
+  static QByteArray encodeScreenDrag(int sourceColumn, int sourceRow, const Screen &screen);
+  [[nodiscard]] bool isInBounds(int column, int row) const;
   QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
   int rowCount() const
   {
@@ -60,28 +63,27 @@ Q_SIGNALS:
 protected:
   bool
   dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
-  const Screen &screen(const QModelIndex &index) const
+  const Screen *screenAt(const QModelIndex &index) const
   {
-    return screen(index.column(), index.row());
+    return index.isValid() && index.model() == this ? screenAt(index.column(), index.row()) : nullptr;
   }
-  Screen &screen(const QModelIndex &index)
+  Screen *screenAt(const QModelIndex &index)
   {
-    return screen(index.column(), index.row());
+    return index.isValid() && index.model() == this ? screenAt(index.column(), index.row()) : nullptr;
   }
-  const Screen &screen(int column, int row) const
-  {
-    return m_Screens[row * m_NumColumns + column];
-  }
-  Screen &screen(int column, int row)
-  {
-    return m_Screens[row * m_NumColumns + column];
-  }
+  const Screen *screenAt(int column, int row) const;
+  Screen *screenAt(int column, int row);
   void addScreen(const Screen &newScreen);
 
 private:
+  bool decodeScreenDrag(const QByteArray &encodedData, int &sourceColumn, int &sourceRow, Screen &screen) const;
+
   ScreenList &m_Screens;
   const int m_NumColumns;
   const int m_NumRows;
 
+  static constexpr quint32 m_MimeMagic = 0x49554d53;
+  static constexpr quint16 m_MimeVersion = 1;
+  static constexpr quint16 m_MimeFieldCount = 3;
   static const QString m_MimeType;
 };
