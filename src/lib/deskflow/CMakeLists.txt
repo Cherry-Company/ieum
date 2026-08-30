@@ -48,6 +48,8 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   DisplayInvalidException.h
   EdgeHandoffDecision.cpp
   EdgeHandoffDecision.h
+  FileTransferControlCodec.cpp
+  FileTransferControlCodec.h
   FileTransferOfferValidator.cpp
   FileTransferOfferValidator.h
   FileTransferSourceManifest.cpp

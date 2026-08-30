@@ -22,6 +22,8 @@ struct FileTransferItem
   std::uint32_t index = 0;
   std::string name;
   std::uint64_t size = 0;
+
+  bool operator==(const FileTransferItem &) const = default;
 };
 
 struct FileTransferOffer
@@ -30,6 +32,8 @@ struct FileTransferOffer
   std::string sourceScreen;
   std::string targetScreen;
   std::vector<FileTransferItem> items;
+
+  bool operator==(const FileTransferOffer &) const = default;
 };
 
 struct FileTransferLimits

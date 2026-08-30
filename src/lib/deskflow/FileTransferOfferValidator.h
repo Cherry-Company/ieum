@@ -10,6 +10,11 @@
 
 namespace deskflow::filetransfer {
 
+[[nodiscard]] OfferValidation validateTransferRoute(
+    const TransferId &id, const std::string &sourceScreen, const std::string &targetScreen,
+    const FileTransferLimits &limits = {}
+);
+
 [[nodiscard]] OfferValidation validateOffer(const FileTransferOffer &offer, const FileTransferLimits &limits = {});
 
 } // namespace deskflow::filetransfer

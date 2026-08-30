@@ -107,33 +107,46 @@ bool isSafeItemName(const std::string_view name)
 
 } // namespace
 
-OfferValidation validateOffer(const FileTransferOffer &offer, const FileTransferLimits &limits)
+OfferValidation validateTransferRoute(
+    const TransferId &id, const std::string &sourceScreen, const std::string &targetScreen,
+    const FileTransferLimits &limits
+)
 {
-  if (isEmptyTransferId(offer.id)) {
+  if (isEmptyTransferId(id)) {
     return failure(OfferError::EmptyTransferId);
   }
 
-  if (offer.sourceScreen.empty()) {
+  if (sourceScreen.empty()) {
     return failure(OfferError::EmptySourceScreen);
   }
-  if (offer.targetScreen.empty()) {
+  if (targetScreen.empty()) {
     return failure(OfferError::EmptyTargetScreen);
   }
 
-  if (offer.sourceScreen.size() > limits.maxScreenNameBytes || offer.targetScreen.size() > limits.maxScreenNameBytes) {
+  if (sourceScreen.size() > limits.maxScreenNameBytes || targetScreen.size() > limits.maxScreenNameBytes) {
     return failure(OfferError::ScreenNameTooLong);
   }
 
-  if (!Unicode::isUTF8(offer.sourceScreen) || !Unicode::isUTF8(offer.targetScreen)) {
+  if (!Unicode::isUTF8(sourceScreen) || !Unicode::isUTF8(targetScreen)) {
     return failure(OfferError::InvalidScreenNameUtf8);
   }
 
-  if (hasUnsafeIdentityByte(offer.sourceScreen) || hasUnsafeIdentityByte(offer.targetScreen)) {
+  if (hasUnsafeIdentityByte(sourceScreen) || hasUnsafeIdentityByte(targetScreen)) {
     return failure(OfferError::UnsafeScreenName);
   }
 
-  if (offer.sourceScreen == offer.targetScreen) {
+  if (sourceScreen == targetScreen) {
     return failure(OfferError::SameSourceAndTarget);
+  }
+
+  return {};
+}
+
+OfferValidation validateOffer(const FileTransferOffer &offer, const FileTransferLimits &limits)
+{
+  const auto routeValidation = validateTransferRoute(offer.id, offer.sourceScreen, offer.targetScreen, limits);
+  if (!routeValidation.ok()) {
+    return routeValidation;
   }
 
   if (offer.items.empty()) {
