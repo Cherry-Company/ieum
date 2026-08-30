@@ -38,6 +38,7 @@
 #include <dwmapi.h>
 #include <string.h>
 #include <tuple>
+#include <utility>
 
 // suppress warning about GetVersionEx, which is used indirectly in this
 // compilation unit.
@@ -125,7 +126,11 @@ MSWindowsScreen::MSWindowsScreen(bool isPrimary, bool useHooks, IEventQueue *eve
       m_powerManager.disableSleep();
     }
 
-    OleInitialize(0);
+    const auto oleResult = OleInitialize(nullptr);
+    m_oleInitialized = SUCCEEDED(oleResult);
+    if (!m_oleInitialized) {
+      LOG_WARN("failed to initialize OLE drag-and-drop support: 0x%08lx", static_cast<unsigned long>(oleResult));
+    }
   } catch (...) {
     m_imeController.reset();
     delete m_keyState;
@@ -151,6 +156,7 @@ MSWindowsScreen::~MSWindowsScreen()
   assert(s_screen != nullptr);
 
   disable();
+  m_fileTransferEdgeDropHost.reset();
   m_events->adoptBuffer(nullptr);
   m_events->removeHandler(EventTypes::System, m_events->getSystemTarget());
   m_imeController.reset();
@@ -160,7 +166,9 @@ MSWindowsScreen::~MSWindowsScreen()
   destroyWindow(m_window);
   destroyClass(m_class);
 
-  OleUninitialize();
+  if (m_oleInitialized) {
+    OleUninitialize();
+  }
 
   s_screen = nullptr;
 }
@@ -177,6 +185,26 @@ HINSTANCE
 MSWindowsScreen::getWindowInstance()
 {
   return s_windowInstance;
+}
+
+bool MSWindowsScreen::installFileTransferEdgeDrop(deskflow::filetransfer::MSWindowsEdgeDropHostCallbacks callbacks)
+{
+  if (!m_isPrimary || !m_oleInitialized) {
+    return false;
+  }
+
+  auto host = std::make_unique<deskflow::filetransfer::MSWindowsEdgeDropHost>(s_windowInstance, std::move(callbacks));
+  m_fileTransferEdgeDropHost = std::move(host);
+  if (!refreshFileTransferEdgeDrop()) {
+    m_fileTransferEdgeDropHost.reset();
+    return false;
+  }
+  return true;
+}
+
+void MSWindowsScreen::uninstallFileTransferEdgeDrop() noexcept
+{
+  m_fileTransferEdgeDropHost.reset();
 }
 
 void MSWindowsScreen::enable()
@@ -211,11 +239,16 @@ void MSWindowsScreen::enable()
     // watch jump zones
     m_hook.setMode(kHOOK_WATCH_JUMP_ZONE);
   }
+
+  (void)refreshFileTransferEdgeDrop();
 }
 
 void MSWindowsScreen::disable()
 {
   LOG_DEBUG("disabling %s screen", m_isPrimary ? "primary" : "secondary");
+  if (m_fileTransferEdgeDropHost) {
+    m_fileTransferEdgeDropHost->clear();
+  }
   m_isEnabled = false;
 
   // stop tracking the active desk
@@ -653,6 +686,7 @@ void MSWindowsScreen::reconfigure(uint32_t activeSides)
   const static auto sidesText = sidesMaskToString(activeSides);
   LOG_DEBUG("active sides: %s (0x%02x)", sidesText.c_str(), activeSides);
   m_hook.setSides(activeSides);
+  (void)refreshFileTransferEdgeDrop();
 }
 
 uint32_t MSWindowsScreen::activeSides()
@@ -1460,6 +1494,7 @@ bool MSWindowsScreen::onDisplayChange()
 
   // do nothing if resolution hasn't changed
   if (xOld != m_x || yOld != m_y || wOld != m_w || hOld != m_h) {
+    (void)refreshFileTransferEdgeDrop();
     if (m_isPrimary) {
       if (!m_isOnScreen) {
         LOG_VERBOSE("centering cursor on display change: %+d, %+d", m_xCenter, m_yCenter);
@@ -1580,6 +1615,24 @@ void MSWindowsScreen::updateScreenShape()
 
   // tell the desks
   m_desks->setShape(m_x, m_y, m_w, m_h, m_xCenter, m_yCenter, m_multimon);
+}
+
+bool MSWindowsScreen::refreshFileTransferEdgeDrop()
+{
+  if (!m_fileTransferEdgeDropHost) {
+    return true;
+  }
+  if (!m_isEnabled) {
+    m_fileTransferEdgeDropHost->clear();
+    return true;
+  }
+
+  const auto configured =
+      m_fileTransferEdgeDropHost->configure({.x = m_x, .y = m_y, .width = m_w, .height = m_h}, activeSides());
+  if (!configured) {
+    LOG_WARN("failed to configure file-transfer edge drop windows");
+  }
+  return configured;
 }
 
 void MSWindowsScreen::handleFixes()
