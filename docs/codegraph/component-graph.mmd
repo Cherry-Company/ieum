@@ -27,11 +27,11 @@ flowchart LR
     n027["test:client<br/>ServerProxyTests"]
     n028["test:codegraph-tools"]
     n029["test:common<br/>I18NTests, LogLevelTests, NetworkInterfacesTests, SettingsTests, TailscaleIntegrationTests"]
-    n030["test:deskflow<br/>CanonicalScancodeTests, ClientReconnectPolicyTests, ClipboardChunksTests, ClipboardTests, IKeyStateTests, IpcServerTests, KeyMapTests, KeyStateTests, KeyboardLayoutManagerTests, Protocol19Tests, X11LayoutParserTests"]
+    n030["test:deskflow<br/>CanonicalScancodeTests, ClientReconnectPolicyTests, ClipboardChunksTests, ClipboardTests, EdgeHandoffDecisionTests, FileTransferControlCodecTests, FileTransferControlProtocolTests, FileTransferDataProtocolTests, FileTransferOfferTests, FileTransferSessionStateTests, FileTransferSourceManifestTests, IKeyStateTests, IpcServerTests, KeyMapTests, KeyStateTests, KeyboardLayoutManagerTests, MSWindowsEdgeDropHostTests, MSWindowsEdgeDropTargetTests, MSWindowsFileTransferServiceTests, Protocol19Tests, X11LayoutParserTests"]
     n031["test:gui<br/>DiagnosticTests, FileTailTests, IpcClientTests, KeySequenceTests, LogWidgetTests, LoggerTests, NetworkMonitorTests, ScreenSetupModelTests, ScreenTests, ServerConfigDialogTests, ServiceStartCoordinatorTests, StatusBarTests, StyleUtilsTests, VersionCheckerTests"]
     n032["test:legacytests<br/>legacytests"]
     n033["test:net<br/>FingerprintDatabaseTests, FingerprintTests, NetworkAddressTests, SecureSocketWriteBufferTests, SecureUtilsTests"]
-    n034["test:platform<br/>ArchNetworkWinsockTests, MSWindowsClipboardTests, MSWindowsMouseInputTests, OSXClipboardTests, OSXKeyStateTests, XWindowsClipboardTests"]
+    n034["test:platform<br/>ArchNetworkWinsockTests, MSWindowsClipboardTests, MSWindowsFileDropExtractorTests, MSWindowsFileTransferIoTests, MSWindowsFileTransferSourceTests, MSWindowsMouseInputTests, OSXClipboardTests, OSXKeyStateTests, XWindowsClipboardTests"]
     n035["test:server<br/>ServerConfigTests, ServerTests"]
   end
   subgraph g03["Tools"]
@@ -192,6 +192,7 @@ flowchart LR
   n030 -->|"include"| n011
   n030 -->|"include"| n012
   n030 -->|"include"| n014
+  n030 -->|"include"| n017
   n031 -->|"include"| n009
   n031 -->|"include"| n011
   n031 -->|"include"| n013

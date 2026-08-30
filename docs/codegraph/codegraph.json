@@ -389,6 +389,8 @@
         "src/lib/client/Client.cpp: #include \"deskflow/StreamChunker.h\" -> src/lib/deskflow/StreamChunker.h",
         "src/lib/client/Client.cpp: #include \"deskflow/ipc/CoreIpc.h\" -> src/lib/deskflow/ipc/CoreIpc.h",
         "src/lib/client/Client.h: #include \"deskflow/DisplayGeometry.h\" -> src/lib/deskflow/DisplayGeometry.h",
+        "src/lib/client/Client.h: #include \"deskflow/FileTransferControlCodec.h\" -> src/lib/deskflow/FileTransferControlCodec.h",
+        "src/lib/client/Client.h: #include \"deskflow/FileTransferDataCodec.h\" -> src/lib/deskflow/FileTransferDataCodec.h",
         "src/lib/client/Client.h: #include \"deskflow/IClient.h\" -> src/lib/deskflow/IClient.h",
         "src/lib/client/Client.h: #include \"deskflow/IClipboard.h\" -> src/lib/deskflow/IClipboard.h",
         "src/lib/client/Client.h: #include \"deskflow/InputLanguageTypes.h\" -> src/lib/deskflow/InputLanguageTypes.h",
@@ -396,6 +398,10 @@
         "src/lib/client/ServerProxy.cpp: #include \"deskflow/Clipboard.h\" -> src/lib/deskflow/Clipboard.h",
         "src/lib/client/ServerProxy.cpp: #include \"deskflow/ClipboardChunk.h\" -> src/lib/deskflow/ClipboardChunk.h",
         "src/lib/client/ServerProxy.cpp: #include \"deskflow/DeskflowException.h\" -> src/lib/deskflow/DeskflowException.h",
+        "src/lib/client/ServerProxy.cpp: #include \"deskflow/FileTransferControlEvent.h\" -> src/lib/deskflow/FileTransferControlEvent.h",
+        "src/lib/client/ServerProxy.cpp: #include \"deskflow/FileTransferControlProtocol.h\" -> src/lib/deskflow/FileTransferControlProtocol.h",
+        "src/lib/client/ServerProxy.cpp: #include \"deskflow/FileTransferDataEvent.h\" -> src/lib/deskflow/FileTransferDataEvent.h",
+        "src/lib/client/ServerProxy.cpp: #include \"deskflow/FileTransferDataProtocol.h\" -> src/lib/deskflow/FileTransferDataProtocol.h",
         "src/lib/client/ServerProxy.cpp: #include \"deskflow/OptionTypes.h\" -> src/lib/deskflow/OptionTypes.h",
         "src/lib/client/ServerProxy.cpp: #include \"deskflow/ProtocolTypes.h\" -> src/lib/deskflow/ProtocolTypes.h",
         "src/lib/client/ServerProxy.cpp: #include \"deskflow/ProtocolUtil.h\" -> src/lib/deskflow/ProtocolUtil.h",
@@ -403,6 +409,8 @@
         "src/lib/client/ServerProxy.cpp: #include \"deskflow/ipc/CoreIpc.h\" -> src/lib/deskflow/ipc/CoreIpc.h",
         "src/lib/client/ServerProxy.h: #include \"deskflow/ClipboardChunk.h\" -> src/lib/deskflow/ClipboardChunk.h",
         "src/lib/client/ServerProxy.h: #include \"deskflow/ClipboardTypes.h\" -> src/lib/deskflow/ClipboardTypes.h",
+        "src/lib/client/ServerProxy.h: #include \"deskflow/FileTransferControlCodec.h\" -> src/lib/deskflow/FileTransferControlCodec.h",
+        "src/lib/client/ServerProxy.h: #include \"deskflow/FileTransferDataCodec.h\" -> src/lib/deskflow/FileTransferDataCodec.h",
         "src/lib/client/ServerProxy.h: #include \"deskflow/InputLanguageTypes.h\" -> src/lib/deskflow/InputLanguageTypes.h",
         "src/lib/client/ServerProxy.h: #include \"deskflow/KeyTypes.h\" -> src/lib/deskflow/KeyTypes.h",
         "src/lib/client/ServerProxy.h: #include \"deskflow/KeyboardLayoutManager.h\" -> src/lib/deskflow/KeyboardLayoutManager.h"
@@ -476,6 +484,10 @@
         "src/lib/deskflow/ClipboardChunk.cpp: #include \"base/String.h\" -> src/lib/base/String.h",
         "src/lib/deskflow/DeskflowException.cpp: #include \"base/String.h\" -> src/lib/base/String.h",
         "src/lib/deskflow/DeskflowException.h: #include \"base/BaseException.h\" -> src/lib/base/BaseException.h",
+        "src/lib/deskflow/EdgeHandoffDecision.h: #include \"base/DirectionTypes.h\" -> src/lib/base/DirectionTypes.h",
+        "src/lib/deskflow/FileTransferControlEvent.h: #include \"base/Event.h\" -> src/lib/base/Event.h",
+        "src/lib/deskflow/FileTransferDataEvent.h: #include \"base/Event.h\" -> src/lib/base/Event.h",
+        "src/lib/deskflow/FileTransferOfferValidator.cpp: #include \"base/Unicode.h\" -> src/lib/base/Unicode.h",
         "src/lib/deskflow/IClipboard.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h",
         "src/lib/deskflow/IKeyState.h: #include \"base/IEventQueue.h\" -> src/lib/base/IEventQueue.h",
         "src/lib/deskflow/InputLanguageTypes.h: #include \"base/Event.h\" -> src/lib/base/Event.h",
@@ -503,7 +515,12 @@
         "src/lib/deskflow/win32/AppUtilWindows.cpp: #include \"base/Event.h\" -> src/lib/base/Event.h",
         "src/lib/deskflow/win32/AppUtilWindows.cpp: #include \"base/IEventQueue.h\" -> src/lib/base/IEventQueue.h",
         "src/lib/deskflow/win32/AppUtilWindows.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h",
-        "src/lib/deskflow/win32/AppUtilWindows.cpp: #include \"base/LogOutputters.h\" -> src/lib/base/LogOutputters.h"
+        "src/lib/deskflow/win32/AppUtilWindows.cpp: #include \"base/LogOutputters.h\" -> src/lib/base/LogOutputters.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h: #include \"base/DirectionTypes.h\" -> src/lib/base/DirectionTypes.h",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp: #include \"base/Event.h\" -> src/lib/base/Event.h",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp: #include \"base/IEventQueue.h\" -> src/lib/base/IEventQueue.h",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h"
       ],
       "kinds": [
         "include",
@@ -557,6 +574,8 @@
     {
       "evidence": [
         "src/lib/deskflow/ClipboardChunk.cpp: #include \"io/IStream.h\" -> src/lib/io/IStream.h",
+        "src/lib/deskflow/FileTransferControlProtocol.cpp: #include \"io/IStream.h\" -> src/lib/io/IStream.h",
+        "src/lib/deskflow/FileTransferDataProtocol.cpp: #include \"io/IStream.h\" -> src/lib/io/IStream.h",
         "src/lib/deskflow/PacketStreamFilter.h: #include \"io/StreamBuffer.h\" -> src/lib/io/StreamBuffer.h",
         "src/lib/deskflow/PacketStreamFilter.h: #include \"io/StreamFilter.h\" -> src/lib/io/StreamFilter.h",
         "src/lib/deskflow/ProtocolUtil.cpp: #include \"io/IStream.h\" -> src/lib/io/IStream.h",
@@ -615,7 +634,10 @@
         "src/lib/deskflow/ServerApp.cpp: #include \"platform/MSWindowsScreen.h\" -> src/lib/platform/MSWindowsScreen.h",
         "src/lib/deskflow/ServerApp.cpp: #include \"platform/OSXScreen.h\" -> src/lib/platform/OSXScreen.h",
         "src/lib/deskflow/ServerApp.cpp: #include \"platform/XWindowsScreen.h\" -> src/lib/platform/XWindowsScreen.h",
-        "src/lib/deskflow/win32/AppUtilWindows.cpp: #include \"platform/MSWindowsScreen.h\" -> src/lib/platform/MSWindowsScreen.h"
+        "src/lib/deskflow/win32/AppUtilWindows.cpp: #include \"platform/MSWindowsScreen.h\" -> src/lib/platform/MSWindowsScreen.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.cpp: #include \"platform/MSWindowsFileTransferSource.h\" -> src/lib/platform/MSWindowsFileTransferSource.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h: #include \"platform/MSWindowsFileDropExtractor.h\" -> src/lib/platform/MSWindowsFileDropExtractor.h",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp: #include \"platform/MSWindowsFileTransferIo.h\" -> src/lib/platform/MSWindowsFileTransferIo.h"
       ],
       "kinds": [
         "include",
@@ -1083,6 +1105,10 @@
         "src/lib/platform/MSWindowsDesks.cpp: #include \"deskflow/win32/AppUtilWindows.h\" -> src/lib/deskflow/win32/AppUtilWindows.h",
         "src/lib/platform/MSWindowsDesks.h: #include \"deskflow/MouseTypes.h\" -> src/lib/deskflow/MouseTypes.h",
         "src/lib/platform/MSWindowsDesks.h: #include \"deskflow/OptionTypes.h\" -> src/lib/deskflow/OptionTypes.h",
+        "src/lib/platform/MSWindowsFileTransferIo.cpp: #include \"deskflow/FileTransferOfferValidator.h\" -> src/lib/deskflow/FileTransferOfferValidator.h",
+        "src/lib/platform/MSWindowsFileTransferIo.h: #include \"deskflow/FileTransferDataCodec.h\" -> src/lib/deskflow/FileTransferDataCodec.h",
+        "src/lib/platform/MSWindowsFileTransferIo.h: #include \"deskflow/FileTransferSourceManifest.h\" -> src/lib/deskflow/FileTransferSourceManifest.h",
+        "src/lib/platform/MSWindowsFileTransferSource.h: #include \"deskflow/FileTransferSourceManifest.h\" -> src/lib/deskflow/FileTransferSourceManifest.h",
         "src/lib/platform/MSWindowsHook.cpp: #include \"deskflow/ScreenException.h\" -> src/lib/deskflow/ScreenException.h",
         "src/lib/platform/MSWindowsImeController.h: #include \"deskflow/InputLanguageTypes.h\" -> src/lib/deskflow/InputLanguageTypes.h",
         "src/lib/platform/MSWindowsKeyState.h: #include \"deskflow/KeyState.h\" -> src/lib/deskflow/KeyState.h",
@@ -1093,6 +1119,7 @@
         "src/lib/platform/MSWindowsScreen.cpp: #include \"deskflow/KeyMap.h\" -> src/lib/deskflow/KeyMap.h",
         "src/lib/platform/MSWindowsScreen.cpp: #include \"deskflow/ScreenException.h\" -> src/lib/deskflow/ScreenException.h",
         "src/lib/platform/MSWindowsScreen.h: #include \"deskflow/PlatformScreen.h\" -> src/lib/deskflow/PlatformScreen.h",
+        "src/lib/platform/MSWindowsScreen.h: #include \"deskflow/win32/MSWindowsEdgeDropHost.h\" -> src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
         "src/lib/platform/MSWindowsScreenSaver.h: #include \"deskflow/IScreenSaver.h\" -> src/lib/deskflow/IScreenSaver.h",
         "src/lib/platform/MSWindowsWatchdog.cpp: #include \"deskflow/App.h\" -> src/lib/deskflow/App.h",
         "src/lib/platform/OSXClipboard.h: #include \"deskflow/IClipboard.h\" -> src/lib/deskflow/IClipboard.h",
@@ -1193,6 +1220,8 @@
         "src/lib/server/ClientProxy1_0.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h",
         "src/lib/server/ClientProxy1_1.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h",
         "src/lib/server/ClientProxy1_11.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h",
+        "src/lib/server/ClientProxy1_12.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h",
+        "src/lib/server/ClientProxy1_13.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h",
         "src/lib/server/ClientProxy1_2.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h",
         "src/lib/server/ClientProxy1_3.cpp: #include \"base/IEventQueue.h\" -> src/lib/base/IEventQueue.h",
         "src/lib/server/ClientProxy1_3.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h",
@@ -1238,6 +1267,8 @@
     {
       "evidence": [
         "src/lib/server/BaseClientProxy.h: #include \"deskflow/DisplayGeometry.h\" -> src/lib/deskflow/DisplayGeometry.h",
+        "src/lib/server/BaseClientProxy.h: #include \"deskflow/FileTransferControlCodec.h\" -> src/lib/deskflow/FileTransferControlCodec.h",
+        "src/lib/server/BaseClientProxy.h: #include \"deskflow/FileTransferDataCodec.h\" -> src/lib/deskflow/FileTransferDataCodec.h",
         "src/lib/server/BaseClientProxy.h: #include \"deskflow/IClient.h\" -> src/lib/deskflow/IClient.h",
         "src/lib/server/BaseClientProxy.h: #include \"deskflow/InputLanguageTypes.h\" -> src/lib/deskflow/InputLanguageTypes.h",
         "src/lib/server/CMakeLists.txt: target_link_libraries(server app)",
@@ -1249,6 +1280,11 @@
         "src/lib/server/ClientProxy1_0.h: #include \"deskflow/ProtocolTypes.h\" -> src/lib/deskflow/ProtocolTypes.h",
         "src/lib/server/ClientProxy1_1.cpp: #include \"deskflow/ProtocolUtil.h\" -> src/lib/deskflow/ProtocolUtil.h",
         "src/lib/server/ClientProxy1_11.cpp: #include \"deskflow/ProtocolUtil.h\" -> src/lib/deskflow/ProtocolUtil.h",
+        "src/lib/server/ClientProxy1_12.cpp: #include \"deskflow/FileTransferControlProtocol.h\" -> src/lib/deskflow/FileTransferControlProtocol.h",
+        "src/lib/server/ClientProxy1_12.cpp: #include \"deskflow/FileTransferControlRouting.h\" -> src/lib/deskflow/FileTransferControlRouting.h",
+        "src/lib/server/ClientProxy1_12.cpp: #include \"deskflow/ProtocolTypes.h\" -> src/lib/deskflow/ProtocolTypes.h",
+        "src/lib/server/ClientProxy1_13.cpp: #include \"deskflow/FileTransferDataProtocol.h\" -> src/lib/deskflow/FileTransferDataProtocol.h",
+        "src/lib/server/ClientProxy1_13.cpp: #include \"deskflow/ProtocolTypes.h\" -> src/lib/deskflow/ProtocolTypes.h",
         "src/lib/server/ClientProxy1_2.cpp: #include \"deskflow/ProtocolUtil.h\" -> src/lib/deskflow/ProtocolUtil.h",
         "src/lib/server/ClientProxy1_3.cpp: #include \"deskflow/ProtocolUtil.h\" -> src/lib/deskflow/ProtocolUtil.h",
         "src/lib/server/ClientProxy1_4.cpp: #include \"deskflow/ProtocolUtil.h\" -> src/lib/deskflow/ProtocolUtil.h",
@@ -1280,6 +1316,8 @@
         "src/lib/server/Server.cpp: #include \"deskflow/AppUtil.h\" -> src/lib/deskflow/AppUtil.h",
         "src/lib/server/Server.cpp: #include \"deskflow/CanonicalScancode.h\" -> src/lib/deskflow/CanonicalScancode.h",
         "src/lib/server/Server.cpp: #include \"deskflow/DeskflowException.h\" -> src/lib/deskflow/DeskflowException.h",
+        "src/lib/server/Server.cpp: #include \"deskflow/FileTransferControlEvent.h\" -> src/lib/deskflow/FileTransferControlEvent.h",
+        "src/lib/server/Server.cpp: #include \"deskflow/FileTransferDataEvent.h\" -> src/lib/deskflow/FileTransferDataEvent.h",
         "src/lib/server/Server.cpp: #include \"deskflow/IPlatformScreen.h\" -> src/lib/deskflow/IPlatformScreen.h",
         "src/lib/server/Server.cpp: #include \"deskflow/OptionTypes.h\" -> src/lib/deskflow/OptionTypes.h",
         "src/lib/server/Server.cpp: #include \"deskflow/PacketStreamFilter.h\" -> src/lib/deskflow/PacketStreamFilter.h",
@@ -1289,6 +1327,9 @@
         "src/lib/server/Server.cpp: #include \"deskflow/ipc/CoreIpc.h\" -> src/lib/deskflow/ipc/CoreIpc.h",
         "src/lib/server/Server.h: #include \"deskflow/Clipboard.h\" -> src/lib/deskflow/Clipboard.h",
         "src/lib/server/Server.h: #include \"deskflow/ClipboardTypes.h\" -> src/lib/deskflow/ClipboardTypes.h",
+        "src/lib/server/Server.h: #include \"deskflow/EdgeHandoffDecision.h\" -> src/lib/deskflow/EdgeHandoffDecision.h",
+        "src/lib/server/Server.h: #include \"deskflow/FileTransferControlRouting.h\" -> src/lib/deskflow/FileTransferControlRouting.h",
+        "src/lib/server/Server.h: #include \"deskflow/FileTransferDataRouting.h\" -> src/lib/deskflow/FileTransferDataRouting.h",
         "src/lib/server/Server.h: #include \"deskflow/InputLanguageTypes.h\" -> src/lib/deskflow/InputLanguageTypes.h",
         "src/lib/server/Server.h: #include \"deskflow/KeyTypes.h\" -> src/lib/deskflow/KeyTypes.h",
         "src/lib/server/Server.h: #include \"deskflow/MouseTypes.h\" -> src/lib/deskflow/MouseTypes.h"
@@ -1448,6 +1489,7 @@
         "src/unittests/deskflow/KeyStateTests.cpp: #include \"base/EventQueue.h\" -> src/lib/base/EventQueue.h",
         "src/unittests/deskflow/KeyStateTests.h: #include \"base/Log.h\" -> src/lib/base/Log.h",
         "src/unittests/deskflow/KeyboardLayoutManagerTests.h: #include \"base/Log.h\" -> src/lib/base/Log.h",
+        "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp: #include \"base/DirectionTypes.h\" -> src/lib/base/DirectionTypes.h",
         "src/unittests/deskflow/MockEventQueue.h: #include \"base/IEventQueue.h\" -> src/lib/base/IEventQueue.h",
         "src/unittests/deskflow/MockKeyState.h: #include \"base/IEventQueue.h\" -> src/lib/base/IEventQueue.h",
         "src/unittests/deskflow/Protocol19Tests.h: #include \"base/Log.h\" -> src/lib/base/Log.h",
@@ -1479,6 +1521,17 @@
         "src/unittests/deskflow/ClipboardChunksTests.cpp: #include \"deskflow/ProtocolTypes.h\" -> src/lib/deskflow/ProtocolTypes.h",
         "src/unittests/deskflow/ClipboardChunksTests.cpp: #include \"deskflow/ProtocolUtil.h\" -> src/lib/deskflow/ProtocolUtil.h",
         "src/unittests/deskflow/ClipboardTests.cpp: #include \"deskflow/Clipboard.h\" -> src/lib/deskflow/Clipboard.h",
+        "src/unittests/deskflow/EdgeHandoffDecisionTests.cpp: #include \"deskflow/EdgeHandoffDecision.h\" -> src/lib/deskflow/EdgeHandoffDecision.h",
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp: #include \"deskflow/FileTransferControlCodec.h\" -> src/lib/deskflow/FileTransferControlCodec.h",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp: #include \"deskflow/FileTransferControlProtocol.h\" -> src/lib/deskflow/FileTransferControlProtocol.h",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp: #include \"deskflow/FileTransferControlRouting.h\" -> src/lib/deskflow/FileTransferControlRouting.h",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp: #include \"deskflow/ProtocolTypes.h\" -> src/lib/deskflow/ProtocolTypes.h",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp: #include \"deskflow/FileTransferDataProtocol.h\" -> src/lib/deskflow/FileTransferDataProtocol.h",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp: #include \"deskflow/FileTransferDataRouting.h\" -> src/lib/deskflow/FileTransferDataRouting.h",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp: #include \"deskflow/ProtocolTypes.h\" -> src/lib/deskflow/ProtocolTypes.h",
+        "src/unittests/deskflow/FileTransferOfferTests.cpp: #include \"deskflow/FileTransferOfferValidator.h\" -> src/lib/deskflow/FileTransferOfferValidator.h",
+        "src/unittests/deskflow/FileTransferSessionStateTests.cpp: #include \"deskflow/FileTransferSessionState.h\" -> src/lib/deskflow/FileTransferSessionState.h",
+        "src/unittests/deskflow/FileTransferSourceManifestTests.cpp: #include \"deskflow/FileTransferSourceManifest.h\" -> src/lib/deskflow/FileTransferSourceManifest.h",
         "src/unittests/deskflow/IKeyStateTests.cpp: #include \"deskflow/IKeyState.h\" -> src/lib/deskflow/IKeyState.h",
         "src/unittests/deskflow/IpcServerTests.cpp: #include \"deskflow/ipc/DaemonIpcServer.h\" -> src/lib/deskflow/ipc/DaemonIpcServer.h",
         "src/unittests/deskflow/IpcServerTests.cpp: #include \"deskflow/ipc/IpcServer.h\" -> src/lib/deskflow/ipc/IpcServer.h",
@@ -1487,6 +1540,9 @@
         "src/unittests/deskflow/KeyStateTests.cpp: #include \"deskflow/KeyMap.h\" -> src/lib/deskflow/KeyMap.h",
         "src/unittests/deskflow/KeyStateTests.h: #include \"deskflow/KeyMap.h\" -> src/lib/deskflow/KeyMap.h",
         "src/unittests/deskflow/KeyboardLayoutManagerTests.cpp: #include \"deskflow/KeyboardLayoutManager.h\" -> src/lib/deskflow/KeyboardLayoutManager.h",
+        "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp: #include \"deskflow/win32/MSWindowsEdgeDropHost.h\" -> src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp: #include \"deskflow/win32/MSWindowsEdgeDropTarget.h\" -> src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp: #include \"deskflow/win32/MSWindowsFileTransferService.h\" -> src/lib/deskflow/win32/MSWindowsFileTransferService.h",
         "src/unittests/deskflow/MockKeyMap.h: #include \"deskflow/KeyMap.h\" -> src/lib/deskflow/KeyMap.h",
         "src/unittests/deskflow/MockKeyState.h: #include \"deskflow/KeyState.h\" -> src/lib/deskflow/KeyState.h",
         "src/unittests/deskflow/Protocol19Tests.cpp: #include \"deskflow/CanonicalScancode.h\" -> src/lib/deskflow/CanonicalScancode.h",
@@ -1504,6 +1560,8 @@
     {
       "evidence": [
         "src/unittests/deskflow/ClipboardChunksTests.cpp: #include \"io/IStream.h\" -> src/lib/io/IStream.h",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp: #include \"io/IStream.h\" -> src/lib/io/IStream.h",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp: #include \"io/IStream.h\" -> src/lib/io/IStream.h",
         "src/unittests/deskflow/Protocol19Tests.cpp: #include \"io/IStream.h\" -> src/lib/io/IStream.h"
       ],
       "kinds": [
@@ -1511,6 +1569,16 @@
       ],
       "source": "test:deskflow",
       "target": "lib:io"
+    },
+    {
+      "evidence": [
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp: #include \"platform/MSWindowsFileTransferSource.h\" -> src/lib/platform/MSWindowsFileTransferSource.h"
+      ],
+      "kinds": [
+        "include"
+      ],
+      "source": "test:deskflow",
+      "target": "lib:platform"
     },
     {
       "evidence": [
@@ -1662,6 +1730,10 @@
     {
       "evidence": [
         "src/unittests/platform/MSWindowsClipboardTests.cpp: #include \"platform/MSWindowsClipboard.h\" -> src/lib/platform/MSWindowsClipboard.h",
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp: #include \"platform/MSWindowsFileDropExtractor.h\" -> src/lib/platform/MSWindowsFileDropExtractor.h",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp: #include \"platform/MSWindowsFileTransferIo.h\" -> src/lib/platform/MSWindowsFileTransferIo.h",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp: #include \"platform/MSWindowsFileTransferSource.h\" -> src/lib/platform/MSWindowsFileTransferSource.h",
+        "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp: #include \"platform/MSWindowsFileTransferSource.h\" -> src/lib/platform/MSWindowsFileTransferSource.h",
         "src/unittests/platform/MSWindowsMouseInputTests.cpp: #include \"platform/MSWindowsMouseInput.h\" -> src/lib/platform/MSWindowsMouseInput.h",
         "src/unittests/platform/OSXClipboardTests.cpp: #include \"platform/OSXClipboard.h\" -> src/lib/platform/OSXClipboard.h",
         "src/unittests/platform/OSXClipboardTests.cpp: #include \"platform/OSXClipboardUTF8Converter.h\" -> src/lib/platform/OSXClipboardUTF8Converter.h",
@@ -1840,7 +1912,7 @@
         "c/c++ header": 21,
         "cmake": 1
       },
-      "lineCount": 3642,
+      "lineCount": 3651,
       "path": "src/lib/base",
       "targets": [
         "base"
@@ -1855,7 +1927,7 @@
         "c/c++ header": 2,
         "cmake": 1
       },
-      "lineCount": 2295,
+      "lineCount": 2368,
       "path": "src/lib/client",
       "targets": [
         "client"
@@ -1871,22 +1943,22 @@
         "cmake": 1,
         "template": 2
       },
-      "lineCount": 2683,
+      "lineCount": 2702,
       "path": "src/lib/common",
       "targets": [
         "common"
       ]
     },
     {
-      "fileCount": 78,
+      "fileCount": 107,
       "id": "lib:deskflow",
       "kind": "library",
       "languageCounts": {
-        "c++": 32,
-        "c/c++ header": 45,
+        "c++": 45,
+        "c/c++ header": 61,
         "cmake": 1
       },
-      "lineCount": 13500,
+      "lineCount": 17848,
       "path": "src/lib/deskflow",
       "targets": [
         "app"
@@ -1903,7 +1975,7 @@
         "objective-c++": 1,
         "qt-ui": 8
       },
-      "lineCount": 17771,
+      "lineCount": 17961,
       "path": "src/lib/gui",
       "targets": [
         "gui"
@@ -1955,33 +2027,33 @@
       ]
     },
     {
-      "fileCount": 126,
+      "fileCount": 132,
       "id": "lib:platform",
       "kind": "library",
       "languageCounts": {
-        "c++": 53,
-        "c/c++ header": 65,
+        "c++": 56,
+        "c/c++ header": 68,
         "cmake": 1,
         "objective-c": 4,
         "objective-c++": 2,
         "template": 1
       },
-      "lineCount": 28290,
+      "lineCount": 29532,
       "path": "src/lib/platform",
       "targets": [
         "platform"
       ]
     },
     {
-      "fileCount": 42,
+      "fileCount": 46,
       "id": "lib:server",
       "kind": "library",
       "languageCounts": {
-        "c++": 20,
-        "c/c++ header": 21,
+        "c++": 22,
+        "c/c++ header": 23,
         "cmake": 1
       },
-      "lineCount": 9555,
+      "lineCount": 9891,
       "path": "src/lib/server",
       "targets": [
         "server"
@@ -2011,14 +2083,14 @@
       "targets": []
     },
     {
-      "fileCount": 22,
+      "fileCount": 32,
       "id": "support:docs",
       "kind": "documentation",
       "languageCounts": {
         "cmake": 3,
-        "markdown": 19
+        "markdown": 29
       },
-      "lineCount": 3767,
+      "lineCount": 4973,
       "path": "docs",
       "targets": []
     },
@@ -2048,7 +2120,7 @@
         "text": 4,
         "toml": 1
       },
-      "lineCount": 2892,
+      "lineCount": 3041,
       "path": ".",
       "targets": []
     },
@@ -2071,7 +2143,7 @@
         "cmake": 1,
         "qt-translation": 7
       },
-      "lineCount": 11440,
+      "lineCount": 11528,
       "path": "translations",
       "targets": []
     },
@@ -2141,26 +2213,36 @@
       ]
     },
     {
-      "fileCount": 26,
+      "fileCount": 36,
       "id": "test:deskflow",
       "kind": "test",
       "languageCounts": {
-        "c++": 11,
+        "c++": 21,
         "c/c++ header": 14,
         "cmake": 1
       },
-      "lineCount": 2335,
+      "lineCount": 4798,
       "path": "src/unittests/deskflow",
       "targets": [
         "CanonicalScancodeTests",
         "ClientReconnectPolicyTests",
         "ClipboardChunksTests",
         "ClipboardTests",
+        "EdgeHandoffDecisionTests",
+        "FileTransferControlCodecTests",
+        "FileTransferControlProtocolTests",
+        "FileTransferDataProtocolTests",
+        "FileTransferOfferTests",
+        "FileTransferSessionStateTests",
+        "FileTransferSourceManifestTests",
         "IKeyStateTests",
         "IpcServerTests",
         "KeyMapTests",
         "KeyStateTests",
         "KeyboardLayoutManagerTests",
+        "MSWindowsEdgeDropHostTests",
+        "MSWindowsEdgeDropTargetTests",
+        "MSWindowsFileTransferServiceTests",
         "Protocol19Tests",
         "X11LayoutParserTests"
       ]
@@ -2228,19 +2310,22 @@
       ]
     },
     {
-      "fileCount": 11,
+      "fileCount": 14,
       "id": "test:platform",
       "kind": "test",
       "languageCounts": {
-        "c++": 6,
+        "c++": 9,
         "c/c++ header": 4,
         "cmake": 1
       },
-      "lineCount": 692,
+      "lineCount": 1827,
       "path": "src/unittests/platform",
       "targets": [
         "ArchNetworkWinsockTests",
         "MSWindowsClipboardTests",
+        "MSWindowsFileDropExtractorTests",
+        "MSWindowsFileTransferIoTests",
+        "MSWindowsFileTransferSourceTests",
         "MSWindowsMouseInputTests",
         "OSXClipboardTests",
         "OSXKeyStateTests",
@@ -2497,6 +2582,13 @@
     },
     {
       "kind": "cmake-link",
+      "name": "bcrypt",
+      "sources": [
+        "src/lib/platform/CMakeLists.txt"
+      ]
+    },
+    {
+      "kind": "cmake-link",
       "name": "dwmapi",
       "sources": [
         "src/lib/platform/CMakeLists.txt"
@@ -2505,6 +2597,20 @@
     {
       "kind": "cmake-link",
       "name": "imm32",
+      "sources": [
+        "src/lib/platform/CMakeLists.txt"
+      ]
+    },
+    {
+      "kind": "cmake-link",
+      "name": "ole32",
+      "sources": [
+        "src/lib/platform/CMakeLists.txt"
+      ]
+    },
+    {
+      "kind": "cmake-link",
+      "name": "shell32",
       "sources": [
         "src/lib/platform/CMakeLists.txt"
       ]
@@ -2681,7 +2787,8 @@
         "src/lib/platform/PortalInputCapture.cpp",
         "src/lib/platform/PortalInputCapture.h",
         "src/lib/platform/PortalRemoteDesktop.h",
-        "src/unittests/base/UnicodeTests.cpp"
+        "src/unittests/base/UnicodeTests.cpp",
+        "src/unittests/deskflow/FileTransferOfferTests.cpp"
       ]
     },
     {
@@ -3764,6 +3871,8 @@
         "src/unittests/deskflow/ClientReconnectPolicyTests.cpp",
         "src/unittests/deskflow/ClipboardChunksTests.h",
         "src/unittests/deskflow/ClipboardTests.h",
+        "src/unittests/deskflow/EdgeHandoffDecisionTests.cpp",
+        "src/unittests/deskflow/FileTransferOfferTests.cpp",
         "src/unittests/deskflow/IKeyStateTests.h",
         "src/unittests/deskflow/IpcServerTests.h",
         "src/unittests/deskflow/KeyMapTests.h",
@@ -3955,6 +4064,13 @@
     },
     {
       "kind": "system-include",
+      "name": "ShlObj_core.h",
+      "sources": [
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
       "name": "Shlobj.h",
       "sources": [
         "src/lib/platform/MSWindowsScreen.cpp"
@@ -3998,12 +4114,18 @@
         "src/lib/arch/win32/XArchWindows.h",
         "src/lib/deskflow/ipc/IpcServer.cpp",
         "src/lib/deskflow/win32/AppUtilWindows.cpp",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
         "src/lib/gui/Logger.cpp",
         "src/lib/platform/IMSWindowsClipboardFacade.h",
         "src/lib/platform/MSWindowsClipboard.h",
         "src/lib/platform/MSWindowsDebugOutputter.cpp",
         "src/lib/platform/MSWindowsDesks.h",
         "src/lib/platform/MSWindowsEventQueueBuffer.h",
+        "src/lib/platform/MSWindowsFileDropExtractor.h",
+        "src/lib/platform/MSWindowsFileTransferIo.cpp",
+        "src/lib/platform/MSWindowsFileTransferSource.cpp",
         "src/lib/platform/MSWindowsHandle.h",
         "src/lib/platform/MSWindowsHook.h",
         "src/lib/platform/MSWindowsImeController.h",
@@ -4014,7 +4136,13 @@
         "src/lib/platform/MSWindowsScreenSaver.h",
         "src/lib/platform/MSWindowsSession.h",
         "src/lib/platform/MSWindowsWatchdog.cpp",
-        "src/lib/platform/MSWindowsWatchdog.h"
+        "src/lib/platform/MSWindowsWatchdog.h",
+        "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp"
       ]
     },
     {
@@ -4149,15 +4277,23 @@
         "src/lib/common/TailscaleIntegration.cpp",
         "src/lib/deskflow/CanonicalScancode.cpp",
         "src/lib/deskflow/ClientApp.cpp",
+        "src/lib/deskflow/EdgeHandoffDecision.cpp",
+        "src/lib/deskflow/FileTransferControlCodec.cpp",
+        "src/lib/deskflow/FileTransferDataCodec.cpp",
+        "src/lib/deskflow/FileTransferOfferValidator.cpp",
         "src/lib/deskflow/KeyMap.cpp",
         "src/lib/deskflow/KeyState.cpp",
         "src/lib/deskflow/KeyboardLayoutManager.cpp",
         "src/lib/deskflow/unix/X11LayoutsParser.cpp",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.cpp",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
         "src/lib/gui/MainWindow.cpp",
         "src/lib/gui/dialogs/ServerConfigDialog.cpp",
         "src/lib/net/NetworkAddress.cpp",
         "src/lib/net/SecureUtils.cpp",
         "src/lib/platform/EiScreen.cpp",
+        "src/lib/platform/MSWindowsFileTransferIo.cpp",
         "src/lib/platform/MSWindowsMouseInput.h",
         "src/lib/platform/MSWindowsScreen.cpp",
         "src/lib/platform/OSXClipboardAnyTextConverter.cpp",
@@ -4173,6 +4309,9 @@
         "src/lib/server/Server.cpp",
         "src/unittests/client/ServerProxyTests.cpp",
         "src/unittests/deskflow/ClipboardChunksTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp",
         "src/unittests/deskflow/Protocol19Tests.cpp"
       ]
     },
@@ -4189,11 +4328,23 @@
       "sources": [
         "src/lib/arch/win32/ArchMiscWindows.cpp",
         "src/lib/deskflow/CanonicalScancode.cpp",
+        "src/lib/deskflow/FileTransferControlCodec.cpp",
+        "src/lib/deskflow/FileTransferControlProtocol.cpp",
+        "src/lib/deskflow/FileTransferDataCodec.cpp",
+        "src/lib/deskflow/FileTransferDataCodec.h",
+        "src/lib/deskflow/FileTransferDataProtocol.cpp",
+        "src/lib/deskflow/FileTransferSourceManifest.h",
+        "src/lib/deskflow/FileTransferTypes.h",
         "src/lib/deskflow/ProtocolUtil.cpp",
         "src/lib/gui/config/ScreenList.cpp",
+        "src/lib/platform/MSWindowsFileTransferIo.cpp",
         "src/lib/platform/MSWindowsScreen.cpp",
         "src/lib/platform/XDGKeyUtil.h",
-        "src/lib/server/Server.cpp"
+        "src/lib/server/Server.cpp",
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp"
       ]
     },
     {
@@ -4235,6 +4386,14 @@
     },
     {
       "kind": "system-include",
+      "name": "bcrypt.h",
+      "sources": [
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+        "src/lib/platform/MSWindowsFileTransferIo.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
       "name": "bit",
       "sources": [
         "src/lib/client/ServerProxy.cpp",
@@ -4260,6 +4419,7 @@
       "kind": "system-include",
       "name": "cctype",
       "sources": [
+        "src/lib/deskflow/FileTransferOfferValidator.cpp",
         "src/lib/deskflow/KeyMap.cpp"
       ]
     },
@@ -4284,11 +4444,15 @@
       "sources": [
         "src/lib/client/ServerProxy.cpp",
         "src/lib/client/ServerProxy.h",
+        "src/lib/deskflow/EdgeHandoffDecision.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
         "src/lib/platform/MSWindowsImeController.cpp",
         "src/lib/platform/MSWindowsScreen.h",
         "src/lib/platform/OSXInputSourceController.mm",
         "src/lib/platform/OSXScreen.h",
         "src/lib/server/Server.h",
+        "src/unittests/deskflow/EdgeHandoffDecisionTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
         "src/unittests/legacytests/shared/ExitTimeout.cpp"
       ]
     },
@@ -4373,9 +4537,27 @@
       "name": "cstddef",
       "sources": [
         "src/lib/deskflow/ClipboardChunk.h",
+        "src/lib/deskflow/FileTransferControlCodec.h",
+        "src/lib/deskflow/FileTransferControlProtocol.cpp",
+        "src/lib/deskflow/FileTransferDataCodec.h",
+        "src/lib/deskflow/FileTransferDataProtocol.cpp",
+        "src/lib/deskflow/FileTransferSessionState.h",
+        "src/lib/deskflow/FileTransferSourceManifest.h",
+        "src/lib/deskflow/FileTransferTypes.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.h",
         "src/lib/net/SecureSocketWriteBuffer.h",
         "src/lib/platform/EiKeyState.cpp",
-        "src/lib/platform/XWindowsKeyState.cpp"
+        "src/lib/platform/MSWindowsFileDropExtractor.h",
+        "src/lib/platform/MSWindowsFileTransferIo.h",
+        "src/lib/platform/MSWindowsFileTransferSource.h",
+        "src/lib/platform/XWindowsKeyState.cpp",
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp"
       ]
     },
     {
@@ -4394,6 +4576,14 @@
         "src/lib/deskflow/ClientReconnectPolicy.h",
         "src/lib/deskflow/ClipboardTypes.h",
         "src/lib/deskflow/DisplayGeometry.h",
+        "src/lib/deskflow/EdgeHandoffDecision.cpp",
+        "src/lib/deskflow/FileTransferControlCodec.h",
+        "src/lib/deskflow/FileTransferControlProtocol.cpp",
+        "src/lib/deskflow/FileTransferDataCodec.h",
+        "src/lib/deskflow/FileTransferDataProtocol.cpp",
+        "src/lib/deskflow/FileTransferSourceManifest.cpp",
+        "src/lib/deskflow/FileTransferSourceManifest.h",
+        "src/lib/deskflow/FileTransferTypes.h",
         "src/lib/deskflow/IClipboard.h",
         "src/lib/deskflow/IKeyState.cpp",
         "src/lib/deskflow/InputLanguageTypes.h",
@@ -4401,16 +4591,25 @@
         "src/lib/deskflow/OptionTypes.h",
         "src/lib/deskflow/ProtocolTypes.h",
         "src/lib/deskflow/ProtocolUtil.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
         "src/lib/io/IStream.h",
         "src/lib/io/StreamBuffer.h",
         "src/lib/net/SecureSocketWriteBuffer.h",
+        "src/lib/platform/MSWindowsFileTransferIo.h",
         "src/lib/platform/MSWindowsMouseInput.h",
         "src/lib/platform/PortalInputCapture.h",
         "src/lib/platform/XDGKeyUtil.h",
         "src/lib/platform/XWindowsUtil.h",
         "src/lib/server/CursorTransform.h",
         "src/lib/server/InputFilter.cpp",
-        "src/unittests/client/ServerProxyTests.cpp"
+        "src/unittests/client/ServerProxyTests.cpp",
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferOfferTests.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp"
       ]
     },
     {
@@ -4438,7 +4637,18 @@
         "src/lib/server/Config.cpp",
         "src/lib/server/InputFilter.cpp",
         "src/lib/server/Server.cpp",
-        "src/unittests/net/SecureSocketWriteBufferTests.cpp"
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferSessionStateTests.cpp",
+        "src/unittests/deskflow/FileTransferSourceManifestTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+        "src/unittests/net/SecureSocketWriteBufferTests.cpp",
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp"
       ]
     },
     {
@@ -4462,6 +4672,8 @@
         "src/lib/net/SecureSocketWriteBuffer.cpp",
         "src/lib/net/TCPSocket.cpp",
         "src/lib/platform/EiScreen.cpp",
+        "src/lib/platform/MSWindowsFileTransferIo.cpp",
+        "src/lib/platform/MSWindowsFileTransferSource.cpp",
         "src/lib/platform/OSXInputSourceController.mm",
         "src/lib/platform/OSXKeyState.cpp",
         "src/lib/platform/PortalClipboard.cpp",
@@ -4469,6 +4681,8 @@
         "src/lib/platform/XWindowsScreen.cpp",
         "src/lib/server/ClientProxy1_0.cpp",
         "src/lib/server/ClientProxy1_11.cpp",
+        "src/lib/server/ClientProxy1_12.cpp",
+        "src/lib/server/ClientProxy1_13.cpp",
         "src/lib/server/ClientProxy1_3.cpp",
         "src/lib/server/ClientProxy1_5.cpp",
         "src/lib/server/ClientProxy1_9.cpp",
@@ -4476,8 +4690,11 @@
         "src/lib/server/Server.cpp",
         "src/unittests/client/ServerProxyTests.cpp",
         "src/unittests/deskflow/ClipboardChunksTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
         "src/unittests/deskflow/Protocol19Tests.cpp",
-        "src/unittests/net/SecureSocketWriteBufferTests.cpp"
+        "src/unittests/net/SecureSocketWriteBufferTests.cpp",
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp"
       ]
     },
     {
@@ -4494,7 +4711,9 @@
         "src/lib/base/SimpleEventQueueBuffer.h",
         "src/lib/server/ClientListener.h",
         "src/unittests/client/ServerProxyTests.cpp",
-        "src/unittests/deskflow/ClipboardChunksTests.cpp"
+        "src/unittests/deskflow/ClipboardChunksTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp"
       ]
     },
     {
@@ -4548,8 +4767,19 @@
       "name": "filesystem",
       "sources": [
         "src/lib/arch/win32/ArchMiscWindows.cpp",
+        "src/lib/deskflow/FileTransferSourceManifest.h",
         "src/lib/deskflow/unix/AppUtilUnix.cpp",
-        "src/lib/net/SecureUtils.cpp"
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.h",
+        "src/lib/net/SecureUtils.cpp",
+        "src/lib/platform/MSWindowsFileDropExtractor.h",
+        "src/lib/platform/MSWindowsFileTransferIo.h",
+        "src/lib/platform/MSWindowsFileTransferSource.h",
+        "src/unittests/deskflow/FileTransferSessionStateTests.cpp",
+        "src/unittests/deskflow/FileTransferSourceManifestTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp"
       ]
     },
     {
@@ -4576,6 +4806,9 @@
         "src/lib/arch/win32/ArchMiscWindows.h",
         "src/lib/base/IEventQueue.h",
         "src/lib/common/TailscaleIntegration.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.h",
         "src/lib/platform/MSWindowsWatchdog.h",
         "src/unittests/client/ServerProxyTests.cpp"
       ]
@@ -4643,7 +4876,18 @@
       "sources": [
         "src/lib/base/LogOutputters.cpp",
         "src/unittests/base/LogTests.cpp",
-        "src/unittests/legacytests/shared/ExitTimeout.cpp"
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferSessionStateTests.cpp",
+        "src/unittests/deskflow/FileTransferSourceManifestTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+        "src/unittests/legacytests/shared/ExitTimeout.cpp",
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp"
       ]
     },
     {
@@ -4662,7 +4906,9 @@
         "src/lib/deskflow/KeyState.cpp",
         "src/lib/deskflow/ProtocolUtil.cpp",
         "src/lib/net/SecureSocket.cpp",
-        "src/lib/net/SslLogger.cpp"
+        "src/lib/net/SslLogger.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp"
       ]
     },
     {
@@ -4701,9 +4947,20 @@
       "name": "limits",
       "sources": [
         "src/lib/deskflow/ClipboardChunk.cpp",
+        "src/lib/deskflow/FileTransferControlCodec.cpp",
+        "src/lib/deskflow/FileTransferControlProtocol.cpp",
+        "src/lib/deskflow/FileTransferDataCodec.cpp",
+        "src/lib/deskflow/FileTransferDataProtocol.cpp",
+        "src/lib/deskflow/FileTransferOfferValidator.cpp",
+        "src/lib/deskflow/FileTransferSourceManifest.cpp",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
         "src/lib/net/SecureSocket.cpp",
+        "src/lib/platform/MSWindowsFileDropExtractor.cpp",
+        "src/lib/platform/MSWindowsFileTransferIo.cpp",
+        "src/lib/platform/MSWindowsFileTransferSource.cpp",
         "src/lib/platform/PortalInputCapture.cpp",
-        "src/lib/server/CursorTransform.h"
+        "src/lib/server/CursorTransform.h",
+        "src/unittests/deskflow/FileTransferOfferTests.cpp"
       ]
     },
     {
@@ -4769,7 +5026,9 @@
       "name": "map",
       "sources": [
         "src/lib/base/EventQueue.h",
+        "src/lib/deskflow/FileTransferSessionState.h",
         "src/lib/deskflow/KeyMap.h",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
         "src/lib/net/SocketMultiplexer.h",
         "src/lib/platform/EiScreen.h",
         "src/lib/platform/MSWindowsDesks.h",
@@ -4805,6 +5064,7 @@
         "src/lib/deskflow/ClientApp.cpp",
         "src/lib/deskflow/ServerApp.h",
         "src/lib/deskflow/unix/DeskflowXkbKeyboard.cpp",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.h",
         "src/lib/gui/MainWindow.cpp",
         "src/lib/gui/Messages.cpp",
         "src/lib/gui/validators/LineEditValidator.h",
@@ -4813,6 +5073,7 @@
         "src/lib/net/SecureSocket.cpp",
         "src/lib/net/SecureSocket.h",
         "src/lib/platform/EiKeyState.cpp",
+        "src/lib/platform/MSWindowsFileTransferIo.h",
         "src/lib/platform/MSWindowsScreen.h",
         "src/lib/platform/MSWindowsWatchdog.h",
         "src/lib/platform/OSXAutoTypes.h",
@@ -4914,6 +5175,31 @@
     },
     {
       "kind": "system-include",
+      "name": "objidl.h",
+      "sources": [
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+        "src/lib/platform/MSWindowsFileDropExtractor.h",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
+      "name": "ole2.h",
+      "sources": [
+        "src/lib/platform/MSWindowsFileDropExtractor.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
+      "name": "oleidl.h",
+      "sources": [
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
       "name": "openssl/err.h",
       "sources": [
         "src/lib/net/SecureSocket.cpp",
@@ -4965,15 +5251,33 @@
         "src/lib/base/EventQueue.h",
         "src/lib/client/ServerProxy.h",
         "src/lib/deskflow/CanonicalScancode.h",
+        "src/lib/deskflow/EdgeHandoffDecision.h",
+        "src/lib/deskflow/FileTransferControlCodec.h",
+        "src/lib/deskflow/FileTransferControlProtocol.h",
+        "src/lib/deskflow/FileTransferDataCodec.h",
+        "src/lib/deskflow/FileTransferDataProtocol.h",
+        "src/lib/deskflow/FileTransferSessionState.h",
+        "src/lib/deskflow/FileTransferSourceManifest.h",
+        "src/lib/deskflow/FileTransferTypes.h",
         "src/lib/deskflow/IPlatformScreen.h",
         "src/lib/deskflow/Screen.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+        "src/lib/platform/MSWindowsFileDropExtractor.h",
+        "src/lib/platform/MSWindowsFileTransferIo.cpp",
+        "src/lib/platform/MSWindowsFileTransferSource.cpp",
+        "src/lib/platform/MSWindowsFileTransferSource.h",
         "src/lib/platform/MSWindowsImeController.h",
         "src/lib/platform/MSWindowsScreen.h",
         "src/lib/platform/MSWindowsWatchdog.h",
         "src/lib/platform/OSXKeyState.h",
         "src/lib/platform/OSXScreen.h",
         "src/lib/server/CursorTransform.h",
-        "src/unittests/client/ServerProxyTests.cpp"
+        "src/lib/server/Server.h",
+        "src/unittests/client/ServerProxyTests.cpp",
+        "src/unittests/deskflow/EdgeHandoffDecisionTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp"
       ]
     },
     {
@@ -5050,6 +5354,14 @@
     },
     {
       "kind": "system-include",
+      "name": "shellapi.h",
+      "sources": [
+        "src/lib/platform/MSWindowsFileDropExtractor.h",
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
       "name": "shlobj.h",
       "sources": [
         "src/lib/platform/MSWindowsWatchdog.cpp"
@@ -5061,6 +5373,18 @@
       "sources": [
         "src/lib/arch/unix/ArchMultithreadPosix.cpp",
         "src/lib/gui/core/CoreProcess.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
+      "name": "span",
+      "sources": [
+        "src/lib/deskflow/FileTransferControlCodec.h",
+        "src/lib/deskflow/FileTransferDataCodec.h",
+        "src/lib/platform/MSWindowsFileTransferIo.cpp",
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp"
       ]
     },
     {
@@ -5095,7 +5419,11 @@
         "src/lib/deskflow/App.h",
         "src/lib/deskflow/DisplayInvalidException.h",
         "src/lib/net/SecureUtils.cpp",
-        "src/lib/platform/MSWindowsSession.cpp"
+        "src/lib/platform/MSWindowsSession.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp"
       ]
     },
     {
@@ -5137,6 +5465,13 @@
         "src/lib/deskflow/AppUtil.h",
         "src/lib/deskflow/ClipboardChunk.h",
         "src/lib/deskflow/DisplayInvalidException.h",
+        "src/lib/deskflow/EdgeHandoffDecision.h",
+        "src/lib/deskflow/FileTransferControlCodec.h",
+        "src/lib/deskflow/FileTransferControlRouting.h",
+        "src/lib/deskflow/FileTransferDataCodec.h",
+        "src/lib/deskflow/FileTransferSessionState.h",
+        "src/lib/deskflow/FileTransferSourceManifest.h",
+        "src/lib/deskflow/FileTransferTypes.h",
         "src/lib/deskflow/IClient.h",
         "src/lib/deskflow/IClipboard.h",
         "src/lib/deskflow/IKeyState.h",
@@ -5144,9 +5479,14 @@
         "src/lib/deskflow/Screen.h",
         "src/lib/deskflow/unix/ISO639Table.h",
         "src/lib/deskflow/unix/X11LayoutsParser.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.h",
         "src/lib/net/IDataSocket.h",
         "src/lib/net/SslLogger.h",
         "src/lib/platform/MSWindowsDesks.h",
+        "src/lib/platform/MSWindowsFileDropExtractor.cpp",
+        "src/lib/platform/MSWindowsFileTransferIo.cpp",
+        "src/lib/platform/MSWindowsFileTransferSource.cpp",
         "src/lib/platform/MSWindowsKeyState.h",
         "src/lib/platform/MSWindowsProcess.cpp",
         "src/lib/platform/MSWindowsProcess.h",
@@ -5158,7 +5498,17 @@
         "src/lib/server/ClientProxy1_6.h",
         "src/lib/server/ClientProxyUnknown.h",
         "src/unittests/client/ServerProxyTests.cpp",
-        "src/unittests/deskflow/Protocol19Tests.cpp"
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferOfferTests.cpp",
+        "src/unittests/deskflow/FileTransferSourceManifestTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+        "src/unittests/deskflow/Protocol19Tests.cpp",
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp"
       ]
     },
     {
@@ -5172,9 +5522,26 @@
       "kind": "system-include",
       "name": "string_view",
       "sources": [
+        "src/lib/deskflow/FileTransferControlCodec.cpp",
+        "src/lib/deskflow/FileTransferControlRouting.h",
+        "src/lib/deskflow/FileTransferDataCodec.cpp",
+        "src/lib/deskflow/FileTransferDataRouting.h",
+        "src/lib/deskflow/FileTransferOfferValidator.cpp",
         "src/lib/deskflow/StreamChunker.h",
+        "src/lib/platform/MSWindowsFileTransferSource.cpp",
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferSessionStateTests.cpp",
+        "src/unittests/deskflow/FileTransferSourceManifestTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
         "src/unittests/legacytests/shared/ExitTimeout.cpp",
-        "src/unittests/legacytests/shared/ExitTimeout.h"
+        "src/unittests/legacytests/shared/ExitTimeout.h",
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp"
       ]
     },
     {
@@ -5236,6 +5603,13 @@
     },
     {
       "kind": "system-include",
+      "name": "system_error",
+      "sources": [
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
       "name": "tchar.h",
       "sources": [
         "src/lib/arch/win32/ArchDaemonWindows.h",
@@ -5274,6 +5648,16 @@
     },
     {
       "kind": "system-include",
+      "name": "type_traits",
+      "sources": [
+        "src/lib/deskflow/FileTransferControlCodec.cpp",
+        "src/lib/deskflow/FileTransferControlRouting.cpp",
+        "src/lib/deskflow/FileTransferDataCodec.cpp",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
       "name": "unistd.h",
       "sources": [
         "src/lib/arch/unix/ArchMultithreadPosix.cpp",
@@ -5291,12 +5675,52 @@
       "name": "utility",
       "sources": [
         "src/lib/base/FinalAction.h",
+        "src/lib/client/ServerProxy.cpp",
         "src/lib/common/NetworkInterfaces.cpp",
         "src/lib/common/TailscaleIntegration.cpp",
+        "src/lib/deskflow/FileTransferControlCodec.cpp",
+        "src/lib/deskflow/FileTransferControlEvent.h",
+        "src/lib/deskflow/FileTransferControlProtocol.cpp",
+        "src/lib/deskflow/FileTransferDataCodec.cpp",
+        "src/lib/deskflow/FileTransferDataEvent.h",
+        "src/lib/deskflow/FileTransferDataProtocol.cpp",
+        "src/lib/deskflow/FileTransferSessionState.cpp",
+        "src/lib/deskflow/FileTransferSourceManifest.cpp",
         "src/lib/deskflow/InputLanguageTypes.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.cpp",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.cpp",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+        "src/lib/platform/MSWindowsFileDropExtractor.cpp",
+        "src/lib/platform/MSWindowsFileTransferIo.cpp",
+        "src/lib/platform/MSWindowsFileTransferSource.cpp",
+        "src/lib/platform/MSWindowsScreen.cpp",
         "src/lib/platform/PortalInputCapture.h",
         "src/unittests/common/TailscaleIntegrationTests.cpp",
-        "src/unittests/gui/ServerConfigDialogTests.cpp"
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferSessionStateTests.cpp",
+        "src/unittests/deskflow/FileTransferSourceManifestTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+        "src/unittests/gui/ServerConfigDialogTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
+      "name": "variant",
+      "sources": [
+        "src/lib/deskflow/FileTransferControlCodec.h",
+        "src/lib/deskflow/FileTransferControlRouting.cpp",
+        "src/lib/deskflow/FileTransferDataCodec.h",
+        "src/lib/deskflow/FileTransferDataRouting.cpp",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp"
       ]
     },
     {
@@ -5309,6 +5733,12 @@
         "src/lib/client/ServerProxy.cpp",
         "src/lib/deskflow/AppUtil.h",
         "src/lib/deskflow/DisplayGeometry.h",
+        "src/lib/deskflow/FileTransferControlCodec.h",
+        "src/lib/deskflow/FileTransferControlProtocol.cpp",
+        "src/lib/deskflow/FileTransferDataCodec.h",
+        "src/lib/deskflow/FileTransferDataProtocol.cpp",
+        "src/lib/deskflow/FileTransferSourceManifest.h",
+        "src/lib/deskflow/FileTransferTypes.h",
         "src/lib/deskflow/IClipboard.cpp",
         "src/lib/deskflow/KeyMap.h",
         "src/lib/deskflow/KeyboardLayoutManager.h",
@@ -5317,12 +5747,18 @@
         "src/lib/deskflow/ProtocolUtil.h",
         "src/lib/deskflow/unix/ISO639Table.h",
         "src/lib/deskflow/unix/X11LayoutsParser.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+        "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+        "src/lib/deskflow/win32/MSWindowsFileTransferService.h",
         "src/lib/gui/validators/LineEditValidator.h",
         "src/lib/io/StreamBuffer.h",
         "src/lib/net/SocketMultiplexer.cpp",
         "src/lib/platform/EiScreen.cpp",
         "src/lib/platform/EiScreen.h",
         "src/lib/platform/MSWindowsClipboard.h",
+        "src/lib/platform/MSWindowsFileDropExtractor.h",
+        "src/lib/platform/MSWindowsFileTransferIo.h",
+        "src/lib/platform/MSWindowsFileTransferSource.h",
         "src/lib/platform/MSWindowsKeyState.h",
         "src/lib/platform/OSXClipboard.h",
         "src/lib/platform/OSXKeyState.h",
@@ -5337,7 +5773,17 @@
         "src/lib/server/Server.h",
         "src/unittests/client/ServerProxyTests.cpp",
         "src/unittests/common/TailscaleIntegrationTests.cpp",
-        "src/unittests/deskflow/Protocol19Tests.cpp"
+        "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+        "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+        "src/unittests/deskflow/FileTransferSourceManifestTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp",
+        "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+        "src/unittests/deskflow/Protocol19Tests.cpp",
+        "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+        "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp"
       ]
     },
     {
@@ -5377,9 +5823,23 @@
     },
     {
       "kind": "unresolved-quoted-include",
+      "name": "EdgeHandoffDecisionTests.moc",
+      "sources": [
+        "src/unittests/deskflow/EdgeHandoffDecisionTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
       "name": "FileTailTests.moc",
       "sources": [
         "src/unittests/gui/FileTailTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
+      "name": "FileTransferOfferTests.moc",
+      "sources": [
+        "src/unittests/deskflow/FileTransferOfferTests.cpp"
       ]
     },
     {
@@ -6530,6 +6990,18 @@
       "target": "src/lib/deskflow/DisplayGeometry.h"
     },
     {
+      "evidence": "#include \"deskflow/FileTransferControlCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/client/Client.h",
+      "target": "src/lib/deskflow/FileTransferControlCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/client/Client.h",
+      "target": "src/lib/deskflow/FileTransferDataCodec.h"
+    },
+    {
       "evidence": "#include \"deskflow/IClient.h\"",
       "kind": "include",
       "source": "src/lib/client/Client.h",
@@ -6608,6 +7080,30 @@
       "target": "src/lib/deskflow/DeskflowException.h"
     },
     {
+      "evidence": "#include \"deskflow/FileTransferControlEvent.h\"",
+      "kind": "include",
+      "source": "src/lib/client/ServerProxy.cpp",
+      "target": "src/lib/deskflow/FileTransferControlEvent.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlProtocol.h\"",
+      "kind": "include",
+      "source": "src/lib/client/ServerProxy.cpp",
+      "target": "src/lib/deskflow/FileTransferControlProtocol.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataEvent.h\"",
+      "kind": "include",
+      "source": "src/lib/client/ServerProxy.cpp",
+      "target": "src/lib/deskflow/FileTransferDataEvent.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataProtocol.h\"",
+      "kind": "include",
+      "source": "src/lib/client/ServerProxy.cpp",
+      "target": "src/lib/deskflow/FileTransferDataProtocol.h"
+    },
+    {
       "evidence": "#include \"deskflow/OptionTypes.h\"",
       "kind": "include",
       "source": "src/lib/client/ServerProxy.cpp",
@@ -6660,6 +7156,18 @@
       "kind": "include",
       "source": "src/lib/client/ServerProxy.h",
       "target": "src/lib/deskflow/ClipboardTypes.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/client/ServerProxy.h",
+      "target": "src/lib/deskflow/FileTransferControlCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/client/ServerProxy.h",
+      "target": "src/lib/deskflow/FileTransferDataCodec.h"
     },
     {
       "evidence": "#include \"deskflow/InputLanguageTypes.h\"",
@@ -6992,6 +7500,12 @@
       "target": "src/lib/deskflow/ipc/CoreIpc.h"
     },
     {
+      "evidence": "#include \"deskflow/win32/MSWindowsFileTransferService.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/ClientApp.cpp",
+      "target": "src/lib/deskflow/win32/MSWindowsFileTransferService.h"
+    },
+    {
       "evidence": "#include \"net/NetworkAddress.h\"",
       "kind": "include",
       "source": "src/lib/deskflow/ClientApp.cpp",
@@ -7140,6 +7654,216 @@
       "kind": "include",
       "source": "src/lib/deskflow/DeskflowException.h",
       "target": "src/lib/base/BaseException.h"
+    },
+    {
+      "evidence": "#include \"deskflow/EdgeHandoffDecision.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/EdgeHandoffDecision.cpp",
+      "target": "src/lib/deskflow/EdgeHandoffDecision.h"
+    },
+    {
+      "evidence": "#include \"base/DirectionTypes.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/EdgeHandoffDecision.h",
+      "target": "src/lib/base/DirectionTypes.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferControlCodec.cpp",
+      "target": "src/lib/deskflow/FileTransferControlCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferOfferValidator.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferControlCodec.cpp",
+      "target": "src/lib/deskflow/FileTransferOfferValidator.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferTypes.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferControlCodec.h",
+      "target": "src/lib/deskflow/FileTransferTypes.h"
+    },
+    {
+      "evidence": "#include \"base/Event.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferControlEvent.h",
+      "target": "src/lib/base/Event.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferControlEvent.h",
+      "target": "src/lib/deskflow/FileTransferControlCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlProtocol.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferControlProtocol.cpp",
+      "target": "src/lib/deskflow/FileTransferControlProtocol.h"
+    },
+    {
+      "evidence": "#include \"deskflow/ProtocolTypes.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferControlProtocol.cpp",
+      "target": "src/lib/deskflow/ProtocolTypes.h"
+    },
+    {
+      "evidence": "#include \"io/IStream.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferControlProtocol.cpp",
+      "target": "src/lib/io/IStream.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferControlProtocol.h",
+      "target": "src/lib/deskflow/FileTransferControlCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlRouting.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferControlRouting.cpp",
+      "target": "src/lib/deskflow/FileTransferControlRouting.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferControlRouting.h",
+      "target": "src/lib/deskflow/FileTransferControlCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataCodec.cpp",
+      "target": "src/lib/deskflow/FileTransferDataCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferOfferValidator.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataCodec.cpp",
+      "target": "src/lib/deskflow/FileTransferOfferValidator.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferTypes.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataCodec.h",
+      "target": "src/lib/deskflow/FileTransferTypes.h"
+    },
+    {
+      "evidence": "#include \"base/Event.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataEvent.h",
+      "target": "src/lib/base/Event.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataEvent.h",
+      "target": "src/lib/deskflow/FileTransferDataCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataProtocol.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataProtocol.cpp",
+      "target": "src/lib/deskflow/FileTransferDataProtocol.h"
+    },
+    {
+      "evidence": "#include \"deskflow/ProtocolTypes.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataProtocol.cpp",
+      "target": "src/lib/deskflow/ProtocolTypes.h"
+    },
+    {
+      "evidence": "#include \"io/IStream.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataProtocol.cpp",
+      "target": "src/lib/io/IStream.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataProtocol.h",
+      "target": "src/lib/deskflow/FileTransferDataCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataRouting.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataRouting.cpp",
+      "target": "src/lib/deskflow/FileTransferDataRouting.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlRouting.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataRouting.h",
+      "target": "src/lib/deskflow/FileTransferControlRouting.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferDataRouting.h",
+      "target": "src/lib/deskflow/FileTransferDataCodec.h"
+    },
+    {
+      "evidence": "#include \"base/Unicode.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferOfferValidator.cpp",
+      "target": "src/lib/base/Unicode.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferOfferValidator.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferOfferValidator.cpp",
+      "target": "src/lib/deskflow/FileTransferOfferValidator.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferTypes.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferOfferValidator.h",
+      "target": "src/lib/deskflow/FileTransferTypes.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferOfferValidator.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferSessionState.cpp",
+      "target": "src/lib/deskflow/FileTransferOfferValidator.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferSessionState.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferSessionState.cpp",
+      "target": "src/lib/deskflow/FileTransferSessionState.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferSessionState.h",
+      "target": "src/lib/deskflow/FileTransferControlCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferSourceManifest.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferSessionState.h",
+      "target": "src/lib/deskflow/FileTransferSourceManifest.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferOfferValidator.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferSourceManifest.cpp",
+      "target": "src/lib/deskflow/FileTransferOfferValidator.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferSourceManifest.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferSourceManifest.cpp",
+      "target": "src/lib/deskflow/FileTransferSourceManifest.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferTypes.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/FileTransferSourceManifest.h",
+      "target": "src/lib/deskflow/FileTransferTypes.h"
     },
     {
       "evidence": "#include \"deskflow/ClipboardTypes.h\"",
@@ -7652,6 +8376,12 @@
       "target": "src/lib/deskflow/ipc/CoreIpc.h"
     },
     {
+      "evidence": "#include \"deskflow/win32/MSWindowsFileTransferService.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/ServerApp.cpp",
+      "target": "src/lib/deskflow/win32/MSWindowsFileTransferService.h"
+    },
+    {
       "evidence": "#include \"net/SocketException.h\"",
       "kind": "include",
       "source": "src/lib/deskflow/ServerApp.cpp",
@@ -8040,6 +8770,126 @@
       "kind": "include",
       "source": "src/lib/deskflow/win32/AppUtilWindows.h",
       "target": "src/lib/deskflow/AppUtil.h"
+    },
+    {
+      "evidence": "#include \"base/Log.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsEdgeDropHost.cpp",
+      "target": "src/lib/base/Log.h"
+    },
+    {
+      "evidence": "#include \"deskflow/win32/MSWindowsEdgeDropHost.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsEdgeDropHost.cpp",
+      "target": "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h"
+    },
+    {
+      "evidence": "#include \"base/DirectionTypes.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+      "target": "src/lib/base/DirectionTypes.h"
+    },
+    {
+      "evidence": "#include \"deskflow/win32/MSWindowsEdgeDropTarget.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+      "target": "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h"
+    },
+    {
+      "evidence": "#include \"deskflow/win32/MSWindowsEdgeDropTarget.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.cpp",
+      "target": "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h"
+    },
+    {
+      "evidence": "#include \"platform/MSWindowsFileTransferSource.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.cpp",
+      "target": "src/lib/platform/MSWindowsFileTransferSource.h"
+    },
+    {
+      "evidence": "#include \"deskflow/EdgeHandoffDecision.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+      "target": "src/lib/deskflow/EdgeHandoffDecision.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferSourceManifest.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+      "target": "src/lib/deskflow/FileTransferSourceManifest.h"
+    },
+    {
+      "evidence": "#include \"platform/MSWindowsFileDropExtractor.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+      "target": "src/lib/platform/MSWindowsFileDropExtractor.h"
+    },
+    {
+      "evidence": "#include \"base/Event.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+      "target": "src/lib/base/Event.h"
+    },
+    {
+      "evidence": "#include \"base/IEventQueue.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+      "target": "src/lib/base/IEventQueue.h"
+    },
+    {
+      "evidence": "#include \"base/Log.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+      "target": "src/lib/base/Log.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlEvent.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+      "target": "src/lib/deskflow/FileTransferControlEvent.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataEvent.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+      "target": "src/lib/deskflow/FileTransferDataEvent.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferSessionState.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+      "target": "src/lib/deskflow/FileTransferSessionState.h"
+    },
+    {
+      "evidence": "#include \"deskflow/win32/MSWindowsFileTransferService.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+      "target": "src/lib/deskflow/win32/MSWindowsFileTransferService.h"
+    },
+    {
+      "evidence": "#include \"platform/MSWindowsFileTransferIo.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+      "target": "src/lib/platform/MSWindowsFileTransferIo.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsFileTransferService.h",
+      "target": "src/lib/deskflow/FileTransferControlCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsFileTransferService.h",
+      "target": "src/lib/deskflow/FileTransferDataCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferSourceManifest.h\"",
+      "kind": "include",
+      "source": "src/lib/deskflow/win32/MSWindowsFileTransferService.h",
+      "target": "src/lib/deskflow/FileTransferSourceManifest.h"
     },
     {
       "evidence": "#include \"Action.h\"",
@@ -10424,6 +11274,48 @@
       "target": "src/lib/base/IEventQueueBuffer.h"
     },
     {
+      "evidence": "#include \"platform/MSWindowsFileDropExtractor.h\"",
+      "kind": "include",
+      "source": "src/lib/platform/MSWindowsFileDropExtractor.cpp",
+      "target": "src/lib/platform/MSWindowsFileDropExtractor.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferOfferValidator.h\"",
+      "kind": "include",
+      "source": "src/lib/platform/MSWindowsFileTransferIo.cpp",
+      "target": "src/lib/deskflow/FileTransferOfferValidator.h"
+    },
+    {
+      "evidence": "#include \"platform/MSWindowsFileTransferIo.h\"",
+      "kind": "include",
+      "source": "src/lib/platform/MSWindowsFileTransferIo.cpp",
+      "target": "src/lib/platform/MSWindowsFileTransferIo.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/platform/MSWindowsFileTransferIo.h",
+      "target": "src/lib/deskflow/FileTransferDataCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferSourceManifest.h\"",
+      "kind": "include",
+      "source": "src/lib/platform/MSWindowsFileTransferIo.h",
+      "target": "src/lib/deskflow/FileTransferSourceManifest.h"
+    },
+    {
+      "evidence": "#include \"platform/MSWindowsFileTransferSource.h\"",
+      "kind": "include",
+      "source": "src/lib/platform/MSWindowsFileTransferSource.cpp",
+      "target": "src/lib/platform/MSWindowsFileTransferSource.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferSourceManifest.h\"",
+      "kind": "include",
+      "source": "src/lib/platform/MSWindowsFileTransferSource.h",
+      "target": "src/lib/deskflow/FileTransferSourceManifest.h"
+    },
+    {
       "evidence": "#include \"base/Log.h\"",
       "kind": "include",
       "source": "src/lib/platform/MSWindowsHandle.h",
@@ -10722,6 +11614,12 @@
       "kind": "include",
       "source": "src/lib/platform/MSWindowsScreen.h",
       "target": "src/lib/deskflow/PlatformScreen.h"
+    },
+    {
+      "evidence": "#include \"deskflow/win32/MSWindowsEdgeDropHost.h\"",
+      "kind": "include",
+      "source": "src/lib/platform/MSWindowsScreen.h",
+      "target": "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h"
     },
     {
       "evidence": "#include \"platform/MSWindowsHook.h\"",
@@ -12008,6 +12906,18 @@
       "target": "src/lib/deskflow/DisplayGeometry.h"
     },
     {
+      "evidence": "#include \"deskflow/FileTransferControlCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/server/BaseClientProxy.h",
+      "target": "src/lib/deskflow/FileTransferControlCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataCodec.h\"",
+      "kind": "include",
+      "source": "src/lib/server/BaseClientProxy.h",
+      "target": "src/lib/deskflow/FileTransferDataCodec.h"
+    },
+    {
       "evidence": "#include \"deskflow/IClient.h\"",
       "kind": "include",
       "source": "src/lib/server/BaseClientProxy.h",
@@ -12246,6 +13156,84 @@
       "kind": "include",
       "source": "src/lib/server/ClientProxy1_11.h",
       "target": "src/lib/server/ClientProxy1_10.h"
+    },
+    {
+      "evidence": "#include \"base/Log.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_12.cpp",
+      "target": "src/lib/base/Log.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlProtocol.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_12.cpp",
+      "target": "src/lib/deskflow/FileTransferControlProtocol.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlRouting.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_12.cpp",
+      "target": "src/lib/deskflow/FileTransferControlRouting.h"
+    },
+    {
+      "evidence": "#include \"deskflow/ProtocolTypes.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_12.cpp",
+      "target": "src/lib/deskflow/ProtocolTypes.h"
+    },
+    {
+      "evidence": "#include \"server/ClientProxy1_12.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_12.cpp",
+      "target": "src/lib/server/ClientProxy1_12.h"
+    },
+    {
+      "evidence": "#include \"server/Server.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_12.cpp",
+      "target": "src/lib/server/Server.h"
+    },
+    {
+      "evidence": "#include \"server/ClientProxy1_11.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_12.h",
+      "target": "src/lib/server/ClientProxy1_11.h"
+    },
+    {
+      "evidence": "#include \"base/Log.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_13.cpp",
+      "target": "src/lib/base/Log.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataProtocol.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_13.cpp",
+      "target": "src/lib/deskflow/FileTransferDataProtocol.h"
+    },
+    {
+      "evidence": "#include \"deskflow/ProtocolTypes.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_13.cpp",
+      "target": "src/lib/deskflow/ProtocolTypes.h"
+    },
+    {
+      "evidence": "#include \"server/ClientProxy1_13.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_13.cpp",
+      "target": "src/lib/server/ClientProxy1_13.h"
+    },
+    {
+      "evidence": "#include \"server/Server.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_13.cpp",
+      "target": "src/lib/server/Server.h"
+    },
+    {
+      "evidence": "#include \"server/ClientProxy1_12.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxy1_13.h",
+      "target": "src/lib/server/ClientProxy1_12.h"
     },
     {
       "evidence": "#include \"base/Log.h\"",
@@ -12572,6 +13560,18 @@
       "target": "src/lib/server/ClientProxy1_11.h"
     },
     {
+      "evidence": "#include \"server/ClientProxy1_12.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxyUnknown.cpp",
+      "target": "src/lib/server/ClientProxy1_12.h"
+    },
+    {
+      "evidence": "#include \"server/ClientProxy1_13.h\"",
+      "kind": "include",
+      "source": "src/lib/server/ClientProxyUnknown.cpp",
+      "target": "src/lib/server/ClientProxy1_13.h"
+    },
+    {
       "evidence": "#include \"server/ClientProxy1_2.h\"",
       "kind": "include",
       "source": "src/lib/server/ClientProxyUnknown.cpp",
@@ -12848,6 +13848,18 @@
       "target": "src/lib/deskflow/DeskflowException.h"
     },
     {
+      "evidence": "#include \"deskflow/FileTransferControlEvent.h\"",
+      "kind": "include",
+      "source": "src/lib/server/Server.cpp",
+      "target": "src/lib/deskflow/FileTransferControlEvent.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataEvent.h\"",
+      "kind": "include",
+      "source": "src/lib/server/Server.cpp",
+      "target": "src/lib/deskflow/FileTransferDataEvent.h"
+    },
+    {
       "evidence": "#include \"deskflow/IPlatformScreen.h\"",
       "kind": "include",
       "source": "src/lib/server/Server.cpp",
@@ -12960,6 +13972,24 @@
       "kind": "include",
       "source": "src/lib/server/Server.h",
       "target": "src/lib/deskflow/ClipboardTypes.h"
+    },
+    {
+      "evidence": "#include \"deskflow/EdgeHandoffDecision.h\"",
+      "kind": "include",
+      "source": "src/lib/server/Server.h",
+      "target": "src/lib/deskflow/EdgeHandoffDecision.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlRouting.h\"",
+      "kind": "include",
+      "source": "src/lib/server/Server.h",
+      "target": "src/lib/deskflow/FileTransferControlRouting.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataRouting.h\"",
+      "kind": "include",
+      "source": "src/lib/server/Server.h",
+      "target": "src/lib/deskflow/FileTransferDataRouting.h"
     },
     {
       "evidence": "#include \"deskflow/InputLanguageTypes.h\"",
@@ -13286,6 +14316,84 @@
       "target": "src/lib/base/Log.h"
     },
     {
+      "evidence": "#include \"deskflow/EdgeHandoffDecision.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/EdgeHandoffDecisionTests.cpp",
+      "target": "src/lib/deskflow/EdgeHandoffDecision.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlCodec.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+      "target": "src/lib/deskflow/FileTransferControlCodec.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlProtocol.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+      "target": "src/lib/deskflow/FileTransferControlProtocol.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferControlRouting.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+      "target": "src/lib/deskflow/FileTransferControlRouting.h"
+    },
+    {
+      "evidence": "#include \"deskflow/ProtocolTypes.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+      "target": "src/lib/deskflow/ProtocolTypes.h"
+    },
+    {
+      "evidence": "#include \"io/IStream.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+      "target": "src/lib/io/IStream.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataProtocol.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+      "target": "src/lib/deskflow/FileTransferDataProtocol.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferDataRouting.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+      "target": "src/lib/deskflow/FileTransferDataRouting.h"
+    },
+    {
+      "evidence": "#include \"deskflow/ProtocolTypes.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+      "target": "src/lib/deskflow/ProtocolTypes.h"
+    },
+    {
+      "evidence": "#include \"io/IStream.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+      "target": "src/lib/io/IStream.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferOfferValidator.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferOfferTests.cpp",
+      "target": "src/lib/deskflow/FileTransferOfferValidator.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferSessionState.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferSessionStateTests.cpp",
+      "target": "src/lib/deskflow/FileTransferSessionState.h"
+    },
+    {
+      "evidence": "#include \"deskflow/FileTransferSourceManifest.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/FileTransferSourceManifestTests.cpp",
+      "target": "src/lib/deskflow/FileTransferSourceManifest.h"
+    },
+    {
       "evidence": "#include \"deskflow/IKeyState.h\"",
       "kind": "include",
       "source": "src/unittests/deskflow/IKeyStateTests.cpp",
@@ -13422,6 +14530,36 @@
       "kind": "include",
       "source": "src/unittests/deskflow/KeyboardLayoutManagerTests.h",
       "target": "src/lib/base/Log.h"
+    },
+    {
+      "evidence": "#include \"base/DirectionTypes.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp",
+      "target": "src/lib/base/DirectionTypes.h"
+    },
+    {
+      "evidence": "#include \"deskflow/win32/MSWindowsEdgeDropHost.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp",
+      "target": "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h"
+    },
+    {
+      "evidence": "#include \"deskflow/win32/MSWindowsEdgeDropTarget.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
+      "target": "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h"
+    },
+    {
+      "evidence": "#include \"deskflow/win32/MSWindowsFileTransferService.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+      "target": "src/lib/deskflow/win32/MSWindowsFileTransferService.h"
+    },
+    {
+      "evidence": "#include \"platform/MSWindowsFileTransferSource.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+      "target": "src/lib/platform/MSWindowsFileTransferSource.h"
     },
     {
       "evidence": "#include \"base/IEventQueue.h\"",
@@ -13880,6 +15018,30 @@
       "target": "src/lib/base/Log.h"
     },
     {
+      "evidence": "#include \"platform/MSWindowsFileDropExtractor.h\"",
+      "kind": "include",
+      "source": "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp",
+      "target": "src/lib/platform/MSWindowsFileDropExtractor.h"
+    },
+    {
+      "evidence": "#include \"platform/MSWindowsFileTransferIo.h\"",
+      "kind": "include",
+      "source": "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+      "target": "src/lib/platform/MSWindowsFileTransferIo.h"
+    },
+    {
+      "evidence": "#include \"platform/MSWindowsFileTransferSource.h\"",
+      "kind": "include",
+      "source": "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+      "target": "src/lib/platform/MSWindowsFileTransferSource.h"
+    },
+    {
+      "evidence": "#include \"platform/MSWindowsFileTransferSource.h\"",
+      "kind": "include",
+      "source": "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp",
+      "target": "src/lib/platform/MSWindowsFileTransferSource.h"
+    },
+    {
       "evidence": "#include \"platform/MSWindowsMouseInput.h\"",
       "kind": "include",
       "source": "src/unittests/platform/MSWindowsMouseInputTests.cpp",
@@ -14301,25 +15463,25 @@
       "binary": false,
       "component": "support:root",
       "language": "markdown",
-      "lineCount": 454,
+      "lineCount": 501,
       "path": "README.en.md",
-      "sizeBytes": 29728
+      "sizeBytes": 33034
     },
     {
       "binary": false,
       "component": "support:root",
       "language": "markdown",
-      "lineCount": 719,
+      "lineCount": 775,
       "path": "README.md",
-      "sizeBytes": 54124
+      "sizeBytes": 57989
     },
     {
       "binary": false,
       "component": "support:root",
       "language": "markdown",
-      "lineCount": 413,
+      "lineCount": 459,
       "path": "README.zh-CN.md",
-      "sizeBytes": 27421
+      "sizeBytes": 30523
     },
     {
       "binary": false,
@@ -14685,9 +15847,9 @@
       "binary": false,
       "component": "support:docs",
       "language": "markdown",
-      "lineCount": 565,
+      "lineCount": 575,
       "path": "docs/dev/protocol_reference.md",
-      "sizeBytes": 32671
+      "sizeBytes": 33662
     },
     {
       "binary": false,
@@ -14709,9 +15871,17 @@
       "binary": false,
       "component": "support:docs",
       "language": "markdown",
-      "lineCount": 53,
+      "lineCount": 285,
+      "path": "docs/product/commercialization-roadmap.md",
+      "sizeBytes": 14964
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 52,
       "path": "docs/release/sponsorship-impact.md",
-      "sizeBytes": 4769
+      "sizeBytes": 4725
     },
     {
       "binary": false,
@@ -14727,7 +15897,79 @@
       "language": "markdown",
       "lineCount": 525,
       "path": "docs/superpowers/plans/2026-08-23-secure-socket-write-reliability.md",
-      "sizeBytes": 18000
+      "sizeBytes": 17961
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 519,
+      "path": "docs/superpowers/plans/2026-08-30-pro-local-file-transfer-foundation.md",
+      "sizeBytes": 17730
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 66,
+      "path": "docs/superpowers/plans/2026-08-30-windows-file-drop-extractor.md",
+      "sizeBytes": 2693
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 28,
+      "path": "docs/superpowers/plans/2026-08-31-file-transfer-control-codec.md",
+      "sizeBytes": 1305
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 28,
+      "path": "docs/superpowers/plans/2026-08-31-file-transfer-control-routing.md",
+      "sizeBytes": 1366
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 36,
+      "path": "docs/superpowers/plans/2026-08-31-file-transfer-session-state.md",
+      "sizeBytes": 1369
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 27,
+      "path": "docs/superpowers/plans/2026-08-31-windows-data-object-bridge.md",
+      "sizeBytes": 1175
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 41,
+      "path": "docs/superpowers/plans/2026-08-31-windows-edge-drop-host.md",
+      "sizeBytes": 2019
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 32,
+      "path": "docs/superpowers/plans/2026-08-31-windows-edge-drop-target.md",
+      "sizeBytes": 1475
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 32,
+      "path": "docs/superpowers/plans/2026-08-31-windows-source-manifest.md",
+      "sizeBytes": 1449
     },
     {
       "binary": false,
@@ -14741,9 +15983,9 @@
       "binary": false,
       "component": "support:docs",
       "language": "markdown",
-      "lineCount": 239,
-      "path": "docs/superpowers/specs/2026-08-23-production-commercialization-roadmap-design.md",
-      "sizeBytes": 12273
+      "lineCount": 342,
+      "path": "docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md",
+      "sizeBytes": 15185
     },
     {
       "binary": false,
@@ -16877,9 +18119,9 @@
       "binary": false,
       "component": "lib:base",
       "language": "c/c++ header",
-      "lineCount": 245,
+      "lineCount": 254,
       "path": "src/lib/base/EventTypes.h",
-      "sizeBytes": 7906
+      "sizeBytes": 8219
     },
     {
       "binary": false,
@@ -17077,33 +18319,33 @@
       "binary": false,
       "component": "lib:client",
       "language": "c++",
-      "lineCount": 788,
+      "lineCount": 798,
       "path": "src/lib/client/Client.cpp",
-      "sizeBytes": 21566
+      "sizeBytes": 21927
     },
     {
       "binary": false,
       "component": "lib:client",
       "language": "c/c++ header",
-      "lineCount": 265,
+      "lineCount": 269,
       "path": "src/lib/client/Client.h",
-      "sizeBytes": 7590
+      "sizeBytes": 7873
     },
     {
       "binary": false,
       "component": "lib:client",
       "language": "c++",
-      "lineCount": 1067,
+      "lineCount": 1120,
       "path": "src/lib/client/ServerProxy.cpp",
-      "sizeBytes": 31280
+      "sizeBytes": 33124
     },
     {
       "binary": false,
       "component": "lib:client",
       "language": "c/c++ header",
-      "lineCount": 158,
+      "lineCount": 164,
       "path": "src/lib/client/ServerProxy.h",
-      "sizeBytes": 4458
+      "sizeBytes": 4812
     },
     {
       "binary": false,
@@ -17237,17 +18479,17 @@
       "binary": false,
       "component": "lib:common",
       "language": "c++",
-      "lineCount": 453,
+      "lineCount": 460,
       "path": "src/lib/common/Settings.cpp",
-      "sizeBytes": 13619
+      "sizeBytes": 13879
     },
     {
       "binary": false,
       "component": "lib:common",
       "language": "c/c++ header",
-      "lineCount": 446,
+      "lineCount": 458,
       "path": "src/lib/common/Settings.h",
-      "sizeBytes": 20763
+      "sizeBytes": 21316
     },
     {
       "binary": false,
@@ -17317,9 +18559,9 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "cmake",
-      "lineCount": 119,
+      "lineCount": 148,
       "path": "src/lib/deskflow/CMakeLists.txt",
-      "sizeBytes": 2217
+      "sizeBytes": 3122
     },
     {
       "binary": false,
@@ -17357,17 +18599,17 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "c++",
-      "lineCount": 423,
+      "lineCount": 468,
       "path": "src/lib/deskflow/ClientApp.cpp",
-      "sizeBytes": 12042
+      "sizeBytes": 13671
     },
     {
       "binary": false,
       "component": "lib:deskflow",
       "language": "c/c++ header",
-      "lineCount": 101,
+      "lineCount": 111,
       "path": "src/lib/deskflow/ClientApp.h",
-      "sizeBytes": 2406
+      "sizeBytes": 2690
     },
     {
       "binary": false,
@@ -17448,6 +18690,190 @@
       "lineCount": 24,
       "path": "src/lib/deskflow/DisplayInvalidException.h",
       "sizeBytes": 529
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 81,
+      "path": "src/lib/deskflow/EdgeHandoffDecision.cpp",
+      "sizeBytes": 2165
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 59,
+      "path": "src/lib/deskflow/EdgeHandoffDecision.h",
+      "sizeBytes": 1466
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 541,
+      "path": "src/lib/deskflow/FileTransferControlCodec.cpp",
+      "sizeBytes": 16603
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 142,
+      "path": "src/lib/deskflow/FileTransferControlCodec.h",
+      "sizeBytes": 3188
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 32,
+      "path": "src/lib/deskflow/FileTransferControlEvent.h",
+      "sizeBytes": 698
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 121,
+      "path": "src/lib/deskflow/FileTransferControlProtocol.cpp",
+      "sizeBytes": 3565
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 50,
+      "path": "src/lib/deskflow/FileTransferControlProtocol.h",
+      "sizeBytes": 1324
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 58,
+      "path": "src/lib/deskflow/FileTransferControlRouting.cpp",
+      "sizeBytes": 1772
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 43,
+      "path": "src/lib/deskflow/FileTransferControlRouting.h",
+      "sizeBytes": 972
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 500,
+      "path": "src/lib/deskflow/FileTransferDataCodec.cpp",
+      "sizeBytes": 15696
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 128,
+      "path": "src/lib/deskflow/FileTransferDataCodec.h",
+      "sizeBytes": 2924
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 26,
+      "path": "src/lib/deskflow/FileTransferDataEvent.h",
+      "sizeBytes": 564
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 120,
+      "path": "src/lib/deskflow/FileTransferDataProtocol.cpp",
+      "sizeBytes": 3578
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 48,
+      "path": "src/lib/deskflow/FileTransferDataProtocol.h",
+      "sizeBytes": 1179
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 36,
+      "path": "src/lib/deskflow/FileTransferDataRouting.cpp",
+      "sizeBytes": 1237
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 20,
+      "path": "src/lib/deskflow/FileTransferDataRouting.h",
+      "sizeBytes": 573
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 194,
+      "path": "src/lib/deskflow/FileTransferOfferValidator.cpp",
+      "sizeBytes": 5397
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 20,
+      "path": "src/lib/deskflow/FileTransferOfferValidator.h",
+      "sizeBytes": 609
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 307,
+      "path": "src/lib/deskflow/FileTransferSessionState.cpp",
+      "sizeBytes": 10481
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 111,
+      "path": "src/lib/deskflow/FileTransferSessionState.h",
+      "sizeBytes": 3143
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 94,
+      "path": "src/lib/deskflow/FileTransferSourceManifest.cpp",
+      "sizeBytes": 2827
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 74,
+      "path": "src/lib/deskflow/FileTransferSourceManifest.h",
+      "sizeBytes": 1711
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 82,
+      "path": "src/lib/deskflow/FileTransferTypes.h",
+      "sizeBytes": 1659
     },
     {
       "binary": false,
@@ -17677,17 +19103,17 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "c++",
-      "lineCount": 53,
+      "lineCount": 55,
       "path": "src/lib/deskflow/ProtocolTypes.cpp",
-      "sizeBytes": 2468
+      "sizeBytes": 2575
     },
     {
       "binary": false,
       "component": "lib:deskflow",
       "language": "c/c++ header",
-      "lineCount": 1439,
+      "lineCount": 1475,
       "path": "src/lib/deskflow/ProtocolTypes.h",
-      "sizeBytes": 40702
+      "sizeBytes": 41950
     },
     {
       "binary": false,
@@ -17741,17 +19167,17 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "c++",
-      "lineCount": 607,
+      "lineCount": 681,
       "path": "src/lib/deskflow/ServerApp.cpp",
-      "sizeBytes": 16604
+      "sizeBytes": 19670
     },
     {
       "binary": false,
       "component": "lib:deskflow",
       "language": "c/c++ header",
-      "lineCount": 119,
+      "lineCount": 129,
       "path": "src/lib/deskflow/ServerApp.h",
-      "sizeBytes": 3001
+      "sizeBytes": 3307
     },
     {
       "binary": false,
@@ -17904,6 +19330,54 @@
       "lineCount": 57,
       "path": "src/lib/deskflow/win32/AppUtilWindows.h",
       "sizeBytes": 1326
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 177,
+      "path": "src/lib/deskflow/win32/MSWindowsEdgeDropHost.cpp",
+      "sizeBytes": 5369
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 156,
+      "path": "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
+      "sizeBytes": 4814
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 260,
+      "path": "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.cpp",
+      "sizeBytes": 6500
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 102,
+      "path": "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
+      "sizeBytes": 3340
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c++",
+      "lineCount": 490,
+      "path": "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+      "sizeBytes": 17472
+    },
+    {
+      "binary": false,
+      "component": "lib:deskflow",
+      "language": "c/c++ header",
+      "lineCount": 70,
+      "path": "src/lib/deskflow/win32/MSWindowsFileTransferService.h",
+      "sizeBytes": 2356
     },
     {
       "binary": false,
@@ -18421,25 +19895,25 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 860,
+      "lineCount": 915,
       "path": "src/lib/gui/dialogs/SettingsDialog.cpp",
-      "sizeBytes": 41863
+      "sizeBytes": 45448
     },
     {
       "binary": false,
       "component": "lib:gui",
       "language": "c/c++ header",
-      "lineCount": 105,
+      "lineCount": 107,
       "path": "src/lib/gui/dialogs/SettingsDialog.h",
-      "sizeBytes": 2901
+      "sizeBytes": 2976
     },
     {
       "binary": false,
       "component": "lib:gui",
       "language": "qt-ui",
-      "lineCount": 1077,
+      "lineCount": 1210,
       "path": "src/lib/gui/dialogs/SettingsDialog.ui",
-      "sizeBytes": 34546
+      "sizeBytes": 38821
     },
     {
       "binary": false,
@@ -19237,9 +20711,9 @@
       "binary": false,
       "component": "lib:platform",
       "language": "cmake",
-      "lineCount": 219,
+      "lineCount": 225,
       "path": "src/lib/platform/CMakeLists.txt",
-      "sizeBytes": 6512
+      "sizeBytes": 6733
     },
     {
       "binary": false,
@@ -19476,6 +20950,54 @@
     {
       "binary": false,
       "component": "lib:platform",
+      "language": "c++",
+      "lineCount": 116,
+      "path": "src/lib/platform/MSWindowsFileDropExtractor.cpp",
+      "sizeBytes": 3400
+    },
+    {
+      "binary": false,
+      "component": "lib:platform",
+      "language": "c/c++ header",
+      "lineCount": 60,
+      "path": "src/lib/platform/MSWindowsFileDropExtractor.h",
+      "sizeBytes": 1318
+    },
+    {
+      "binary": false,
+      "component": "lib:platform",
+      "language": "c++",
+      "lineCount": 639,
+      "path": "src/lib/platform/MSWindowsFileTransferIo.cpp",
+      "sizeBytes": 20279
+    },
+    {
+      "binary": false,
+      "component": "lib:platform",
+      "language": "c/c++ header",
+      "lineCount": 135,
+      "path": "src/lib/platform/MSWindowsFileTransferIo.h",
+      "sizeBytes": 3522
+    },
+    {
+      "binary": false,
+      "component": "lib:platform",
+      "language": "c++",
+      "lineCount": 174,
+      "path": "src/lib/platform/MSWindowsFileTransferSource.cpp",
+      "sizeBytes": 5537
+    },
+    {
+      "binary": false,
+      "component": "lib:platform",
+      "language": "c/c++ header",
+      "lineCount": 47,
+      "path": "src/lib/platform/MSWindowsFileTransferSource.h",
+      "sizeBytes": 1103
+    },
+    {
+      "binary": false,
+      "component": "lib:platform",
       "language": "c/c++ header",
       "lineCount": 48,
       "path": "src/lib/platform/MSWindowsHandle.h",
@@ -19573,17 +21095,17 @@
       "binary": false,
       "component": "lib:platform",
       "language": "c++",
-      "lineCount": 1904,
+      "lineCount": 1957,
       "path": "src/lib/platform/MSWindowsScreen.cpp",
-      "sizeBytes": 57205
+      "sizeBytes": 58747
     },
     {
       "binary": false,
       "component": "lib:platform",
       "language": "c/c++ header",
-      "lineCount": 354,
+      "lineCount": 366,
       "path": "src/lib/platform/MSWindowsScreen.h",
-      "sizeBytes": 11041
+      "sizeBytes": 11559
     },
     {
       "binary": false,
@@ -20253,17 +21775,17 @@
       "binary": false,
       "component": "lib:server",
       "language": "c/c++ header",
-      "lineCount": 109,
+      "lineCount": 119,
       "path": "src/lib/server/BaseClientProxy.h",
-      "sizeBytes": 3343
+      "sizeBytes": 3678
     },
     {
       "binary": false,
       "component": "lib:server",
       "language": "cmake",
-      "lineCount": 54,
+      "lineCount": 58,
       "path": "src/lib/server/CMakeLists.txt",
-      "sizeBytes": 1137
+      "sizeBytes": 1221
     },
     {
       "binary": false,
@@ -20360,6 +21882,38 @@
       "lineCount": 34,
       "path": "src/lib/server/ClientProxy1_11.h",
       "sizeBytes": 840
+    },
+    {
+      "binary": false,
+      "component": "lib:server",
+      "language": "c++",
+      "lineCount": 72,
+      "path": "src/lib/server/ClientProxy1_12.cpp",
+      "sizeBytes": 2122
+    },
+    {
+      "binary": false,
+      "component": "lib:server",
+      "language": "c/c++ header",
+      "lineCount": 29,
+      "path": "src/lib/server/ClientProxy1_12.h",
+      "sizeBytes": 727
+    },
+    {
+      "binary": false,
+      "component": "lib:server",
+      "language": "c++",
+      "lineCount": 71,
+      "path": "src/lib/server/ClientProxy1_13.cpp",
+      "sizeBytes": 2037
+    },
+    {
+      "binary": false,
+      "component": "lib:server",
+      "language": "c/c++ header",
+      "lineCount": 29,
+      "path": "src/lib/server/ClientProxy1_13.h",
+      "sizeBytes": 718
     },
     {
       "binary": false,
@@ -20493,9 +22047,9 @@
       "binary": false,
       "component": "lib:server",
       "language": "c++",
-      "lineCount": 277,
+      "lineCount": 287,
       "path": "src/lib/server/ClientProxyUnknown.cpp",
-      "sizeBytes": 7972
+      "sizeBytes": 8244
     },
     {
       "binary": false,
@@ -20565,17 +22119,17 @@
       "binary": false,
       "component": "lib:server",
       "language": "c++",
-      "lineCount": 2269,
+      "lineCount": 2366,
       "path": "src/lib/server/Server.cpp",
-      "sizeBytes": 68914
+      "sizeBytes": 72366
     },
     {
       "binary": false,
       "component": "lib:server",
       "language": "c/c++ header",
-      "lineCount": 492,
+      "lineCount": 506,
       "path": "src/lib/server/Server.h",
-      "sizeBytes": 15193
+      "sizeBytes": 16114
     },
     {
       "binary": false,
@@ -20797,9 +22351,9 @@
       "binary": false,
       "component": "test:deskflow",
       "language": "cmake",
-      "lineCount": 96,
+      "lineCount": 178,
       "path": "src/unittests/deskflow/CMakeLists.txt",
-      "sizeBytes": 2148
+      "sizeBytes": 4200
     },
     {
       "binary": false,
@@ -20856,6 +22410,62 @@
       "lineCount": 32,
       "path": "src/unittests/deskflow/ClipboardTests.h",
       "sizeBytes": 746
+    },
+    {
+      "binary": false,
+      "component": "test:deskflow",
+      "language": "c++",
+      "lineCount": 152,
+      "path": "src/unittests/deskflow/EdgeHandoffDecisionTests.cpp",
+      "sizeBytes": 5115
+    },
+    {
+      "binary": false,
+      "component": "test:deskflow",
+      "language": "c++",
+      "lineCount": 230,
+      "path": "src/unittests/deskflow/FileTransferControlCodecTests.cpp",
+      "sizeBytes": 8750
+    },
+    {
+      "binary": false,
+      "component": "test:deskflow",
+      "language": "c++",
+      "lineCount": 271,
+      "path": "src/unittests/deskflow/FileTransferControlProtocolTests.cpp",
+      "sizeBytes": 8694
+    },
+    {
+      "binary": false,
+      "component": "test:deskflow",
+      "language": "c++",
+      "lineCount": 340,
+      "path": "src/unittests/deskflow/FileTransferDataProtocolTests.cpp",
+      "sizeBytes": 10576
+    },
+    {
+      "binary": false,
+      "component": "test:deskflow",
+      "language": "c++",
+      "lineCount": 292,
+      "path": "src/unittests/deskflow/FileTransferOfferTests.cpp",
+      "sizeBytes": 10713
+    },
+    {
+      "binary": false,
+      "component": "test:deskflow",
+      "language": "c++",
+      "lineCount": 237,
+      "path": "src/unittests/deskflow/FileTransferSessionStateTests.cpp",
+      "sizeBytes": 8691
+    },
+    {
+      "binary": false,
+      "component": "test:deskflow",
+      "language": "c++",
+      "lineCount": 133,
+      "path": "src/unittests/deskflow/FileTransferSourceManifestTests.cpp",
+      "sizeBytes": 6037
     },
     {
       "binary": false,
@@ -20936,6 +22546,30 @@
       "lineCount": 25,
       "path": "src/unittests/deskflow/KeyboardLayoutManagerTests.h",
       "sizeBytes": 545
+    },
+    {
+      "binary": false,
+      "component": "test:deskflow",
+      "language": "c++",
+      "lineCount": 112,
+      "path": "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp",
+      "sizeBytes": 3895
+    },
+    {
+      "binary": false,
+      "component": "test:deskflow",
+      "language": "c++",
+      "lineCount": 335,
+      "path": "src/unittests/deskflow/MSWindowsEdgeDropTargetTests.cpp",
+      "sizeBytes": 11833
+    },
+    {
+      "binary": false,
+      "component": "test:deskflow",
+      "language": "c++",
+      "lineCount": 279,
+      "path": "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+      "sizeBytes": 9099
     },
     {
       "binary": false,
@@ -21373,9 +23007,9 @@
       "binary": false,
       "component": "test:platform",
       "language": "cmake",
-      "lineCount": 51,
+      "lineCount": 72,
       "path": "src/unittests/platform/CMakeLists.txt",
-      "sizeBytes": 1306
+      "sizeBytes": 1926
     },
     {
       "binary": false,
@@ -21392,6 +23026,30 @@
       "lineCount": 36,
       "path": "src/unittests/platform/MSWindowsClipboardTests.h",
       "sizeBytes": 908
+    },
+    {
+      "binary": false,
+      "component": "test:platform",
+      "language": "c++",
+      "lineCount": 506,
+      "path": "src/unittests/platform/MSWindowsFileDropExtractorTests.cpp",
+      "sizeBytes": 15534
+    },
+    {
+      "binary": false,
+      "component": "test:platform",
+      "language": "c++",
+      "lineCount": 414,
+      "path": "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
+      "sizeBytes": 15538
+    },
+    {
+      "binary": false,
+      "component": "test:platform",
+      "language": "c++",
+      "lineCount": 194,
+      "path": "src/unittests/platform/MSWindowsFileTransferSourceTests.cpp",
+      "sizeBytes": 6641
     },
     {
       "binary": false,
@@ -21637,9 +23295,9 @@
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1917,
+      "lineCount": 1961,
       "path": "translations/deskflow_ko.ts",
-      "sizeBytes": 85277
+      "sizeBytes": 87306
     },
     {
       "binary": false,
@@ -21653,27 +23311,27 @@
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1913,
+      "lineCount": 1957,
       "path": "translations/deskflow_zh_CN.ts",
-      "sizeBytes": 79775
+      "sizeBytes": 81666
     }
   ],
   "revision": {
-    "branch": "fix/tailscale-async-query",
-    "commit": "54830a475e08eb2daafae96e5a58a908457db49a",
-    "dirtyTrackedFiles": true
+    "branch": "feat/pro-file-transfer-service",
+    "commit": "66a5c7f7ecf38cb6b7dfc5560d86b85214893405",
+    "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
   "summary": {
-    "componentEdges": 97,
+    "componentEdges": 98,
     "components": 42,
     "excludedFiles": 3,
-    "fileIncludeEdges": 1416,
-    "representedFiles": 957,
-    "sourceFiles": 598,
-    "sourceLines": 97501,
-    "targets": 66,
-    "trackedFiles": 960
+    "fileIncludeEdges": 1533,
+    "representedFiles": 1019,
+    "sourceFiles": 650,
+    "sourceLines": 107041,
+    "targets": 79,
+    "trackedFiles": 1022
   },
   "targets": [
     {
@@ -21719,6 +23377,12 @@
       "source": "src/unittests/gui/CMakeLists.txt"
     },
     {
+      "component": "test:deskflow",
+      "kind": "test",
+      "name": "EdgeHandoffDecisionTests",
+      "source": "src/unittests/deskflow/CMakeLists.txt"
+    },
+    {
       "component": "test:base",
       "kind": "test",
       "name": "EventQueueTests",
@@ -21729,6 +23393,42 @@
       "kind": "test",
       "name": "FileTailTests",
       "source": "src/unittests/gui/CMakeLists.txt"
+    },
+    {
+      "component": "test:deskflow",
+      "kind": "test",
+      "name": "FileTransferControlCodecTests",
+      "source": "src/unittests/deskflow/CMakeLists.txt"
+    },
+    {
+      "component": "test:deskflow",
+      "kind": "test",
+      "name": "FileTransferControlProtocolTests",
+      "source": "src/unittests/deskflow/CMakeLists.txt"
+    },
+    {
+      "component": "test:deskflow",
+      "kind": "test",
+      "name": "FileTransferDataProtocolTests",
+      "source": "src/unittests/deskflow/CMakeLists.txt"
+    },
+    {
+      "component": "test:deskflow",
+      "kind": "test",
+      "name": "FileTransferOfferTests",
+      "source": "src/unittests/deskflow/CMakeLists.txt"
+    },
+    {
+      "component": "test:deskflow",
+      "kind": "test",
+      "name": "FileTransferSessionStateTests",
+      "source": "src/unittests/deskflow/CMakeLists.txt"
+    },
+    {
+      "component": "test:deskflow",
+      "kind": "test",
+      "name": "FileTransferSourceManifestTests",
+      "source": "src/unittests/deskflow/CMakeLists.txt"
     },
     {
       "component": "test:net",
@@ -21824,6 +23524,42 @@
       "component": "test:platform",
       "kind": "test",
       "name": "MSWindowsClipboardTests",
+      "source": "src/unittests/platform/CMakeLists.txt"
+    },
+    {
+      "component": "test:deskflow",
+      "kind": "test",
+      "name": "MSWindowsEdgeDropHostTests",
+      "source": "src/unittests/deskflow/CMakeLists.txt"
+    },
+    {
+      "component": "test:deskflow",
+      "kind": "test",
+      "name": "MSWindowsEdgeDropTargetTests",
+      "source": "src/unittests/deskflow/CMakeLists.txt"
+    },
+    {
+      "component": "test:platform",
+      "kind": "test",
+      "name": "MSWindowsFileDropExtractorTests",
+      "source": "src/unittests/platform/CMakeLists.txt"
+    },
+    {
+      "component": "test:platform",
+      "kind": "test",
+      "name": "MSWindowsFileTransferIoTests",
+      "source": "src/unittests/platform/CMakeLists.txt"
+    },
+    {
+      "component": "test:deskflow",
+      "kind": "test",
+      "name": "MSWindowsFileTransferServiceTests",
+      "source": "src/unittests/deskflow/CMakeLists.txt"
+    },
+    {
+      "component": "test:platform",
+      "kind": "test",
+      "name": "MSWindowsFileTransferSourceTests",
       "source": "src/unittests/platform/CMakeLists.txt"
     },
     {
@@ -22117,6 +23853,14 @@
     {
       "include": "ClientReconnectPolicyTests.moc",
       "source": "src/unittests/deskflow/ClientReconnectPolicyTests.cpp"
+    },
+    {
+      "include": "EdgeHandoffDecisionTests.moc",
+      "source": "src/unittests/deskflow/EdgeHandoffDecisionTests.cpp"
+    },
+    {
+      "include": "FileTransferOfferTests.moc",
+      "source": "src/unittests/deskflow/FileTransferOfferTests.cpp"
     },
     {
       "include": "FileTailTests.moc",
