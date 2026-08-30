@@ -194,6 +194,22 @@ class PublicPrivacyGuardTests(unittest.TestCase):
             )
         )
 
+        source_zip = io.BytesIO()
+        with zipfile.ZipFile(source_zip, "w") as archive:
+            archive.writestr("source/target.txt", "clean")
+            link = zipfile.ZipInfo("source/link.txt")
+            link.create_system = 3
+            link.external_attr = (stat.S_IFLNK | 0o777) << 16
+            archive.writestr(link, "target.txt")
+        self.assertTrue(
+            scanner.scan_archive(
+                state,
+                source_zip.getvalue(),
+                "source.zip",
+                allow_safe_links=True,
+            )
+        )
+
         escaping = io.BytesIO()
         with tarfile.open(fileobj=escaping, mode="w") as archive:
             link = tarfile.TarInfo("files/lib/escape")
@@ -464,8 +480,25 @@ class PublicPrivacyGuardTests(unittest.TestCase):
         else:
             add_zip(package, [("payload.txt", b"clean package")])
         checksum.write_text(f"{sha256(package)}  {package.name}\n", encoding="utf-8")
-        add_zip(source_zip, [("source/file.txt", b"clean source")])
-        source_tar.write_bytes(tar_gz_bytes([("source/file.txt", b"clean source")]))
+        with zipfile.ZipFile(
+            source_zip, "w", compression=zipfile.ZIP_DEFLATED
+        ) as archive:
+            archive.writestr("source/file.txt", b"clean source")
+            link = zipfile.ZipInfo("source/file-link.txt")
+            link.create_system = 3
+            link.external_attr = (stat.S_IFLNK | 0o777) << 16
+            archive.writestr(link, "file.txt")
+        source_buffer = io.BytesIO()
+        with tarfile.open(fileobj=source_buffer, mode="w:gz") as archive:
+            payload = b"clean source"
+            regular = tarfile.TarInfo("source/file.txt")
+            regular.size = len(payload)
+            archive.addfile(regular, io.BytesIO(payload))
+            link = tarfile.TarInfo("source/file-link.txt")
+            link.type = tarfile.SYMTYPE
+            link.linkname = "file.txt"
+            archive.addfile(link)
+        source_tar.write_bytes(source_buffer.getvalue())
         return body, notes, package, checksum, source_zip, source_tar
 
     def release_command(self, manifest, inputs, *extra):

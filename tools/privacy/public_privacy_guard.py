@@ -32,7 +32,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple
 
 
-SCANNER_VERSION = "1.0.0"
+SCANNER_VERSION = "1.1.0"
 DENY_MAP_SCHEMA = "ieum.private-deny-map.v1"
 MANIFEST_SCHEMA = "ieum.public-surface-manifest.v1"
 ZERO_OIDS = {"0" * 40, "0" * 64}
@@ -645,38 +645,46 @@ def scan_external_package(
         raise CoverageError("unsupported package inspection tool")
 
 
+def resolve_link_name(
+    member_name: str,
+    link_name: str,
+    hardlink: bool,
+    member_names: Set[str],
+) -> str:
+    normalized = link_name.replace("\\", "/")
+    if (
+        not normalized
+        or "\x00" in normalized
+        or normalized.startswith("/")
+        or re.match(r"^[A-Za-z]:/", normalized)
+    ):
+        raise CoverageError("archive contains an unsafe link target")
+    parts = [] if hardlink else list(PurePosixPath(member_name).parent.parts)
+    for part in PurePosixPath(normalized).parts:
+        if part in {"", "."}:
+            continue
+        if part == "..":
+            if not parts:
+                raise CoverageError("archive link target escapes the archive root")
+            parts.pop()
+        else:
+            parts.append(part)
+    resolved_target = "/".join(parts)
+    if not resolved_target or resolved_target not in member_names:
+        raise CoverageError("archive link target is missing")
+    return resolved_target
+
+
 def resolve_archive_link(
     member_name: str,
     link_name: str,
     hardlink: bool,
     members: Dict[str, tarfile.TarInfo],
 ) -> str:
-    def resolve_once(name: str, target: str, is_hardlink: bool) -> str:
-        normalized = target.replace("\\", "/")
-        if (
-            not normalized
-            or "\x00" in normalized
-            or normalized.startswith("/")
-            or re.match(r"^[A-Za-z]:/", normalized)
-        ):
-            raise CoverageError("archive contains an unsafe link target")
-        parts = [] if is_hardlink else list(PurePosixPath(name).parent.parts)
-        for part in PurePosixPath(normalized).parts:
-            if part in {"", "."}:
-                continue
-            if part == "..":
-                if not parts:
-                    raise CoverageError("archive link target escapes the archive root")
-                parts.pop()
-            else:
-                parts.append(part)
-        resolved_target = "/".join(parts)
-        if not resolved_target or resolved_target not in members:
-            raise CoverageError("archive link target is missing")
-        return resolved_target
 
     visited = {member_name}
-    first = resolve_once(member_name, link_name, hardlink)
+    names = set(members)
+    first = resolve_link_name(member_name, link_name, hardlink, names)
     current = first
     while True:
         if current in visited:
@@ -687,11 +695,29 @@ def resolve_archive_link(
             return first
         if not (info.issym() or info.islnk()):
             raise CoverageError("archive link resolves to an unsupported member")
-        current = resolve_once(
+        current = resolve_link_name(
             current,
             info.linkname,
             info.islnk(),
+            names,
         )
+
+
+def resolve_zip_link(
+    member_name: str,
+    link_name: str,
+    links: Dict[str, str],
+    member_names: Set[str],
+) -> str:
+    visited = {member_name}
+    first = resolve_link_name(member_name, link_name, False, member_names)
+    current = first
+    while current in links:
+        if current in visited:
+            raise CoverageError("archive contains a link cycle")
+        visited.add(current)
+        current = resolve_link_name(current, links[current], False, member_names)
+    return first
 
 
 def scan_archive(
@@ -717,25 +743,63 @@ def scan_archive(
         child = target + "!/payload"
         state.archive_members += 1
         scan_bytes(state, member, child, "archive-member")
-        scan_archive(state, member, child, depth + 1)
+        scan_archive(
+            state,
+            member,
+            child,
+            depth + 1,
+            allow_safe_links=allow_safe_links,
+        )
         return True
     if kind == "zip":
         try:
             with zipfile.ZipFile(io.BytesIO(data)) as archive:
                 infos = sorted(archive.infolist(), key=lambda item: item.filename)
                 seen: Set[str] = set()
+                named_infos: List[Tuple[zipfile.ZipInfo, str]] = []
+                link_data: Dict[str, bytes] = {}
+                link_targets: Dict[str, str] = {}
                 for info in infos:
                     name = safe_member_name(info.filename)
                     if name in seen:
                         raise CoverageError("archive contains duplicate member paths")
                     seen.add(name)
-                    mode = (info.external_attr >> 16) & 0xFFFF
-                    if stat.S_ISLNK(mode):
-                        raise CoverageError("archive contains a symlink member")
                     if info.flag_bits & 0x1:
                         raise CoverageError("archive contains an encrypted member")
+                    named_infos.append((info, name))
+                    mode = (info.external_attr >> 16) & 0xFFFF
+                    if not stat.S_ISLNK(mode):
+                        continue
+                    if not allow_safe_links:
+                        raise CoverageError("archive contains a symlink member")
+                    if info.file_size > state.limits.max_member_bytes:
+                        raise CoverageError("archive member exceeds configured byte limit")
+                    try:
+                        member = archive.read(info)
+                    except (OSError, RuntimeError, zipfile.BadZipFile) as exc:
+                        raise CoverageError("archive member is unreadable") from exc
+                    try:
+                        link_name = member.decode("utf-8", errors="strict")
+                    except UnicodeDecodeError as exc:
+                        raise CoverageError("archive link target is undecodable") from exc
+                    link_data[name] = member
+                    link_targets[name] = link_name
+
+                for name, link_name in link_targets.items():
+                    resolve_zip_link(name, link_name, link_targets, seen)
+
+                for info, name in named_infos:
+                    mode = (info.external_attr >> 16) & 0xFFFF
+                    if stat.S_ISLNK(mode):
+                        child = target + "!/" + name + "!/link-target"
+                        state.archive_members += 1
+                        scan_bytes(state, link_data[name], child, "archive-link")
+                        continue
                     if info.is_dir():
                         continue
+                    file_type = stat.S_IFMT(mode)
+                    if file_type not in {0, stat.S_IFREG}:
+                        raise CoverageError("archive contains an unsupported member type")
                     if info.file_size > state.limits.max_member_bytes:
                         raise CoverageError("archive member exceeds configured byte limit")
                     try:
@@ -745,7 +809,13 @@ def scan_archive(
                     child = target + "!/" + name
                     state.archive_members += 1
                     scan_bytes(state, member, child, "archive-member")
-                    scan_archive(state, member, child, depth + 1)
+                    scan_archive(
+                        state,
+                        member,
+                        child,
+                        depth + 1,
+                        allow_safe_links=allow_safe_links,
+                    )
         except zipfile.BadZipFile as exc:
             raise CoverageError("zip archive is unreadable") from exc
         return True
@@ -791,7 +861,13 @@ def scan_archive(
                 child = target + "!/" + name
                 state.archive_members += 1
                 scan_bytes(state, member, child, "archive-member")
-                scan_archive(state, member, child, depth + 1)
+                scan_archive(
+                    state,
+                    member,
+                    child,
+                    depth + 1,
+                    allow_safe_links=allow_safe_links,
+                )
     except (tarfile.TarError, EOFError, OSError) as exc:
         raise CoverageError("tar archive is unreadable") from exc
     return True
@@ -805,6 +881,7 @@ def scan_file(
     *,
     depth: int = 0,
     target: Optional[str] = None,
+    allow_safe_links: bool = False,
 ) -> None:
     try:
         metadata = path.lstat()
@@ -817,7 +894,13 @@ def scan_file(
     data = path.read_bytes()
     scan_target = target if target is not None else str(path.resolve())
     scan_bytes(state, data, scan_target, target_kind)
-    expanded = scan_archive(state, data, scan_target, depth)
+    expanded = scan_archive(
+        state,
+        data,
+        scan_target,
+        depth,
+        allow_safe_links=allow_safe_links,
+    )
     if not expanded:
         external_kind = external_package_kind(path, data)
         if external_kind is not None:
@@ -1097,7 +1180,13 @@ def scan_release_inputs(args: argparse.Namespace, state: ScanState) -> None:
     for path in checksums:
         scan_file(state, path, "checksum-manifest")
     for path in sources:
-        scan_file(state, path, "generated-source-archive", must_expand=True)
+        scan_file(
+            state,
+            path,
+            "generated-source-archive",
+            must_expand=True,
+            allow_safe_links=True,
+        )
     for path in responses:
         scan_file(state, path, "response-identity")
 

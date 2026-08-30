@@ -49,9 +49,10 @@ object. ZIP and tar-family archives use the standard-library decoder. Release
 packages additionally use bounded `zstd` and 7-Zip processes; Flatpak bundles
 are imported into a temporary OSTree repository and exported as a tar stream.
 Those helpers run with an isolated home, a 120-second deadline, the configured
-per-file limit, and no inherited Git controls. Flatpak and DMG links are accepted
-only when they resolve inside the extracted package; their link text is scanned
-as release data. Unsupported, encrypted, unsafe or unresolved linked,
+per-file limit, and no inherited Git controls. Flatpak, DMG, and
+provider-generated source archive links are accepted only when they resolve
+inside the extracted package or archive; their link text is scanned as release
+data. Unsupported, encrypted, unsafe or unresolved linked,
 unreadable, traversing, nested beyond the declared limit, or oversized archive
 material is `unverified` and blocks publication.
 
