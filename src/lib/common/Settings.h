@@ -91,6 +91,12 @@ public:
     inline static const auto LogFile = QStringLiteral("daemon/logFile");
     inline static const auto LogLevel = QStringLiteral("daemon/logLevel");
   };
+  struct FileTransfer
+  {
+    inline static const auto Enabled = QStringLiteral("fileTransfer/enabled");
+    inline static const auto ReceiveEnabled = QStringLiteral("fileTransfer/receiveEnabled");
+    inline static const auto DownloadDirectory = QStringLiteral("fileTransfer/downloadDirectory");
+  };
   struct Gui
   {
     inline static const auto Autohide = QStringLiteral("gui/autoHide");
@@ -261,6 +267,7 @@ private:
       QStringLiteral("client")
     , QStringLiteral("core")
     , QStringLiteral("daemon")
+    , QStringLiteral("fileTransfer")
     , QStringLiteral("gui")
     , QStringLiteral("log")
     , QStringLiteral("security")
@@ -307,6 +314,9 @@ private:
     , Settings::Daemon::Elevate
     , Settings::Daemon::LogFile
     , Settings::Daemon::LogLevel
+    , Settings::FileTransfer::Enabled
+    , Settings::FileTransfer::ReceiveEnabled
+    , Settings::FileTransfer::DownloadDirectory
     , Settings::Log::File
     , Settings::Log::Level
     , Settings::Log::ToFile
@@ -366,6 +376,8 @@ private:
     , Settings::Client::DynamicConnectionRetry
     , Settings::Client::InvertYScroll
     , Settings::Client::InvertXScroll
+    , Settings::FileTransfer::Enabled
+    , Settings::FileTransfer::ReceiveEnabled
     , Settings::Log::ToFile
     , Settings::Log::GuiDebug
     , Settings::Server::DefaultLockToComputerState

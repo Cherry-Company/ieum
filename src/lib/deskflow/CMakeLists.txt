@@ -14,6 +14,8 @@ if(WIN32)
     win32/MSWindowsEdgeDropHost.h
     win32/MSWindowsEdgeDropTarget.cpp
     win32/MSWindowsEdgeDropTarget.h
+    win32/MSWindowsFileTransferService.cpp
+    win32/MSWindowsFileTransferService.h
   )
 elseif(UNIX)
   set(PLATFORM_CODE

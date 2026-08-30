@@ -381,9 +381,8 @@ Server::sendFileTransferControl(const deskflow::filetransfer::FileTransferContro
   return routeFileTransferControl(m_primaryClient, message);
 }
 
-deskflow::filetransfer::FileTransferRouteResult Server::routeFileTransferData(
-    BaseClientProxy *sender, const deskflow::filetransfer::FileTransferDataMessage &message
-)
+deskflow::filetransfer::FileTransferRouteResult
+Server::routeFileTransferData(BaseClientProxy *sender, const deskflow::filetransfer::FileTransferDataMessage &message)
 {
   auto route = deskflow::filetransfer::resolveFileTransferDataDestination(message, getName(sender));
   if (!route.ok()) {
@@ -430,7 +429,7 @@ Server::resolveFileTransferEdgeTarget(Direction direction, int32_t x, int32_t y)
 
   auto *target = getNeighbor(m_primaryClient, direction, x, y);
   if (target == nullptr || target == m_primaryClient ||
-      target->protocolMinorVersion() < kProtocolFileTransferControlMinorVersion) {
+      target->protocolMinorVersion() < kProtocolFileTransferDataMinorVersion) {
     return std::nullopt;
   }
 

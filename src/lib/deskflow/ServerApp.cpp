@@ -32,6 +32,7 @@
 #include <QFileInfo>
 
 #if defined(Q_OS_WIN)
+#include "deskflow/win32/MSWindowsFileTransferService.h"
 #include "platform/MSWindowsScreen.h"
 #endif
 
@@ -60,6 +61,8 @@ ServerApp::ServerApp(IEventQueue *events, const QString &processName) : App(even
   m_name = Settings::value(Settings::Core::ComputerName).toString().toStdString();
   // do nothing
 }
+
+ServerApp::~ServerApp() = default;
 
 void ServerApp::parseArgs()
 {
@@ -202,6 +205,9 @@ void ServerApp::stopServer()
 {
   using enum ServerState;
   if (m_serverState == Started) {
+#if defined(Q_OS_WIN)
+    stopFileTransferService();
+#endif
     closeServer(m_server);
     closeClientListener(m_listener);
     m_server = nullptr;
@@ -375,6 +381,9 @@ bool ServerApp::startServer()
     listener->setServer(m_server);
     m_server->setListener(listener);
     m_listener = listener;
+#if defined(Q_OS_WIN)
+    startFileTransferService();
+#endif
     LOG_DEBUG("started server, waiting for clients");
     ipcSendConnectionState(deskflow::core::ConnectionState::Listening);
     m_serverState = Started;
@@ -390,6 +399,71 @@ bool ServerApp::startServer()
 
   return false;
 }
+
+#if defined(Q_OS_WIN)
+void ServerApp::startFileTransferService()
+{
+  stopFileTransferService();
+  const auto tlsEnabled = Settings::value(Settings::Security::TlsEnabled).toBool();
+  const auto sendEnabled = Settings::value(Settings::FileTransfer::Enabled).toBool();
+  const auto receiveEnabled = Settings::value(Settings::FileTransfer::ReceiveEnabled).toBool();
+  if (!tlsEnabled || (!sendEnabled && !receiveEnabled) || m_server == nullptr || m_primaryClient == nullptr) {
+    return;
+  }
+
+  m_fileTransferService = std::make_unique<deskflow::filetransfer::MSWindowsFileTransferService>(
+      deskflow::filetransfer::MSWindowsFileTransferServiceOptions{
+          .localScreen = m_name,
+          .destinationDirectory = Settings::value(Settings::FileTransfer::DownloadDirectory).toString().toStdWString(),
+          .receiveEnabled = receiveEnabled,
+          .sendControl = [this](
+                             const deskflow::filetransfer::FileTransferControlMessage &message
+                         ) { return m_server != nullptr && m_server->sendFileTransferControl(message).ok(); },
+          .sendData = [this](
+                          const deskflow::filetransfer::FileTransferDataMessage &message
+                      ) { return m_server != nullptr && m_server->sendFileTransferData(message).ok(); },
+          .events = getEvents(),
+          .eventTarget = m_primaryClient->getEventTarget(),
+      }
+  );
+
+  if (!sendEnabled) {
+    return;
+  }
+  auto *windowsScreen = dynamic_cast<MSWindowsScreen *>(m_serverScreen->getPlatformScreen());
+  if (windowsScreen == nullptr ||
+      !windowsScreen->installFileTransferEdgeDrop({
+          .resolveTarget =
+              [this](Direction direction, POINTL point) {
+                return m_server == nullptr ? std::optional<deskflow::filetransfer::EdgeTarget>{}
+                                           : m_server->resolveFileTransferEdgeTarget(direction, point.x, point.y);
+              },
+          .handoff =
+              [this](
+                  const deskflow::filetransfer::EdgeTarget &target,
+                  std::vector<deskflow::filetransfer::FileTransferSourceCandidate> sources
+              ) {
+                if (m_fileTransferService == nullptr ||
+                    !m_fileTransferService->offerLocalFiles(target.screen, std::move(sources))) {
+                  LOG_WARN("could not start local file transfer");
+                }
+              },
+      })) {
+    LOG_WARN("could not install Windows file-transfer edge drop host");
+  }
+}
+
+void ServerApp::stopFileTransferService() noexcept
+{
+  if (m_serverScreen != nullptr) {
+    if (auto *windowsScreen = dynamic_cast<MSWindowsScreen *>(m_serverScreen->getPlatformScreen());
+        windowsScreen != nullptr) {
+      windowsScreen->uninstallFileTransferEdgeDrop();
+    }
+  }
+  m_fileTransferService.reset();
+}
+#endif
 
 deskflow::Screen *ServerApp::createScreen()
 {

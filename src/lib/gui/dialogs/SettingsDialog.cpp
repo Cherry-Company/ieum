@@ -150,6 +150,7 @@ void SettingsDialog::initConnections() const
   connect(ui->comboTlsKeyLength, &QComboBox::currentIndexChanged, this, &SettingsDialog::updateRequestedKeySize);
   connect(ui->btnTlsCertPath, &QPushButton::clicked, this, &SettingsDialog::browseCertificatePath);
   connect(ui->btnBrowseLog, &QPushButton::clicked, this, &SettingsDialog::browseLogPath);
+  connect(ui->btnBrowseFileTransfer, &QPushButton::clicked, this, &SettingsDialog::browseFileTransferDirectory);
   connect(ui->groupLogToFile, &QGroupBox::toggled, this, &SettingsDialog::setLogToFile);
   connect(ui->comboLogLevel, &QComboBox::currentIndexChanged, this, &SettingsDialog::logLevelChanged);
   connect(ui->comboLanguage, &QComboBox::currentTextChanged, this, [](const QString &lang) {
@@ -191,6 +192,10 @@ void SettingsDialog::initConnections() const
   connect(ui->comboEnterScreenLang, &QComboBox::currentIndexChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->cbClipboardNormalizeNfc, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->spinMacInterKeyDelayMicros, &QSpinBox::valueChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->cbFileTransferEnabled, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->cbFileTransferReceive, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->cbFileTransferReceive, &QCheckBox::toggled, this, &SettingsDialog::updateFileTransferControls);
+  connect(ui->lineFileTransferDirectory, &QLineEdit::textChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
 }
 
 void SettingsDialog::tailscaleToggled(bool enabled)
@@ -342,6 +347,16 @@ void SettingsDialog::browseLogPath()
   }
 }
 
+void SettingsDialog::browseFileTransferDirectory()
+{
+  const auto directory = QFileDialog::getExistingDirectory(
+      this, tr("Choose where received files are saved"), ui->lineFileTransferDirectory->text()
+  );
+  if (!directory.isEmpty()) {
+    ui->lineFileTransferDirectory->setText(QDir::cleanPath(directory));
+  }
+}
+
 void SettingsDialog::setLogToFile(bool logToFile)
 {
   ui->widgetLogFilename->setEnabled(logToFile);
@@ -405,6 +420,15 @@ void SettingsDialog::accept()
 void SettingsDialog::acceptWithTailscaleStatus()
 {
   bool startupApprovalRequired = false;
+
+  if (ui->cbFileTransferReceive->isChecked() &&
+      !QDir::isAbsolutePath(ui->lineFileTransferDirectory->text().trimmed())) {
+    QMessageBox::warning(
+        this, tr("Choose a destination folder"),
+        tr("Select an absolute folder before enabling incoming file transfers.")
+    );
+    return;
+  }
 
   if (ui->groupTailscale->isChecked()) {
     if (!m_tailscaleStatus.isReady()) {
@@ -470,6 +494,11 @@ void SettingsDialog::acceptWithTailscaleStatus()
   Settings::setValue(Settings::Core::EnterScreenLang, ui->comboEnterScreenLang->currentData());
   Settings::setValue(Settings::Client::ClipboardNormalizeNfc, ui->cbClipboardNormalizeNfc->isChecked());
   Settings::setValue(Settings::Client::MacInterKeyDelayMicros, ui->spinMacInterKeyDelayMicros->value());
+  Settings::setValue(Settings::FileTransfer::Enabled, ui->cbFileTransferEnabled->isChecked());
+  Settings::setValue(Settings::FileTransfer::ReceiveEnabled, ui->cbFileTransferReceive->isChecked());
+  Settings::setValue(
+      Settings::FileTransfer::DownloadDirectory, QDir::cleanPath(ui->lineFileTransferDirectory->text().trimmed())
+  );
 
   Settings::ProcessMode mode;
   if (ui->groupService->isChecked())
@@ -541,12 +570,16 @@ void SettingsDialog::loadFromConfig()
   );
   ui->cbClipboardNormalizeNfc->setChecked(Settings::value(Settings::Client::ClipboardNormalizeNfc).toBool());
   ui->spinMacInterKeyDelayMicros->setValue(Settings::value(Settings::Client::MacInterKeyDelayMicros).toInt());
+  ui->cbFileTransferEnabled->setChecked(Settings::value(Settings::FileTransfer::Enabled).toBool());
+  ui->cbFileTransferReceive->setChecked(Settings::value(Settings::FileTransfer::ReceiveEnabled).toBool());
+  ui->lineFileTransferDirectory->setText(Settings::value(Settings::FileTransfer::DownloadDirectory).toString());
 
   const auto processMode = Settings::value(Settings::Core::ProcessMode).value<Settings::ProcessMode>();
   ui->groupService->setChecked(processMode == Settings::ProcessMode::Service);
 
   if (!deskflow::platform::isWindows())
     ui->groupService->setVisible(false);
+  ui->tabWidget->setTabVisible(ui->tabWidget->indexOf(ui->tabFileTransfer), deskflow::platform::isWindows());
 
   if (Settings::value(Settings::Gui::SymbolicTrayIcon).toBool())
     ui->rbIconMono->setChecked(true);
@@ -612,6 +645,16 @@ void SettingsDialog::updateTlsControlsEnabled()
   ui->widgetTlsCert->setEnabled(enabled);
   ui->btnTlsRegenCert->setEnabled(enabled);
   ui->cbRequireClientCert->setEnabled(enabled && !isClientMode());
+  updateFileTransferControls();
+}
+
+void SettingsDialog::updateFileTransferControls()
+{
+  const auto enabled = Settings::isWritable() && deskflow::platform::isWindows() && ui->groupSecurity->isChecked();
+  ui->cbFileTransferEnabled->setEnabled(enabled);
+  ui->cbFileTransferReceive->setEnabled(enabled);
+  ui->widgetFileTransferDestination->setEnabled(enabled && ui->cbFileTransferReceive->isChecked());
+  ui->lblFileTransferTls->setEnabled(ui->groupSecurity->isChecked());
 }
 
 bool SettingsDialog::isClientMode() const
@@ -730,6 +773,10 @@ bool SettingsDialog::isModified() const
       ) ||
       (ui->cbClipboardNormalizeNfc->isChecked() != Settings::value(Settings::Client::ClipboardNormalizeNfc).toBool()) ||
       (ui->spinMacInterKeyDelayMicros->value() != Settings::value(Settings::Client::MacInterKeyDelayMicros).toInt()) ||
+      (ui->cbFileTransferEnabled->isChecked() != Settings::value(Settings::FileTransfer::Enabled).toBool()) ||
+      (ui->cbFileTransferReceive->isChecked() != Settings::value(Settings::FileTransfer::ReceiveEnabled).toBool()) ||
+      (QDir::cleanPath(ui->lineFileTransferDirectory->text()) !=
+       QDir::cleanPath(Settings::value(Settings::FileTransfer::DownloadDirectory).toString())) ||
       (I18N::nativeTo639Name(ui->comboLanguage->currentText()) != Settings::value(Settings::Core::Language).toString());
 
   return modified;
@@ -777,6 +824,11 @@ bool SettingsDialog::isDefault() const
        Settings::defaultValue(Settings::Client::ClipboardNormalizeNfc).toBool()) &&
       (ui->spinMacInterKeyDelayMicros->value() ==
        Settings::defaultValue(Settings::Client::MacInterKeyDelayMicros).toInt()) &&
+      (ui->cbFileTransferEnabled->isChecked() == Settings::defaultValue(Settings::FileTransfer::Enabled).toBool()) &&
+      (ui->cbFileTransferReceive->isChecked() == Settings::defaultValue(Settings::FileTransfer::ReceiveEnabled).toBool()
+      ) &&
+      (QDir::cleanPath(ui->lineFileTransferDirectory->text()) ==
+       QDir::cleanPath(Settings::defaultValue(Settings::FileTransfer::DownloadDirectory).toString())) &&
       (ui->comboLanguage->currentText() == "English")
   );
 }
@@ -812,6 +864,9 @@ void SettingsDialog::resetToDefault()
   selectComboData(ui->comboEnterScreenLang, defaultEnterLang, defaultEnterLang);
   ui->cbClipboardNormalizeNfc->setChecked(Settings::defaultValue(Settings::Client::ClipboardNormalizeNfc).toBool());
   ui->spinMacInterKeyDelayMicros->setValue(Settings::defaultValue(Settings::Client::MacInterKeyDelayMicros).toInt());
+  ui->cbFileTransferEnabled->setChecked(Settings::defaultValue(Settings::FileTransfer::Enabled).toBool());
+  ui->cbFileTransferReceive->setChecked(Settings::defaultValue(Settings::FileTransfer::ReceiveEnabled).toBool());
+  ui->lineFileTransferDirectory->setText(Settings::defaultValue(Settings::FileTransfer::DownloadDirectory).toString());
 
   const auto autoHide = Settings::defaultValue(Settings::Gui::Autohide).toBool();
   ui->rbAutoHide->setChecked(autoHide);

@@ -204,10 +204,19 @@ integration are governed by a separate approved design.
 
 That design is now approved in
 [`docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md`](../superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md).
-The first beta uses the configured screen edge and a receiver-approved
-`Ieum Transfers` directory. Direct LAN bytes do not use an Ieum-operated
-service. Native drop into arbitrary remote applications, hosted discovery, and
-relay remain later slices.
+The `alpha.20` implementation is the first Windows preview: a server-side edge
+drop sends bounded 60 KiB chunks over the existing TLS connection to a client
+that has explicitly enabled receiving. The receiver stages bytes in a hidden
+directory, verifies each SHA-256 digest, and publishes without overwriting into
+the configured directory (default: `Downloads/Ieum`). Direct LAN bytes do not
+use an Ieum-operated service.
+
+This first slice is server-to-client only. Per-transfer approval UI,
+client-to-server edge drag, pause/resume, progress UI, native drop into an
+arbitrary remote application, hosted discovery, entitlement, billing, and
+relay remain later work. Shipping this capability in an experimental GPL alpha
+does not mean that Pro is on sale or that the Phase 1 and Phase 2 production
+gates are complete.
 
 ## Phase 4: Discovery and Relay
 
@@ -268,7 +277,9 @@ stable. It adds:
 
 ## Immediate Implementation Slices
 
-Phase 1 continues in the issue order above, starting with #38 and then the
-remaining Windows, X11, Wayland, macOS, protocol-documentation, and translation
-work. The Pro file-transfer design proceeds as a separate planning track, but
-its implementation does not ship before the Phase 1 and Phase 2 exit gates.
+Phase 1 continues through the remaining Windows, X11, Wayland, macOS,
+protocol-documentation, and translation work. The Pro Local file-transfer
+preview may be exercised in alpha releases, but it is not sold or described as
+production-ready before the Phase 1 and Phase 2 exit gates. The next Pro Local
+slices are per-transfer approval and progress UI, client-to-server initiation,
+resumable sessions, and only then entitlement packaging or hosted connectivity.

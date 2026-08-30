@@ -224,6 +224,13 @@ QVariant Settings::defaultValue(const QString &key)
   if (key == Log::File)
     return QStringLiteral("%1/%2.log").arg(QDir::homePath(), kRuntimeId);
 
+  if (key == FileTransfer::DownloadDirectory) {
+    auto downloads = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+    if (downloads.isEmpty())
+      downloads = QDir::homePath();
+    return QStringLiteral("%1/Ieum").arg(downloads);
+  }
+
   if (key == Log::Level)
     return QVariant::fromValue(LogLevel::Level::Info).toString();
 

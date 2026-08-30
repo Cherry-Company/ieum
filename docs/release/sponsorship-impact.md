@@ -3,7 +3,7 @@
 
 ## 후원 투명성 / Sponsorship transparency
 
-Release: v0.1.0-alpha.19
+Release: v0.1.0-alpha.20
 
 - 이번 릴리스에 배분된 GitHub Sponsors 후원금 / Sponsor funds allocated to this release: **USD 0**
 - 후원금으로 완료한 작업 / Work claimed as sponsor-funded: **없음 / None**
@@ -26,14 +26,13 @@ Release: v0.1.0-alpha.19
   after ARM64 compilation and CTest, DMG creation and mounting, `codesign --verify --deep --strict`, ARM64 Mach-O
   inspection, and artifact upload all pass. Windows x64 and ARM64 packages must also pass build, MSI structure,
   replacement-install, and service-coexistence checks.
-- alpha.19은 혼합 DPI 화면에서 경계 비율을 두 번 적용하던 좌표 경로를 누적 물리 경계 영역 매핑으로
-  교체했고 Per-Monitor V2 DPI 인식을 사용합니다. Windows 네이티브 빌드와 좌표·업데이트·진단 회귀
-  테스트, x64 글로벌·한국어 MSI 구조 검증을 로컬에서 통과했습니다. 다만 실제 게임별 재시험과
-  Windows↔macOS 장시간 좌표 왕복이 끝날 때까지 해결 완료로 분류하지 않습니다. / Alpha.19
-  replaces the double-applied mixed-DPI edge ratio with cumulative physical-edge span mapping and enables
-  Per-Monitor V2 DPI awareness. Native Windows builds, coordinate/update/diagnostic regression tests, and x64
-  global/Korean MSI structure validation pass locally. Per-game retesting and sustained Windows-to-macOS
-  coordinate traversal remain physical acceptance items.
+- alpha.20은 Windows 서버 PC에서 클라이언트 PC로 보내는 Pro Local 파일 드래그 프리뷰를 추가합니다.
+  제어·데이터 프로토콜, 60 KiB 청크, SHA-256 검증, 소스 스냅샷 재검증, 숨김 임시 파일과 무덮어쓰기
+  게시를 자동 테스트했습니다. 두 대의 Windows PC에서 설치 패키지로 수행하는 장시간·대용량 실기
+  검증 전에는 양방향 또는 안정판 기능으로 분류하지 않습니다. / Alpha.20 adds the Pro Local Windows
+  server-to-client file-drag preview. Automated tests cover control/data protocols, bounded 60 KiB chunks,
+  SHA-256 verification, source snapshot revalidation, hidden staging, and no-overwrite publication. It is not
+  classified as bidirectional or stable before packaged, sustained, large-file acceptance on two Windows PCs.
 - Windows 설치 경로는 실행 중인 새 GUI에 정상 종료를 요청한 뒤 파일을 교체하고, 이 명령을 모르는
   alpha.18 이하 프로세스만 기존 MSI 강제 종료 규칙으로 정리합니다. 다운로드 중에는 KVM이 계속 동작하지만
   바이너리 교체 순간의 짧은 재시작은 필요합니다. / The Windows installer asks a current GUI to shut down

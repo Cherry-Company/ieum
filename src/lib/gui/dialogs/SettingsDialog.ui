@@ -946,6 +946,139 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tabFileTransfer">
+      <attribute name="title">
+       <string>&amp;Files</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayoutFileTransfer">
+       <property name="spacing">
+        <number>9</number>
+       </property>
+       <property name="leftMargin">
+        <number>12</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>12</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <spacer name="verticalSpacerFileTransferTop">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblFileTransferTitle">
+         <property name="text">
+          <string>&lt;b&gt;Pro Local file transfer preview&lt;/b&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="cbFileTransferEnabled">
+         <property name="text">
+          <string>Send files by dragging them across a screen edge</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="cbFileTransferReceive">
+         <property name="text">
+          <string>Receive files from configured connected computers</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="widgetFileTransferDestination" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayoutFileTransferDestination">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="lblFileTransferDirectory">
+            <property name="text">
+             <string>Save to</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineFileTransferDirectory"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnBrowseFileTransfer">
+            <property name="toolTip">
+             <string>Choose destination folder</string>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset theme="QIcon::ThemeIcon::DocumentOpen"/>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblFileTransferTls">
+         <property name="text">
+          <string>TLS must be enabled on both computers. Receiving is off by default.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblFileTransferPreview">
+         <property name="text">
+          <string>This preview sends from the Windows server computer to a connected Windows client.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacerFileTransferBottom">
+         <property name="orientation">
+          <enum>Qt::Orientation::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tabAdvanced">
       <attribute name="title">
        <string>&amp;System</string>

@@ -1781,6 +1781,50 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>输入语言与共享文本</translation>
     </message>
     <message>
+        <source>&amp;Files</source>
+        <translation>文件(&amp;F)</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Pro Local file transfer preview&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Pro Local 文件传输预览&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Send files by dragging them across a screen edge</source>
+        <translation>将文件拖过屏幕边缘发送</translation>
+    </message>
+    <message>
+        <source>Receive files from configured connected computers</source>
+        <translation>接收来自已配置连接电脑的文件</translation>
+    </message>
+    <message>
+        <source>Save to</source>
+        <translation>保存到</translation>
+    </message>
+    <message>
+        <source>Choose destination folder</source>
+        <translation>选择目标文件夹</translation>
+    </message>
+    <message>
+        <source>TLS must be enabled on both computers. Receiving is off by default.</source>
+        <translation>两台电脑都必须启用 TLS。默认关闭文件接收。</translation>
+    </message>
+    <message>
+        <source>This preview sends from the Windows server computer to a connected Windows client.</source>
+        <translation>当前预览从 Windows 服务端电脑发送到已连接的 Windows 客户端。</translation>
+    </message>
+    <message>
+        <source>Choose where received files are saved</source>
+        <translation>选择接收文件的保存位置</translation>
+    </message>
+    <message>
+        <source>Choose a destination folder</source>
+        <translation>请选择目标文件夹</translation>
+    </message>
+    <message>
+        <source>Select an absolute folder before enabling incoming file transfers.</source>
+        <translation>启用文件接收前，请选择绝对路径文件夹。</translation>
+    </message>
+    <message>
         <source>&amp;System</source>
         <translation>系统(&amp;S)</translation>
     </message>

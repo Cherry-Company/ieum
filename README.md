@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.19"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20"><strong>이음 다운로드</strong></a>
   · <a href="#설치와-첫-연결"><strong>설치 가이드</strong></a>
   · <a href="#설치-전-1분-보안-확인"><strong>보안·권한 안내</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>GitHub Sponsors로 후원</strong></a>
@@ -33,7 +33,7 @@
 KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
 원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
 
-> 현재 단계는 `v0.1.0-alpha.19`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 현재 단계는 `v0.1.0-alpha.20`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
 
 ## 이음의 정식 배포를 함께 완성해 주세요
@@ -53,7 +53,21 @@ ARM64·Apple Silicon 실기 회귀 테스트와 안정적인 릴리스 유지**�
 월간 티어 외에 일회성 사용자 지정 금액도 선택할 수 있습니다. 후원 여부와 관계없이 로컬 KVM,
 한글·CJK 입력 동기화와 클립보드 코어는 공개 프로젝트로 유지합니다. 릴리스마다
 [배분 금액과 후원으로 완료한 작업](docs/release/sponsorship-impact.md)을 함께 공개하며, 이번
-`alpha.19`에 배분된 후원금은 **USD 0**입니다.
+`alpha.20`에 배분된 후원금은 **USD 0**입니다.
+
+### alpha.20 Pro Local 파일 드래그 프리뷰
+
+`alpha.20`은 Windows 서버 PC의 화면 경계로 파일을 끌어 Windows 클라이언트 PC로 보내는 첫
+Pro Local 프리뷰를 포함합니다.
+
+- **환경설정 → Files**에서 서버는 송신, 클라이언트는 수신을 명시적으로 켭니다. TLS가 꺼져 있으면
+  파일 전송도 시작하지 않습니다.
+- 파일 제안·수락·취소·결과는 프로토콜 `1.12`, 실제 바이트는 프로토콜 `1.13`으로 분리했습니다.
+  데이터는 한 번에 최대 60 KiB만 이벤트 루프에서 처리합니다.
+- 송신 직전 Windows 파일 ID·크기·수정 시각을 다시 확인하고, 수신은 숨김 임시 디렉터리에 쓴 뒤
+  SHA-256과 크기를 검증합니다. 같은 이름이 있으면 덮어쓰지 않고 새 이름으로 게시합니다.
+- 이번 프리뷰는 **Windows 서버 → Windows 클라이언트 단방향**입니다. 전송별 승인 창, 진행률,
+  일시정지·재개, 반대 방향 드래그와 원격 앱에 직접 놓기는 다음 구현 순서입니다.
 
 ### alpha.19 좌표·업데이트·권한 복구 변경
 
@@ -202,17 +216,17 @@ Tailscale·Wi-Fi 품질과 마우스 폴링률은 환경마다 다르므로, 두
 ### 1. 설치 파일 고르기
 
 최신 테스트 릴리스는
-**[이음 (Ieum) v0.1.0-alpha.19](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.19)**입니다.
+**[이음 (Ieum) v0.1.0-alpha.20](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20)**입니다.
 한국어 사용자는 아래 직링크를 사용하면 릴리스 자산 목록에서 파일명을 찾을 필요가 없습니다.
 
 | 기기 | 권장 다운로드 |
 | --- | --- |
-| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.19/Ieum-0.1.0-alpha.19-win-x64-ko-KR.msi) |
-| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.19/Ieum-0.1.0-alpha.19-win-arm64-ko-KR.msi) |
-| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.19/Ieum-0.1.0-alpha.19-macos-arm64.dmg) |
-| Intel Mac | [macOS Intel DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.19/Ieum-0.1.0-alpha.19-macos-x86_64.dmg) |
-| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.19) |
-| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.19) |
+| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.20/Ieum-0.1.0-alpha.20-win-x64-ko-KR.msi) |
+| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.20/Ieum-0.1.0-alpha.20-win-arm64-ko-KR.msi) |
+| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.20/Ieum-0.1.0-alpha.20-macos-arm64.dmg) |
+| Intel Mac | [macOS Intel DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.20/Ieum-0.1.0-alpha.20-macos-x86_64.dmg) |
+| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20) |
+| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20) |
 
 아키텍처를 모르겠다면 다음 위치에서 확인합니다.
 
@@ -674,13 +688,27 @@ Pro는 무료 기능을 회수하는 제품이 아니라, 공식 배포와 새 �
 | Teams | 조직·기기 정책, 역할 관리, 감사 기록, SSO와 관리 콘솔 |
 | 지원 | 우선 기술지원, 배포 지원, 기업 통합과 유지보수 계약 |
 
-첫 Pro 구현 목표는 **컴퓨터 사이 파일 드래그 전송**입니다. 데스크톱 전송 코드와 프로토콜은 이
-저장소에서 GPL로 공개하고, 유료 경계는 공식 Pro 배포, 호스팅 릴레이, 기기 관리와 지원에 둡니다.
-첫 베타는 파일을 설정된 화면 경계로 끌어 상대 PC에 전송하고, 수신자가 승인하면 `Ieum Transfers`
-폴더에 충돌 없이 저장합니다. 직접 연결 파일은 이음 운영 서버를 통과하지 않습니다. 원격 앱 안으로
-바로 놓는 네이티브 드롭은 이 안전한 수신 폴더 흐름 이후에 확장합니다. 세부 동작과 보안 제한은
+첫 Pro 구현인 **컴퓨터 사이 파일 드래그 전송**은 `alpha.20`에서 Windows 프리뷰로 시작합니다.
+데스크톱 전송 코드와 프로토콜은 이 저장소에서 GPL로 공개하고, 유료 경계는 공식 Pro 배포, 호스팅
+릴레이, 기기 관리와 지원에 둡니다. 이번 프리뷰는 Windows 서버 PC의 설정된 화면 경계로 파일을 끌면,
+기존 TLS 연결을 통해 Windows 클라이언트 PC의 `다운로드/Ieum` 폴더에 충돌 없이 저장합니다. 직접
+연결 파일은 이음 운영 서버를 통과하지 않으므로 이음 측 전송 대역폭 비용도 없습니다. 세부 동작과
+보안 제한은
 [Pro Local 화면 경계 파일전송 설계](docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md)에
 고정했습니다.
+
+사용하려면 양쪽 PC를 `alpha.20` 이상으로 맞추고 TLS를 켠 뒤, **환경설정 → Files**에서 서버 PC는
+`Send files...`, 클라이언트 PC는 `Receive files...`를 켭니다. 수신 스위치를 켜는 동작이 현재
+프리뷰의 사전 승인입니다. 전송마다 묻는 승인 창, 클라이언트→서버 드래그, 중단 재개, 진행률 UI와
+원격 앱 안으로 바로 놓는 네이티브 드롭은 아직 구현되지 않았습니다.
+
+```mermaid
+flowchart LR
+  D["Windows 서버<br/>화면 경계 드래그"] --> O["파일 제안·수락<br/>프로토콜 1.12"]
+  O --> T["기존 TLS 연결<br/>60 KiB 청크·SHA-256<br/>프로토콜 1.13"]
+  T --> S["Windows 클라이언트<br/>숨김 임시 파일"]
+  S --> V["검증 후 게시<br/>다운로드/Ieum"]
+```
 
 ```mermaid
 flowchart LR
@@ -715,7 +743,7 @@ flowchart LR
 | --- | --- | --- |
 | 1. v1 안정화 | 감사 이슈 #6~#38, 필수 CI와 플랫폼 수용 기준 완료 | **진행 중 — 16/33** |
 | 2. 공식 배포 | Windows 서명, Apple 공증, 안정 업데이트와 롤백 | 대기 |
-| 3. Pro 기반 | 계정·기기·구독과 파일 드래그 전송 베타 | **Pro Local 설계 확정·첫 구현 시작** |
+| 3. Pro 기반 | 계정·기기·구독과 파일 드래그 전송 베타 | **alpha.20 Windows 단방향 프리뷰 구현 — 판매·계정·결제는 아직 없음** |
 | 4. Pro 연결 | 장치 검색, 종단간 암호화 릴레이와 로컬 연결 대체 경로 | 대기 |
 | 5. Teams | 조직, 역할, 기기 정책과 감사 내보내기 | 대기 |
 | 6. Enterprise | SSO, SCIM, 재해 복구와 계약형 SLO | 대기 |

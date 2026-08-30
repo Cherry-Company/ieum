@@ -26,6 +26,7 @@
 #include "net/TCPSocketFactory.h"
 
 #if defined(Q_OS_WIN)
+#include "deskflow/win32/MSWindowsFileTransferService.h"
 #include "platform/MSWindowsScreen.h"
 #endif
 
@@ -50,6 +51,8 @@ ClientApp::ClientApp(IEventQueue *events, const QString &processName) : App(even
 {
   // do nothing
 }
+
+ClientApp::~ClientApp() = default;
 
 void ClientApp::parseArgs()
 {
@@ -247,6 +250,9 @@ void ClientApp::handleClientRefused(const Event &e)
 
 void ClientApp::handleClientDisconnected()
 {
+#if defined(Q_OS_WIN)
+  stopFileTransferService();
+#endif
   m_retryCount = 0;
   LOG_DEBUG("disconnected from server");
   ipcSendConnectionState(deskflow::core::ConnectionState::Disconnected);
@@ -309,6 +315,10 @@ bool ClientApp::startClient()
       LOG_INFO("started client");
     }
 
+#if defined(Q_OS_WIN)
+    startFileTransferService();
+#endif
+
     m_client->setServerAddress(getCurrentServerAddress());
     m_client->connect(m_lastServerAddressIndex);
 
@@ -336,12 +346,47 @@ bool ClientApp::startClient()
 void ClientApp::stopClient()
 {
   cancelClientRestart();
+#if defined(Q_OS_WIN)
+  stopFileTransferService();
+#endif
   closeClient(m_client);
   closeClientScreen(m_clientScreen);
   m_client = nullptr;
   m_clientScreen = nullptr;
   m_retryCount = 0;
 }
+
+#if defined(Q_OS_WIN)
+void ClientApp::startFileTransferService()
+{
+  if (m_fileTransferService != nullptr || m_client == nullptr ||
+      !Settings::value(Settings::Security::TlsEnabled).toBool() ||
+      !Settings::value(Settings::FileTransfer::ReceiveEnabled).toBool()) {
+    return;
+  }
+
+  m_fileTransferService = std::make_unique<deskflow::filetransfer::MSWindowsFileTransferService>(
+      deskflow::filetransfer::MSWindowsFileTransferServiceOptions{
+          .localScreen = Settings::value(Settings::Core::ComputerName).toString().toStdString(),
+          .destinationDirectory = Settings::value(Settings::FileTransfer::DownloadDirectory).toString().toStdWString(),
+          .receiveEnabled = true,
+          .sendControl = [this](
+                             const deskflow::filetransfer::FileTransferControlMessage &message
+                         ) { return m_client != nullptr && m_client->sendFileTransferControl(message); },
+          .sendData = [this](
+                          const deskflow::filetransfer::FileTransferDataMessage &message
+                      ) { return m_client != nullptr && m_client->sendFileTransferData(message); },
+          .events = getEvents(),
+          .eventTarget = m_client->getEventTarget(),
+      }
+  );
+}
+
+void ClientApp::stopFileTransferService() noexcept
+{
+  m_fileTransferService.reset();
+}
+#endif
 
 int ClientApp::mainLoop()
 {
