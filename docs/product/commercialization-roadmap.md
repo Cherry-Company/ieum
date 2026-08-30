@@ -26,6 +26,10 @@ an unimplemented paid product already exists.
    core.
 7. No phase is called complete without its automated gates and the native or
    physical acceptance evidence listed below.
+8. Pro Local moves file bytes directly between users and may use a one-time
+   official-package price. Pro Cloud pays recurring control-plane and relay
+   costs, so hosted relay is subscription and quota based rather than an
+   unlimited lifetime entitlement.
 
 ## Repository and Process Boundaries
 
@@ -54,6 +58,19 @@ hosted control plane
 The hosted components may authorize and route a connection, but they do not
 receive the TLS session keys used to protect remote input and clipboard
 payloads.
+
+The first file-transfer product keeps the data path local:
+
+```text
+Pro Local: sender desktop ───── direct authenticated stream ─────> receiver desktop
+           Ieum-operated bandwidth: none
+
+Pro Cloud: sender desktop ── direct when possible ───────────────> receiver desktop
+                          └── metered encrypted relay fallback ──> receiver desktop
+```
+
+The hosted relay is not bundled as unlimited lifetime traffic. Plans expose a
+clear included relay quota and keep direct-transfer bytes outside that quota.
 
 ## License Policy
 
@@ -126,8 +143,9 @@ changes into one review. The implementation order is:
 8. **macOS:** #29–#32.
 9. **Protocol documentation and translation quality:** #19, #37.
 
-As of 2026-08-30, 15 of these 33 issues are closed and 18 remain. The next
-ordered issue is #38, which moves Tailscale status queries off the GUI thread.
+As of 2026-08-30, 16 of these 33 issues are closed and 17 remain. Issue #38 is
+complete; the next ordered implementation group is the remaining Windows
+runtime work beginning with #12.
 
 Each issue begins with a failing regression test. A public issue is closed only
 after its relevant native lane passes. Platform-specific issues may merge with
@@ -182,7 +200,14 @@ computers. Its desktop implementation and protocol remain in the public GPL
 repository. Official Pro distribution, hosted relay, device administration,
 and support form the paid boundary. Drag semantics, receiving-user approval,
 filename conflicts, transfer limits, cancellation, resumption, and platform
-integration require a separate approved design before implementation begins.
+integration are governed by a separate approved design.
+
+That design is now approved in
+[`docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md`](../superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md).
+The first beta uses the configured screen edge and a receiver-approved
+`Ieum Transfers` directory. Direct LAN bytes do not use an Ieum-operated
+service. Native drop into arbitrary remote applications, hosted discovery, and
+relay remain later slices.
 
 ## Phase 4: Discovery and Relay
 

@@ -408,14 +408,28 @@ Community. The following items are **implementation plans**, not products curren
 | Product | Scope |
 | --- | --- |
 | Community | Local-network KVM, IME synchronization, clipboard, and the public protocol |
-| Pro | Official signed and notarized builds, stable updates, device registration, drag-and-drop file transfer, and remote connectivity |
+| Pro Local | Official signed and notarized builds, stable updates, and direct drag-and-drop transfer that does not use an Ieum relay |
+| Pro Cloud | Accounts, multi-device registration, remote connectivity, and an encrypted relay with explicit usage limits |
 | Teams | Organization and device policies, roles, audit history, SSO, and a management console |
 | Support | Priority support, deployment assistance, enterprise integration, and maintenance contracts |
 
 The first Pro implementation target is **drag-and-drop file transfer between computers**. Desktop transfer code
 and protocol changes remain GPL-licensed in this repository. Paid value sits at the official Pro distribution,
-hosted relay, device management, and support boundaries. The exact drag behavior, transfer approval, conflict
-handling, and security limits will be fixed in a separate design before implementation.
+hosted relay, device management, and support boundaries.
+The first beta hands files off at the configured screen edge and writes an accepted transfer into the receiving
+computer's `Ieum Transfers` directory without routing direct-transfer bytes through an Ieum-operated server.
+Native drop into an arbitrary remote application follows this safe receive-directory flow. The behavior and limits
+are fixed in the [Pro Local edge file-transfer design](docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md).
+
+```mermaid
+flowchart LR
+  A["Pro Local<br/>one-time purchase possible"] -->|"direct LAN transfer<br/>no Ieum bandwidth cost"| B["Peer computer"]
+  A --> C["Pro Cloud<br/>monthly or annual subscription"]
+  C -->|"quota-controlled relay<br/>only when direct paths fail"| B
+```
+
+Ieum will not promise unlimited lifetime relay traffic. Direct local transfer can fit a one-time official package;
+an Ieum-operated internet relay uses a monthly or annual subscription with explicit usage limits.
 
 GPL binaries may be sold, but recipients retain the right to receive corresponding source and redistribute their
 copies. If a paid server becomes necessary, it will be developed from scratch in a separate repository rather than
@@ -426,11 +440,11 @@ distribution still requires a copyright, trademark, and service-boundary review.
 
 ## Implementation roadmap
 
-Ieum is currently in phase 1. Fifteen of the 33 audit issues are closed, with 18 remaining.
+Ieum is currently in phase 1. Sixteen of the 33 audit issues are closed, with 17 remaining.
 
 ```mermaid
 flowchart LR
-  P1["1. v1 reliability<br/>Audit issues 15/33"] --> P2["2. Official distribution<br/>Signing, notarization, stable updates"]
+  P1["1. v1 reliability<br/>Audit issues 16/33"] --> P2["2. Official distribution<br/>Signing, notarization, stable updates"]
   P2 --> P3["3. Pro foundation<br/>Accounts, devices, billing, file transfer"]
   P3 --> P4["4. Pro connectivity<br/>Discovery and encrypted relay"]
   P4 --> P5["5. Teams<br/>Organizations, policy, audit history"]
@@ -439,9 +453,9 @@ flowchart LR
 
 | Phase | Exit condition | Status |
 | --- | --- | --- |
-| 1. v1 reliability | Audit issues #6–#38, required CI, and platform acceptance evidence | **In progress — 15/33** |
+| 1. v1 reliability | Audit issues #6–#38, required CI, and platform acceptance evidence | **In progress — 16/33** |
 | 2. Official distribution | Windows signing, Apple notarization, stable updates, and rollback | Waiting |
-| 3. Pro foundation | Accounts, devices, subscriptions, and a file-transfer beta | Design starting |
+| 3. Pro foundation | Accounts, devices, subscriptions, and a file-transfer beta | **Pro Local design approved; first slice starting** |
 | 4. Pro connectivity | Device discovery, end-to-end encrypted relay, and local fallback | Waiting |
 | 5. Teams | Organizations, roles, device policy, and audit export | Waiting |
 | 6. Enterprise | SSO, SCIM, disaster recovery, and contractual SLOs | Waiting |
