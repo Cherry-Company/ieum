@@ -44,6 +44,8 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   DeskflowException.h
   DisplayGeometry.h
   DisplayInvalidException.h
+  EdgeHandoffDecision.cpp
+  EdgeHandoffDecision.h
   FileTransferOfferValidator.cpp
   FileTransferOfferValidator.h
   FileTransferTypes.h

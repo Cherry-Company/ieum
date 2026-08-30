@@ -46,6 +46,14 @@ create_test(
 )
 
 create_test(
+  NAME EdgeHandoffDecisionTests
+  DEPENDS app
+  LIBS arch base ${extra_libs}
+  SOURCE EdgeHandoffDecisionTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+)
+
+create_test(
   NAME FileTransferOfferTests
   DEPENDS app
   LIBS arch base ${extra_libs}
