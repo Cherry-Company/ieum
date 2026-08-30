@@ -6,7 +6,7 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `7dd1b3d33be01cc12bdb96ca5f409eac73d37f0d`
+- Revision: `0f1d147822f0d51134476f6432905014ce287c2a`
 - Branch: `feat/pro-file-transfer-service`
 - Tracked files: 1,022
 - Represented files: 1,019
@@ -73,7 +73,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `support:github` | automation | GitHub Actions workflows, composite actions, templates, and repository automation. | 26 | 3,594 | — |
 | `support:root` | support | Repository support files rooted at `.`. | 20 | 3,041 | — |
 | `support:source-build` | build | Repository support files rooted at `src`. | 3 | 170 | — |
-| `support:translations` | localization | Qt translation catalogs and translation build rules. | 8 | 11,528 | — |
+| `support:translations` | localization | Qt translation catalogs and translation build rules. | 8 | 11,704 | — |
 | `test:base` | test | Automated tests for the `base` surface. | 12 | 649 | `BaseExceptionTests`, `EventQueueTests`, `LogOutputtersTests`, `LogTests`, `StringTests`, `UnicodeTests` |
 | `test:client` | test | Automated tests for the `client` surface. | 3 | 670 | `ServerProxyTests` |
 | `test:codegraph-tools` | test | Automated tests for the `codegraph-tools` surface. | 1 | 461 | — |

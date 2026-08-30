@@ -2143,7 +2143,7 @@
         "cmake": 1,
         "qt-translation": 7
       },
-      "lineCount": 11528,
+      "lineCount": 11704,
       "path": "translations",
       "targets": []
     },
@@ -23271,25 +23271,25 @@
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1881,
+      "lineCount": 1925,
       "path": "translations/deskflow_es.ts",
-      "sizeBytes": 82526
+      "sizeBytes": 84193
     },
     {
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1881,
+      "lineCount": 1925,
       "path": "translations/deskflow_it.ts",
-      "sizeBytes": 78021
+      "sizeBytes": 79688
     },
     {
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1881,
+      "lineCount": 1925,
       "path": "translations/deskflow_ja.ts",
-      "sizeBytes": 79736
+      "sizeBytes": 81403
     },
     {
       "binary": false,
@@ -23303,9 +23303,9 @@
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1881,
+      "lineCount": 1925,
       "path": "translations/deskflow_ru.ts",
-      "sizeBytes": 84170
+      "sizeBytes": 85837
     },
     {
       "binary": false,
@@ -23318,7 +23318,7 @@
   ],
   "revision": {
     "branch": "feat/pro-file-transfer-service",
-    "commit": "7dd1b3d33be01cc12bdb96ca5f409eac73d37f0d",
+    "commit": "0f1d147822f0d51134476f6432905014ce287c2a",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
