@@ -1545,6 +1545,8 @@
         "src/unittests/gui/KeySequenceTests.cpp: #include \"gui/KeySequence.h\" -> src/lib/gui/KeySequence.h",
         "src/unittests/gui/LogWidgetTests.cpp: #include \"gui/widgets/LogWidget.h\" -> src/lib/gui/widgets/LogWidget.h",
         "src/unittests/gui/LoggerTests.cpp: #include \"gui/Logger.h\" -> src/lib/gui/Logger.h",
+        "src/unittests/gui/ScreenSetupModelTests.cpp: #include \"gui/ScreenSetupModel.h\" -> src/lib/gui/ScreenSetupModel.h",
+        "src/unittests/gui/ScreenSetupModelTests.cpp: #include \"gui/widgets/ScreenSetupView.h\" -> src/lib/gui/widgets/ScreenSetupView.h",
         "src/unittests/gui/ServerConfigDialogTests.cpp: #include \"gui/config/ServerConfig.h\" -> src/lib/gui/config/ServerConfig.h",
         "src/unittests/gui/ServerConfigDialogTests.cpp: #include \"gui/dialogs/ServerConfigDialog.h\" -> src/lib/gui/dialogs/ServerConfigDialog.h",
         "src/unittests/gui/ServiceStartCoordinatorTests.cpp: #include \"gui/core/ServiceStartCoordinator.h\" -> src/lib/gui/core/ServiceStartCoordinator.h",
@@ -1901,7 +1903,7 @@
         "objective-c++": 1,
         "qt-ui": 8
       },
-      "lineCount": 17539,
+      "lineCount": 17610,
       "path": "src/lib/gui",
       "targets": [
         "gui"
@@ -2030,7 +2032,7 @@
         "powershell": 2,
         "yaml": 19
       },
-      "lineCount": 3588,
+      "lineCount": 3594,
       "path": ".github",
       "targets": []
     },
@@ -2069,7 +2071,7 @@
         "cmake": 1,
         "qt-translation": 7
       },
-      "lineCount": 11416,
+      "lineCount": 11440,
       "path": "translations",
       "targets": []
     },
@@ -2164,15 +2166,15 @@
       ]
     },
     {
-      "fileCount": 25,
+      "fileCount": 26,
       "id": "test:gui",
       "kind": "test",
       "languageCounts": {
-        "c++": 13,
+        "c++": 14,
         "c/c++ header": 9,
         "cmake": 3
       },
-      "lineCount": 1468,
+      "lineCount": 1696,
       "path": "src/unittests/gui",
       "targets": [
         "DiagnosticTests",
@@ -2182,6 +2184,7 @@
         "LogWidgetTests",
         "LoggerTests",
         "NetworkMonitorTests",
+        "ScreenSetupModelTests",
         "ScreenTests",
         "ServerConfigDialogTests",
         "ServiceStartCoordinatorTests",
@@ -2199,7 +2202,7 @@
         "c/c++ header": 4,
         "cmake": 2
       },
-      "lineCount": 888,
+      "lineCount": 887,
       "path": "src/unittests/legacytests",
       "targets": [
         "legacytests"
@@ -2279,7 +2282,7 @@
         "c": 1,
         "python": 1
       },
-      "lineCount": 281,
+      "lineCount": 326,
       "path": "tools/ci",
       "targets": []
     },
@@ -2671,6 +2674,7 @@
         "src/lib/common/TailscaleIntegration.h",
         "src/lib/deskflow/ipc/IpcServer.h",
         "src/lib/gui/FileTail.h",
+        "src/lib/gui/ScreenSetupModel.h",
         "src/lib/net/Fingerprint.h",
         "src/lib/net/SocketException.h",
         "src/lib/platform/PortalClipboard.h",
@@ -2801,6 +2805,7 @@
       "kind": "system-include",
       "name": "QDataStream",
       "sources": [
+        "src/lib/gui/ScreenSetupModel.cpp",
         "src/lib/platform/PortalClipboard.cpp",
         "src/lib/platform/PortalInputCapture.cpp"
       ]
@@ -2913,7 +2918,8 @@
       "kind": "system-include",
       "name": "QDragMoveEvent",
       "sources": [
-        "src/lib/gui/widgets/ScreenSetupView.cpp"
+        "src/lib/gui/widgets/ScreenSetupView.cpp",
+        "src/unittests/gui/ScreenSetupModelTests.cpp"
       ]
     },
     {
@@ -3291,7 +3297,8 @@
         "src/lib/gui/ScreenSetupModel.cpp",
         "src/lib/gui/widgets/NewScreenWidget.cpp",
         "src/lib/gui/widgets/ScreenSetupView.cpp",
-        "src/lib/gui/widgets/TrashScreenWidget.cpp"
+        "src/lib/gui/widgets/TrashScreenWidget.cpp",
+        "src/unittests/gui/ScreenSetupModelTests.cpp"
       ]
     },
     {
@@ -3300,7 +3307,8 @@
       "sources": [
         "src/lib/gui/widgets/KeySequenceWidget.cpp",
         "src/lib/gui/widgets/NewScreenWidget.cpp",
-        "src/lib/gui/widgets/ScreenSetupView.cpp"
+        "src/lib/gui/widgets/ScreenSetupView.cpp",
+        "src/unittests/gui/ScreenSetupModelTests.cpp"
       ]
     },
     {
@@ -3584,6 +3592,7 @@
         "src/unittests/gui/FileTailTests.cpp",
         "src/unittests/gui/IpcClientTests.cpp",
         "src/unittests/gui/LoggerTests.cpp",
+        "src/unittests/gui/ScreenSetupModelTests.cpp",
         "src/unittests/gui/ServiceStartCoordinatorTests.cpp",
         "src/unittests/gui/core/NetworkMonitorTests.cpp"
       ]
@@ -3765,6 +3774,7 @@
         "src/unittests/gui/KeySequenceTests.h",
         "src/unittests/gui/LogWidgetTests.cpp",
         "src/unittests/gui/LoggerTests.h",
+        "src/unittests/gui/ScreenSetupModelTests.cpp",
         "src/unittests/gui/ServerConfigDialogTests.cpp",
         "src/unittests/gui/ServiceStartCoordinatorTests.h",
         "src/unittests/gui/StatusBarTests.cpp",
@@ -4801,6 +4811,7 @@
         "src/lib/platform/OSXScreen.h",
         "src/lib/server/ClientListener.h",
         "src/unittests/base/EventQueueTests.cpp",
+        "src/unittests/gui/ScreenSetupModelTests.cpp",
         "src/unittests/legacytests/legacytests/arch/unix/ArchNetworkBSDTests.cpp",
         "src/unittests/legacytests/shared/ExitTimeout.cpp",
         "src/unittests/net/NetworkAddressTests.cpp"
@@ -5385,6 +5396,13 @@
       "name": "NetworkAddressTests.moc",
       "sources": [
         "src/unittests/net/NetworkAddressTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
+      "name": "ScreenSetupModelTests.moc",
+      "sources": [
+        "src/unittests/gui/ScreenSetupModelTests.cpp"
       ]
     },
     {
@@ -13568,6 +13586,18 @@
       "target": "src/unittests/gui/LoggerTests.h"
     },
     {
+      "evidence": "#include \"gui/ScreenSetupModel.h\"",
+      "kind": "include",
+      "source": "src/unittests/gui/ScreenSetupModelTests.cpp",
+      "target": "src/lib/gui/ScreenSetupModel.h"
+    },
+    {
+      "evidence": "#include \"gui/widgets/ScreenSetupView.h\"",
+      "kind": "include",
+      "source": "src/unittests/gui/ScreenSetupModelTests.cpp",
+      "target": "src/lib/gui/widgets/ScreenSetupView.h"
+    },
+    {
       "evidence": "#include \"common/Settings.h\"",
       "kind": "include",
       "source": "src/unittests/gui/ServerConfigDialogTests.cpp",
@@ -14083,17 +14113,17 @@
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 91,
+      "lineCount": 93,
       "path": ".github/actions/lint-clang/action.yml",
-      "sizeBytes": 2510
+      "sizeBytes": 2562
     },
     {
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 84,
+      "lineCount": 85,
       "path": ".github/actions/run-tests/action.yml",
-      "sizeBytes": 2382
+      "sizeBytes": 2408
     },
     {
       "binary": false,
@@ -14131,9 +14161,9 @@
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 93,
+      "lineCount": 94,
       "path": ".github/actions/test-summary/action.yml",
-      "sizeBytes": 2408
+      "sizeBytes": 2434
     },
     {
       "binary": false,
@@ -14179,9 +14209,9 @@
       "binary": false,
       "component": "support:github",
       "language": "yaml",
-      "lineCount": 1048,
+      "lineCount": 1050,
       "path": ".github/workflows/continuous-integration.yml",
-      "sizeBytes": 39945
+      "sizeBytes": 40001
     },
     {
       "binary": false,
@@ -18035,17 +18065,17 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 161,
+      "lineCount": 217,
       "path": "src/lib/gui/ScreenSetupModel.cpp",
-      "sizeBytes": 4437
+      "sizeBytes": 6578
     },
     {
       "binary": false,
       "component": "lib:gui",
       "language": "c/c++ header",
-      "lineCount": 87,
+      "lineCount": 89,
       "path": "src/lib/gui/ScreenSetupModel.h",
-      "sizeBytes": 2098
+      "sizeBytes": 2537
     },
     {
       "binary": false,
@@ -18355,9 +18385,9 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 612,
+      "lineCount": 613,
       "path": "src/lib/gui/dialogs/ServerConfigDialog.cpp",
-      "sizeBytes": 22526
+      "sizeBytes": 22599
     },
     {
       "binary": false,
@@ -18675,9 +18705,9 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 39,
+      "lineCount": 35,
       "path": "src/lib/gui/widgets/NewScreenWidget.cpp",
-      "sizeBytes": 1113
+      "sizeBytes": 1036
     },
     {
       "binary": false,
@@ -18691,9 +18721,9 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 162,
+      "lineCount": 178,
       "path": "src/lib/gui/widgets/ScreenSetupView.cpp",
-      "sizeBytes": 4584
+      "sizeBytes": 5009
     },
     {
       "binary": false,
@@ -20963,9 +20993,9 @@
       "binary": false,
       "component": "test:gui",
       "language": "cmake",
-      "lineCount": 85,
+      "lineCount": 92,
       "path": "src/unittests/gui/CMakeLists.txt",
-      "sizeBytes": 1792
+      "sizeBytes": 1940
     },
     {
       "binary": false,
@@ -21046,6 +21076,14 @@
       "lineCount": 24,
       "path": "src/unittests/gui/LoggerTests.h",
       "sizeBytes": 746
+    },
+    {
+      "binary": false,
+      "component": "test:gui",
+      "language": "c++",
+      "lineCount": 221,
+      "path": "src/unittests/gui/ScreenSetupModelTests.cpp",
+      "sizeBytes": 7035
     },
     {
       "binary": false,
@@ -21187,9 +21225,9 @@
       "binary": false,
       "component": "test:legacytests",
       "language": "c++",
-      "lineCount": 283,
+      "lineCount": 282,
       "path": "src/unittests/legacytests/legacytests/deskflow/KeyStateTests.cpp",
-      "sizeBytes": 8579
+      "sizeBytes": 8498
     },
     {
       "binary": false,
@@ -21459,9 +21497,9 @@
       "binary": false,
       "component": "tool:ci",
       "language": "python",
-      "lineCount": 261,
+      "lineCount": 306,
       "path": "tools/ci/tests/test_analysis_workflows.py",
-      "sizeBytes": 10914
+      "sizeBytes": 12685
     },
     {
       "binary": false,
@@ -21563,54 +21601,54 @@
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1877,
+      "lineCount": 1881,
       "path": "translations/deskflow_es.ts",
-      "sizeBytes": 82379
+      "sizeBytes": 82526
     },
     {
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1877,
+      "lineCount": 1881,
       "path": "translations/deskflow_it.ts",
-      "sizeBytes": 77874
+      "sizeBytes": 78021
     },
     {
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1877,
+      "lineCount": 1881,
       "path": "translations/deskflow_ja.ts",
-      "sizeBytes": 79589
+      "sizeBytes": 79736
+    },
+    {
+      "binary": false,
+      "component": "support:translations",
+      "language": "qt-translation",
+      "lineCount": 1917,
+      "path": "translations/deskflow_ko.ts",
+      "sizeBytes": 85277
+    },
+    {
+      "binary": false,
+      "component": "support:translations",
+      "language": "qt-translation",
+      "lineCount": 1881,
+      "path": "translations/deskflow_ru.ts",
+      "sizeBytes": 84170
     },
     {
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
       "lineCount": 1913,
-      "path": "translations/deskflow_ko.ts",
-      "sizeBytes": 85130
-    },
-    {
-      "binary": false,
-      "component": "support:translations",
-      "language": "qt-translation",
-      "lineCount": 1877,
-      "path": "translations/deskflow_ru.ts",
-      "sizeBytes": 84023
-    },
-    {
-      "binary": false,
-      "component": "support:translations",
-      "language": "qt-translation",
-      "lineCount": 1909,
       "path": "translations/deskflow_zh_CN.ts",
-      "sizeBytes": 79628
+      "sizeBytes": 79775
     }
   ],
   "revision": {
-    "branch": "fix/typed-server-config-path",
-    "commit": "848d94ce6541eaa32e8f6481d4eab8d458945f16",
+    "branch": "fix/screen-grid-bounds",
+    "commit": "487fcd08f7d7d219819db45e13afb91345a59705",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
@@ -21618,12 +21656,12 @@
     "componentEdges": 97,
     "components": 42,
     "excludedFiles": 3,
-    "fileIncludeEdges": 1414,
-    "representedFiles": 956,
-    "sourceFiles": 597,
-    "sourceLines": 96480,
-    "targets": 65,
-    "trackedFiles": 959
+    "fileIncludeEdges": 1416,
+    "representedFiles": 957,
+    "sourceFiles": 598,
+    "sourceLines": 96816,
+    "targets": 66,
+    "trackedFiles": 960
   },
   "targets": [
     {
@@ -21817,6 +21855,12 @@
       "kind": "test",
       "name": "Protocol19Tests",
       "source": "src/unittests/deskflow/CMakeLists.txt"
+    },
+    {
+      "component": "test:gui",
+      "kind": "test",
+      "name": "ScreenSetupModelTests",
+      "source": "src/unittests/gui/CMakeLists.txt"
     },
     {
       "component": "test:gui",
@@ -22069,6 +22113,10 @@
     {
       "include": "LogWidgetTests.moc",
       "source": "src/unittests/gui/LogWidgetTests.cpp"
+    },
+    {
+      "include": "ScreenSetupModelTests.moc",
+      "source": "src/unittests/gui/ScreenSetupModelTests.cpp"
     },
     {
       "include": "ServerConfigDialogTests.moc",

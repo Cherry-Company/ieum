@@ -46,7 +46,11 @@ ScreenSetupModel *ScreenSetupView::model() const
 
 void ScreenSetupView::showScreenConfig(int col, int row)
 {
-  ScreenSettingsDialog dlg(this, &model()->screen(col, row), &model()->m_Screens);
+  auto *selectedScreen = model() == nullptr ? nullptr : model()->screenAt(col, row);
+  if (selectedScreen == nullptr || selectedScreen->isNull())
+    return;
+
+  ScreenSettingsDialog dlg(this, selectedScreen, &model()->m_Screens);
   dlg.exec();
   Q_EMIT model()->screensChanged();
 }
@@ -68,15 +72,18 @@ void ScreenSetupView::resizeEvent(QResizeEvent *event)
 
 void ScreenSetupView::mouseDoubleClickEvent(QMouseEvent *event)
 {
-  if (event->buttons() & Qt::LeftButton) {
-    int col = columnAt(event->pos().x());
-    int row = rowAt(event->pos().y());
+  event->ignore();
+  if (model() == nullptr || event->button() != Qt::LeftButton)
+    return;
 
-    if (!model()->screen(col, row).isNull()) {
-      showScreenConfig(col, row);
-    }
-  } else
-    event->ignore();
+  const auto col = columnAt(event->pos().x());
+  const auto row = rowAt(event->pos().y());
+  const auto *selectedScreen = model()->screenAt(col, row);
+  if (selectedScreen == nullptr || selectedScreen->isNull())
+    return;
+
+  event->accept();
+  showScreenConfig(col, row);
 }
 
 void ScreenSetupView::dragEnterEvent(QDragEnterEvent *event)
@@ -91,26 +98,25 @@ void ScreenSetupView::dragEnterEvent(QDragEnterEvent *event)
 
 void ScreenSetupView::dragMoveEvent(QDragMoveEvent *event)
 {
-  if (event->mimeData()->hasFormat(ScreenSetupModel::mimeType())) {
-    // where does the event come from? myself or someone else?
-    if (event->source() == this) {
-      // myself is ok, but then it must be a move action, never a copy
-      event->setDropAction(Qt::MoveAction);
-      event->accept();
-    } else {
-      const auto &point = event->position().toPoint();
-      int col = columnAt(point.x());
-      int row = rowAt(point.y());
+  event->ignore();
+  if (model() == nullptr || !event->mimeData()->hasFormat(ScreenSetupModel::mimeType()))
+    return;
 
-      // a drop from outside is not allowed if there's a screen already there.
-      if (!model()->screen(col, row).isNull())
-        event->ignore();
-      else {
-        event->acceptProposedAction();
-      }
-    }
-  } else
-    event->ignore();
+  const auto point = event->position().toPoint();
+  const auto col = columnAt(point.x());
+  const auto row = rowAt(point.y());
+  const auto *destinationScreen = model()->screenAt(col, row);
+  if (destinationScreen == nullptr)
+    return;
+
+  // where does the event come from? myself or someone else?
+  if (event->source() == this) {
+    // myself is ok, but then it must be a move action, never a copy
+    event->setDropAction(Qt::MoveAction);
+    event->accept();
+  } else if (destinationScreen->isNull()) {
+    event->acceptProposedAction();
+  }
 }
 
 // this is reimplemented from QAbstractItemView::startDrag()
@@ -125,7 +131,13 @@ void ScreenSetupView::startDrag(Qt::DropActions)
   if (pData == nullptr)
     return;
 
-  const QPixmap &pixmap = model()->screen(indexes[0]).pixmap();
+  auto *draggedScreen = model()->screenAt(indexes[0]);
+  if (draggedScreen == nullptr) {
+    delete pData;
+    return;
+  }
+
+  const QPixmap &pixmap = draggedScreen->pixmap();
   auto *pDrag = new QDrag(this);
   pDrag->setPixmap(pixmap);
   pDrag->setMimeData(pData);
@@ -134,12 +146,16 @@ void ScreenSetupView::startDrag(Qt::DropActions)
   if (pDrag->exec(Qt::MoveAction, Qt::MoveAction) == Qt::MoveAction) {
     selectionModel()->clear();
 
+    auto *sourceScreen = model()->screenAt(indexes[0]);
+    if (sourceScreen == nullptr)
+      return;
+
     // make sure to only delete the drag source if screens weren't swapped
     // see ScreenSetupModel::dropMimeData
-    if (!model()->screen(indexes[0]).swapped())
-      model()->screen(indexes[0]) = Screen();
+    if (!sourceScreen->swapped())
+      *sourceScreen = Screen();
     else
-      model()->screen(indexes[0]).setSwapped(false);
+      sourceScreen->setSwapped(false);
 
     Q_EMIT model()->screensChanged();
   }

@@ -475,7 +475,8 @@ void ServerConfigDialog::loadFromConfig()
   if (server == screens.end()) {
     Screen serverScreen(serverConfig().getServerName());
     serverScreen.markAsServer();
-    model().screen(m_columns / 2, m_rows / 2) = serverScreen;
+    if (auto *centerScreen = model().screenAt(m_columns / 2, m_rows / 2); centerScreen != nullptr)
+      *centerScreen = serverScreen;
   } else {
     server->markAsServer();
   }
