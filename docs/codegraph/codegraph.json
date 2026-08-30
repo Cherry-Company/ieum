@@ -1958,7 +1958,7 @@
         "c/c++ header": 61,
         "cmake": 1
       },
-      "lineCount": 17848,
+      "lineCount": 17847,
       "path": "src/lib/deskflow",
       "targets": [
         "app"
@@ -2038,7 +2038,7 @@
         "objective-c++": 2,
         "template": 1
       },
-      "lineCount": 29532,
+      "lineCount": 29530,
       "path": "src/lib/platform",
       "targets": [
         "platform"
@@ -2318,7 +2318,7 @@
         "c/c++ header": 4,
         "cmake": 1
       },
-      "lineCount": 1827,
+      "lineCount": 1832,
       "path": "src/unittests/platform",
       "targets": [
         "ArchNetworkWinsockTests",
@@ -18839,9 +18839,9 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "c++",
-      "lineCount": 307,
+      "lineCount": 306,
       "path": "src/lib/deskflow/FileTransferSessionState.cpp",
-      "sizeBytes": 10481
+      "sizeBytes": 10451
     },
     {
       "binary": false,
@@ -20967,9 +20967,9 @@
       "binary": false,
       "component": "lib:platform",
       "language": "c++",
-      "lineCount": 639,
+      "lineCount": 637,
       "path": "src/lib/platform/MSWindowsFileTransferIo.cpp",
-      "sizeBytes": 20279
+      "sizeBytes": 20355
     },
     {
       "binary": false,
@@ -23039,9 +23039,9 @@
       "binary": false,
       "component": "test:platform",
       "language": "c++",
-      "lineCount": 414,
+      "lineCount": 419,
       "path": "src/unittests/platform/MSWindowsFileTransferIoTests.cpp",
-      "sizeBytes": 15538
+      "sizeBytes": 15646
     },
     {
       "binary": false,
@@ -23318,7 +23318,7 @@
   ],
   "revision": {
     "branch": "feat/pro-file-transfer-service",
-    "commit": "66a5c7f7ecf38cb6b7dfc5560d86b85214893405",
+    "commit": "7dd1b3d33be01cc12bdb96ca5f409eac73d37f0d",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
@@ -23329,7 +23329,7 @@
     "fileIncludeEdges": 1533,
     "representedFiles": 1019,
     "sourceFiles": 650,
-    "sourceLines": 107041,
+    "sourceLines": 107043,
     "targets": 79,
     "trackedFiles": 1022
   },

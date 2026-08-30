@@ -6,11 +6,11 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `66a5c7f7ecf38cb6b7dfc5560d86b85214893405`
+- Revision: `7dd1b3d33be01cc12bdb96ca5f409eac73d37f0d`
 - Branch: `feat/pro-file-transfer-service`
 - Tracked files: 1,022
 - Represented files: 1,019
-- Source files / lines: 650 / 107,041
+- Source files / lines: 650 / 107,043
 - Components / targets: 42 / 79
 - File include edges / component edges: 1,533 / 98
 
@@ -60,12 +60,12 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `lib:base` | library | Events, jobs, queues, logging, strings, Unicode, and timing primitives. | 32 | 3,651 | `base` |
 | `lib:client` | library | Connection to the server and dispatch of incoming KVM protocol messages. | 5 | 2,368 | `client` |
 | `lib:common` | library | Settings, network-interface selection, Tailscale integration, and shared product types. | 22 | 2,702 | `common` |
-| `lib:deskflow` | library | Shared KVM application, protocol, screen, key, clipboard, and IPC behavior. | 107 | 17,848 | `app` |
+| `lib:deskflow` | library | Shared KVM application, protocol, screen, key, clipboard, and IPC behavior. | 107 | 17,847 | `app` |
 | `lib:gui` | library | Qt windows, dialogs, widgets, validators, startup, diagnostics, updates, and IPC clients. | 111 | 17,961 | `gui` |
 | `lib:io` | library | Stream interfaces, buffers, filters, and framed I/O support. | 8 | 570 | `io` |
 | `lib:mt` | library | Thread, mutex, lock, and condition-variable wrappers. | 12 | 892 | `mt` |
 | `lib:net` | library | TCP/TLS sockets, multiplexing, addresses, certificates, and fingerprint persistence. | 35 | 4,180 | `net` |
-| `lib:platform` | library | Windows, macOS, X11, libei, and portal input/clipboard adapters. | 132 | 29,532 | `platform` |
+| `lib:platform` | library | Windows, macOS, X11, libei, and portal input/clipboard adapters. | 132 | 29,530 | `platform` |
 | `lib:server` | library | Client proxies, input routing, screen topology, filters, and cursor transforms. | 46 | 9,891 | `server` |
 | `support:artwork` | resource | Brand artwork and documentation screenshots. | 5 | 253 | — |
 | `support:cmake` | build | Shared dependency, coverage, packaging, and signing CMake modules. | 4 | 746 | — |
@@ -82,7 +82,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `test:gui` | test | Automated tests for the `gui` surface. | 26 | 1,696 | `DiagnosticTests`, `FileTailTests`, `IpcClientTests`, `KeySequenceTests`, `LogWidgetTests`, `LoggerTests`, `NetworkMonitorTests`, `ScreenSetupModelTests`, `ScreenTests`, `ServerConfigDialogTests`, `ServiceStartCoordinatorTests`, `StatusBarTests`, `StyleUtilsTests`, `VersionCheckerTests` |
 | `test:legacytests` | test | Automated tests for the `legacytests` surface. | 10 | 887 | `legacytests` |
 | `test:net` | test | Automated tests for the `net` surface. | 9 | 595 | `FingerprintDatabaseTests`, `FingerprintTests`, `NetworkAddressTests`, `SecureSocketWriteBufferTests`, `SecureUtilsTests` |
-| `test:platform` | test | Automated tests for the `platform` surface. | 14 | 1,827 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsFileDropExtractorTests`, `MSWindowsFileTransferIoTests`, `MSWindowsFileTransferSourceTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
+| `test:platform` | test | Automated tests for the `platform` surface. | 14 | 1,832 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsFileDropExtractorTests`, `MSWindowsFileTransferIoTests`, `MSWindowsFileTransferSourceTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
 | `test:server` | test | Automated tests for the `server` surface. | 5 | 437 | `ServerConfigTests`, `ServerTests` |
 | `tool:cgtap-logger` | tool | Developer or diagnostic tool rooted at `tools/cgtap-logger`. | 1 | 108 | — |
 | `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 2 | 326 | — |
