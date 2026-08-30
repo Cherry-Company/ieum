@@ -6,6 +6,7 @@
 
 #include "deskflow/win32/MSWindowsFileTransferService.h"
 
+#include "base/Log.h"
 #include "platform/MSWindowsFileTransferSource.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -272,6 +273,7 @@ void rejectsWhenReceivingIsDisabled()
 
 int main()
 {
+  Log log;
   transfersFileEndToEnd();
   rejectsWhenReceivingIsDisabled();
   std::cout << "PASS: MSWindowsFileTransferServiceTests\n";
