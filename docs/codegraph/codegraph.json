@@ -2091,7 +2091,7 @@
         "cmake": 3,
         "markdown": 29
       },
-      "lineCount": 4979,
+      "lineCount": 4980,
       "path": "docs",
       "targets": []
     },
@@ -2414,7 +2414,7 @@
         "python": 4,
         "shell": 1
       },
-      "lineCount": 2321,
+      "lineCount": 2443,
       "path": "tools/privacy",
       "targets": []
     }
@@ -15870,9 +15870,9 @@
       "binary": false,
       "component": "support:docs",
       "language": "markdown",
-      "lineCount": 63,
+      "lineCount": 64,
       "path": "docs/dev/public-privacy-guard.md",
-      "sizeBytes": 3080
+      "sizeBytes": 3127
     },
     {
       "binary": false,
@@ -23238,9 +23238,9 @@
       "binary": false,
       "component": "tool:privacy",
       "language": "python",
-      "lineCount": 1329,
+      "lineCount": 1418,
       "path": "tools/privacy/public_privacy_guard.py",
-      "sizeBytes": 52716
+      "sizeBytes": 55685
     },
     {
       "binary": false,
@@ -23254,9 +23254,9 @@
       "binary": false,
       "component": "tool:privacy",
       "language": "python",
-      "lineCount": 734,
+      "lineCount": 767,
       "path": "tools/privacy/tests/test_public_privacy_guard.py",
-      "sizeBytes": 28251
+      "sizeBytes": 29579
     },
     {
       "binary": false,
@@ -23333,7 +23333,7 @@
   ],
   "revision": {
     "branch": "fix/release-privacy-evidence",
-    "commit": "d0d2454f3eed76e57b685af88c3453ceabfbace7",
+    "commit": "e89024e1b00c85957fd433fe0475816de0155c62",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
@@ -23344,7 +23344,7 @@
     "fileIncludeEdges": 1534,
     "representedFiles": 1020,
     "sourceFiles": 650,
-    "sourceLines": 107691,
+    "sourceLines": 107813,
     "targets": 79,
     "trackedFiles": 1023
   },

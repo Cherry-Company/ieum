@@ -6,11 +6,11 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `d0d2454f3eed76e57b685af88c3453ceabfbace7`
+- Revision: `e89024e1b00c85957fd433fe0475816de0155c62`
 - Branch: `fix/release-privacy-evidence`
 - Tracked files: 1,023
 - Represented files: 1,020
-- Source files / lines: 650 / 107,691
+- Source files / lines: 650 / 107,813
 - Components / targets: 42 / 79
 - File include edges / component edges: 1,534 / 98
 
@@ -69,7 +69,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `lib:server` | library | Client proxies, input routing, screen topology, filters, and cursor transforms. | 46 | 9,891 | `server` |
 | `support:artwork` | resource | Brand artwork and documentation screenshots. | 5 | 253 | — |
 | `support:cmake` | build | Shared dependency, coverage, packaging, and signing CMake modules. | 4 | 746 | — |
-| `support:docs` | documentation | User, developer, security, design, release, audit, and generated documentation. | 32 | 4,979 | — |
+| `support:docs` | documentation | User, developer, security, design, release, audit, and generated documentation. | 32 | 4,980 | — |
 | `support:github` | automation | GitHub Actions workflows, composite actions, templates, and repository automation. | 27 | 4,050 | — |
 | `support:root` | support | Repository support files rooted at `.`. | 20 | 3,041 | — |
 | `support:source-build` | build | Repository support files rooted at `src`. | 3 | 170 | — |
@@ -89,7 +89,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `tool:codegraph` | tool | Developer or diagnostic tool rooted at `tools/codegraph.py`. | 1 | 945 | — |
 | `tool:generate-codegraph` | tool | Developer or diagnostic tool rooted at `tools/generate-codegraph.py`. | 1 | 64 | — |
 | `tool:merge-input-timeline` | tool | Developer or diagnostic tool rooted at `tools/merge-input-timeline.py`. | 1 | 67 | — |
-| `tool:privacy` | tool | Developer or diagnostic tool rooted at `tools/privacy`. | 6 | 2,321 | — |
+| `tool:privacy` | tool | Developer or diagnostic tool rooted at `tools/privacy`. | 6 | 2,443 | — |
 
 ## Graph semantics
 
