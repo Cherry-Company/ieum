@@ -2105,7 +2105,7 @@
         "powershell": 2,
         "yaml": 20
       },
-      "lineCount": 3934,
+      "lineCount": 3946,
       "path": ".github",
       "targets": []
     },
@@ -2368,7 +2368,7 @@
         "c": 1,
         "python": 1
       },
-      "lineCount": 354,
+      "lineCount": 363,
       "path": "tools/ci",
       "targets": []
     },
@@ -15326,9 +15326,9 @@
       "binary": false,
       "component": "support:github",
       "language": "powershell",
-      "lineCount": 924,
+      "lineCount": 936,
       "path": ".github/actions/test-package/test-windows-msi-upgrade.ps1",
-      "sizeBytes": 29298
+      "sizeBytes": 29710
     },
     {
       "binary": false,
@@ -23182,9 +23182,9 @@
       "binary": false,
       "component": "tool:ci",
       "language": "python",
-      "lineCount": 334,
+      "lineCount": 343,
       "path": "tools/ci/tests/test_analysis_workflows.py",
-      "sizeBytes": 14203
+      "sizeBytes": 14609
     },
     {
       "binary": false,
@@ -23333,7 +23333,7 @@
   ],
   "revision": {
     "branch": "fix/release-job-skip",
-    "commit": "7680f834d55380f2b1503fd79b4ef0ddbc3eccb3",
+    "commit": "a8e9281462284a2182e4ebf7a9de63d3cd8c8ce4",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
@@ -23344,7 +23344,7 @@
     "fileIncludeEdges": 1534,
     "representedFiles": 1020,
     "sourceFiles": 650,
-    "sourceLines": 107073,
+    "sourceLines": 107082,
     "targets": 79,
     "trackedFiles": 1023
   },
