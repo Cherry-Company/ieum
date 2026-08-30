@@ -8,6 +8,7 @@
 
 #include <ShlObj_core.h>
 #include <Windows.h>
+#include <objidl.h>
 #include <shellapi.h>
 
 #include <cstdlib>
@@ -21,8 +22,194 @@
 namespace {
 
 using deskflow::filetransfer::extractWindowsFileDrop;
+using deskflow::filetransfer::extractWindowsFileDropDataObject;
 using deskflow::filetransfer::WindowsFileDropError;
 using deskflow::filetransfer::WindowsFileDropLimits;
+
+class ReleaseTracker final : public IUnknown
+{
+public:
+  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID interfaceId, void **object) override
+  {
+    if (object == nullptr) {
+      return E_POINTER;
+    }
+    if (IsEqualIID(interfaceId, IID_IUnknown)) {
+      *object = static_cast<IUnknown *>(this);
+      AddRef();
+      return S_OK;
+    }
+    *object = nullptr;
+    return E_NOINTERFACE;
+  }
+
+  ULONG STDMETHODCALLTYPE AddRef() override
+  {
+    ++m_addRefCalls;
+    return ++m_refCount;
+  }
+
+  ULONG STDMETHODCALLTYPE Release() override
+  {
+    ++m_releaseCalls;
+    return --m_refCount;
+  }
+
+  [[nodiscard]] ULONG addRefCalls() const noexcept
+  {
+    return m_addRefCalls;
+  }
+
+  [[nodiscard]] ULONG releaseCalls() const noexcept
+  {
+    return m_releaseCalls;
+  }
+
+  [[nodiscard]] ULONG refCount() const noexcept
+  {
+    return m_refCount;
+  }
+
+private:
+  ULONG m_refCount = 1;
+  ULONG m_addRefCalls = 0;
+  ULONG m_releaseCalls = 0;
+};
+
+class FakeDataObject final : public IDataObject
+{
+public:
+  explicit FakeDataObject(HRESULT queryResult = S_OK, HRESULT getResult = S_OK)
+      : m_queryResult(queryResult),
+        m_getResult(getResult)
+  {
+  }
+
+  void setHGlobal(HGLOBAL handle, IUnknown *releaser)
+  {
+    m_medium = {};
+    m_medium.tymed = TYMED_HGLOBAL;
+    m_medium.hGlobal = handle;
+    m_medium.pUnkForRelease = releaser;
+  }
+
+  void setInvalidMedium(IUnknown *releaser)
+  {
+    m_medium = {};
+    m_medium.tymed = TYMED_NULL;
+    m_medium.pUnkForRelease = releaser;
+  }
+
+  [[nodiscard]] ULONG queryCalls() const noexcept
+  {
+    return m_queryCalls;
+  }
+
+  [[nodiscard]] ULONG getCalls() const noexcept
+  {
+    return m_getCalls;
+  }
+
+  [[nodiscard]] const FORMATETC &queryFormat() const noexcept
+  {
+    return m_queryFormat;
+  }
+
+  HRESULT STDMETHODCALLTYPE QueryInterface(REFIID interfaceId, void **object) override
+  {
+    if (object == nullptr) {
+      return E_POINTER;
+    }
+    if (IsEqualIID(interfaceId, IID_IUnknown) || IsEqualIID(interfaceId, IID_IDataObject)) {
+      *object = static_cast<IDataObject *>(this);
+      AddRef();
+      return S_OK;
+    }
+    *object = nullptr;
+    return E_NOINTERFACE;
+  }
+
+  ULONG STDMETHODCALLTYPE AddRef() override
+  {
+    return ++m_refCount;
+  }
+
+  ULONG STDMETHODCALLTYPE Release() override
+  {
+    return --m_refCount;
+  }
+
+  HRESULT STDMETHODCALLTYPE GetData(FORMATETC *format, STGMEDIUM *medium) override
+  {
+    ++m_getCalls;
+    if (format == nullptr || medium == nullptr) {
+      return E_POINTER;
+    }
+    if (m_getResult != S_OK) {
+      return m_getResult;
+    }
+
+    *medium = m_medium;
+    if (medium->pUnkForRelease != nullptr) {
+      medium->pUnkForRelease->AddRef();
+    }
+    return S_OK;
+  }
+
+  HRESULT STDMETHODCALLTYPE GetDataHere(FORMATETC *, STGMEDIUM *) override
+  {
+    return E_NOTIMPL;
+  }
+
+  HRESULT STDMETHODCALLTYPE QueryGetData(FORMATETC *format) override
+  {
+    ++m_queryCalls;
+    if (format == nullptr) {
+      return E_POINTER;
+    }
+    m_queryFormat = *format;
+    return m_queryResult;
+  }
+
+  HRESULT STDMETHODCALLTYPE GetCanonicalFormatEtc(FORMATETC *, FORMATETC *) override
+  {
+    return E_NOTIMPL;
+  }
+
+  HRESULT STDMETHODCALLTYPE SetData(FORMATETC *, STGMEDIUM *, BOOL) override
+  {
+    return E_NOTIMPL;
+  }
+
+  HRESULT STDMETHODCALLTYPE EnumFormatEtc(DWORD, IEnumFORMATETC **) override
+  {
+    return E_NOTIMPL;
+  }
+
+  HRESULT STDMETHODCALLTYPE DAdvise(FORMATETC *, DWORD, IAdviseSink *, DWORD *) override
+  {
+    return OLE_E_ADVISENOTSUPPORTED;
+  }
+
+  HRESULT STDMETHODCALLTYPE DUnadvise(DWORD) override
+  {
+    return OLE_E_ADVISENOTSUPPORTED;
+  }
+
+  HRESULT STDMETHODCALLTYPE EnumDAdvise(IEnumSTATDATA **) override
+  {
+    return OLE_E_ADVISENOTSUPPORTED;
+  }
+
+private:
+  ULONG m_refCount = 1;
+  ULONG m_queryCalls = 0;
+  ULONG m_getCalls = 0;
+  HRESULT m_queryResult;
+  HRESULT m_getResult;
+  FORMATETC m_queryFormat{};
+  STGMEDIUM m_medium{};
+};
 
 class DropBlock
 {
@@ -193,6 +380,90 @@ bool discardsEarlierPathsWhenALaterPathFails()
          expect(result.paths.empty(), "partial extraction is discarded");
 }
 
+bool rejectsNullUnsupportedAndFailedDataObjects()
+{
+  const auto nullResult = extractWindowsFileDropDataObject(nullptr);
+  if (!expect(nullResult.error == WindowsFileDropError::NullDataObject, "null data object error")) {
+    return false;
+  }
+
+  FakeDataObject unsupported(DV_E_FORMATETC);
+  const auto unsupportedResult = extractWindowsFileDropDataObject(&unsupported);
+  if (!expect(unsupportedResult.error == WindowsFileDropError::UnsupportedFormat, "unsupported format error") ||
+      !expect(unsupported.queryCalls() == 1, "unsupported format is queried once") ||
+      !expect(unsupported.getCalls() == 0, "unsupported format is not acquired")) {
+    return false;
+  }
+
+  FakeDataObject failed(S_OK, E_FAIL);
+  const auto failedResult = extractWindowsFileDropDataObject(&failed);
+  return expect(failedResult.error == WindowsFileDropError::DataRequestFailed, "failed GetData error") &&
+         expect(failed.queryCalls() == 1, "failed object is queried once") &&
+         expect(failed.getCalls() == 1, "failed object acquisition is attempted once") &&
+         expect(failedResult.paths.empty(), "failed acquisition has no paths");
+}
+
+bool extractsAndReleasesDataObjectPayload()
+{
+  const std::vector<std::wstring> paths = {L"C:\\첫 번째.txt", L"D:\\second.bin"};
+  const DropBlock drop(paths);
+  ReleaseTracker releaser;
+  FakeDataObject dataObject;
+  dataObject.setHGlobal(reinterpret_cast<HGLOBAL>(drop.get()), &releaser);
+
+  const auto result = extractWindowsFileDropDataObject(&dataObject);
+  const auto &format = dataObject.queryFormat();
+  return expect(result.ok(), "data object extraction succeeds") &&
+         expect(result.paths.size() == paths.size(), "data object returns every path") &&
+         expect(
+             result.paths[0].native() == paths[0] && result.paths[1].native() == paths[1],
+             "data object preserves path contents"
+         ) &&
+         expect(format.cfFormat == CF_HDROP, "CF_HDROP is requested") &&
+         expect(format.ptd == nullptr, "no target device is requested") &&
+         expect(format.dwAspect == DVASPECT_CONTENT, "content aspect is requested") &&
+         expect(format.lindex == -1, "all content is requested") &&
+         expect(format.tymed == TYMED_HGLOBAL, "HGLOBAL storage is requested") &&
+         expect(releaser.addRefCalls() == 1, "returned medium takes one release reference") &&
+         expect(releaser.releaseCalls() == 1, "successful medium is released once") &&
+         expect(releaser.refCount() == 1, "release reference is balanced");
+}
+
+bool releasesInvalidAndRejectedDataObjectPayloads()
+{
+  ReleaseTracker invalidReleaser;
+  FakeDataObject invalid;
+  invalid.setInvalidMedium(&invalidReleaser);
+  const auto invalidResult = extractWindowsFileDropDataObject(&invalid);
+  if (!expect(invalidResult.error == WindowsFileDropError::InvalidStorage, "invalid medium is rejected") ||
+      !expect(invalidReleaser.releaseCalls() == 1, "invalid medium is still released")) {
+    return false;
+  }
+
+  const DropBlock empty({});
+  ReleaseTracker emptyReleaser;
+  FakeDataObject emptyObject;
+  emptyObject.setHGlobal(reinterpret_cast<HGLOBAL>(empty.get()), &emptyReleaser);
+  const auto emptyResult = extractWindowsFileDropDataObject(&emptyObject);
+  return expect(emptyResult.error == WindowsFileDropError::EmptyDrop, "empty data-object payload is rejected") &&
+         expect(emptyReleaser.releaseCalls() == 1, "rejected payload medium is released") &&
+         expect(emptyResult.paths.empty(), "rejected payload has no paths");
+}
+
+bool forwardsLimitsAndReleasesDataObjectPayload()
+{
+  const DropBlock drop({L"C:\\one.txt", L"C:\\two.txt"});
+  ReleaseTracker releaser;
+  FakeDataObject dataObject;
+  dataObject.setHGlobal(reinterpret_cast<HGLOBAL>(drop.get()), &releaser);
+  const WindowsFileDropLimits limits{.maxItems = 1};
+
+  const auto result = extractWindowsFileDropDataObject(&dataObject, limits);
+  return expect(result.error == WindowsFileDropError::TooManyItems, "data-object item limit is forwarded") &&
+         expect(result.paths.empty(), "limited data-object result is atomic") &&
+         expect(releaser.releaseCalls() == 1, "limited data-object medium is released");
+}
+
 struct TestCase
 {
   const char *name;
@@ -211,6 +482,10 @@ int main()
       {"honorsItemLimitBoundary", honorsItemLimitBoundary},
       {"honorsPathLimitBoundary", honorsPathLimitBoundary},
       {"discardsEarlierPathsWhenALaterPathFails", discardsEarlierPathsWhenALaterPathFails},
+      {"rejectsNullUnsupportedAndFailedDataObjects", rejectsNullUnsupportedAndFailedDataObjects},
+      {"extractsAndReleasesDataObjectPayload", extractsAndReleasesDataObjectPayload},
+      {"releasesInvalidAndRejectedDataObjectPayloads", releasesInvalidAndRejectedDataObjectPayloads},
+      {"forwardsLimitsAndReleasesDataObjectPayload", forwardsLimitsAndReleasesDataObjectPayload},
   };
 
   int failures = 0;

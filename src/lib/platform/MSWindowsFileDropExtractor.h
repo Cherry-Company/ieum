@@ -10,6 +10,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif
 #include <Windows.h>
+#include <objidl.h>
 #include <shellapi.h>
 
 #include <cstddef>
@@ -29,10 +30,14 @@ enum class WindowsFileDropError
 {
   None,
   NullHandle,
+  NullDataObject,
   EmptyDrop,
   TooManyItems,
   PathTooLong,
   PathQueryFailed,
+  UnsupportedFormat,
+  DataRequestFailed,
+  InvalidStorage,
 };
 
 struct WindowsFileDropExtraction
@@ -48,5 +53,8 @@ struct WindowsFileDropExtraction
 };
 
 [[nodiscard]] WindowsFileDropExtraction extractWindowsFileDrop(HDROP drop, const WindowsFileDropLimits &limits = {});
+
+[[nodiscard]] WindowsFileDropExtraction
+extractWindowsFileDropDataObject(IDataObject *dataObject, const WindowsFileDropLimits &limits = {});
 
 } // namespace deskflow::filetransfer
