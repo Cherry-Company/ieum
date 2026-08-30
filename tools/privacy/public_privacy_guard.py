@@ -272,7 +272,435 @@ def archive_kind(data: bytes) -> Optional[str]:
     return None
 
 
-def scan_archive(state: ScanState, data: bytes, target: str, depth: int = 0) -> bool:
+def external_package_kind(path: Path, data: bytes) -> Optional[str]:
+    """Return the bounded external decoder required by a release package."""
+    name = path.name.casefold()
+    if data.startswith(b"flatpak\x00"):
+        return "flatpak"
+    if data.startswith(b"\x28\xb5\x2f\xfd"):
+        return "zstd"
+    sevenzip_magics = (
+        b"!<arch>\n",  # Debian ar container
+        b"\xed\xab\xee\xdb",  # RPM
+        b"7z\xbc\xaf'\x1c",
+        b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1",  # MSI compound file
+        b"MSCF",  # Cabinet
+        b"070701",  # new ASCII cpio
+        b"070702",  # CRC ASCII cpio
+        b"070707",  # old ASCII cpio
+    )
+    if data.startswith(sevenzip_magics) or name.endswith(".dmg"):
+        return "sevenzip"
+    return None
+
+
+def required_tool(*names: str) -> str:
+    for name in names:
+        candidate = shutil.which(name)
+        if candidate is None:
+            continue
+        resolved = Path(candidate).resolve()
+        if resolved.is_file():
+            return str(resolved)
+    raise CoverageError("required package inspection tool is unavailable")
+
+
+def tool_environment(home: Path) -> Dict[str, str]:
+    return {
+        "PATH": os.environ.get("PATH", "/usr/bin:/bin"),
+        "HOME": str(home),
+        "LC_ALL": "C",
+        "LANG": "C",
+        "XDG_CACHE_HOME": str(home / ".cache"),
+        "XDG_CONFIG_HOME": str(home / ".config"),
+        "XDG_DATA_HOME": str(home / ".local" / "share"),
+    }
+
+
+def process_limits(max_file_bytes: int, timeout_seconds: int):
+    if os.name != "posix":
+        return None
+
+    def apply_limits() -> None:
+        import resource
+
+        os.umask(0o077)
+        resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
+        resource.setrlimit(resource.RLIMIT_FSIZE, (max_file_bytes, max_file_bytes))
+        resource.setrlimit(
+            resource.RLIMIT_CPU,
+            (timeout_seconds, timeout_seconds + 1),
+        )
+
+    return apply_limits
+
+
+def run_bounded_tool(
+    command: Sequence[str],
+    cwd: Path,
+    env: Dict[str, str],
+    max_file_bytes: int,
+    capture_limit: int = 1024 * 1024,
+    timeout_seconds: int = 120,
+    allowed_return_codes: Sequence[int] = (0,),
+) -> Tuple[int, bytes, bytes]:
+    with tempfile.TemporaryFile() as stdout, tempfile.TemporaryFile() as stderr:
+        process = subprocess.Popen(
+            list(command),
+            cwd=str(cwd),
+            env=env,
+            stdin=subprocess.DEVNULL,
+            stdout=stdout,
+            stderr=stderr,
+            preexec_fn=process_limits(max_file_bytes, timeout_seconds),
+        )
+        try:
+            return_code = process.wait(timeout=timeout_seconds)
+        except subprocess.TimeoutExpired as exc:
+            process.kill()
+            process.wait()
+            raise CoverageError("package inspection tool timed out") from exc
+
+        stdout.flush()
+        stderr.flush()
+        stdout_size = os.fstat(stdout.fileno()).st_size
+        stderr_size = os.fstat(stderr.fileno()).st_size
+        if stdout_size > capture_limit or stderr_size > capture_limit:
+            raise CoverageError("package inspection tool output exceeds configured byte limit")
+        if return_code not in allowed_return_codes:
+            raise CoverageError("package inspection tool rejected the archive")
+        stdout.seek(0)
+        stderr.seek(0)
+        return return_code, stdout.read(), stderr.read()
+
+
+def scan_extracted_tree(
+    state: ScanState,
+    root: Path,
+    target: str,
+    depth: int,
+    allow_safe_links: bool = False,
+) -> None:
+    if depth >= state.limits.max_archive_depth:
+        raise CoverageError("archive nesting depth limit exceeded")
+    metadata = root.lstat()
+    if stat.S_ISLNK(metadata.st_mode) or not stat.S_ISDIR(metadata.st_mode):
+        raise CoverageError("package extractor did not produce a regular directory")
+
+    entries = sorted(root.rglob("*"), key=lambda item: item.relative_to(root).as_posix())
+    files = 0
+    seen: Set[str] = set()
+    for path in entries:
+        relative = safe_member_name(path.relative_to(root).as_posix())
+        if relative in seen:
+            raise CoverageError("archive contains duplicate member paths")
+        seen.add(relative)
+        entry = path.lstat()
+        if stat.S_ISLNK(entry.st_mode):
+            if not allow_safe_links:
+                raise CoverageError("archive contains a symlink member")
+            try:
+                link_name = os.readlink(path)
+                link_data = link_name.encode("utf-8")
+                resolved = (path.parent / link_name).resolve(strict=True)
+                resolved.relative_to(root.resolve())
+            except (OSError, RuntimeError, UnicodeEncodeError, ValueError) as exc:
+                raise CoverageError("archive contains an unsafe symlink member") from exc
+            resolved_entry = resolved.lstat()
+            if not (
+                stat.S_ISREG(resolved_entry.st_mode)
+                or stat.S_ISDIR(resolved_entry.st_mode)
+            ):
+                raise CoverageError("archive symlink resolves to an unsupported member")
+            state.archive_members += 1
+            scan_bytes(
+                state,
+                link_data,
+                target + "!/" + relative + "!/link-target",
+                "archive-link",
+            )
+            continue
+        if stat.S_ISDIR(entry.st_mode):
+            continue
+        if not stat.S_ISREG(entry.st_mode):
+            raise CoverageError("archive contains a link or special member")
+        files += 1
+        state.archive_members += 1
+        scan_file(
+            state,
+            path,
+            "archive-member",
+            depth=depth + 1,
+            target=target + "!/" + relative,
+        )
+    if files == 0:
+        raise CoverageError("package extractor produced no regular files")
+
+
+def scan_sevenzip_package(
+    state: ScanState,
+    path: Path,
+    target: str,
+    depth: int,
+    original_sha256: str,
+) -> None:
+    sevenzip = required_tool("7zz", "7z")
+    with tempfile.TemporaryDirectory(prefix="ieum-privacy-7z-") as temporary:
+        root = Path(temporary)
+        output = root / "output"
+        home = root / "home"
+        output.mkdir()
+        home.mkdir()
+        return_code, stdout, stderr = run_bounded_tool(
+            (
+                sevenzip,
+                "x",
+                "-y",
+                "-bd",
+                "-bb0",
+                "-aoa",
+                f"-o{output}",
+                "--",
+                str(path.resolve()),
+            ),
+            root,
+            tool_environment(home),
+            state.limits.max_member_bytes,
+            allowed_return_codes=(0, 1, 2)
+            if path.name.casefold().endswith(".dmg")
+            else (0,),
+        )
+        if return_code == 1:
+            combined = stdout + b"\n" + stderr
+            errors = [
+                line.strip()
+                for line in combined.splitlines()
+                if line.strip().startswith(b"ERROR:")
+            ]
+            prefix = b"ERROR: Dangerous link path was ignored : "
+            if not errors or any(not line.startswith(prefix) for line in errors):
+                raise CoverageError("package inspection tool reported an unsafe warning")
+            for index, line in enumerate(errors):
+                state.archive_members += 1
+                scan_bytes(
+                    state,
+                    line,
+                    f"{target}!/ignored-external-link-{index}",
+                    "archive-link",
+                )
+        if sha256_file(path) != original_sha256:
+            raise SecurityError("package inspection tool changed its input")
+        scan_extracted_tree(
+            state,
+            output,
+            target,
+            depth,
+            allow_safe_links=path.name.casefold().endswith(".dmg"),
+        )
+
+
+def scan_zstd_package(
+    state: ScanState,
+    path: Path,
+    target: str,
+    depth: int,
+    original_sha256: str,
+) -> None:
+    zstd = required_tool("zstd")
+    with tempfile.TemporaryDirectory(prefix="ieum-privacy-zstd-") as temporary:
+        root = Path(temporary)
+        home = root / "home"
+        home.mkdir()
+        _, expanded, _ = run_bounded_tool(
+            (
+                zstd,
+                "--decompress",
+                "--stdout",
+                "--quiet",
+                "--no-progress",
+                str(path.resolve()),
+            ),
+            root,
+            tool_environment(home),
+            state.limits.max_member_bytes,
+            capture_limit=state.limits.max_member_bytes,
+        )
+        if sha256_file(path) != original_sha256:
+            raise SecurityError("package inspection tool changed its input")
+        expanded_target = target + "!/zstd-payload"
+        state.archive_members += 1
+        scan_bytes(state, expanded, expanded_target, "archive-member")
+        if scan_archive(state, expanded, expanded_target, depth + 1):
+            return
+
+        payload = root / "zstd-payload"
+        payload.write_bytes(expanded)
+        payload.chmod(0o600)
+        nested_kind = external_package_kind(payload, expanded)
+        if nested_kind is None:
+            raise CoverageError("Zstandard payload is not a readable archive")
+        scan_external_package(
+            state,
+            payload,
+            expanded_target,
+            depth + 1,
+            nested_kind,
+            sha256_bytes(expanded),
+        )
+
+
+def scan_flatpak_package(
+    state: ScanState,
+    path: Path,
+    target: str,
+    depth: int,
+    original_sha256: str,
+) -> None:
+    flatpak = required_tool("flatpak")
+    ostree = required_tool("ostree")
+    with tempfile.TemporaryDirectory(prefix="ieum-privacy-flatpak-") as temporary:
+        root = Path(temporary)
+        repository = root / "repository"
+        home = root / "home"
+        home.mkdir()
+        env = tool_environment(home)
+        run_bounded_tool(
+            (ostree, f"--repo={repository}", "init", "--mode=archive-z2"),
+            root,
+            env,
+            state.limits.max_member_bytes,
+        )
+        run_bounded_tool(
+            (flatpak, "build-import-bundle", str(repository), str(path.resolve())),
+            root,
+            env,
+            state.limits.max_member_bytes,
+        )
+        _, refs_raw, _ = run_bounded_tool(
+            (ostree, f"--repo={repository}", "refs"),
+            root,
+            env,
+            state.limits.max_member_bytes,
+        )
+        try:
+            refs = [item for item in refs_raw.decode("utf-8").splitlines() if item]
+        except UnicodeDecodeError as exc:
+            raise CoverageError("Flatpak repository returned an undecodable ref") from exc
+        app_refs = sorted(item for item in refs if item.startswith("app/"))
+        if len(app_refs) != 1 or any(safe_member_name(item) != item for item in app_refs):
+            raise CoverageError("Flatpak bundle did not import exactly one safe app ref")
+
+        _, commit_raw, _ = run_bounded_tool(
+            (ostree, f"--repo={repository}", "rev-parse", app_refs[0]),
+            root,
+            env,
+            state.limits.max_member_bytes,
+        )
+        try:
+            commit = commit_raw.decode("ascii").strip()
+        except UnicodeDecodeError as exc:
+            raise CoverageError("Flatpak repository returned an invalid commit") from exc
+        if HEX_OID.fullmatch(commit) is None:
+            raise CoverageError("Flatpak repository returned an invalid commit")
+
+        _, exported, _ = run_bounded_tool(
+            (ostree, f"--repo={repository}", "export", commit),
+            root,
+            env,
+            state.limits.max_member_bytes,
+            capture_limit=state.limits.max_member_bytes,
+        )
+        if sha256_file(path) != original_sha256:
+            raise SecurityError("package inspection tool changed its input")
+        exported_target = target + "!/ostree-export.tar"
+        state.archive_members += 1
+        scan_bytes(state, exported, exported_target, "archive-member")
+        if not scan_archive(
+            state,
+            exported,
+            exported_target,
+            depth + 1,
+            allow_safe_links=True,
+        ):
+            raise CoverageError("Flatpak export is not a readable tar archive")
+
+
+def scan_external_package(
+    state: ScanState,
+    path: Path,
+    target: str,
+    depth: int,
+    kind: str,
+    original_sha256: str,
+) -> None:
+    if depth >= state.limits.max_archive_depth:
+        raise CoverageError("archive nesting depth limit exceeded")
+    if kind == "sevenzip":
+        scan_sevenzip_package(state, path, target, depth, original_sha256)
+    elif kind == "zstd":
+        scan_zstd_package(state, path, target, depth, original_sha256)
+    elif kind == "flatpak":
+        scan_flatpak_package(state, path, target, depth, original_sha256)
+    else:
+        raise CoverageError("unsupported package inspection tool")
+
+
+def resolve_archive_link(
+    member_name: str,
+    link_name: str,
+    hardlink: bool,
+    members: Dict[str, tarfile.TarInfo],
+) -> str:
+    def resolve_once(name: str, target: str, is_hardlink: bool) -> str:
+        normalized = target.replace("\\", "/")
+        if (
+            not normalized
+            or "\x00" in normalized
+            or normalized.startswith("/")
+            or re.match(r"^[A-Za-z]:/", normalized)
+        ):
+            raise CoverageError("archive contains an unsafe link target")
+        parts = [] if is_hardlink else list(PurePosixPath(name).parent.parts)
+        for part in PurePosixPath(normalized).parts:
+            if part in {"", "."}:
+                continue
+            if part == "..":
+                if not parts:
+                    raise CoverageError("archive link target escapes the archive root")
+                parts.pop()
+            else:
+                parts.append(part)
+        resolved_target = "/".join(parts)
+        if not resolved_target or resolved_target not in members:
+            raise CoverageError("archive link target is missing")
+        return resolved_target
+
+    visited = {member_name}
+    first = resolve_once(member_name, link_name, hardlink)
+    current = first
+    while True:
+        if current in visited:
+            raise CoverageError("archive contains a link cycle")
+        visited.add(current)
+        info = members[current]
+        if info.isfile() or info.isdir():
+            return first
+        if not (info.issym() or info.islnk()):
+            raise CoverageError("archive link resolves to an unsupported member")
+        current = resolve_once(
+            current,
+            info.linkname,
+            info.islnk(),
+        )
+
+
+def scan_archive(
+    state: ScanState,
+    data: bytes,
+    target: str,
+    depth: int = 0,
+    allow_safe_links: bool = False,
+) -> bool:
     kind = archive_kind(data)
     if kind is None:
         return False
@@ -324,13 +752,29 @@ def scan_archive(state: ScanState, data: bytes, target: str, depth: int = 0) -> 
     try:
         with tarfile.open(fileobj=io.BytesIO(data), mode="r:*") as archive:
             members = sorted(archive.getmembers(), key=lambda item: item.name)
-            seen = set()
+            seen: Set[str] = set()
+            named_members: List[Tuple[tarfile.TarInfo, str]] = []
             for info in members:
                 name = safe_member_name(info.name)
                 if name in seen:
                     raise CoverageError("archive contains duplicate member paths")
                 seen.add(name)
-                if info.issym() or info.islnk() or info.isdev() or info.isfifo():
+                named_members.append((info, name))
+            member_map = {name: info for info, name in named_members}
+            for info, name in named_members:
+                if info.issym() or info.islnk():
+                    if not allow_safe_links:
+                        raise CoverageError("archive contains a link or special member")
+                    resolve_archive_link(name, info.linkname, info.islnk(), member_map)
+                    try:
+                        link_data = info.linkname.encode("utf-8")
+                    except UnicodeEncodeError as exc:
+                        raise CoverageError("archive link target is undecodable") from exc
+                    child = target + "!/" + name + "!/link-target"
+                    state.archive_members += 1
+                    scan_bytes(state, link_data, child, "archive-link")
+                    continue
+                if info.isdev() or info.isfifo():
                     raise CoverageError("archive contains a link or special member")
                 if info.isdir():
                     continue
@@ -353,7 +797,15 @@ def scan_archive(state: ScanState, data: bytes, target: str, depth: int = 0) -> 
     return True
 
 
-def scan_file(state: ScanState, path: Path, target_kind: str, must_expand: bool = False) -> None:
+def scan_file(
+    state: ScanState,
+    path: Path,
+    target_kind: str,
+    must_expand: bool = False,
+    *,
+    depth: int = 0,
+    target: Optional[str] = None,
+) -> None:
     try:
         metadata = path.lstat()
     except FileNotFoundError as exc:
@@ -363,9 +815,21 @@ def scan_file(state: ScanState, path: Path, target_kind: str, must_expand: bool 
     if metadata.st_size > state.limits.max_member_bytes:
         raise CoverageError(f"required input exceeds configured byte limit: {path}")
     data = path.read_bytes()
-    target = str(path.resolve())
-    scan_bytes(state, data, target, target_kind)
-    expanded = scan_archive(state, data, target)
+    scan_target = target if target is not None else str(path.resolve())
+    scan_bytes(state, data, scan_target, target_kind)
+    expanded = scan_archive(state, data, scan_target, depth)
+    if not expanded:
+        external_kind = external_package_kind(path, data)
+        if external_kind is not None:
+            scan_external_package(
+                state,
+                path,
+                scan_target,
+                depth,
+                external_kind,
+                sha256_bytes(data),
+            )
+            expanded = True
     if must_expand and not expanded:
         raise CoverageError(f"required package/archive format is not safely expandable: {path.name}")
 

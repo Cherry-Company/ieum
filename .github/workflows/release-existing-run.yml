@@ -31,10 +31,10 @@ jobs:
       SOURCE_RUN_ID: ${{ inputs.source_run_id }}
 
     steps:
-      - name: Checkout the tagged source without persisted credentials
+      - name: Checkout release tooling without persisted credentials
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: ${{ inputs.tag }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -167,6 +167,19 @@ jobs:
               "$url" > "$evidence/source-$kind.response.json"
           done
 
+      - name: Prepare package privacy inspection tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v 7z >/dev/null
+          command -v zstd >/dev/null
+          if ! command -v flatpak >/dev/null || ! command -v ostree >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends flatpak ostree
+          fi
+          command -v flatpak >/dev/null
+          command -v ostree >/dev/null
+
       - name: Run exact release privacy gate
         id: release_privacy_gate
         continue-on-error: true
@@ -243,10 +256,10 @@ jobs:
       RELEASE_TAG: ${{ inputs.tag }}
 
     steps:
-      - name: Checkout the tagged source without persisted credentials
+      - name: Checkout release tooling without persisted credentials
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          ref: ${{ inputs.tag }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -269,6 +282,19 @@ jobs:
           chmod 600 "$deny_map"
           printf 'IEUM_PRIVATE_DENY_MAP=%s\n' "$deny_map" >> "$GITHUB_ENV"
           printf 'IEUM_PRIVATE_DENY_MAP_SHA256=%s\n' "$DENY_MAP_SHA256" >> "$GITHUB_ENV"
+
+      - name: Prepare package privacy inspection tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v 7z >/dev/null
+          command -v zstd >/dev/null
+          if ! command -v flatpak >/dev/null || ! command -v ostree >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends flatpak ostree
+          fi
+          command -v flatpak >/dev/null
+          command -v ostree >/dev/null
 
       - name: Download and bind live Release bytes
         shell: bash
