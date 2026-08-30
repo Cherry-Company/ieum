@@ -319,6 +319,11 @@ deskflow::InputLanguageStatus Client::inputLanguageStatus() const
   return m_screen->inputLanguageStatus();
 }
 
+bool Client::sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &message)
+{
+  return m_server != nullptr && m_server->sendFileTransferControl(message);
+}
+
 void Client::mouseDown(ButtonID id)
 {
   m_screen->mouseDown(id);

@@ -50,6 +50,11 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   EdgeHandoffDecision.h
   FileTransferControlCodec.cpp
   FileTransferControlCodec.h
+  FileTransferControlEvent.h
+  FileTransferControlProtocol.cpp
+  FileTransferControlProtocol.h
+  FileTransferControlRouting.cpp
+  FileTransferControlRouting.h
   FileTransferOfferValidator.cpp
   FileTransferOfferValidator.h
   FileTransferSourceManifest.cpp

@@ -14,6 +14,7 @@
 #include "deskflow/AppUtil.h"
 #include "deskflow/CanonicalScancode.h"
 #include "deskflow/DeskflowException.h"
+#include "deskflow/FileTransferControlEvent.h"
 #include "deskflow/IPlatformScreen.h"
 #include "deskflow/OptionTypes.h"
 #include "deskflow/PacketStreamFilter.h"
@@ -337,6 +338,46 @@ std::string Server::getName(const BaseClientProxy *client) const
     name = client->getName();
   }
   return name;
+}
+
+deskflow::filetransfer::FileTransferRouteResult Server::routeFileTransferControl(
+    BaseClientProxy *sender, const deskflow::filetransfer::FileTransferControlMessage &message
+)
+{
+  auto route = deskflow::filetransfer::resolveFileTransferControlDestination(message, getName(sender));
+  if (!route.ok()) {
+    return route;
+  }
+
+  const auto destination = m_clients.find(route.destinationScreen);
+  if (destination == m_clients.end()) {
+    route.error = deskflow::filetransfer::FileTransferRouteError::DestinationUnavailable;
+    return route;
+  }
+
+  auto *client = destination->second;
+  if (client == m_primaryClient) {
+    m_events->addEvent(Event(
+        EventTypes::FileTransferControlReceived, m_primaryClient->getEventTarget(),
+        new deskflow::filetransfer::FileTransferControlEventData(message)
+    ));
+    return route;
+  }
+
+  if (client->protocolMinorVersion() < kProtocolFileTransferControlMinorVersion) {
+    route.error = deskflow::filetransfer::FileTransferRouteError::DestinationUnsupported;
+    return route;
+  }
+  if (!client->sendFileTransferControl(message)) {
+    route.error = deskflow::filetransfer::FileTransferRouteError::DeliveryFailed;
+  }
+  return route;
+}
+
+deskflow::filetransfer::FileTransferRouteResult
+Server::sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &message)
+{
+  return routeFileTransferControl(m_primaryClient, message);
 }
 
 uint32_t Server::getActivePrimarySides() const

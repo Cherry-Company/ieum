@@ -17,6 +17,8 @@
 #include "deskflow/Clipboard.h"
 #include "deskflow/ClipboardChunk.h"
 #include "deskflow/DeskflowException.h"
+#include "deskflow/FileTransferControlEvent.h"
+#include "deskflow/FileTransferControlProtocol.h"
 #include "deskflow/OptionTypes.h"
 #include "deskflow/ProtocolTypes.h"
 #include "deskflow/ProtocolUtil.h"
@@ -27,6 +29,7 @@
 #include <bit>
 #include <chrono>
 #include <cstring>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -338,6 +341,10 @@ ServerProxy::ConnectionResult ServerProxy::parseMessage(const uint8_t *code)
     setClipboard();
   }
 
+  else if (memcmp(code, kMsgDFileTransferControl, 4) == 0) {
+    receiveFileTransferControl();
+  }
+
   else if (memcmp(code, kMsgCResetOptions, 4) == 0) {
     resetOptions();
   }
@@ -419,6 +426,26 @@ void ServerProxy::onClipboardChanged(ClipboardID id, const IClipboard *clipboard
   LOG_DEBUG("sending clipboard %d seqnum=%d", id, m_seqNum);
 
   StreamChunker::sendClipboard(data, data.size(), id, m_seqNum, m_events, this);
+}
+
+bool ServerProxy::sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &message)
+{
+  if (m_client->protocolMinorVersion() < kProtocolFileTransferControlMinorVersion) {
+    return false;
+  }
+  return deskflow::filetransfer::writeFileTransferControlFrame(m_stream, message).ok();
+}
+
+void ServerProxy::receiveFileTransferControl()
+{
+  auto received = deskflow::filetransfer::readFileTransferControlFrame(m_stream);
+  if (!received.ok()) {
+    throw BadClientException("invalid file-transfer control frame");
+  }
+  m_events->addEvent(Event(
+      EventTypes::FileTransferControlReceived, m_clientEventTarget,
+      new deskflow::filetransfer::FileTransferControlEventData(std::move(*received.message))
+  ));
 }
 
 void ServerProxy::flushCompressedMouse()

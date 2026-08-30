@@ -9,6 +9,7 @@
 #pragma once
 
 #include "deskflow/DisplayGeometry.h"
+#include "deskflow/FileTransferControlCodec.h"
 #include "deskflow/IClient.h"
 #include "deskflow/InputLanguageTypes.h"
 
@@ -189,6 +190,7 @@ public:
   bool rawKeyUp(KeyButton, KeyModifierMask);
   void inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target);
   deskflow::InputLanguageStatus inputLanguageStatus() const;
+  bool sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &message);
 
   //! Protocol minor version agreed with the server, 0 until the hello is done.
   int16_t protocolMinorVersion() const

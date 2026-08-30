@@ -45,13 +45,16 @@ static const int16_t kProtocolMajorVersion = 1;
  * @note When incrementing the minor version, the Deskflow application version should also increment
  * @since Protocol version 1.0
  */
-static const int16_t kProtocolMinorVersion = 11;
+static const int16_t kProtocolMinorVersion = 12;
 
 //! First minor version that negotiates the canonical-scancode button flag.
 static const int16_t kProtocolCanonicalScancodeMinorVersion = 10;
 
 //! First minor version that reports physical displays and foreground capture.
 static const int16_t kProtocolDisplayLayoutMinorVersion = 11;
+
+//! First minor version that carries bounded file-transfer control messages.
+static const int16_t kProtocolFileTransferControlMinorVersion = 12;
 
 /**
  * @brief Default TCP port for Deskflow connections
@@ -1064,6 +1067,21 @@ extern const char *const kMsgDFileTransfer;
  * @deprecated File drag and drop is no longer implemented.
  */
 extern const char *const kMsgDDragInfo;
+
+/**
+ * @brief Bounded file-transfer control message
+ *
+ * **Message Code**: `"DFTC"`
+ * **Direction**: Primary ↔ Secondary, relayed by the primary
+ * **Format**: `"DFTC%S"`
+ *
+ * The raw payload is a versioned file-transfer control codec message. The
+ * outer length is capped at 64 KiB before allocation. This metadata-only
+ * message replaces the deprecated path-bearing drag protocol.
+ *
+ * @since Protocol version 1.12
+ */
+extern const char *const kMsgDFileTransferControl;
 
 /** @} */ // end of protocol_files group
 
