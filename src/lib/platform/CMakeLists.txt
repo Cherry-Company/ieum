@@ -42,6 +42,8 @@ if(WIN32)
     MSWindowsDesks.h
     MSWindowsEventQueueBuffer.cpp
     MSWindowsEventQueueBuffer.h
+    MSWindowsFileDropExtractor.cpp
+    MSWindowsFileDropExtractor.h
     MSWindowsHook.cpp
     MSWindowsHook.h
     MSWindowsImeController.cpp
@@ -181,7 +183,7 @@ add_library(platform STATIC ${PLATFORM_SOURCES})
 target_link_libraries(platform client ${libs})
 
 if(WIN32)
-  target_link_libraries(platform dwmapi imm32)
+  target_link_libraries(platform dwmapi imm32 shell32)
 endif()
 
 if(UNIX)
