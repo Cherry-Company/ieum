@@ -325,9 +325,8 @@ MSWindowsFileTransferReadResult MSWindowsFileTransferReader::readNext()
   std::size_t received = 0;
   while (received < requested) {
     DWORD count = 0;
-    const auto next = static_cast<DWORD>(
-        (std::min)(requested - received, static_cast<std::size_t>((std::numeric_limits<DWORD>::max)()))
-    );
+    const auto next = static_cast<DWORD>((std::min)(requested - received,
+                                                    static_cast<std::size_t>((std::numeric_limits<DWORD>::max)())));
     if (ReadFile(m_impl->file.get(), result.bytes.data() + received, next, &count, nullptr) == 0) {
       m_impl->failed = true;
       return {.error = MSWindowsFileTransferIoError::ReadFailed};
@@ -547,9 +546,8 @@ MSWindowsFileTransferWriterMutation MSWindowsFileTransferWriter::writeChunk(cons
   std::size_t written = 0;
   while (written < message.bytes.size()) {
     DWORD count = 0;
-    const auto next = static_cast<DWORD>(
-        (std::min)(message.bytes.size() - written, static_cast<std::size_t>((std::numeric_limits<DWORD>::max)()))
-    );
+    const auto next = static_cast<DWORD>((std::min)(message.bytes.size() - written,
+                                                    static_cast<std::size_t>((std::numeric_limits<DWORD>::max)())));
     if (WriteFile(m_impl->currentFile.get(), message.bytes.data() + written, next, &count, nullptr) == 0 ||
         count == 0) {
       return m_impl->fail(MSWindowsFileTransferIoError::WriteFailed);

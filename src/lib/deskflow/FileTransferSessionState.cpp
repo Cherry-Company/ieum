@@ -154,13 +154,12 @@ FileTransferSessionRegistry::decideIncoming(TransferId id, FileTransferDecisionV
                                                                  : FileTransferSessionPhase::Rejected;
   return {
       .error = FileTransferSessionError::None,
-      .decision =
-          FileTransferDecision{
-              .id = id,
-              .sourceScreen = session->offer.sourceScreen,
-              .targetScreen = session->offer.targetScreen,
-              .decision = decision,
-          },
+      .decision = FileTransferDecision{
+          .id = id,
+          .sourceScreen = session->offer.sourceScreen,
+          .targetScreen = session->offer.targetScreen,
+          .decision = decision,
+      },
   };
 }
 

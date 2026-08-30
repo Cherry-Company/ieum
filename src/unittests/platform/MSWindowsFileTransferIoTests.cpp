@@ -273,23 +273,26 @@ void writerPublishesAtomicallyWithoutOverwritingExistingFiles()
   const auto route = routeFor(offer);
   require(created.writer->begin(FileTransferDataBegin{route}).ok(), "matching begin should start receiver");
   require(
-      created.writer->writeChunk(FileTransferDataChunk{.route = route, .itemIndex = 0, .offset = 0, .bytes = {'a', 'b'}}
-      ).ok(),
+      created.writer
+          ->writeChunk(FileTransferDataChunk{.route = route, .itemIndex = 0, .offset = 0, .bytes = {'a', 'b'}})
+          .ok(),
       "first sequential chunk should write"
   );
   require(
-      created.writer->writeChunk(FileTransferDataChunk{.route = route, .itemIndex = 0, .offset = 2, .bytes = {'c'}}
-      ).ok(),
+      created.writer->writeChunk(FileTransferDataChunk{.route = route, .itemIndex = 0, .offset = 2, .bytes = {'c'}})
+          .ok(),
       "last sequential chunk should write"
   );
   require(
       created.writer
-          ->endItem(FileTransferDataItemEnd{
-              .route = route,
-              .itemIndex = 0,
-              .size = 3,
-              .sha256 = digestFromHex("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"),
-          })
+          ->endItem(
+              FileTransferDataItemEnd{
+                  .route = route,
+                  .itemIndex = 0,
+                  .size = 3,
+                  .sha256 = digestFromHex("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"),
+              }
+          )
           .ok(),
       "matching item digest should seal the staged file"
   );
@@ -311,12 +314,14 @@ void writerSupportsVerifiedZeroByteFiles()
   require(created.ok() && created.writer->begin(FileTransferDataBegin{route}).ok(), "zero-byte receive should begin");
   require(
       created.writer
-          ->endItem(FileTransferDataItemEnd{
-              .route = route,
-              .itemIndex = 0,
-              .size = 0,
-              .sha256 = digestFromHex("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
-          })
+          ->endItem(
+              FileTransferDataItemEnd{
+                  .route = route,
+                  .itemIndex = 0,
+                  .size = 0,
+                  .sha256 = digestFromHex("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
+              }
+          )
           .ok(),
       "zero-byte item should seal without a chunk"
   );
@@ -349,9 +354,9 @@ void writerFailsClosedOnSequenceAndIntegrityErrors()
   );
   auto wrongDigest = digestFromHex("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
   wrongDigest[0] ^= 0xff;
-  const auto ended =
-      created.writer->endItem(FileTransferDataItemEnd{.route = route, .itemIndex = 0, .size = 3, .sha256 = wrongDigest}
-      );
+  const auto ended = created.writer->endItem(
+      FileTransferDataItemEnd{.route = route, .itemIndex = 0, .size = 3, .sha256 = wrongDigest}
+  );
   require(ended.error == MSWindowsFileTransferIoError::IntegrityMismatch, "wrong SHA-256 should abort");
   require(!hasStagingEntry(directory.path()), "integrity failure should remove staged data immediately");
   require(!std::filesystem::exists(directory.path() / L"failed.bin"), "integrity failure should publish nothing");
