@@ -6,11 +6,11 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `cead7ef85d4b44464524ecb867fb1fbca7f7b3f9`
-- Branch: `feat/pro-file-transfer-service`
-- Tracked files: 1,022
-- Represented files: 1,019
-- Source files / lines: 650 / 107,045
+- Revision: `7680f834d55380f2b1503fd79b4ef0ddbc3eccb3`
+- Branch: `fix/release-job-skip`
+- Tracked files: 1,023
+- Represented files: 1,020
+- Source files / lines: 650 / 107,073
 - Components / targets: 42 / 79
 - File include edges / component edges: 1,534 / 98
 
@@ -70,7 +70,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `support:artwork` | resource | Brand artwork and documentation screenshots. | 5 | 253 | — |
 | `support:cmake` | build | Shared dependency, coverage, packaging, and signing CMake modules. | 4 | 746 | — |
 | `support:docs` | documentation | User, developer, security, design, release, audit, and generated documentation. | 32 | 4,973 | — |
-| `support:github` | automation | GitHub Actions workflows, composite actions, templates, and repository automation. | 26 | 3,594 | — |
+| `support:github` | automation | GitHub Actions workflows, composite actions, templates, and repository automation. | 27 | 3,934 | — |
 | `support:root` | support | Repository support files rooted at `.`. | 20 | 3,041 | — |
 | `support:source-build` | build | Repository support files rooted at `src`. | 3 | 170 | — |
 | `support:translations` | localization | Qt translation catalogs and translation build rules. | 8 | 11,704 | — |
@@ -85,7 +85,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `test:platform` | test | Automated tests for the `platform` surface. | 14 | 1,832 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsFileDropExtractorTests`, `MSWindowsFileTransferIoTests`, `MSWindowsFileTransferSourceTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
 | `test:server` | test | Automated tests for the `server` surface. | 5 | 437 | `ServerConfigTests`, `ServerTests` |
 | `tool:cgtap-logger` | tool | Developer or diagnostic tool rooted at `tools/cgtap-logger`. | 1 | 108 | — |
-| `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 2 | 326 | — |
+| `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 2 | 354 | — |
 | `tool:codegraph` | tool | Developer or diagnostic tool rooted at `tools/codegraph.py`. | 1 | 945 | — |
 | `tool:generate-codegraph` | tool | Developer or diagnostic tool rooted at `tools/generate-codegraph.py`. | 1 | 64 | — |
 | `tool:merge-input-timeline` | tool | Developer or diagnostic tool rooted at `tools/merge-input-timeline.py`. | 1 | 67 | — |
