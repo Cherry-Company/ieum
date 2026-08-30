@@ -8,7 +8,7 @@
 
 **Tech Stack:** C++20, Qt 6 Test, OpenSSL, CMake/Ninja, WinSock, Python 3 code-graph tests.
 
-**Spec:** `docs/superpowers/specs/2026-08-23-production-commercialization-roadmap-design.md`
+**Spec:** `docs/product/commercialization-roadmap.md`
 
 ## Global Constraints
 

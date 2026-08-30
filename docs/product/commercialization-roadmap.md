@@ -1,4 +1,4 @@
-# Production and Commercialization Roadmap Design
+# Ieum Product and Commercialization Roadmap
 
 ## Purpose
 
@@ -102,7 +102,7 @@ This policy records an engineering decision and is not legal advice.
 | ---: | --- | --- | --- |
 | 1 | v1 reliability and audit-backlog closure | Repository audit and code graph merged | Issues #6–#38 closed with tests; required CI green; withheld security candidates privately revalidated |
 | 2 | Official release trust | Phase 1 complete | Windows signing, Apple Developer ID/notarization, signed update metadata, rollback drills, and published physical acceptance matrix |
-| 3 | Identity and subscription foundation | Phase 2 stable channel operating | OIDC login, device registration, entitlement cache, billing adapter, self-service account lifecycle, and community-offline behavior verified |
+| 3 | Pro foundation | Phase 2 stable channel operating | OIDC login, device registration, entitlement cache, billing adapter, drag-and-drop file-transfer beta, self-service account lifecycle, and community-offline behavior verified |
 | 4 | Hosted discovery and relay | Phase 3 identity and device identity stable | Authenticated rendezvous, end-to-end encrypted relay, abuse controls, regional health evidence, and direct-LAN fallback |
 | 5 | Teams administration | Phase 4 service SLOs measured | Organizations, roles, fleet inventory, policy rollout, audit export, retention controls, and tenant-isolation tests |
 | 6 | Enterprise readiness | Phase 5 team controls stable | SAML/OIDC federation, SCIM lifecycle, delegated administration, support tooling, disaster recovery evidence, and contractual SLO reporting |
@@ -125,6 +125,9 @@ changes into one review. The implementation order is:
 7. **Wayland/libei:** #24–#27.
 8. **macOS:** #29–#32.
 9. **Protocol documentation and translation quality:** #19, #37.
+
+As of 2026-08-30, 15 of these 33 issues are closed and 18 remain. The next
+ordered issue is #38, which moves Tailscale status queries off the GUI thread.
 
 Each issue begins with a failing regression test. A public issue is closed only
 after its relevant native lane passes. Platform-specific issues may merge with
@@ -173,6 +176,13 @@ plane. The desktop never handles raw card data and never embeds a provider
 secret. Required lifecycle cases are checkout, renewal, payment failure,
 cancellation, refund, plan change, grace expiry, webhook replay, and duplicate
 webhook delivery.
+
+The first planned Pro product feature is drag-and-drop file transfer between
+computers. Its desktop implementation and protocol remain in the public GPL
+repository. Official Pro distribution, hosted relay, device administration,
+and support form the paid boundary. Drag semantics, receiving-user approval,
+filename conflicts, transfer limits, cancellation, resumption, and platform
+integration require a separate approved design before implementation begins.
 
 ## Phase 4: Discovery and Relay
 
@@ -231,9 +241,9 @@ stable. It adds:
 - Every paid capability has an observable community/offline fallback and a
   documented support boundary.
 
-## Immediate Implementation Slice
+## Immediate Implementation Slices
 
-The first executable slice is issue #6: connection-local TLS write-retry state,
-allocation-safe retry buffering, and Windows writable-poll reset. Its detailed
-test-first plan is
-`docs/superpowers/plans/2026-08-23-secure-socket-write-reliability.md`.
+Phase 1 continues in the issue order above, starting with #38 and then the
+remaining Windows, X11, Wayland, macOS, protocol-documentation, and translation
+work. The Pro file-transfer design proceeds as a separate planning track, but
+its implementation does not ship before the Phase 1 and Phase 2 exit gates.
