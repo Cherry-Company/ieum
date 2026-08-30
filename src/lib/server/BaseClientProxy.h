@@ -8,6 +8,7 @@
 #pragma once
 
 #include "deskflow/DisplayGeometry.h"
+#include "deskflow/FileTransferControlCodec.h"
 #include "deskflow/IClient.h"
 #include "deskflow/InputLanguageTypes.h"
 
@@ -80,6 +81,10 @@ public:
   void setOptions(const OptionsList &options) override = 0;
   virtual void sendDragInfo(uint32_t fileCount, const char *info, size_t size) = 0;
   virtual void fileChunkSending(uint8_t mark, char *data, size_t dataSize) = 0;
+  virtual bool sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &)
+  {
+    return false;
+  }
   virtual std::string getSecureInputApp() const = 0;
   virtual void secureInputNotification(const std::string &app) const = 0;
   virtual int16_t protocolMinorVersion() const

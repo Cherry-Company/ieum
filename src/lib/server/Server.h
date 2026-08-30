@@ -13,6 +13,7 @@
 #include "common/NetworkProtocol.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/ClipboardTypes.h"
+#include "deskflow/FileTransferControlRouting.h"
 #include "deskflow/InputLanguageTypes.h"
 #include "deskflow/KeyTypes.h"
 #include "deskflow/MouseTypes.h"
@@ -202,6 +203,10 @@ public:
   void sendConnectedClientsIpc() const;
   size_t getMaximumClipboardSizeBytes() const;
   void onInputLanguageStatus(BaseClientProxy *client, const deskflow::InputLanguageStatus &status) const;
+  deskflow::filetransfer::FileTransferRouteResult
+  routeFileTransferControl(BaseClientProxy *sender, const deskflow::filetransfer::FileTransferControlMessage &message);
+  deskflow::filetransfer::FileTransferRouteResult
+  sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &message);
 
   //@}
 

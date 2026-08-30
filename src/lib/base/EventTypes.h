@@ -236,6 +236,9 @@ enum class EventTypes : uint32_t
   /// The active OS input source changed. Event data is InputLanguageStatus.
   InputLanguageChanged,
 
+  /// A bounded file-transfer control message arrived for the local screen.
+  FileTransferControlReceived,
+
   /// Start libei
   EIConnected,
 
