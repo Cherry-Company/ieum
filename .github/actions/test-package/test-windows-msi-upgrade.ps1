@@ -599,15 +599,27 @@ function Assert-UserStartupRegistration {
   }
 }
 
-$previousRevision = if ($CurrentTag -like 'v*') {
+$searchRevision = if ($CurrentTag -like 'v*') {
   "$CurrentTag^"
 }
 else {
   'HEAD'
 }
-$previousTag = (& git describe --tags --abbrev=0 $previousRevision).Trim()
-if ([string]::IsNullOrWhiteSpace($previousTag)) {
-  throw "Could not determine the release before $CurrentTag"
+$previousTag = $null
+while ([string]::IsNullOrWhiteSpace($previousTag)) {
+  $candidateTag = (& git describe --tags --abbrev=0 $searchRevision 2>$null).Trim()
+  if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($candidateTag)) {
+    throw "Could not determine a published release before $CurrentTag"
+  }
+
+  & gh release view $candidateTag --repo $Repository --json tagName 1>$null 2>$null
+  if ($LASTEXITCODE -eq 0) {
+    $previousTag = $candidateTag
+    break
+  }
+
+  Write-Host "Skipping unpublished tag $candidateTag while selecting the upgrade baseline"
+  $searchRevision = "$candidateTag^"
 }
 
 $currentMsi = Get-Item -LiteralPath (

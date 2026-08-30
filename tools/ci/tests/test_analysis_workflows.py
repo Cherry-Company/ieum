@@ -204,6 +204,15 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
         self.assertIn("always() && needs.release.result == 'success'", post_fetch)
         self.assertIn("startsWith(github.ref, 'refs/tags/v')", post_fetch)
 
+    def test_windows_upgrade_uses_the_previous_published_release(self) -> None:
+        script = read_repository_file(
+            ".github/actions/test-package/test-windows-msi-upgrade.ps1"
+        )
+
+        self.assertIn("gh release view $candidateTag", script)
+        self.assertIn("Skipping unpublished tag $candidateTag", script)
+        self.assertIn('$searchRevision = "$candidateTag^"', script)
+
     def test_valgrind_workflow_proves_invalid_access_fails(self) -> None:
         workflow = read_workflow("valgrind-analysis.yml")
         fixture_path = "tools/ci/fixtures/valgrind-invalid-access.c"
