@@ -67,6 +67,7 @@ using namespace deskflow::gui;
 MainWindow::MainWindow()
     : ui{std::make_unique<Ui::MainWindow>()},
       m_coreProcess(m_serverConfig),
+      m_tailscaleIntegration{new deskflow::network::TailscaleIntegration(this)},
       m_trayIcon{new QSystemTrayIcon(this)},
       m_trayRepairTimer{new QTimer(this)},
       m_guiDupeChecker{new QLocalServer(this)},
@@ -155,6 +156,14 @@ MainWindow::MainWindow()
   setupControls();
   updateText();
   connectSlots();
+  connect(
+      m_tailscaleIntegration, &deskflow::network::TailscaleIntegration::queryStarted, this,
+      &MainWindow::tailscaleQueryStarted
+  );
+  connect(
+      m_tailscaleIntegration, &deskflow::network::TailscaleIntegration::queryFinished, this,
+      &MainWindow::tailscaleQueryFinished
+  );
   setupTrayIcon();
 #ifdef Q_OS_MACOS
   macOSInstallApplicationReopenHandler(this);
@@ -540,13 +549,26 @@ void MainWindow::startCore()
   tryStartCore(true);
 }
 
-bool MainWindow::tryStartCore(bool interactive)
+void MainWindow::tryStartCore(bool interactive)
 {
   if (m_coreProcess.processState() != ProcessState::Stopped) {
-    return true;
+    return;
   }
-  if (!prepareTailscale(interactive)) {
-    return false;
+
+  if (Settings::value(Settings::Core::UseTailscale).toBool()) {
+    requestTailscale(
+        interactive ? TailscaleAction::StartInteractive : TailscaleAction::StartAutomatic, interactive ? 2000 : 750
+    );
+    return;
+  }
+
+  startCoreProcess();
+}
+
+void MainWindow::startCoreProcess()
+{
+  if (m_coreProcess.processState() != ProcessState::Stopped) {
+    return;
   }
   if (m_coreProcess.mode() == CoreMode::Server) {
     recordServerStartNetwork();
@@ -555,7 +577,14 @@ bool MainWindow::tryStartCore(bool interactive)
   m_actionStartCore->setVisible(false);
   m_actionRestartCore->setVisible(true);
   m_coreProcess.start();
-  return true;
+}
+
+void MainWindow::restartCoreProcess()
+{
+  if (m_coreProcess.mode() == CoreMode::Server) {
+    recordServerStartNetwork();
+  }
+  m_coreProcess.restart();
 }
 
 void MainWindow::autoStartCore()
@@ -573,9 +602,7 @@ void MainWindow::autoStartCore()
     return;
   }
   m_automaticStartPending = true;
-  if (!tryStartCore(false)) {
-    scheduleAutoStartRetry();
-  }
+  tryStartCore(false);
 }
 
 void MainWindow::scheduleAutoStartRetry()
@@ -596,6 +623,14 @@ void MainWindow::stopCore()
   m_autoStartRetryTimer->stop();
   m_autoStartRetryCount = 0;
   m_automaticStartPending = false;
+  m_pendingTailscaleAction = TailscaleAction::None;
+  m_tailscaleIntegration->cancel();
+  ui->btnRefreshTailscalePeers->setEnabled(
+      Settings::value(Settings::Core::UseTailscale).toBool() && m_coreProcess.mode() == CoreMode::Client
+  );
+  if (ui->comboTailscalePeer->isVisible()) {
+    ui->comboTailscalePeer->setEnabled(m_tailscaleReady);
+  }
   Settings::setValue(Settings::Gui::AutoStartCore, false);
   Settings::save(false);
   m_coreProcess.stop();
@@ -790,13 +825,11 @@ void MainWindow::openSettings()
 
 void MainWindow::resetCore()
 {
-  if (!prepareTailscale()) {
+  if (Settings::value(Settings::Core::UseTailscale).toBool()) {
+    requestTailscale(TailscaleAction::Restart);
     return;
   }
-  if (m_coreProcess.mode() == CoreMode::Server) {
-    recordServerStartNetwork();
-  }
-  m_coreProcess.restart();
+  restartCoreProcess();
 }
 
 void MainWindow::showMyFingerprint()
@@ -1661,8 +1694,7 @@ void MainWindow::refreshTailscalePeers()
     return;
   }
 
-  const auto status = deskflow::network::TailscaleIntegration::query();
-  populateTailscalePeers(status);
+  requestTailscale(TailscaleAction::RefreshPeers);
 }
 
 void MainWindow::populateTailscalePeers(const deskflow::network::TailscaleStatus &status)
@@ -1770,19 +1802,71 @@ void MainWindow::updateTailscaleControls(bool refreshPeers)
   ui->lineHostname->setVisible(!showPeerPicker);
   ui->comboTailscalePeer->setVisible(showPeerPicker);
   ui->btnRefreshTailscalePeers->setVisible(showPeerPicker);
+  ui->btnRefreshTailscalePeers->setEnabled(showPeerPicker && !m_tailscaleIntegration->isQuerying());
 
   if (showPeerPicker && refreshPeers) {
     refreshTailscalePeers();
   }
 }
 
-bool MainWindow::prepareTailscale(bool interactive)
+void MainWindow::requestTailscale(TailscaleAction action, int timeoutMs)
+{
+  if (action != TailscaleAction::RefreshPeers || m_pendingTailscaleAction == TailscaleAction::None) {
+    m_pendingTailscaleAction = action;
+  }
+  m_tailscaleIntegration->query(timeoutMs);
+}
+
+void MainWindow::tailscaleQueryStarted()
+{
+  ui->btnRefreshTailscalePeers->setEnabled(false);
+  if (ui->comboTailscalePeer->isVisible()) {
+    ui->comboTailscalePeer->setEnabled(false);
+  }
+  toggleCanRunCore(false);
+}
+
+void MainWindow::tailscaleQueryFinished(const deskflow::network::TailscaleStatus &status)
+{
+  const auto action = m_pendingTailscaleAction;
+  m_pendingTailscaleAction = TailscaleAction::None;
+  ui->btnRefreshTailscalePeers->setEnabled(
+      Settings::value(Settings::Core::UseTailscale).toBool() && m_coreProcess.mode() == CoreMode::Client
+  );
+
+  if (action == TailscaleAction::RefreshPeers || action == TailscaleAction::None) {
+    if (m_coreProcess.mode() == CoreMode::Client) {
+      populateTailscalePeers(status);
+    } else {
+      m_tailscaleReady = status.isReady();
+      toggleCanRunCore(canRunCore());
+    }
+    return;
+  }
+
+  const bool interactive = action != TailscaleAction::StartAutomatic;
+  if (!prepareTailscale(status, interactive)) {
+    toggleCanRunCore(canRunCore());
+    if (action == TailscaleAction::StartAutomatic) {
+      m_automaticStartPending = false;
+      scheduleAutoStartRetry();
+    }
+    return;
+  }
+
+  if (action == TailscaleAction::Restart) {
+    restartCoreProcess();
+  } else {
+    startCoreProcess();
+  }
+}
+
+bool MainWindow::prepareTailscale(const deskflow::network::TailscaleStatus &status, bool interactive)
 {
   if (!Settings::value(Settings::Core::UseTailscale).toBool()) {
     return true;
   }
 
-  const auto status = deskflow::network::TailscaleIntegration::query(interactive ? 2000 : 750);
   if (m_coreProcess.mode() == CoreMode::Client) {
     populateTailscalePeers(status);
   } else {

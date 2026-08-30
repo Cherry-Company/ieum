@@ -1871,7 +1871,7 @@
         "cmake": 1,
         "template": 2
       },
-      "lineCount": 2396,
+      "lineCount": 2683,
       "path": "src/lib/common",
       "targets": [
         "common"
@@ -1903,7 +1903,7 @@
         "objective-c++": 1,
         "qt-ui": 8
       },
-      "lineCount": 17610,
+      "lineCount": 17771,
       "path": "src/lib/gui",
       "targets": [
         "gui"
@@ -2130,7 +2130,7 @@
         "c/c++ header": 5,
         "cmake": 1
       },
-      "lineCount": 705,
+      "lineCount": 942,
       "path": "src/unittests/common",
       "targets": [
         "I18NTests",
@@ -2747,6 +2747,7 @@
         "src/apps/deskflow-daemon/deskflow-daemon.cpp",
         "src/lib/common/I18N.cpp",
         "src/lib/common/Settings.cpp",
+        "src/lib/common/TailscaleIntegration.cpp",
         "src/lib/gui/Diagnostic.cpp",
         "src/lib/gui/ProductIdentity.h",
         "src/lib/gui/StartupManager.cpp",
@@ -3366,6 +3367,7 @@
         "src/lib/common/I18N.h",
         "src/lib/common/LogLevel.h",
         "src/lib/common/NetworkProtocol.h",
+        "src/lib/common/TailscaleIntegration.h",
         "src/lib/deskflow/App.h",
         "src/lib/deskflow/ipc/CoreIpcServer.h",
         "src/lib/deskflow/ipc/DaemonIpcServer.h",
@@ -3425,6 +3427,7 @@
       "name": "QPointer",
       "sources": [
         "src/apps/deskflow-daemon/DaemonApp.cpp",
+        "src/lib/common/TailscaleIntegration.cpp",
         "src/lib/deskflow/ipc/DaemonIpcServer.h",
         "src/lib/gui/OSXHelpers.mm"
       ]
@@ -3588,6 +3591,7 @@
         "src/unittests/common/I18NTests.cpp",
         "src/unittests/common/LogLevelTests.cpp",
         "src/unittests/common/SettingsTests.cpp",
+        "src/unittests/common/TailscaleIntegrationTests.cpp",
         "src/unittests/deskflow/IpcServerTests.cpp",
         "src/unittests/gui/FileTailTests.cpp",
         "src/unittests/gui/IpcClientTests.cpp",
@@ -3831,6 +3835,7 @@
       "name": "QTimer",
       "sources": [
         "src/apps/deskflow-gui/deskflow-gui.cpp",
+        "src/lib/common/TailscaleIntegration.h",
         "src/lib/gui/FileTail.cpp",
         "src/lib/gui/MainWindow.cpp",
         "src/lib/gui/core/CoreProcess.h",
@@ -3841,6 +3846,7 @@
         "src/lib/gui/ipc/IpcClient.h",
         "src/lib/gui/widgets/LogWidget.h",
         "src/lib/gui/widgets/StatusBar.cpp",
+        "src/unittests/common/TailscaleIntegrationTests.cpp",
         "src/unittests/gui/IpcClientTests.cpp"
       ]
     },
@@ -4569,6 +4575,7 @@
         "src/lib/arch/win32/ArchDaemonWindows.h",
         "src/lib/arch/win32/ArchMiscWindows.h",
         "src/lib/base/IEventQueue.h",
+        "src/lib/common/TailscaleIntegration.h",
         "src/lib/platform/MSWindowsWatchdog.h",
         "src/unittests/client/ServerProxyTests.cpp"
       ]
@@ -4793,6 +4800,7 @@
       "sources": [
         "src/lib/arch/unix/ArchNetworkBSD.h",
         "src/lib/base/EventQueue.h",
+        "src/lib/common/TailscaleIntegration.h",
         "src/lib/deskflow/App.h",
         "src/lib/deskflow/ClientApp.cpp",
         "src/lib/deskflow/ServerApp.h",
@@ -4811,6 +4819,7 @@
         "src/lib/platform/OSXScreen.h",
         "src/lib/server/ClientListener.h",
         "src/unittests/base/EventQueueTests.cpp",
+        "src/unittests/common/TailscaleIntegrationTests.cpp",
         "src/unittests/gui/ScreenSetupModelTests.cpp",
         "src/unittests/legacytests/legacytests/arch/unix/ArchNetworkBSDTests.cpp",
         "src/unittests/legacytests/shared/ExitTimeout.cpp",
@@ -5283,8 +5292,10 @@
       "sources": [
         "src/lib/base/FinalAction.h",
         "src/lib/common/NetworkInterfaces.cpp",
+        "src/lib/common/TailscaleIntegration.cpp",
         "src/lib/deskflow/InputLanguageTypes.h",
         "src/lib/platform/PortalInputCapture.h",
+        "src/unittests/common/TailscaleIntegrationTests.cpp",
         "src/unittests/gui/ServerConfigDialogTests.cpp"
       ]
     },
@@ -5325,6 +5336,7 @@
         "src/lib/server/CursorTransform.h",
         "src/lib/server/Server.h",
         "src/unittests/client/ServerProxyTests.cpp",
+        "src/unittests/common/TailscaleIntegrationTests.cpp",
         "src/unittests/deskflow/Protocol19Tests.cpp"
       ]
     },
@@ -17241,17 +17253,17 @@
       "binary": false,
       "component": "lib:common",
       "language": "c++",
-      "lineCount": 233,
+      "lineCount": 463,
       "path": "src/lib/common/TailscaleIntegration.cpp",
-      "sizeBytes": 7828
+      "sizeBytes": 13265
     },
     {
       "binary": false,
       "component": "lib:common",
       "language": "c/c++ header",
-      "lineCount": 60,
+      "lineCount": 117,
       "path": "src/lib/common/TailscaleIntegration.h",
-      "sizeBytes": 1257
+      "sizeBytes": 2998
     },
     {
       "binary": false,
@@ -18001,17 +18013,17 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 1954,
+      "lineCount": 2038,
       "path": "src/lib/gui/MainWindow.cpp",
-      "sizeBytes": 66426
+      "sizeBytes": 69090
     },
     {
       "binary": false,
       "component": "lib:gui",
       "language": "c/c++ header",
-      "lineCount": 260,
+      "lineCount": 277,
       "path": "src/lib/gui/MainWindow.h",
-      "sizeBytes": 7582
+      "sizeBytes": 8197
     },
     {
       "binary": false,
@@ -18409,17 +18421,17 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 806,
+      "lineCount": 860,
       "path": "src/lib/gui/dialogs/SettingsDialog.cpp",
-      "sizeBytes": 40166
+      "sizeBytes": 41863
     },
     {
       "binary": false,
       "component": "lib:gui",
       "language": "c/c++ header",
-      "lineCount": 99,
+      "lineCount": 105,
       "path": "src/lib/gui/dialogs/SettingsDialog.h",
-      "sizeBytes": 2588
+      "sizeBytes": 2901
     },
     {
       "binary": false,
@@ -20769,17 +20781,17 @@
       "binary": false,
       "component": "test:common",
       "language": "c++",
-      "lineCount": 84,
+      "lineCount": 315,
       "path": "src/unittests/common/TailscaleIntegrationTests.cpp",
-      "sizeBytes": 2737
+      "sizeBytes": 8447
     },
     {
       "binary": false,
       "component": "test:common",
       "language": "c/c++ header",
-      "lineCount": 20,
+      "lineCount": 26,
       "path": "src/unittests/common/TailscaleIntegrationTests.h",
-      "sizeBytes": 434
+      "sizeBytes": 670
     },
     {
       "binary": false,
@@ -21647,9 +21659,9 @@
     }
   ],
   "revision": {
-    "branch": "fix/screen-grid-bounds",
-    "commit": "487fcd08f7d7d219819db45e13afb91345a59705",
-    "dirtyTrackedFiles": false
+    "branch": "fix/tailscale-async-query",
+    "commit": "54830a475e08eb2daafae96e5a58a908457db49a",
+    "dirtyTrackedFiles": true
   },
   "schemaVersion": 1,
   "summary": {
@@ -21659,7 +21671,7 @@
     "fileIncludeEdges": 1416,
     "representedFiles": 957,
     "sourceFiles": 598,
-    "sourceLines": 96816,
+    "sourceLines": 97501,
     "targets": 66,
     "trackedFiles": 960
   },

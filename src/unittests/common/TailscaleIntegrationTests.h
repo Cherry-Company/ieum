@@ -17,4 +17,10 @@ private Q_SLOTS:
   void parsesLoginState();
   void parsesMachineAuthorizationState();
   void rejectsMalformedStatus();
+  void queryKeepsEventLoopResponsive();
+  void hungQueryTimesOut();
+  void duplicateQueriesAreCoalesced();
+  void lateCompletionDoesNotReplaceNewerQuery();
+  void destructionIgnoresLateCompletion();
+  void completedQueryParsesStatus();
 };
