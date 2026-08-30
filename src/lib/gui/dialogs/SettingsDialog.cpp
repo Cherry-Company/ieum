@@ -47,7 +47,8 @@ void selectComboData(QComboBox *combo, const QString &data, const QString &fallb
 SettingsDialog::SettingsDialog(QWidget *parent, const ServerConfig &serverConfig)
     : QDialog(parent),
       ui{std::make_unique<Ui::SettingsDialog>()},
-      m_serverConfig(serverConfig)
+      m_serverConfig(serverConfig),
+      m_tailscaleIntegration{new deskflow::network::TailscaleIntegration(this)}
 {
 
   ui->setupUi(this);
@@ -95,6 +96,15 @@ SettingsDialog::SettingsDialog(QWidget *parent, const ServerConfig &serverConfig
       !interface.isEmpty() && (ui->comboInterface->findData(interface) == -1)) {
     ui->comboInterface->addItem(interface, interface);
   }
+
+  connect(
+      m_tailscaleIntegration, &deskflow::network::TailscaleIntegration::queryStarted, this,
+      &SettingsDialog::tailscaleQueryStarted
+  );
+  connect(
+      m_tailscaleIntegration, &deskflow::network::TailscaleIntegration::queryFinished, this,
+      &SettingsDialog::tailscaleQueryFinished
+  );
 
   loadFromConfig();
   logLevelChanged();
@@ -197,17 +207,22 @@ void SettingsDialog::tailscaleToggled(bool enabled)
       m_previousNetworkCaptured = true;
     }
     updateTailscaleStatus();
-    if (m_tailscaleStatus.isReady()) {
-      applyTailscalePreset();
+  } else {
+    m_acceptAfterTailscaleCheck = false;
+    m_tailscaleIntegration->cancel();
+    m_tailscaleQueryInProgress = false;
+    m_tailscaleStatusChecked = false;
+    if (m_previousNetworkCaptured) {
+      if (!m_previousInterface.isEmpty() && ui->comboInterface->findData(m_previousInterface) < 0) {
+        ui->comboInterface->addItem(m_previousInterface, m_previousInterface);
+      }
+      const auto interfaceIndex = m_previousInterface.isEmpty() ? 0 : ui->comboInterface->findData(m_previousInterface);
+      ui->comboInterface->setCurrentIndex(interfaceIndex < 0 ? 0 : interfaceIndex);
+      ui->cbPreferPhysicalNetwork->setChecked(m_previousPreferPhysical);
+      ui->sbPort->setValue(m_previousPort);
     }
-  } else if (m_previousNetworkCaptured) {
-    if (!m_previousInterface.isEmpty() && ui->comboInterface->findData(m_previousInterface) < 0) {
-      ui->comboInterface->addItem(m_previousInterface, m_previousInterface);
-    }
-    const auto interfaceIndex = m_previousInterface.isEmpty() ? 0 : ui->comboInterface->findData(m_previousInterface);
-    ui->comboInterface->setCurrentIndex(interfaceIndex < 0 ? 0 : interfaceIndex);
-    ui->cbPreferPhysicalNetwork->setChecked(m_previousPreferPhysical);
-    ui->sbPort->setValue(m_previousPort);
+    ui->lblTailscaleStatus->setText(tailscaleStatusText());
+    ui->lblTailscaleStatus->setToolTip(QString());
   }
 
   updateControls();
@@ -216,13 +231,36 @@ void SettingsDialog::tailscaleToggled(bool enabled)
 
 void SettingsDialog::updateTailscaleStatus()
 {
-  m_tailscaleStatus = deskflow::network::TailscaleIntegration::query();
+  m_tailscaleIntegration->query();
+}
+
+void SettingsDialog::tailscaleQueryStarted()
+{
+  m_tailscaleQueryInProgress = true;
+  m_tailscaleStatusChecked = false;
+  ui->lblTailscaleStatus->setText(tr("Checking Tailscale..."));
+  ui->lblTailscaleStatus->setToolTip(QString());
+  updateControls();
+  setButtonBoxEnabledButtons();
+}
+
+void SettingsDialog::tailscaleQueryFinished(const deskflow::network::TailscaleStatus &status)
+{
+  m_tailscaleStatus = status;
+  m_tailscaleQueryInProgress = false;
   m_tailscaleStatusChecked = true;
   ui->lblTailscaleStatus->setText(tailscaleStatusText());
   ui->lblTailscaleStatus->setToolTip(m_tailscaleStatus.error);
 
   if (ui->groupTailscale->isChecked() && m_tailscaleStatus.isReady()) {
     applyTailscalePreset();
+  }
+  updateControls();
+  setButtonBoxEnabledButtons();
+
+  if (m_acceptAfterTailscaleCheck) {
+    m_acceptAfterTailscaleCheck = false;
+    acceptWithTailscaleStatus();
   }
 }
 
@@ -355,10 +393,20 @@ void SettingsDialog::updateText()
 
 void SettingsDialog::accept()
 {
+  if (ui->groupTailscale->isChecked()) {
+    m_acceptAfterTailscaleCheck = true;
+    updateTailscaleStatus();
+    return;
+  }
+
+  acceptWithTailscaleStatus();
+}
+
+void SettingsDialog::acceptWithTailscaleStatus()
+{
   bool startupApprovalRequired = false;
 
   if (ui->groupTailscale->isChecked()) {
-    updateTailscaleStatus();
     if (!m_tailscaleStatus.isReady()) {
       QMessageBox::warning(
           this, tr("Tailscale is not ready"),
@@ -447,6 +495,9 @@ void SettingsDialog::accept()
 
 void SettingsDialog::loadFromConfig()
 {
+  m_acceptAfterTailscaleCheck = false;
+  m_tailscaleIntegration->cancel();
+  m_tailscaleQueryInProgress = false;
   m_loadingConfig = true;
   ui->sbPort->setValue(Settings::value(Settings::Core::Port).toInt());
   ui->comboLogLevel->setCurrentIndex(
@@ -592,10 +643,10 @@ void SettingsDialog::updateControls()
   const bool logToFile = ui->groupLogToFile->isChecked();
   const bool tailscaleEnabled = ui->groupTailscale->isChecked();
 
-  ui->buttonBox->button(QDialogButtonBox::Save)->setEnabled(writable);
+  ui->buttonBox->button(QDialogButtonBox::Save)->setEnabled(writable && !m_tailscaleQueryInProgress);
 
   ui->groupTailscale->setEnabled(writable);
-  ui->btnRefreshTailscale->setEnabled(writable);
+  ui->btnRefreshTailscale->setEnabled(writable && !m_tailscaleQueryInProgress);
   ui->sbPort->setEnabled(writable && !tailscaleEnabled);
   ui->comboInterface->setEnabled(writable && !tailscaleEnabled);
   ui->cbPreferPhysicalNetwork->setEnabled(writable && !tailscaleEnabled && ui->comboInterface->currentIndex() == 0);
@@ -732,6 +783,9 @@ bool SettingsDialog::isDefault() const
 
 void SettingsDialog::resetToDefault()
 {
+  m_acceptAfterTailscaleCheck = false;
+  m_tailscaleIntegration->cancel();
+  m_tailscaleQueryInProgress = false;
   m_loadingConfig = true;
   ui->sbPort->setValue(Settings::defaultValue(Settings::Core::Port).toInt());
   ui->comboLogLevel->setCurrentIndex(
@@ -798,7 +852,7 @@ void SettingsDialog::resetToDefault()
 void SettingsDialog::setButtonBoxEnabledButtons() const
 {
   const bool modified = isModified();
-  ui->buttonBox->button(QDialogButtonBox::Save)->setEnabled(modified);
+  ui->buttonBox->button(QDialogButtonBox::Save)->setEnabled(modified && !m_tailscaleQueryInProgress);
   ui->buttonBox->button(QDialogButtonBox::Reset)->setEnabled(modified);
   ui->buttonBox->button(QDialogButtonBox::RestoreDefaults)->setEnabled(!isDefault());
 }

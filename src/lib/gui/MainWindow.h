@@ -45,8 +45,9 @@ class DaemonIpcClient;
 }
 
 namespace deskflow::network {
+class TailscaleIntegration;
 struct TailscaleStatus;
-}
+} // namespace deskflow::network
 
 class MainWindow : public QMainWindow
 {
@@ -55,6 +56,15 @@ class MainWindow : public QMainWindow
   using CoreProcess = deskflow::gui::CoreProcess;
   using NetworkMonitor = deskflow::gui::NetworkMonitor;
   using ProcessState = deskflow::core::ProcessState;
+
+  enum class TailscaleAction
+  {
+    None,
+    RefreshPeers,
+    StartInteractive,
+    StartAutomatic,
+    Restart
+  };
 
   Q_OBJECT
 
@@ -114,7 +124,9 @@ private:
   void openSettings();
   void startCore();
   void autoStartCore();
-  bool tryStartCore(bool interactive);
+  void tryStartCore(bool interactive);
+  void startCoreProcess();
+  void restartCoreProcess();
   void scheduleAutoStartRetry();
   void stopCore();
   void quitApplication();
@@ -165,7 +177,10 @@ private:
   void populateTailscalePeers(const deskflow::network::TailscaleStatus &status);
   void tailscalePeerSelected(int index);
   void updateTailscaleControls(bool refreshPeers = false);
-  bool prepareTailscale(bool interactive = true);
+  void requestTailscale(TailscaleAction action, int timeoutMs = 2000);
+  void tailscaleQueryStarted();
+  void tailscaleQueryFinished(const deskflow::network::TailscaleStatus &status);
+  bool prepareTailscale(const deskflow::network::TailscaleStatus &status, bool interactive = true);
   void recordServerStartNetwork();
   void networkAddressesChanged(const QStringList &addresses);
   void updateIpLabel(const QStringList &addresses);
@@ -202,6 +217,8 @@ private:
   bool m_quitRequested = false;
   ServerConfig m_serverConfig;
   deskflow::gui::CoreProcess m_coreProcess;
+  deskflow::network::TailscaleIntegration *m_tailscaleIntegration = nullptr;
+  TailscaleAction m_pendingTailscaleAction = TailscaleAction::None;
   QSet<QString> m_ignoredClients;
   bool m_newClientPromptShowing = false;
   bool m_serverConfigDialogVisible = false;

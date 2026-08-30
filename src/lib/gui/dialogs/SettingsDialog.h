@@ -38,6 +38,7 @@ private:
   void browseLogPath();
   void setLogToFile(bool logToFile);
   void accept() override;
+  void acceptWithTailscaleStatus();
   void showEvent(QShowEvent *event) override;
   bool isClientMode() const;
   void updateTlsControls();
@@ -46,6 +47,8 @@ private:
   void updateText();
   void tailscaleToggled(bool enabled);
   void updateTailscaleStatus();
+  void tailscaleQueryStarted();
+  void tailscaleQueryFinished(const deskflow::network::TailscaleStatus &status);
   void applyTailscalePreset();
   QString tailscaleStatusText() const;
 
@@ -89,6 +92,7 @@ private:
 
   std::unique_ptr<Ui::SettingsDialog> ui;
   const ServerConfig &m_serverConfig;
+  deskflow::network::TailscaleIntegration *m_tailscaleIntegration = nullptr;
   deskflow::network::TailscaleStatus m_tailscaleStatus;
   QString m_previousInterface;
   bool m_previousPreferPhysical = true;
@@ -96,4 +100,6 @@ private:
   bool m_previousNetworkCaptured = false;
   bool m_loadingConfig = false;
   bool m_tailscaleStatusChecked = false;
+  bool m_tailscaleQueryInProgress = false;
+  bool m_acceptAfterTailscaleCheck = false;
 };

@@ -9,18 +9,21 @@
 #include "NetworkInterfaces.h"
 
 #include <QAbstractSocket>
+#include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
 #include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QPointer>
 #include <QProcess>
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 
 #include <algorithm>
 #include <iterator>
+#include <utility>
 
 namespace deskflow::network {
 
@@ -64,6 +67,107 @@ TailscaleStatus interfaceFallback(TailscaleState failureState, const QString &er
   return result;
 }
 
+class QtTailscaleProcess final : public TailscaleIntegration::Process
+{
+public:
+  QtTailscaleProcess() : m_process(new QProcess(QCoreApplication::instance()))
+  {
+    auto environment = QProcessEnvironment::systemEnvironment();
+    environment.insert(QStringLiteral("TAILSCALE_BE_CLI"), QStringLiteral("1"));
+    m_process->setProcessEnvironment(environment);
+
+    m_connections = {
+        QObject::connect(
+            m_process, &QProcess::started,
+            [this] {
+              const auto callback = m_callbacks.started;
+              if (callback) {
+                callback();
+              }
+            }
+        ),
+        QObject::connect(
+            m_process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished),
+            [this] {
+              const auto callback = m_callbacks.finished;
+              if (callback) {
+                callback();
+              }
+            }
+        ),
+        QObject::connect(m_process, &QProcess::errorOccurred, [this] {
+          const auto callback = m_callbacks.failed;
+          if (callback) {
+            callback(m_process->errorString());
+          }
+        }),
+    };
+  }
+
+  ~QtTailscaleProcess() override
+  {
+    m_callbacks = {};
+    for (const auto &connection : std::as_const(m_connections)) {
+      QObject::disconnect(connection);
+    }
+
+    auto *process = std::exchange(m_process, nullptr);
+    if (process == nullptr) {
+      return;
+    }
+
+    if (process->state() == QProcess::NotRunning) {
+      process->deleteLater();
+      return;
+    }
+
+    QObject::connect(
+        process, qOverload<int, QProcess::ExitStatus>(&QProcess::finished), process, &QObject::deleteLater
+    );
+    QObject::connect(process, &QProcess::errorOccurred, process, [process] {
+      if (process->state() == QProcess::NotRunning) {
+        process->deleteLater();
+      }
+    });
+    process->kill();
+  }
+
+  void setCallbacks(TailscaleIntegration::ProcessCallbacks callbacks) override
+  {
+    m_callbacks = std::move(callbacks);
+  }
+
+  void start(const QString &executable, const QStringList &arguments) override
+  {
+    m_process->start(executable, arguments, QIODevice::ReadOnly);
+  }
+
+  void kill() override
+  {
+    m_process->kill();
+  }
+
+  QByteArray readAllStandardOutput() override
+  {
+    return m_process->readAllStandardOutput();
+  }
+
+  QByteArray readAllStandardError() override
+  {
+    return m_process->readAllStandardError();
+  }
+
+  int exitCode() const override
+  {
+    return m_process->exitCode();
+  }
+
+private:
+  QProcess *m_process;
+  TailscaleIntegration::ProcessCallbacks m_callbacks;
+  QList<QMetaObject::Connection> m_connections;
+};
+
 } // namespace
 
 QString TailscalePeer::preferredAddress() const
@@ -99,6 +203,166 @@ QList<TailscalePeer> TailscaleStatus::onlineDesktopPeers() const
   return result;
 }
 
+TailscaleIntegration::TailscaleIntegration(QObject *parent)
+    : TailscaleIntegration(
+          [] { return std::make_unique<QtTailscaleProcess>(); }, [] { return executablePath(); }, parent
+      )
+{
+}
+
+TailscaleIntegration::TailscaleIntegration(
+    ProcessFactory processFactory, ExecutableResolver executableResolver, QObject *parent
+)
+    : QObject(parent),
+      m_processFactory(std::move(processFactory)),
+      m_executableResolver(std::move(executableResolver))
+{
+  m_timeoutTimer.setSingleShot(true);
+  connect(&m_timeoutTimer, &QTimer::timeout, this, [this] {
+    finishQuery(
+        m_generation, interfaceFallback(TailscaleState::Error, QStringLiteral("Tailscale status timed out")), true
+    );
+  });
+}
+
+TailscaleIntegration::~TailscaleIntegration()
+{
+  cancel();
+}
+
+void TailscaleIntegration::query(int timeoutMs)
+{
+  if (m_querying) {
+    return;
+  }
+
+  m_querying = true;
+  m_timeoutMs = std::max(1, timeoutMs);
+  const auto generation = ++m_generation;
+  Q_EMIT queryStarted();
+
+  const auto executable = m_executableResolver();
+  if (executable.isEmpty()) {
+    QTimer::singleShot(0, this, [this, generation] {
+      finishQuery(
+          generation, interfaceFallback(TailscaleState::NotInstalled, QStringLiteral("Tailscale command not found"))
+      );
+    });
+    return;
+  }
+
+  m_process = m_processFactory();
+  if (!m_process) {
+    QTimer::singleShot(0, this, [this, generation] {
+      finishQuery(generation, interfaceFallback(TailscaleState::Error, QStringLiteral("Could not start Tailscale")));
+    });
+    return;
+  }
+
+  const QPointer<TailscaleIntegration> guard(this);
+  m_process->setCallbacks({
+      .started =
+          [guard, generation] {
+            if (guard) {
+              guard->processStarted(generation);
+            }
+          },
+      .finished =
+          [guard, generation] {
+            if (guard) {
+              guard->processFinished(generation);
+            }
+          },
+      .failed =
+          [guard, generation](const QString &error) {
+            if (guard) {
+              guard->processFailed(generation, error);
+            }
+          },
+  });
+  m_timeoutTimer.start(std::max(1, m_timeoutMs / 2));
+  m_process->start(executable, {QStringLiteral("status"), QStringLiteral("--json")});
+}
+
+void TailscaleIntegration::cancel()
+{
+  if (!m_querying && !m_process) {
+    return;
+  }
+
+  ++m_generation;
+  m_querying = false;
+  m_timeoutTimer.stop();
+  if (m_process) {
+    m_process->setCallbacks({});
+    m_process->kill();
+    m_process.reset();
+  }
+}
+
+bool TailscaleIntegration::isQuerying() const
+{
+  return m_querying;
+}
+
+void TailscaleIntegration::processStarted(quint64 generation)
+{
+  if (!isCurrentQuery(generation)) {
+    return;
+  }
+  m_timeoutTimer.start(m_timeoutMs);
+}
+
+void TailscaleIntegration::processFinished(quint64 generation)
+{
+  if (!isCurrentQuery(generation) || !m_process) {
+    return;
+  }
+
+  const auto standardError = QString::fromUtf8(m_process->readAllStandardError()).trimmed();
+  const auto output = m_process->readAllStandardOutput();
+  if (output.isEmpty()) {
+    const auto error = standardError.isEmpty()
+                           ? QStringLiteral("Tailscale status exited with code %1").arg(m_process->exitCode())
+                           : standardError;
+    finishQuery(generation, interfaceFallback(TailscaleState::Error, error));
+    return;
+  }
+
+  finishQuery(generation, parseStatus(output, standardError));
+}
+
+void TailscaleIntegration::processFailed(quint64 generation, const QString &error)
+{
+  if (!isCurrentQuery(generation)) {
+    return;
+  }
+  finishQuery(generation, interfaceFallback(TailscaleState::Error, error), true);
+}
+
+void TailscaleIntegration::finishQuery(quint64 generation, const TailscaleStatus &status, bool killProcess)
+{
+  if (!isCurrentQuery(generation)) {
+    return;
+  }
+
+  m_timeoutTimer.stop();
+  m_querying = false;
+  if (m_process) {
+    m_process->setCallbacks({});
+    if (killProcess) {
+      m_process->kill();
+    }
+    m_process.reset();
+  }
+  Q_EMIT queryFinished(status);
+}
+
+bool TailscaleIntegration::isCurrentQuery(quint64 generation) const
+{
+  return m_querying && generation == m_generation;
+}
+
 QString TailscaleIntegration::executablePath()
 {
   if (const auto executable = QStandardPaths::findExecutable(QStringLiteral("tailscale")); !executable.isEmpty()) {
@@ -129,40 +393,6 @@ QString TailscaleIntegration::executablePath()
     }
   }
   return {};
-}
-
-TailscaleStatus TailscaleIntegration::query(int timeoutMs)
-{
-  const auto executable = executablePath();
-  if (executable.isEmpty()) {
-    return interfaceFallback(TailscaleState::NotInstalled, QStringLiteral("Tailscale command not found"));
-  }
-
-  QProcess process;
-  auto environment = QProcessEnvironment::systemEnvironment();
-  environment.insert(QStringLiteral("TAILSCALE_BE_CLI"), QStringLiteral("1"));
-  process.setProcessEnvironment(environment);
-  process.start(executable, {QStringLiteral("status"), QStringLiteral("--json")}, QIODevice::ReadOnly);
-  if (!process.waitForStarted(std::max(250, timeoutMs / 2))) {
-    return interfaceFallback(TailscaleState::Error, process.errorString());
-  }
-
-  if (!process.waitForFinished(std::max(250, timeoutMs))) {
-    process.kill();
-    process.waitForFinished();
-    return interfaceFallback(TailscaleState::Error, QStringLiteral("Tailscale status timed out"));
-  }
-
-  const auto standardError = QString::fromUtf8(process.readAllStandardError()).trimmed();
-  const auto output = process.readAllStandardOutput();
-  if (output.isEmpty()) {
-    const auto error = standardError.isEmpty()
-                           ? QStringLiteral("Tailscale status exited with code %1").arg(process.exitCode())
-                           : standardError;
-    return interfaceFallback(TailscaleState::Error, error);
-  }
-
-  return parseStatus(output, standardError);
 }
 
 TailscaleStatus TailscaleIntegration::parseStatus(const QByteArray &json, const QString &processError)
