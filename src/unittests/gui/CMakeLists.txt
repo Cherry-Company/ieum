@@ -48,6 +48,14 @@ create_test(
 )
 
 create_test(
+  NAME ServerConfigDialogTests
+  DEPENDS gui
+  SOURCE ServerConfigDialogTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+target_include_directories(ServerConfigDialogTests PRIVATE "${PROJECT_SOURCE_DIR}/src/lib/gui")
+
+create_test(
   NAME StyleUtilsTests
   DEPENDS gui
   SOURCE StyleUtilsTests.cpp

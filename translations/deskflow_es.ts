@@ -1392,6 +1392,10 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
         <translation type="unfinished">Busque un archivo de configuración</translation>
     </message>
     <message>
+        <source>Select an existing configuration file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable lock to computer at startup</source>
         <translation type="unfinished">Activar el bloqueo del ordenador al iniciar</translation>
     </message>

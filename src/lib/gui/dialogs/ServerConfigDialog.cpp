@@ -18,7 +18,8 @@
 #include "dialogs/ScreenSettingsDialog.h"
 
 #include <QFileDialog>
-#include <QMessageBox>
+#include <QFileInfo>
+#include <QStyle>
 
 #include <algorithm>
 
@@ -36,6 +37,9 @@ ServerConfigDialog::ServerConfigDialog(QWidget *parent, ServerConfig &config)
       m_screenSetupModel(m_serverConfig.screens(), m_columns, m_rows)
 {
   ui->setupUi(this);
+  ui->lineConfigFile->setStyleSheet(
+      QStringLiteral("QLineEdit[configPathValid=\"false\"] { border: 1px solid #c42b1c; }")
+  );
 
   loadFromConfig();
 
@@ -63,15 +67,10 @@ bool ServerConfigDialog::addClient(const QString &clientName)
 
 void ServerConfigDialog::accept()
 {
-  if (ui->groupExternalConfig->isChecked() && !QFile::exists(ui->lineConfigFile->text())) {
-
-    auto selectedButton = QMessageBox::warning(
-        this, "Filename invalid", "Please select a valid configuration file.", QMessageBox::Ok | QMessageBox::Ignore
-    );
-
-    if (selectedButton != QMessageBox::Ok || !browseConfigFile()) {
-      return;
-    }
+  setServerConfigFile(ui->lineConfigFile->text());
+  if (!isExternalConfigFileValid()) {
+    ui->lineConfigFile->setFocus(Qt::OtherFocusReason);
+    return;
   }
 
   // now that the dialog has been accepted, copy the new server config to the
@@ -387,17 +386,19 @@ bool ServerConfigDialog::browseConfigFile()
   //: (*.conf) and (*.*) should not be translated
   const auto deskflowConfigFilter = tr("%1 Configurations (*.conf);;All files (*.*)");
 
-  QString fileName =
-      QFileDialog::getOpenFileName(this, tr("Browse for a config file"), "", deskflowConfigFilter.arg(kAppName));
+  const auto fileName = chooseConfigFile(deskflowConfigFilter.arg(kAppName));
 
   if (!fileName.isEmpty()) {
     ui->lineConfigFile->setText(fileName);
-    serverConfig().setConfigFile(ui->lineConfigFile->text());
-    onChange();
     return true;
   }
 
   return false;
+}
+
+QString ServerConfigDialog::chooseConfigFile(const QString &filter)
+{
+  return QFileDialog::getOpenFileName(this, tr("Browse for a config file"), {}, filter);
 }
 
 void ServerConfigDialog::loadFromConfig()
@@ -527,6 +528,7 @@ void ServerConfigDialog::initConnections() const
   connect(ui->cbEnableClipboard, &QCheckBox::toggled, this, &ServerConfigDialog::toggleClipboard);
   connect(ui->btnBrowseConfigFile, &QPushButton::clicked, this, &ServerConfigDialog::browseConfigFile);
   connect(ui->groupExternalConfig, &QGroupBox::toggled, this, &ServerConfigDialog::toggleExternalConfig);
+  connect(ui->lineConfigFile, &QLineEdit::textChanged, this, &ServerConfigDialog::setServerConfigFile);
 
   connect(
       ui->sbClipboardSizeLimit, QOverload<int>::of(&QSpinBox::valueChanged), this,
@@ -538,6 +540,33 @@ void ServerConfigDialog::initConnections() const
   connect(ui->cbDisableLockToComputer, &QCheckBox::toggled, this, &ServerConfigDialog::toggleLockToComputer);
   connect(ui->cbAutoLockFullscreen, &QCheckBox::toggled, this, &ServerConfigDialog::toggleAutoLockFullscreen);
   connect(&m_screenSetupModel, &ScreenSetupModel::screensChanged, this, &ServerConfigDialog::onChange);
+}
+
+bool ServerConfigDialog::isExternalConfigFileValid() const
+{
+  return !ui->groupExternalConfig->isChecked() || QFileInfo(ui->lineConfigFile->text()).isFile();
+}
+
+void ServerConfigDialog::setServerConfigFile(const QString &path)
+{
+  serverConfig().setConfigFile(path);
+  onChange();
+}
+
+void ServerConfigDialog::updateConfigFileValidation() const
+{
+  const auto isValid = isExternalConfigFileValid();
+  const auto errorMessage = isValid ? QString() : tr("Select an existing configuration file.");
+
+  if (!ui->lineConfigFile->property("configPathValid").isValid() ||
+      ui->lineConfigFile->property("configPathValid").toBool() != isValid) {
+    ui->lineConfigFile->setProperty("configPathValid", isValid);
+    ui->lineConfigFile->style()->unpolish(ui->lineConfigFile);
+    ui->lineConfigFile->style()->polish(ui->lineConfigFile);
+  }
+
+  ui->lineConfigFile->setToolTip(errorMessage);
+  ui->lineConfigFile->setAccessibleDescription(errorMessage);
 }
 
 bool ServerConfigDialog::addComputer(const QString &clientName, bool doSilent)
@@ -556,6 +585,8 @@ bool ServerConfigDialog::addComputer(const QString &clientName, bool doSilent)
 
 void ServerConfigDialog::onChange()
 {
+  updateConfigFileValidation();
+
   bool isAppConfigDataEqual =
       m_originalServerConfigIsExternal == serverConfig().useExternalConfig() &&
       m_originalServerConfigUsesExternalFile == serverConfig().configFile() &&
@@ -575,5 +606,7 @@ void ServerConfigDialog::onChange()
       m_disableLockToComputer == Settings::value(Settings::Server::DisableLockToComputer).toBool() &&
       m_defaultLockToComputerState == Settings::value(Settings::Server::DefaultLockToComputerState).toBool();
   ui->buttonBox->button(QDialogButtonBox::Ok)
-      ->setEnabled(!isAppConfigDataEqual || !(m_originalServerConfig == m_serverConfig));
+      ->setEnabled(
+          isExternalConfigFileValid() && (!isAppConfigDataEqual || !(m_originalServerConfig == m_serverConfig))
+      );
 }

@@ -1424,6 +1424,10 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>설정 파일 찾아보기</translation>
     </message>
     <message>
+        <source>Select an existing configuration file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Enable lock to computer at startup</source>
         <translation>시작 시 컴퓨터 잠금 사용</translation>
     </message>
