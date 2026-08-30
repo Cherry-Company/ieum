@@ -45,7 +45,7 @@ static const int16_t kProtocolMajorVersion = 1;
  * @note When incrementing the minor version, the Deskflow application version should also increment
  * @since Protocol version 1.0
  */
-static const int16_t kProtocolMinorVersion = 12;
+static const int16_t kProtocolMinorVersion = 13;
 
 //! First minor version that negotiates the canonical-scancode button flag.
 static const int16_t kProtocolCanonicalScancodeMinorVersion = 10;
@@ -55,6 +55,9 @@ static const int16_t kProtocolDisplayLayoutMinorVersion = 11;
 
 //! First minor version that carries bounded file-transfer control messages.
 static const int16_t kProtocolFileTransferControlMinorVersion = 12;
+
+//! First minor version that carries bounded file-transfer data messages.
+static const int16_t kProtocolFileTransferDataMinorVersion = 13;
 
 /**
  * @brief Default TCP port for Deskflow connections
@@ -1082,6 +1085,21 @@ extern const char *const kMsgDDragInfo;
  * @since Protocol version 1.12
  */
 extern const char *const kMsgDFileTransferControl;
+
+/**
+ * @brief Bounded file-transfer byte stream
+ *
+ * **Message Code**: `"DFTD"`
+ * **Direction**: Secondary -> Primary -> Secondary, or either endpoint to the primary
+ * **Format**: `"DFTD%S"`
+ *
+ * Each versioned payload identifies the source, target, transfer, item, and
+ * sequential byte offset. Payload allocation is capped at 64 KiB and each
+ * completed item carries a SHA-256 digest.
+ *
+ * @since Protocol version 1.13
+ */
+extern const char *const kMsgDFileTransferData;
 
 /** @} */ // end of protocol_files group
 

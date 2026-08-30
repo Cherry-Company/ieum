@@ -15,6 +15,7 @@
 #include "deskflow/ClipboardTypes.h"
 #include "deskflow/EdgeHandoffDecision.h"
 #include "deskflow/FileTransferControlRouting.h"
+#include "deskflow/FileTransferDataRouting.h"
 #include "deskflow/InputLanguageTypes.h"
 #include "deskflow/KeyTypes.h"
 #include "deskflow/MouseTypes.h"
@@ -209,6 +210,10 @@ public:
   routeFileTransferControl(BaseClientProxy *sender, const deskflow::filetransfer::FileTransferControlMessage &message);
   deskflow::filetransfer::FileTransferRouteResult
   sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &message);
+  deskflow::filetransfer::FileTransferRouteResult
+  routeFileTransferData(BaseClientProxy *sender, const deskflow::filetransfer::FileTransferDataMessage &message);
+  deskflow::filetransfer::FileTransferRouteResult
+  sendFileTransferData(const deskflow::filetransfer::FileTransferDataMessage &message);
   [[nodiscard]] std::optional<deskflow::filetransfer::EdgeTarget>
   resolveFileTransferEdgeTarget(Direction direction, int32_t x, int32_t y) const;
 

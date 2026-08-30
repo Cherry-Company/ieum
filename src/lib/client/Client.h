@@ -10,6 +10,7 @@
 
 #include "deskflow/DisplayGeometry.h"
 #include "deskflow/FileTransferControlCodec.h"
+#include "deskflow/FileTransferDataCodec.h"
 #include "deskflow/IClient.h"
 #include "deskflow/InputLanguageTypes.h"
 
@@ -191,6 +192,7 @@ public:
   void inputLanguageControl(deskflow::InputLanguageAction action, const std::string &target);
   deskflow::InputLanguageStatus inputLanguageStatus() const;
   bool sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &message);
+  bool sendFileTransferData(const deskflow::filetransfer::FileTransferDataMessage &message);
 
   //! Protocol minor version agreed with the server, 0 until the hello is done.
   int16_t protocolMinorVersion() const

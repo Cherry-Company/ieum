@@ -239,6 +239,9 @@ enum class EventTypes : uint32_t
   /// A bounded file-transfer control message arrived for the local screen.
   FileTransferControlReceived,
 
+  /// A bounded file-transfer data message arrived for the local screen.
+  FileTransferDataReceived,
+
   /// Start libei
   EIConnected,
 

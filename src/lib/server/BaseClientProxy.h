@@ -9,6 +9,7 @@
 
 #include "deskflow/DisplayGeometry.h"
 #include "deskflow/FileTransferControlCodec.h"
+#include "deskflow/FileTransferDataCodec.h"
 #include "deskflow/IClient.h"
 #include "deskflow/InputLanguageTypes.h"
 
@@ -82,6 +83,10 @@ public:
   virtual void sendDragInfo(uint32_t fileCount, const char *info, size_t size) = 0;
   virtual void fileChunkSending(uint8_t mark, char *data, size_t dataSize) = 0;
   virtual bool sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &)
+  {
+    return false;
+  }
+  virtual bool sendFileTransferData(const deskflow::filetransfer::FileTransferDataMessage &)
   {
     return false;
   }

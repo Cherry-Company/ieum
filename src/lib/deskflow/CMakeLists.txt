@@ -57,6 +57,13 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   FileTransferControlProtocol.h
   FileTransferControlRouting.cpp
   FileTransferControlRouting.h
+  FileTransferDataCodec.cpp
+  FileTransferDataCodec.h
+  FileTransferDataEvent.h
+  FileTransferDataProtocol.cpp
+  FileTransferDataProtocol.h
+  FileTransferDataRouting.cpp
+  FileTransferDataRouting.h
   FileTransferOfferValidator.cpp
   FileTransferOfferValidator.h
   FileTransferSourceManifest.cpp

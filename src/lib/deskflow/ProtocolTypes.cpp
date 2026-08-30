@@ -41,6 +41,7 @@ const char *const kMsgDSetOptions = "DSOP%4I";
 const char *const kMsgDFileTransfer = "DFTR%1i%s";
 const char *const kMsgDDragInfo = "DDRG%2i%s";
 const char *const kMsgDFileTransferControl = "DFTC%S";
+const char *const kMsgDFileTransferData = "DFTD%S";
 const char *const kMsgDSecureInputNotification = "SECN%s";
 const char *const kMsgDLanguageSynchronisation = "LSYN%s";
 const char *const kMsgDInputLangControl = "DILC%1i%s";
