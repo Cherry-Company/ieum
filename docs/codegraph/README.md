@@ -6,13 +6,13 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `72b24794635d2a13ea5009dde0516b337df71e01`
+- Revision: `cead7ef85d4b44464524ecb867fb1fbca7f7b3f9`
 - Branch: `feat/pro-file-transfer-service`
 - Tracked files: 1,022
 - Represented files: 1,019
-- Source files / lines: 650 / 107,043
+- Source files / lines: 650 / 107,045
 - Components / targets: 42 / 79
-- File include edges / component edges: 1,533 / 98
+- File include edges / component edges: 1,534 / 98
 
 `docs/codegraph/`의 생성 산출물은 자기참조로 인한 비결정성을 막기 위해
 파일 인벤토리에서 명시적으로 제외됩니다.
@@ -78,7 +78,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `test:client` | test | Automated tests for the `client` surface. | 3 | 670 | `ServerProxyTests` |
 | `test:codegraph-tools` | test | Automated tests for the `codegraph-tools` surface. | 1 | 461 | — |
 | `test:common` | test | Automated tests for the `common` surface. | 11 | 942 | `I18NTests`, `LogLevelTests`, `NetworkInterfacesTests`, `SettingsTests`, `TailscaleIntegrationTests` |
-| `test:deskflow` | test | Automated tests for the `deskflow` surface. | 36 | 4,798 | `CanonicalScancodeTests`, `ClientReconnectPolicyTests`, `ClipboardChunksTests`, `ClipboardTests`, `EdgeHandoffDecisionTests`, `FileTransferControlCodecTests`, `FileTransferControlProtocolTests`, `FileTransferDataProtocolTests`, `FileTransferOfferTests`, `FileTransferSessionStateTests`, `FileTransferSourceManifestTests`, `IKeyStateTests`, `IpcServerTests`, `KeyMapTests`, `KeyStateTests`, `KeyboardLayoutManagerTests`, `MSWindowsEdgeDropHostTests`, `MSWindowsEdgeDropTargetTests`, `MSWindowsFileTransferServiceTests`, `Protocol19Tests`, `X11LayoutParserTests` |
+| `test:deskflow` | test | Automated tests for the `deskflow` surface. | 36 | 4,800 | `CanonicalScancodeTests`, `ClientReconnectPolicyTests`, `ClipboardChunksTests`, `ClipboardTests`, `EdgeHandoffDecisionTests`, `FileTransferControlCodecTests`, `FileTransferControlProtocolTests`, `FileTransferDataProtocolTests`, `FileTransferOfferTests`, `FileTransferSessionStateTests`, `FileTransferSourceManifestTests`, `IKeyStateTests`, `IpcServerTests`, `KeyMapTests`, `KeyStateTests`, `KeyboardLayoutManagerTests`, `MSWindowsEdgeDropHostTests`, `MSWindowsEdgeDropTargetTests`, `MSWindowsFileTransferServiceTests`, `Protocol19Tests`, `X11LayoutParserTests` |
 | `test:gui` | test | Automated tests for the `gui` surface. | 26 | 1,696 | `DiagnosticTests`, `FileTailTests`, `IpcClientTests`, `KeySequenceTests`, `LogWidgetTests`, `LoggerTests`, `NetworkMonitorTests`, `ScreenSetupModelTests`, `ScreenTests`, `ServerConfigDialogTests`, `ServiceStartCoordinatorTests`, `StatusBarTests`, `StyleUtilsTests`, `VersionCheckerTests` |
 | `test:legacytests` | test | Automated tests for the `legacytests` surface. | 10 | 887 | `legacytests` |
 | `test:net` | test | Automated tests for the `net` surface. | 9 | 595 | `FingerprintDatabaseTests`, `FingerprintTests`, `NetworkAddressTests`, `SecureSocketWriteBufferTests`, `SecureUtilsTests` |

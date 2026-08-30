@@ -1490,6 +1490,7 @@
         "src/unittests/deskflow/KeyStateTests.h: #include \"base/Log.h\" -> src/lib/base/Log.h",
         "src/unittests/deskflow/KeyboardLayoutManagerTests.h: #include \"base/Log.h\" -> src/lib/base/Log.h",
         "src/unittests/deskflow/MSWindowsEdgeDropHostTests.cpp: #include \"base/DirectionTypes.h\" -> src/lib/base/DirectionTypes.h",
+        "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp: #include \"base/Log.h\" -> src/lib/base/Log.h",
         "src/unittests/deskflow/MockEventQueue.h: #include \"base/IEventQueue.h\" -> src/lib/base/IEventQueue.h",
         "src/unittests/deskflow/MockKeyState.h: #include \"base/IEventQueue.h\" -> src/lib/base/IEventQueue.h",
         "src/unittests/deskflow/Protocol19Tests.h: #include \"base/Log.h\" -> src/lib/base/Log.h",
@@ -2221,7 +2222,7 @@
         "c/c++ header": 14,
         "cmake": 1
       },
-      "lineCount": 4798,
+      "lineCount": 4800,
       "path": "src/unittests/deskflow",
       "targets": [
         "CanonicalScancodeTests",
@@ -14550,6 +14551,12 @@
       "target": "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h"
     },
     {
+      "evidence": "#include \"base/Log.h\"",
+      "kind": "include",
+      "source": "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
+      "target": "src/lib/base/Log.h"
+    },
+    {
       "evidence": "#include \"deskflow/win32/MSWindowsFileTransferService.h\"",
       "kind": "include",
       "source": "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
@@ -22567,9 +22574,9 @@
       "binary": false,
       "component": "test:deskflow",
       "language": "c++",
-      "lineCount": 279,
+      "lineCount": 281,
       "path": "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
-      "sizeBytes": 9099
+      "sizeBytes": 9132
     },
     {
       "binary": false,
@@ -23318,7 +23325,7 @@
   ],
   "revision": {
     "branch": "feat/pro-file-transfer-service",
-    "commit": "72b24794635d2a13ea5009dde0516b337df71e01",
+    "commit": "cead7ef85d4b44464524ecb867fb1fbca7f7b3f9",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
@@ -23326,10 +23333,10 @@
     "componentEdges": 98,
     "components": 42,
     "excludedFiles": 3,
-    "fileIncludeEdges": 1533,
+    "fileIncludeEdges": 1534,
     "representedFiles": 1019,
     "sourceFiles": 650,
-    "sourceLines": 107043,
+    "sourceLines": 107045,
     "targets": 79,
     "trackedFiles": 1022
   },
