@@ -13,6 +13,7 @@
 #include "deskflow/ClipboardChunk.h"
 #include "deskflow/ClipboardTypes.h"
 #include "deskflow/FileTransferControlCodec.h"
+#include "deskflow/FileTransferDataCodec.h"
 #include "deskflow/InputLanguageTypes.h"
 #include "deskflow/KeyTypes.h"
 #include "deskflow/KeyboardLayoutManager.h"
@@ -58,6 +59,7 @@ public:
   bool onGrabClipboard(ClipboardID);
   void onClipboardChanged(ClipboardID, const IClipboard *);
   bool sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &message);
+  bool sendFileTransferData(const deskflow::filetransfer::FileTransferDataMessage &message);
 
   //! Release raw keys while the platform screen is still enabled.
   void releaseRawScancodeButtons();
@@ -120,6 +122,7 @@ private:
   void setActiveServerLanguage(const std::string_view &language);
   void inputLanguageControl();
   void receiveFileTransferControl();
+  void receiveFileTransferData();
   void handleInputLanguageChanged(const Event &event);
   void sendInputLanguageStatus(const deskflow::InputLanguageStatus &status);
   bool rawScancodeEnabled() const;

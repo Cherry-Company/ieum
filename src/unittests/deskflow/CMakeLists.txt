@@ -85,6 +85,22 @@ create_test(
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
 )
 
+create_test(
+  NAME FileTransferSessionStateTests
+  DEPENDS app
+  LIBS arch base ${extra_libs}
+  SOURCE FileTransferSessionStateTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+)
+
+create_test(
+  NAME FileTransferDataProtocolTests
+  DEPENDS app
+  LIBS arch base io ${extra_libs}
+  SOURCE FileTransferDataProtocolTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+)
+
 if(WIN32)
   create_test(
     NAME MSWindowsEdgeDropTargetTests
@@ -99,6 +115,14 @@ if(WIN32)
     DEPENDS app
     LIBS arch base ${extra_libs}
     SOURCE MSWindowsEdgeDropHostTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+  )
+
+  create_test(
+    NAME MSWindowsFileTransferServiceTests
+    DEPENDS app
+    LIBS arch base ${extra_libs}
+    SOURCE MSWindowsFileTransferServiceTests.cpp
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
   )
 endif()

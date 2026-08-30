@@ -14,6 +14,8 @@ if(WIN32)
     win32/MSWindowsEdgeDropHost.h
     win32/MSWindowsEdgeDropTarget.cpp
     win32/MSWindowsEdgeDropTarget.h
+    win32/MSWindowsFileTransferService.cpp
+    win32/MSWindowsFileTransferService.h
   )
 elseif(UNIX)
   set(PLATFORM_CODE
@@ -57,10 +59,19 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   FileTransferControlProtocol.h
   FileTransferControlRouting.cpp
   FileTransferControlRouting.h
+  FileTransferDataCodec.cpp
+  FileTransferDataCodec.h
+  FileTransferDataEvent.h
+  FileTransferDataProtocol.cpp
+  FileTransferDataProtocol.h
+  FileTransferDataRouting.cpp
+  FileTransferDataRouting.h
   FileTransferOfferValidator.cpp
   FileTransferOfferValidator.h
   FileTransferSourceManifest.cpp
   FileTransferSourceManifest.h
+  FileTransferSessionState.cpp
+  FileTransferSessionState.h
   FileTransferTypes.h
   IApp.h
   IClient.h

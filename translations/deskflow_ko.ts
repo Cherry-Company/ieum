@@ -1785,6 +1785,50 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>입력 언어 및 공유 텍스트</translation>
     </message>
     <message>
+        <source>&amp;Files</source>
+        <translation>파일(&amp;F)</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Pro Local file transfer preview&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Pro Local 파일 전송 프리뷰&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Send files by dragging them across a screen edge</source>
+        <translation>파일을 화면 경계 너머로 끌어서 보내기</translation>
+    </message>
+    <message>
+        <source>Receive files from configured connected computers</source>
+        <translation>설정된 연결 컴퓨터에서 파일 받기</translation>
+    </message>
+    <message>
+        <source>Save to</source>
+        <translation>저장 위치</translation>
+    </message>
+    <message>
+        <source>Choose destination folder</source>
+        <translation>저장 폴더 선택</translation>
+    </message>
+    <message>
+        <source>TLS must be enabled on both computers. Receiving is off by default.</source>
+        <translation>양쪽 컴퓨터에서 TLS를 켜야 합니다. 파일 수신은 기본적으로 꺼져 있습니다.</translation>
+    </message>
+    <message>
+        <source>This preview sends from the Windows server computer to a connected Windows client.</source>
+        <translation>이번 프리뷰는 Windows 서버 컴퓨터에서 연결된 Windows 클라이언트로 전송합니다.</translation>
+    </message>
+    <message>
+        <source>Choose where received files are saved</source>
+        <translation>받은 파일을 저장할 위치 선택</translation>
+    </message>
+    <message>
+        <source>Choose a destination folder</source>
+        <translation>저장 폴더를 선택하세요</translation>
+    </message>
+    <message>
+        <source>Select an absolute folder before enabling incoming file transfers.</source>
+        <translation>파일 수신을 켜기 전에 전체 경로로 된 저장 폴더를 선택하세요.</translation>
+    </message>
+    <message>
         <source>&amp;System</source>
         <translation>시스템(&amp;S)</translation>
     </message>

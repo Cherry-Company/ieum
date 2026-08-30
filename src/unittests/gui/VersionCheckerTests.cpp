@@ -27,27 +27,27 @@ void VersionCheckerTests::packageFileName_selectsPlatformAndArchitecture()
 {
   QCOMPARE(
       VersionChecker::packageFileName(
-          QStringLiteral("0.1.0-alpha.19"), QStringLiteral("windows"), QStringLiteral("x86_64"), true
+          QStringLiteral("0.1.0-alpha.20"), QStringLiteral("windows"), QStringLiteral("x86_64"), true
       ),
-      QStringLiteral("Ieum-0.1.0-alpha.19-win-x64-ko-KR.msi")
+      QStringLiteral("Ieum-0.1.0-alpha.20-win-x64-ko-KR.msi")
   );
   QCOMPARE(
       VersionChecker::packageFileName(
-          QStringLiteral("0.1.0-alpha.19"), QStringLiteral("windows"), QStringLiteral("arm64"), false
+          QStringLiteral("0.1.0-alpha.20"), QStringLiteral("windows"), QStringLiteral("arm64"), false
       ),
-      QStringLiteral("Ieum-0.1.0-alpha.19-win-arm64.msi")
+      QStringLiteral("Ieum-0.1.0-alpha.20-win-arm64.msi")
   );
   QCOMPARE(
       VersionChecker::packageFileName(
-          QStringLiteral("0.1.0-alpha.19"), QStringLiteral("macos"), QStringLiteral("arm64"), false
+          QStringLiteral("0.1.0-alpha.20"), QStringLiteral("macos"), QStringLiteral("arm64"), false
       ),
-      QStringLiteral("Ieum-0.1.0-alpha.19-macos-arm64.dmg")
+      QStringLiteral("Ieum-0.1.0-alpha.20-macos-arm64.dmg")
   );
   QCOMPARE(
       VersionChecker::packageFileName(
-          QStringLiteral("0.1.0-alpha.19"), QStringLiteral("macos"), QStringLiteral("x86_64"), false
+          QStringLiteral("0.1.0-alpha.20"), QStringLiteral("macos"), QStringLiteral("x86_64"), false
       ),
-      QStringLiteral("Ieum-0.1.0-alpha.19-macos-x86_64.dmg")
+      QStringLiteral("Ieum-0.1.0-alpha.20-macos-x86_64.dmg")
   );
 }
 

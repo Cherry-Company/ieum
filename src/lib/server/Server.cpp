@@ -15,6 +15,7 @@
 #include "deskflow/CanonicalScancode.h"
 #include "deskflow/DeskflowException.h"
 #include "deskflow/FileTransferControlEvent.h"
+#include "deskflow/FileTransferDataEvent.h"
 #include "deskflow/IPlatformScreen.h"
 #include "deskflow/OptionTypes.h"
 #include "deskflow/PacketStreamFilter.h"
@@ -380,6 +381,45 @@ Server::sendFileTransferControl(const deskflow::filetransfer::FileTransferContro
   return routeFileTransferControl(m_primaryClient, message);
 }
 
+deskflow::filetransfer::FileTransferRouteResult
+Server::routeFileTransferData(BaseClientProxy *sender, const deskflow::filetransfer::FileTransferDataMessage &message)
+{
+  auto route = deskflow::filetransfer::resolveFileTransferDataDestination(message, getName(sender));
+  if (!route.ok()) {
+    return route;
+  }
+
+  const auto destination = m_clients.find(route.destinationScreen);
+  if (destination == m_clients.end()) {
+    route.error = deskflow::filetransfer::FileTransferRouteError::DestinationUnavailable;
+    return route;
+  }
+
+  auto *client = destination->second;
+  if (client == m_primaryClient) {
+    m_events->addEvent(Event(
+        EventTypes::FileTransferDataReceived, m_primaryClient->getEventTarget(),
+        new deskflow::filetransfer::FileTransferDataEventData(message)
+    ));
+    return route;
+  }
+
+  if (client->protocolMinorVersion() < kProtocolFileTransferDataMinorVersion) {
+    route.error = deskflow::filetransfer::FileTransferRouteError::DestinationUnsupported;
+    return route;
+  }
+  if (!client->sendFileTransferData(message)) {
+    route.error = deskflow::filetransfer::FileTransferRouteError::DeliveryFailed;
+  }
+  return route;
+}
+
+deskflow::filetransfer::FileTransferRouteResult
+Server::sendFileTransferData(const deskflow::filetransfer::FileTransferDataMessage &message)
+{
+  return routeFileTransferData(m_primaryClient, message);
+}
+
 std::optional<deskflow::filetransfer::EdgeTarget>
 Server::resolveFileTransferEdgeTarget(Direction direction, int32_t x, int32_t y) const
 {
@@ -389,7 +429,7 @@ Server::resolveFileTransferEdgeTarget(Direction direction, int32_t x, int32_t y)
 
   auto *target = getNeighbor(m_primaryClient, direction, x, y);
   if (target == nullptr || target == m_primaryClient ||
-      target->protocolMinorVersion() < kProtocolFileTransferControlMinorVersion) {
+      target->protocolMinorVersion() < kProtocolFileTransferDataMinorVersion) {
     return std::nullopt;
   }
 

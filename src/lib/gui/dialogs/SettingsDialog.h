@@ -36,6 +36,7 @@ private:
   void regenCertificates();
   void browseCertificatePath();
   void browseLogPath();
+  void browseFileTransferDirectory();
   void setLogToFile(bool logToFile);
   void accept() override;
   void acceptWithTailscaleStatus();
@@ -43,6 +44,7 @@ private:
   bool isClientMode() const;
   void updateTlsControls();
   void updateTlsControlsEnabled();
+  void updateFileTransferControls();
   void showReadOnlyMessage();
   void updateText();
   void tailscaleToggled(bool enabled);

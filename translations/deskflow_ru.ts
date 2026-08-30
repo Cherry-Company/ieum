@@ -1750,6 +1750,50 @@ Enabling this setting will disable the server config GUI.</source>
         <source>&amp;System</source>
         <translation>Система (&amp;S)</translation>
     </message>
+    <message>
+        <source>&amp;Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Pro Local file transfer preview&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Send files by dragging them across a screen edge</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receive files from configured connected computers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose destination folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>TLS must be enabled on both computers. Receiving is off by default.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This preview sends from the Windows server computer to a connected Windows client.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose where received files are saved</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a destination folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select an absolute folder before enabling incoming file transfers.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>StartupManager</name>

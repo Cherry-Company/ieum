@@ -153,6 +153,8 @@ This table lists all protocol messages in alphabetical order. For a typical sequ
 | [**CSEC**](@ref kMsgCScreenSaver) | @ref kMsgCScreenSaver | Command | Server→Client | Screen saver control | [MsgSize](#constraint-protocol-max-message-length) | 1.0+ |
 | [**DCLP**](@ref kMsgDClipboard) | @ref kMsgDClipboard | Data | Both | Clipboard data | [MsgSize](#constraint-protocol-max-message-length) | 1.0+ |
 | [**DDRG**](@ref kMsgDDragInfo) | @ref kMsgDDragInfo | Data | Server→Client | Drag file info | [MsgSize](#constraint-protocol-max-message-length), [ListSize](#constraint-max-list) | 1.5+ |
+| **DFTC** | `kMsgDFileTransferControl` | Data | Both | Bounded offer, decision, cancel, or result | 64 KiB payload; validated route; at most 100 items | 1.12+ |
+| **DFTD** | `kMsgDFileTransferData` | Data | Source→Target | Begin, chunk, item digest, or transfer finish | 64 KiB payload; 60 KiB chunks; exact offset order | 1.13+ |
 | [**DFTR**](@ref kMsgDFileTransfer) | @ref kMsgDFileTransfer | Data | Both | File transfer data | [MsgSize](#constraint-protocol-max-message-length) | 1.5+ |
 | [**DINF**](@ref kMsgDInfo) | @ref kMsgDInfo | Data | Client→Server | Screen information | [MsgSize](#constraint-protocol-max-message-length) | 1.0+ |
 | [**DKDL**](@ref kMsgDKeyDownLang) | @ref kMsgDKeyDownLang | Data | Server→Client | Key down with language | [MsgSize](#constraint-protocol-max-message-length), [KeyMap](#constraint-keymap) | 1.8+ |
@@ -492,10 +494,18 @@ For platform-specific implementation details, refer to:
   - Data transfer (@ref kMsgDClipboard - text, images, HTML)
   - Streaming for large data (v1.6+)
 
-- **File Transfer** (v1.5+)
-  - Drag-and-drop initiation
-  - Chunked file transfer
-  - Progress tracking
+- **Pro Local file transfer preview**
+  - `DFTC` control negotiation requires protocol 1.12 or later.
+  - `DFTD` data streaming requires protocol 1.13 or later.
+  - Every frame carries the 16-byte transfer ID and exact source/target screen route.
+  - A source sends `Begin`, ordered chunks of at most 60 KiB, an `ItemEnd`
+    containing the exact size and SHA-256 digest for each file, then `Finish`.
+  - The receiver writes only into an owned hidden staging directory, verifies
+    sizes and digests, flushes, and publishes without overwriting an existing
+    destination file.
+  - The `alpha.20` UI enables this path only over the existing TLS connection.
+    The first preview is Windows server-to-client and does not yet expose
+    progress or pause/resume.
 
 - **Security Features**
   - TLS/SSL encryption (v1.4+)

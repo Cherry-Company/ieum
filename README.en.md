@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.19"><strong>Download Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20"><strong>Download Ieum</strong></a>
   · <a href="#first-run-security-and-permissions"><strong>Security &amp; permissions</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>Sponsor Ieum</strong></a>
 </p>
@@ -32,7 +32,7 @@ Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers
 screen edge: it connects **Korean/English mode, IME composition sessions, physical key positions, and Unicode
 clipboard data** into one consistent input path across operating systems.
 
-> The current release is `v0.1.0-alpha.19`. Automated builds and unit tests pass, but the long-running physical
+> The current release is `v0.1.0-alpha.20`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
 
 ## Help Ieum reach production distribution
@@ -52,7 +52,21 @@ notarization, physical Windows ARM64 and Apple Silicon regression testing, and d
 Custom one-time amounts remain available. Local KVM, Korean/CJK input synchronization, and clipboard core remain
 open regardless of sponsorship. Every release publishes the
 [amount allocated and work completed with sponsorship funds](docs/release/sponsorship-impact.md). The amount
-allocated to `alpha.19` is **USD 0**.
+allocated to `alpha.20` is **USD 0**.
+
+## Alpha.20 Pro Local file-drag preview
+
+`alpha.20` introduces the first Pro Local preview: drag files through a configured edge on a Windows server PC
+to a Windows client PC.
+
+- In **Preferences → Files**, explicitly enable sending on the server and receiving on the client. File transfer
+  does not start when TLS is disabled.
+- Protocol 1.12 carries offers, decisions, cancellations, and results. Protocol 1.13 carries bounded data frames,
+  processing at most one 60 KiB chunk per event-loop turn.
+- The sender revalidates Windows file identity, size, and modification time before reading. The receiver uses a
+  hidden staging directory, verifies size and SHA-256, and publishes under a collision-safe name without overwrite.
+- This preview is **Windows server → Windows client only**. Per-transfer prompts, progress, pause/resume, reverse
+  edge drag, and native drop into a remote application are the next slices.
 
 ## Alpha.19 coordinate, update, permission, and diagnostic reliability
 
@@ -263,16 +277,16 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[이음 (Ieum) v0.1.0-alpha.19 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.19)
+[이음 (Ieum) v0.1.0-alpha.20 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20)
 
 | Operating system | Installer |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.19-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.19-macos-x86_64.dmg` |
-| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.19-win-x64.msi` |
-| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.19-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.19-win-arm64.msi` |
-| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.19-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.20-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.20-macos-x86_64.dmg` |
+| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.20-win-x64.msi` |
+| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.20-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.20-win-arm64.msi` |
+| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.20-win-arm64-ko-KR.msi` |
 
 Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
 `SHA256SUMS.txt`.
@@ -413,13 +427,17 @@ Community. The following items are **implementation plans**, not products curren
 | Teams | Organization and device policies, roles, audit history, SSO, and a management console |
 | Support | Priority support, deployment assistance, enterprise integration, and maintenance contracts |
 
-The first Pro implementation target is **drag-and-drop file transfer between computers**. Desktop transfer code
-and protocol changes remain GPL-licensed in this repository. Paid value sits at the official Pro distribution,
-hosted relay, device management, and support boundaries.
-The first beta hands files off at the configured screen edge and writes an accepted transfer into the receiving
-computer's `Ieum Transfers` directory without routing direct-transfer bytes through an Ieum-operated server.
-Native drop into an arbitrary remote application follows this safe receive-directory flow. The behavior and limits
-are fixed in the [Pro Local edge file-transfer design](docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md).
+The first Pro implementation, **drag-and-drop file transfer between computers**, starts as a Windows preview in
+`alpha.20`. Desktop transfer code and protocol changes remain GPL-licensed in this repository. Paid value sits at
+the official Pro distribution, hosted relay, device management, and support boundaries. This preview sends from a
+Windows server edge to an opted-in Windows client over the existing TLS connection, verifies SHA-256, and publishes
+without overwriting into `Downloads/Ieum`. Direct-transfer bytes do not pass through an Ieum-operated server.
+
+On both computers, use `alpha.20` or later and keep TLS enabled. In **Preferences → Files**, enable sending on the
+server and receiving on the client. The receiving switch is the preview's advance approval. Per-transfer prompts,
+client-to-server edge drag, pause/resume, progress UI, and native drop into an arbitrary remote application remain
+future slices. The behavior and limits are fixed in the
+[Pro Local edge file-transfer design](docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md).
 
 ```mermaid
 flowchart LR
@@ -455,7 +473,7 @@ flowchart LR
 | --- | --- | --- |
 | 1. v1 reliability | Audit issues #6–#38, required CI, and platform acceptance evidence | **In progress — 16/33** |
 | 2. Official distribution | Windows signing, Apple notarization, stable updates, and rollback | Waiting |
-| 3. Pro foundation | Accounts, devices, subscriptions, and a file-transfer beta | **Pro Local design approved; first slice starting** |
+| 3. Pro foundation | Accounts, devices, subscriptions, and a file-transfer beta | **alpha.20 Windows one-way preview implemented; no sales, accounts, or billing yet** |
 | 4. Pro connectivity | Device discovery, end-to-end encrypted relay, and local fallback | Waiting |
 | 5. Teams | Organizations, roles, device policy, and audit export | Waiting |
 | 6. Enterprise | SSO, SCIM, disaster recovery, and contractual SLOs | Waiting |

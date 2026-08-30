@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.19"><strong>下载 Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20"><strong>下载 Ieum</strong></a>
   · <a href="#首次运行时的安全与权限"><strong>安全与权限</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>赞助 Ieum</strong></a>
 </p>
@@ -32,7 +32,7 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 还试图把不同系统中的 **韩/英输入状态、输入法组合会话、物理按键位置和 Unicode 剪贴板**连接成
 一致的输入链路。
 
-> 当前版本为 `v0.1.0-alpha.19`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
+> 当前版本为 `v0.1.0-alpha.20`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
 
 ## 帮助 Ieum 完成正式发行
@@ -51,7 +51,20 @@ ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
 
 仍可选择自定义金额进行单次赞助。无论是否赞助，本地 KVM、韩语/CJK 输入同步和剪贴板核心都将保持
 开放。每个版本都会公开[赞助资金分配金额和完成的工作](docs/release/sponsorship-impact.md)。
-`alpha.19` 分配的赞助资金为 **USD 0**。
+`alpha.20` 分配的赞助资金为 **USD 0**。
+
+## Alpha.20 Pro Local 文件拖放预览
+
+`alpha.20` 首次提供 Pro Local 预览：把文件拖到 Windows 服务端电脑已配置的屏幕边缘，即可发送到
+Windows 客户端电脑。
+
+- 在 **首选项 → Files** 中，服务端需明确启用发送，客户端需明确启用接收。TLS 关闭时不会启动传输。
+- 协议 1.12 负责提议、决定、取消和结果；协议 1.13 传输有界数据帧，每次事件循环最多处理一个
+  60 KiB 数据块。
+- 发送前重新验证 Windows 文件标识、大小和修改时间。接收端写入隐藏暂存目录，验证大小与 SHA-256，
+  并以避免冲突的新名称发布，不覆盖已有文件。
+- 当前预览仅支持 **Windows 服务端 → Windows 客户端**。逐次确认、进度、暂停/续传、反向拖放和
+  直接放入远程应用仍是后续工作。
 
 ## Alpha.19 坐标、更新、权限与诊断可靠性
 
@@ -239,16 +252,16 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.19 发布页](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.19)
+[Ieum v0.1.0-alpha.20 发布页](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.19-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.19-macos-x86_64.dmg` |
-| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.19-win-x64.msi` |
-| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.19-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.19-win-arm64.msi` |
-| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.19-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.20-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.20-macos-x86_64.dmg` |
+| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.20-win-x64.msi` |
+| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.20-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.20-win-arm64.msi` |
+| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.20-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
 
@@ -375,11 +388,15 @@ Pro 会增加官方发行以及新的连接和管理功能，不会从 Community
 | Teams | 组织与设备策略、角色管理、审计记录、SSO 和管理控制台 |
 | 技术支持 | 优先支持、部署协助、企业集成和维护合同 |
 
-第一个 Pro 实现目标是**在电脑之间拖放文件进行传输**。桌面端传输代码和协议仍在本仓库中以
-GPL 发布；付费边界放在官方 Pro 发行、托管中继、设备管理和技术支持。
-首个测试版会在已配置的屏幕边缘交接文件；接收方确认后，文件会保存到对方电脑的
-`Ieum Transfers` 目录，直接传输的数据不会经过 Ieum 运营的服务器。向任意远程应用执行原生放置会在
-这个安全接收目录流程稳定后实现。具体行为和限制见
+第一个 Pro 实现——**在电脑之间拖放文件进行传输**——从 `alpha.20` 的 Windows 预览开始。
+桌面端传输代码和协议仍在本仓库中以 GPL 发布；付费边界放在官方 Pro 发行、托管中继、设备管理和
+技术支持。当前预览从 Windows 服务端电脑的屏幕边缘发送到已明确启用接收的 Windows 客户端，
+通过现有 TLS 连接传输，校验 SHA-256 后无覆盖地保存到 `下载/Ieum`。直接传输的数据不会经过
+Ieum 运营的服务器。
+
+两台电脑都需使用 `alpha.20` 或更高版本并启用 TLS。在 **首选项 → Files** 中，服务端启用发送，
+客户端启用接收；接收开关就是当前预览的预先授权。逐次确认窗口、客户端到服务端拖放、暂停/续传、
+进度界面以及向任意远程应用执行原生放置仍属后续实现。具体行为和限制见
 [Pro Local 屏幕边缘文件传输设计](docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md)。
 
 ```mermaid
@@ -415,7 +432,7 @@ flowchart LR
 | --- | --- | --- |
 | 1. v1 稳定性 | 完成审计问题 #6–#38、必需 CI 和各平台验收记录 | **进行中 — 16/33** |
 | 2. 官方发行 | Windows 签名、Apple 公证、稳定更新和回滚 | 等待 |
-| 3. Pro 基础 | 账户、设备、订阅和文件传输测试版 | **Pro Local 设计已确定，开始首个实现切片** |
+| 3. Pro 基础 | 账户、设备、订阅和文件传输测试版 | **alpha.20 Windows 单向预览已实现；尚未销售，也没有账户或支付功能** |
 | 4. Pro 连接 | 设备发现、端到端加密中继和本地连接回退 | 等待 |
 | 5. Teams | 组织、角色、设备策略和审计导出 | 等待 |
 | 6. Enterprise | SSO、SCIM、灾难恢复和合同 SLO | 等待 |
