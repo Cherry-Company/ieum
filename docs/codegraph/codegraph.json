@@ -2096,16 +2096,16 @@
       "targets": []
     },
     {
-      "fileCount": 26,
+      "fileCount": 27,
       "id": "support:github",
       "kind": "automation",
       "languageCounts": {
         "markdown": 3,
         "other": 2,
         "powershell": 2,
-        "yaml": 19
+        "yaml": 20
       },
-      "lineCount": 3594,
+      "lineCount": 3946,
       "path": ".github",
       "targets": []
     },
@@ -2368,7 +2368,7 @@
         "c": 1,
         "python": 1
       },
-      "lineCount": 326,
+      "lineCount": 363,
       "path": "tools/ci",
       "targets": []
     },
@@ -15326,9 +15326,9 @@
       "binary": false,
       "component": "support:github",
       "language": "powershell",
-      "lineCount": 924,
+      "lineCount": 936,
       "path": ".github/actions/test-package/test-windows-msi-upgrade.ps1",
-      "sizeBytes": 29298
+      "sizeBytes": 29710
     },
     {
       "binary": false,
@@ -15392,7 +15392,15 @@
       "language": "yaml",
       "lineCount": 1050,
       "path": ".github/workflows/continuous-integration.yml",
-      "sizeBytes": 40001
+      "sizeBytes": 40115
+    },
+    {
+      "binary": false,
+      "component": "support:github",
+      "language": "yaml",
+      "lineCount": 340,
+      "path": ".github/workflows/release-existing-run.yml",
+      "sizeBytes": 13649
     },
     {
       "binary": false,
@@ -23174,9 +23182,9 @@
       "binary": false,
       "component": "tool:ci",
       "language": "python",
-      "lineCount": 306,
+      "lineCount": 343,
       "path": "tools/ci/tests/test_analysis_workflows.py",
-      "sizeBytes": 12685
+      "sizeBytes": 14609
     },
     {
       "binary": false,
@@ -23324,8 +23332,8 @@
     }
   ],
   "revision": {
-    "branch": "feat/pro-file-transfer-service",
-    "commit": "cead7ef85d4b44464524ecb867fb1fbca7f7b3f9",
+    "branch": "fix/release-job-skip",
+    "commit": "a8e9281462284a2182e4ebf7a9de63d3cd8c8ce4",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
@@ -23334,11 +23342,11 @@
     "components": 42,
     "excludedFiles": 3,
     "fileIncludeEdges": 1534,
-    "representedFiles": 1019,
+    "representedFiles": 1020,
     "sourceFiles": 650,
-    "sourceLines": 107045,
+    "sourceLines": 107082,
     "targets": 79,
-    "trackedFiles": 1022
+    "trackedFiles": 1023
   },
   "targets": [
     {

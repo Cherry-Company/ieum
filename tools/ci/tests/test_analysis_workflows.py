@@ -150,6 +150,23 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
             workflow,
         )
 
+    def test_existing_tag_release_recovery_is_bound_and_privacy_gated(self) -> None:
+        workflow = read_workflow("release-existing-run.yml")
+
+        self.assertIn("  workflow_dispatch:", workflow)
+        self.assertIn("      source_run_id:", workflow)
+        self.assertIn("run-id: ${{ inputs.source_run_id }}", workflow)
+        self.assertIn('[[ "${source_run[0]}" == "$release_sha" ]]', workflow)
+        self.assertIn('[[ "${source_run[1]}" == "$RELEASE_TAG" ]]', workflow)
+        self.assertIn('[[ "${source_run[3]}" == "success" ]]', workflow)
+        self.assertIn(
+            "target_commitish: ${{ steps.bind.outputs.release_sha }}", workflow
+        )
+        self.assertIn("Run exact release privacy gate", workflow)
+        self.assertIn("Run post-fetch ref and byte verification", workflow)
+        self.assertIn('--ref "refs/tags/$RELEASE_TAG"', workflow)
+        self.assertIn("persist-credentials: false", workflow)
+
     def test_contributor_docs_explain_sonarcloud_configuration(self) -> None:
         documentation = (
             REPOSITORY_ROOT / "docs" / "dev" / "contributing.md"
@@ -175,6 +192,26 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
 
         self.assertRegex(workflow, r"needs:\s*\[[^]]*analyze-valgrind[^]]*\]")
         self.assertIn("needs.analyze-valgrind.result", workflow)
+
+    def test_release_chain_runs_after_the_gate_accepts_expected_skips(self) -> None:
+        workflow = read_workflow("continuous-integration.yml")
+
+        release = job_block(workflow, "release")
+        self.assertIn("always() && needs.ci-passed.result == 'success'", release)
+        self.assertIn("startsWith(github.ref, 'refs/tags/v')", release)
+
+        post_fetch = job_block(workflow, "privacy-post-fetch")
+        self.assertIn("always() && needs.release.result == 'success'", post_fetch)
+        self.assertIn("startsWith(github.ref, 'refs/tags/v')", post_fetch)
+
+    def test_windows_upgrade_uses_the_previous_published_release(self) -> None:
+        script = read_repository_file(
+            ".github/actions/test-package/test-windows-msi-upgrade.ps1"
+        )
+
+        self.assertIn("gh release view $candidateTag", script)
+        self.assertIn("Skipping unpublished tag $candidateTag", script)
+        self.assertIn('$searchRevision = "$candidateTag^"', script)
 
     def test_valgrind_workflow_proves_invalid_access_fails(self) -> None:
         workflow = read_workflow("valgrind-analysis.yml")

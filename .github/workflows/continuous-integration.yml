@@ -772,7 +772,7 @@ jobs:
 
   release:
     needs: ci-passed
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: ${{ always() && needs.ci-passed.result == 'success' && startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -934,7 +934,7 @@ jobs:
 
   privacy-post-fetch:
     needs: release
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: ${{ always() && needs.release.result == 'success' && startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
