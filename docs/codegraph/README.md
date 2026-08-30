@@ -6,7 +6,7 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `0f1d147822f0d51134476f6432905014ce287c2a`
+- Revision: `72b24794635d2a13ea5009dde0516b337df71e01`
 - Branch: `feat/pro-file-transfer-service`
 - Tracked files: 1,022
 - Represented files: 1,019

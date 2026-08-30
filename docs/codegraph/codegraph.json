@@ -23009,7 +23009,7 @@
       "language": "cmake",
       "lineCount": 72,
       "path": "src/unittests/platform/CMakeLists.txt",
-      "sizeBytes": 1926
+      "sizeBytes": 1930
     },
     {
       "binary": false,
@@ -23318,7 +23318,7 @@
   ],
   "revision": {
     "branch": "feat/pro-file-transfer-service",
-    "commit": "0f1d147822f0d51134476f6432905014ce287c2a",
+    "commit": "72b24794635d2a13ea5009dde0516b337df71e01",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
