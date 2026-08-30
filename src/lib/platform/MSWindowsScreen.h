@@ -9,6 +9,7 @@
 #pragma once
 
 #include "deskflow/PlatformScreen.h"
+#include "deskflow/win32/MSWindowsEdgeDropHost.h"
 #include "platform/MSWindowsHook.h"
 #include "platform/MSWindowsPowerManager.h"
 
@@ -55,6 +56,12 @@ public:
   Returns the application instance handle passed to init().
   */
   static HINSTANCE getWindowInstance();
+
+  //! Install the optional file-transfer edge drop host.
+  [[nodiscard]] bool installFileTransferEdgeDrop(deskflow::filetransfer::MSWindowsEdgeDropHostCallbacks callbacks);
+
+  //! Remove every file-transfer edge drop window and callback.
+  void uninstallFileTransferEdgeDrop() noexcept;
 
   //@}
 
@@ -196,6 +203,8 @@ private: // HACK
 
   // update screen size cache
   void updateScreenShape();
+
+  [[nodiscard]] bool refreshFileTransferEdgeDrop();
 
   // fix timer callback
   void handleFixes();
@@ -348,6 +357,9 @@ private:
 
   PrimaryKeyDownList m_primaryKeyDownList;
   MSWindowsPowerManager m_powerManager;
+
+  std::unique_ptr<deskflow::filetransfer::MSWindowsEdgeDropHost> m_fileTransferEdgeDropHost;
+  bool m_oleInitialized = false;
 
   mutable std::chrono::steady_clock::time_point m_fullscreenLastCheck;
   mutable bool m_foregroundFullscreen = false;

@@ -380,6 +380,22 @@ Server::sendFileTransferControl(const deskflow::filetransfer::FileTransferContro
   return routeFileTransferControl(m_primaryClient, message);
 }
 
+std::optional<deskflow::filetransfer::EdgeTarget>
+Server::resolveFileTransferEdgeTarget(Direction direction, int32_t x, int32_t y) const
+{
+  if (direction < Direction::FirstDirection || direction > Direction::LastDirection) {
+    return std::nullopt;
+  }
+
+  auto *target = getNeighbor(m_primaryClient, direction, x, y);
+  if (target == nullptr || target == m_primaryClient ||
+      target->protocolMinorVersion() < kProtocolFileTransferControlMinorVersion) {
+    return std::nullopt;
+  }
+
+  return deskflow::filetransfer::EdgeTarget{.direction = direction, .screen = getName(target)};
+}
+
 uint32_t Server::getActivePrimarySides() const
 {
   using enum DirectionMask;

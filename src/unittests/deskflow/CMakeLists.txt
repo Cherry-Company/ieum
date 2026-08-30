@@ -93,6 +93,14 @@ if(WIN32)
     SOURCE MSWindowsEdgeDropTargetTests.cpp
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
   )
+
+  create_test(
+    NAME MSWindowsEdgeDropHostTests
+    DEPENDS app
+    LIBS arch base ${extra_libs}
+    SOURCE MSWindowsEdgeDropHostTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+  )
 endif()
 
 create_test(

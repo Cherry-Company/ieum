@@ -13,6 +13,7 @@
 #include "common/NetworkProtocol.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/ClipboardTypes.h"
+#include "deskflow/EdgeHandoffDecision.h"
 #include "deskflow/FileTransferControlRouting.h"
 #include "deskflow/InputLanguageTypes.h"
 #include "deskflow/KeyTypes.h"
@@ -22,6 +23,7 @@
 #include <chrono>
 #include <climits>
 #include <map>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -207,6 +209,8 @@ public:
   routeFileTransferControl(BaseClientProxy *sender, const deskflow::filetransfer::FileTransferControlMessage &message);
   deskflow::filetransfer::FileTransferRouteResult
   sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &message);
+  [[nodiscard]] std::optional<deskflow::filetransfer::EdgeTarget>
+  resolveFileTransferEdgeTarget(Direction direction, int32_t x, int32_t y) const;
 
   //@}
 
