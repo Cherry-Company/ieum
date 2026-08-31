@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.21"><strong>이음 다운로드</strong></a>
   · <a href="#설치와-첫-연결"><strong>설치 가이드</strong></a>
   · <a href="#설치-전-1분-보안-확인"><strong>보안·권한 안내</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>GitHub Sponsors로 후원</strong></a>
@@ -33,7 +33,7 @@
 KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
 원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
 
-> 현재 단계는 `v0.1.0-alpha.20`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 현재 단계는 `v0.1.0-alpha.21`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
 
 ## 이음의 정식 배포를 함께 완성해 주세요
@@ -53,21 +53,28 @@ ARM64·Apple Silicon 실기 회귀 테스트와 안정적인 릴리스 유지**�
 월간 티어 외에 일회성 사용자 지정 금액도 선택할 수 있습니다. 후원 여부와 관계없이 로컬 KVM,
 한글·CJK 입력 동기화와 클립보드 코어는 공개 프로젝트로 유지합니다. 릴리스마다
 [배분 금액과 후원으로 완료한 작업](docs/release/sponsorship-impact.md)을 함께 공개하며, 이번
-`alpha.20`에 배분된 후원금은 **USD 0**입니다.
+`alpha.21`에 배분된 후원금은 **USD 0**입니다.
 
-### alpha.20 Pro Local 파일 드래그 프리뷰
+### alpha.21 Pro Local 오프라인 라이선스와 파일 드래그
 
-`alpha.20`은 Windows 서버 PC의 화면 경계로 파일을 끌어 Windows 클라이언트 PC로 보내는 첫
-Pro Local 프리뷰를 포함합니다.
+`alpha.21`부터 Windows 파일 보내기와 받기는 **Pro Local** 기능입니다. 로컬 KVM, 한글·CJK 입력
+동기화와 클립보드는 라이선스 없이 그대로 사용할 수 있습니다.
 
-- **환경설정 → Files**에서 서버는 송신, 클라이언트는 수신을 명시적으로 켭니다. TLS가 꺼져 있으면
-  파일 전송도 시작하지 않습니다.
+- 후원자가 받는 것은 한 줄짜리 `*.ieum-license.txt` 파일입니다. 파일 전송에 참여할 Windows PC
+  두 대 모두에서 **환경설정 → Files → Import license file → Activate** 순서로 활성화합니다.
+- 두 PC 모두 TLS를 켠 뒤 보내기 또는 받기를 직접 선택해야 합니다. 이전 버전에 저장된 전송 설정은
+  유효한 라이선스가 없으면 꺼지며, 키를 나중에 넣어도 자동으로 다시 켜지지 않습니다.
+- 파일 전송 서비스는 시작·제안·수락·데이터 청크마다 현재 권한을 다시 확인합니다. 만료되거나 제거된
+  키는 진행 중 세션도 실패 처리하며, 키를 다시 넣어도 실패한 세션을 되살리지 않습니다.
 - 파일 제안·수락·취소·결과는 프로토콜 `1.12`, 실제 바이트는 프로토콜 `1.13`으로 분리했습니다.
   데이터는 한 번에 최대 60 KiB만 이벤트 루프에서 처리합니다.
 - 송신 직전 Windows 파일 ID·크기·수정 시각을 다시 확인하고, 수신은 숨김 임시 디렉터리에 쓴 뒤
   SHA-256과 크기를 검증합니다. 같은 이름이 있으면 덮어쓰지 않고 새 이름으로 게시합니다.
-- 이번 프리뷰는 **Windows 서버 → Windows 클라이언트 단방향**입니다. 전송별 승인 창, 진행률,
-  일시정지·재개, 반대 방향 드래그와 원격 앱에 직접 놓기는 다음 구현 순서입니다.
+- 현재 화면 경계 드래그 경로는 **Windows 서버 → Windows 클라이언트 단방향**입니다. 전송별 승인 창,
+  진행률, 일시정지·재개, 반대 방향 드래그와 원격 앱에 직접 놓기는 다음 구현 순서입니다.
+- 현재 키는 오프라인 서명 파일이라 장치 수를 세거나 원격으로 회수하지 않습니다. 발급용 개인키와
+  발급기는 프로젝트 소유자만 보관하며 공개 저장소·릴리스·후원자에게 배포하지 않습니다. 자세한
+  설치와 범위는 [Pro Local 파일 전송 안내](docs/dev/pro_local_file_transfer.md)를 참고하세요.
 
 ### alpha.19 좌표·업데이트·권한 복구 변경
 
@@ -216,17 +223,17 @@ Tailscale·Wi-Fi 품질과 마우스 폴링률은 환경마다 다르므로, 두
 ### 1. 설치 파일 고르기
 
 최신 테스트 릴리스는
-**[이음 (Ieum) v0.1.0-alpha.20](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20)**입니다.
+**[이음 (Ieum) v0.1.0-alpha.21](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.21)**입니다.
 한국어 사용자는 아래 직링크를 사용하면 릴리스 자산 목록에서 파일명을 찾을 필요가 없습니다.
 
 | 기기 | 권장 다운로드 |
 | --- | --- |
-| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.20/Ieum-0.1.0-alpha.20-win-x64-ko-KR.msi) |
-| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.20/Ieum-0.1.0-alpha.20-win-arm64-ko-KR.msi) |
-| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.20/Ieum-0.1.0-alpha.20-macos-arm64.dmg) |
-| Intel Mac | [macOS Intel DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.20/Ieum-0.1.0-alpha.20-macos-x86_64.dmg) |
-| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20) |
-| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20) |
+| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.21/Ieum-0.1.0-alpha.21-win-x64-ko-KR.msi) |
+| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.21/Ieum-0.1.0-alpha.21-win-arm64-ko-KR.msi) |
+| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.21/Ieum-0.1.0-alpha.21-macos-arm64.dmg) |
+| Intel Mac | [macOS Intel DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.21/Ieum-0.1.0-alpha.21-macos-x86_64.dmg) |
+| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.21) |
+| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.21) |
 
 아키텍처를 모르겠다면 다음 위치에서 확인합니다.
 
@@ -677,30 +684,42 @@ flowchart LR
 `GPL-2.0-only WITH LicenseRef-OpenSSL-Exception`으로 공개합니다. 현재 앱의 핵심 기능을 같은
 실행 파일 안에서 비공개 코드로 바꾸지는 않습니다.
 
-Pro는 무료 기능을 회수하는 제품이 아니라, 공식 배포와 새 연결·관리 기능을 더하는 제품입니다.
-아래 항목은 **구현 계획**이며 아직 판매 중인 상품이 아닙니다.
+Pro는 무료 기능을 회수하는 제품이 아니라 파일 전송, 공식 배포와 향후 연결·관리 기능을 더하는
+제품입니다. `alpha.21`은 수동 발급하는 **Pro Local 오프라인 라이선스**의 첫 구현입니다. 결제 페이지,
+계정, 자동 활성화와 구독 관리는 아직 없으며 후원자에게 라이선스 파일을 직접 전달합니다.
 
 | 제품 | 제공 범위 |
 | --- | --- |
 | Community | 같은 네트워크의 로컬 KVM, IME 동기화, 클립보드와 공개 프로토콜 |
-| Pro Local | 공식 서명·공증 빌드, 안정 업데이트와 이음 서버를 거치지 않는 직접 파일 드래그 전송 |
+| Pro Local | `alpha.21` 오프라인 라이선스, 이음 서버를 거치지 않는 Windows 직접 파일 드래그 전송 |
 | Pro Cloud | 계정·여러 기기 등록, 외부 네트워크 연결과 사용량 한도가 있는 암호화 릴레이 |
 | Teams | 조직·기기 정책, 역할 관리, 감사 기록, SSO와 관리 콘솔 |
 | 지원 | 우선 기술지원, 배포 지원, 기업 통합과 유지보수 계약 |
 
-첫 Pro 구현인 **컴퓨터 사이 파일 드래그 전송**은 `alpha.20`에서 Windows 프리뷰로 시작합니다.
-데스크톱 전송 코드와 프로토콜은 이 저장소에서 GPL로 공개하고, 유료 경계는 공식 Pro 배포, 호스팅
-릴레이, 기기 관리와 지원에 둡니다. 이번 프리뷰는 Windows 서버 PC의 설정된 화면 경계로 파일을 끌면,
-기존 TLS 연결을 통해 Windows 클라이언트 PC의 `다운로드/Ieum` 폴더에 충돌 없이 저장합니다. 직접
-연결 파일은 이음 운영 서버를 통과하지 않으므로 이음 측 전송 대역폭 비용도 없습니다. 세부 동작과
-보안 제한은
+첫 Pro 구현인 **컴퓨터 사이 파일 드래그 전송**은 `alpha.21`부터 유효한 Pro Local 키가 양쪽 PC에
+있어야 열립니다. Windows 서버 PC의 설정된 화면 경계로 파일을 끌면 기존 TLS 연결을 통해 Windows
+클라이언트 PC의 `다운로드/Ieum` 폴더에 충돌 없이 저장합니다. 직접 연결 파일은 이음 운영 서버를
+통과하지 않으므로 이음 측 전송 대역폭 비용도 없습니다. 세부 동작과 보안 제한은
 [Pro Local 화면 경계 파일전송 설계](docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md)에
 고정했습니다.
 
-사용하려면 양쪽 PC를 `alpha.20` 이상으로 맞추고 TLS를 켠 뒤, **환경설정 → Files**에서 서버 PC는
-`Send files...`, 클라이언트 PC는 `Receive files...`를 켭니다. 수신 스위치를 켜는 동작이 현재
-프리뷰의 사전 승인입니다. 전송마다 묻는 승인 창, 클라이언트→서버 드래그, 중단 재개, 진행률 UI와
-원격 앱 안으로 바로 놓는 네이티브 드롭은 아직 구현되지 않았습니다.
+사용하려면 양쪽 Windows PC를 `alpha.21` 이상으로 맞추고, 받은 `*.ieum-license.txt`를 각각
+**환경설정 → Files**에서 가져와 **Activate**를 누릅니다. 그다음 TLS를 켜고 서버 PC는
+`Send files...`, 클라이언트 PC는 `Receive files...`를 직접 켭니다. 수신 스위치를 켜는 동작이 현재
+사전 승인입니다. 전송마다 묻는 승인 창, 클라이언트→서버 드래그, 중단 재개, 진행률 UI와 원격 앱
+안으로 바로 놓는 네이티브 드롭은 아직 구현되지 않았습니다.
+
+오프라인 키는 장치에 묶이지 않고 장치 수를 세지 않으며 서버에서 원격 회수할 수도 없습니다. 같은
+후원자의 PC에는 같은 파일을 사용할 수 있습니다. 발급 개인키·발급기·발급대장은 프로젝트 소유자만
+오프라인으로 보관하고 공개 저장소나 릴리스에는 넣지 않습니다. 후원자에게 전달하는 파일은
+`*.ieum-license.txt` 하나뿐입니다.
+
+```mermaid
+flowchart LR
+  A["Community core<br/>KVM · Clipboard · IME"] --> B["Pro Local alpha.21<br/>Offline license · File transfer"]
+  B --> C["Pro account service<br/>Payment · Activation · Seats"]
+  C --> D["Hosted services<br/>Discovery · Relay · Managed updates"]
+```
 
 ```mermaid
 flowchart LR
@@ -720,8 +739,12 @@ flowchart LR
 무제한 릴레이를 평생 라이선스로 제공하지 않습니다. 로컬 직접 전송은 1회 구매형 공식 패키지에
 둘 수 있지만, 이음이 대역폭 비용을 부담하는 외부 릴레이는 월간·연간 구독과 사용량 한도를 둡니다.
 
-GPL 바이너리는 유료로 배포할 수 있지만 구매자는 대응 소스를 받고 재배포할 권리를 가집니다. 별도
-유료 서버가 필요해지면 현재 GPL 소스를 옮기지 않고 독립 저장소에서 새로 만들며, 공개 네트워크 API로
+GPL 바이너리는 유료로 배포할 수 있지만 구매자는 대응 소스를 받고 재배포할 권리를 가집니다. 또한
+소스를 직접 빌드하거나 수정해 공식 바이너리의 라이선스 검사를 제거하는 것까지 기술적으로 막는
+DRM은 아닙니다. `alpha.21` 키는 공식 배포본에서 후원 기능을 여는 권한증이며, 공개키만 저장소에
+포함하고 서명용 개인키와 발급기는 배포하지 않습니다.
+
+별도 유료 서버가 필요해지면 현재 GPL 소스를 옮기지 않고 독립 저장소에서 새로 만들며, 공개 네트워크 API로
 데스크톱 앱과 연결합니다. 자세한 기준은 [제품·상용화 로드맵](docs/product/commercialization-roadmap.md)과
 [GNU GPL v2 FAQ](https://www.gnu.org/licenses/gpl-faq.en.html)를 참고하세요. 이 방향은 법률 자문이
 아니며 실제 유료 배포 전에는 저작권·상표·서비스 경계를 별도로 검토해야 합니다.
@@ -733,20 +756,20 @@ GPL 바이너리는 유료로 배포할 수 있지만 구매자는 대응 소스
 ```mermaid
 flowchart LR
   P1["1. v1 안정화<br/>감사 이슈 16/33"] --> P2["2. 공식 배포<br/>서명·공증·안정 업데이트"]
-  P2 --> P3["3. Pro 기반<br/>계정·기기·구독·파일 전송"]
-  P3 --> P4["4. Pro 연결<br/>장치 검색·암호화 릴레이"]
-  P4 --> P5["5. Teams<br/>조직·정책·감사 기록"]
-  P5 --> P6["6. Enterprise<br/>SSO·SCIM·SLO"]
+  P2 --> P3["3. Pro Local<br/>오프라인 키·파일 전송"]
+  P3 --> P4["4. Pro 계정<br/>결제·활성화·좌석"]
+  P4 --> P5["5. Hosted 연결<br/>장치 검색·암호화 릴레이"]
+  P5 --> P6["6. Teams·Enterprise<br/>조직·SSO·감사·SLO"]
 ```
 
 | 단계 | 완료 조건 | 현재 상태 |
 | --- | --- | --- |
 | 1. v1 안정화 | 감사 이슈 #6~#38, 필수 CI와 플랫폼 수용 기준 완료 | **진행 중 — 16/33** |
 | 2. 공식 배포 | Windows 서명, Apple 공증, 안정 업데이트와 롤백 | 대기 |
-| 3. Pro 기반 | 계정·기기·구독과 파일 드래그 전송 베타 | **alpha.20 Windows 단방향 프리뷰 구현 — 판매·계정·결제는 아직 없음** |
-| 4. Pro 연결 | 장치 검색, 종단간 암호화 릴레이와 로컬 연결 대체 경로 | 대기 |
-| 5. Teams | 조직, 역할, 기기 정책과 감사 내보내기 | 대기 |
-| 6. Enterprise | SSO, SCIM, 재해 복구와 계약형 SLO | 대기 |
+| 3. Pro Local | 오프라인 라이선스, 양쪽 PC 권한 검사, 직접 파일 전송과 복구 UX | **alpha.21 첫 삽 완료 — Windows 단방향 경로, 실기 수용·진행률·재개는 남음** |
+| 4. Pro 계정 | 결제, 로그인, 장치 활성화·좌석·환불과 오프라인 유예 | 대기 |
+| 5. Hosted 연결 | 장치 검색, 종단간 암호화 릴레이와 로컬 연결 대체 경로 | 대기 |
+| 6. Teams·Enterprise | 조직, 역할, 기기 정책, 감사, SSO·SCIM과 계약형 SLO | 대기 |
 
 ## 빌드와 테스트
 

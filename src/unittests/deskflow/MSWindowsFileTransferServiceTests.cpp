@@ -181,6 +181,7 @@ void transfersFileEndToEnd()
       .localScreen = "office",
       .destinationDirectory = {},
       .receiveEnabled = false,
+      .authorizeFileTransfer = [] { return true; },
       .sendControl =
           [&](const FileTransferControlMessage &message) {
             senderControl.push_back(message);
@@ -197,6 +198,7 @@ void transfersFileEndToEnd()
       .localScreen = "laptop",
       .destinationDirectory = destination,
       .receiveEnabled = true,
+      .authorizeFileTransfer = [] { return true; },
       .sendControl =
           [&](const FileTransferControlMessage &message) {
             receiverControl.push_back(message);
@@ -250,6 +252,7 @@ void rejectsWhenReceivingIsDisabled()
       .localScreen = "laptop",
       .destinationDirectory = destination,
       .receiveEnabled = false,
+      .authorizeFileTransfer = [] { return true; },
       .sendControl =
           [&](const FileTransferControlMessage &message) {
             controls.push_back(message);
@@ -269,6 +272,193 @@ void rejectsWhenReceivingIsDisabled()
   require(!std::filesystem::exists(destination), "disabled receiver should not create a destination directory");
 }
 
+void rejectsUnauthorizedOffers()
+{
+  TemporaryDirectory temporary;
+  const auto sourcePath = temporary.path() / L"locked.txt";
+  writeFile(sourcePath, "locked");
+  const auto inspected = inspectMSWindowsFileTransferSources({sourcePath});
+  require(inspected.ok(), "unauthorized source snapshot should succeed");
+
+  bool authorized = false;
+  std::vector<FileTransferControlMessage> controls;
+  std::vector<FileTransferDataMessage> data;
+  MSWindowsFileTransferService sender({
+      .localScreen = "office",
+      .destinationDirectory = {},
+      .receiveEnabled = false,
+      .authorizeFileTransfer = [&] { return authorized; },
+      .sendControl =
+          [&](const FileTransferControlMessage &message) {
+            controls.push_back(message);
+            return true;
+          },
+      .sendData =
+          [&](const FileTransferDataMessage &message) {
+            data.push_back(message);
+            return true;
+          },
+      .createTransferId = [] { return fixedId(); },
+  });
+
+  require(!sender.offerLocalFiles("laptop", inspected.sources), "unauthorized sender must not create an offer");
+  require(controls.empty(), "unauthorized sender must emit no control frame");
+  require(data.empty(), "unauthorized sender must emit no data frame");
+  require(sender.activeSessionCount() == 0, "unauthorized sender must create no session");
+
+  authorized = true;
+  require(sender.offerLocalFiles("laptop", inspected.sources), "authorization should permit a new offer");
+  require(controls.size() == 1, "authorized sender should emit exactly one offer");
+}
+
+void rejectsUnauthorizedIncomingOffers()
+{
+  TemporaryDirectory temporary;
+  const auto destination = temporary.path() / L"locked-receiver";
+  const FileTransferOffer offer{
+      .id = fixedId(),
+      .sourceScreen = "office",
+      .targetScreen = "laptop",
+      .items = {{.index = 0, .name = "locked.txt", .size = 6}},
+  };
+
+  std::vector<FileTransferControlMessage> controls;
+  MSWindowsFileTransferService receiver({
+      .localScreen = "laptop",
+      .destinationDirectory = destination,
+      .receiveEnabled = true,
+      .authorizeFileTransfer = [] { return false; },
+      .sendControl =
+          [&](const FileTransferControlMessage &message) {
+            controls.push_back(message);
+            return true;
+          },
+      .sendData = [](const FileTransferDataMessage &) { return false; },
+  });
+
+  require(!receiver.handleControl(FileTransferControlMessage{offer}), "unauthorized incoming offer must be denied");
+  require(controls.empty(), "unauthorized receiver must emit no transfer control frame");
+  require(receiver.activeSessionCount() == 0, "unauthorized receiver must create no session");
+  require(!std::filesystem::exists(destination), "unauthorized receiver must not create its destination");
+}
+
+void stopsOutgoingTransferWhenAuthorizationIsRevoked()
+{
+  TemporaryDirectory temporary;
+  const auto sourcePath = temporary.path() / L"revoked.bin";
+  writeFile(sourcePath, payload());
+  const auto inspected = inspectMSWindowsFileTransferSources({sourcePath});
+  require(inspected.ok(), "revocation source snapshot should succeed");
+
+  bool authorized = true;
+  std::vector<FileTransferControlMessage> controls;
+  std::vector<FileTransferDataMessage> data;
+  MSWindowsFileTransferService sender({
+      .localScreen = "office",
+      .destinationDirectory = {},
+      .receiveEnabled = false,
+      .authorizeFileTransfer = [&] { return authorized; },
+      .sendControl =
+          [&](const FileTransferControlMessage &message) {
+            controls.push_back(message);
+            return true;
+          },
+      .sendData =
+          [&](const FileTransferDataMessage &message) {
+            data.push_back(message);
+            return true;
+          },
+      .createTransferId = [] { return fixedId(); },
+  });
+
+  require(sender.offerLocalFiles("laptop", inspected.sources), "authorized sender should offer the source");
+  const auto *offer = std::get_if<FileTransferOffer>(&controls.front());
+  require(offer != nullptr, "first control frame should be an offer");
+  require(
+      sender.handleControl(
+          FileTransferControlMessage{FileTransferDecision{
+              .id = offer->id,
+              .sourceScreen = offer->sourceScreen,
+              .targetScreen = offer->targetScreen,
+              .decision = FileTransferDecisionValue::Accept,
+          }}
+      ),
+      "authorized sender should begin after acceptance"
+  );
+  require(
+      data.size() == 1 && std::holds_alternative<FileTransferDataBegin>(data.front()),
+      "accepted sender should emit only the begin frame before its first chunk"
+  );
+
+  authorized = false;
+  const auto dataBeforeRevocation = data.size();
+  require(!sender.processNextOutgoingChunk(), "revoked sender must stop before its next chunk");
+  require(data.size() == dataBeforeRevocation, "revoked sender must emit no additional data");
+  require(sender.activeSessionCount() == 0, "revocation must erase the outgoing session");
+  require(controls.size() == 2, "revocation should notify the peer once");
+  const auto *result = std::get_if<FileTransferResult>(&controls.back());
+  require(
+      result != nullptr && result->status == FileTransferResultStatus::Failed,
+      "revocation notification should be a failed result"
+  );
+  require(
+      result->code == FileTransferResultCode::AuthorizationFailed,
+      "revocation notification should identify authorization failure"
+  );
+
+  authorized = true;
+  require(!sender.processNextOutgoingChunk(), "restoring authorization must not resurrect a failed session");
+  require(data.size() == dataBeforeRevocation, "restored authorization must not replay old data");
+}
+
+void stopsIncomingTransferWhenAuthorizationIsRevoked()
+{
+  TemporaryDirectory temporary;
+  const auto destination = temporary.path() / L"revoked-receiver";
+  const FileTransferOffer offer{
+      .id = fixedId(),
+      .sourceScreen = "office",
+      .targetScreen = "laptop",
+      .items = {{.index = 0, .name = "revoked.txt", .size = 6}},
+  };
+
+  bool authorized = true;
+  std::vector<FileTransferControlMessage> controls;
+  MSWindowsFileTransferService receiver({
+      .localScreen = "laptop",
+      .destinationDirectory = destination,
+      .receiveEnabled = true,
+      .authorizeFileTransfer = [&] { return authorized; },
+      .sendControl =
+          [&](const FileTransferControlMessage &message) {
+            controls.push_back(message);
+            return true;
+          },
+      .sendData = [](const FileTransferDataMessage &) { return false; },
+  });
+
+  require(receiver.handleControl(FileTransferControlMessage{offer}), "authorized receiver should accept the offer");
+  require(controls.size() == 1, "authorized receiver should emit one acceptance");
+
+  authorized = false;
+  const FileTransferDataRoute route{
+      .id = offer.id,
+      .sourceScreen = offer.sourceScreen,
+      .targetScreen = offer.targetScreen,
+  };
+  require(
+      !receiver.handleData(FileTransferDataMessage{FileTransferDataBegin{.route = route}}),
+      "revoked receiver must reject incoming data"
+  );
+  require(receiver.activeSessionCount() == 0, "revocation must erase the incoming session");
+  require(controls.size() == 2, "revoked receiver should notify the peer once");
+  const auto *result = std::get_if<FileTransferResult>(&controls.back());
+  require(
+      result != nullptr && result->code == FileTransferResultCode::AuthorizationFailed,
+      "incoming revocation should identify authorization failure"
+  );
+}
+
 } // namespace
 
 int main()
@@ -276,6 +466,10 @@ int main()
   Log log;
   transfersFileEndToEnd();
   rejectsWhenReceivingIsDisabled();
+  rejectsUnauthorizedOffers();
+  rejectsUnauthorizedIncomingOffers();
+  stopsOutgoingTransferWhenAuthorizationIsRevoked();
+  stopsIncomingTransferWhenAuthorizationIsRevoked();
   std::cout << "PASS: MSWindowsFileTransferServiceTests\n";
   return 0;
 }

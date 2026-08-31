@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20"><strong>Download Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.21"><strong>Download Ieum</strong></a>
   · <a href="#first-run-security-and-permissions"><strong>Security &amp; permissions</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>Sponsor Ieum</strong></a>
 </p>
@@ -32,7 +32,7 @@ Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers
 screen edge: it connects **Korean/English mode, IME composition sessions, physical key positions, and Unicode
 clipboard data** into one consistent input path across operating systems.
 
-> The current release is `v0.1.0-alpha.20`. Automated builds and unit tests pass, but the long-running physical
+> The current release is `v0.1.0-alpha.21`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
 
 ## Help Ieum reach production distribution
@@ -52,21 +52,26 @@ notarization, physical Windows ARM64 and Apple Silicon regression testing, and d
 Custom one-time amounts remain available. Local KVM, Korean/CJK input synchronization, and clipboard core remain
 open regardless of sponsorship. Every release publishes the
 [amount allocated and work completed with sponsorship funds](docs/release/sponsorship-impact.md). The amount
-allocated to `alpha.20` is **USD 0**.
+allocated to `alpha.21` is **USD 0**.
 
-## Alpha.20 Pro Local file-drag preview
+## Alpha.21 Pro Local offline license and file drag
 
-`alpha.20` introduces the first Pro Local preview: drag files through a configured edge on a Windows server PC
-to a Windows client PC.
+Starting with `alpha.21`, Windows file sending and receiving are **Pro Local** features. Local KVM, Korean/CJK
+input synchronization, and clipboard remain available without a license.
 
-- In **Preferences → Files**, explicitly enable sending on the server and receiving on the client. File transfer
-  does not start when TLS is disabled.
+- Supporters receive one `*.ieum-license.txt` file. Import and activate it in **Preferences → Files** on both
+  Windows PCs, enable TLS on both, and then explicitly enable the required send or receive role.
+- The application rechecks entitlement at service start, offer/accept boundaries, and while streaming data.
+  Removing or expiring a key fails the current session; restoring a key does not resurrect it.
 - Protocol 1.12 carries offers, decisions, cancellations, and results. Protocol 1.13 carries bounded data frames,
   processing at most one 60 KiB chunk per event-loop turn.
 - The sender revalidates Windows file identity, size, and modification time before reading. The receiver uses a
   hidden staging directory, verifies size and SHA-256, and publishes under a collision-safe name without overwrite.
-- This preview is **Windows server → Windows client only**. Per-transfer prompts, progress, pause/resume, reverse
+- The current screen-edge path is **Windows server → Windows client only**. Per-transfer prompts, progress, pause/resume, reverse
   edge drag, and native drop into a remote application are the next slices.
+- Offline licenses are not device-counted or remotely revocable. The private issuer and signing key stay with the
+  project owner and are not published in the repository, release, or supporter package. See the
+  [Pro Local file-transfer guide](docs/dev/pro_local_file_transfer.md).
 
 ## Alpha.19 coordinate, update, permission, and diagnostic reliability
 
@@ -277,16 +282,16 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[이음 (Ieum) v0.1.0-alpha.20 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.20)
+[이음 (Ieum) v0.1.0-alpha.21 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.21)
 
 | Operating system | Installer |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.20-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.20-macos-x86_64.dmg` |
-| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.20-win-x64.msi` |
-| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.20-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.20-win-arm64.msi` |
-| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.20-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.21-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.21-macos-x86_64.dmg` |
+| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.21-win-x64.msi` |
+| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.21-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.21-win-arm64.msi` |
+| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.21-win-arm64-ko-KR.msi` |
 
 Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
 `SHA256SUMS.txt`.
@@ -416,28 +421,41 @@ Ieum's local KVM, IME synchronization, clipboard, protocol, and desktop app rema
 `GPL-2.0-only WITH LicenseRef-OpenSSL-Exception`. Ieum will not turn core functionality into closed code inside
 the same executable.
 
-Pro adds official distribution and new connectivity and administration features. It does not remove features from
-Community. The following items are **implementation plans**, not products currently for sale.
+Pro adds file transfer, official distribution, and future connectivity and administration features. It does not
+remove Community features. `alpha.21` is the first manually issued **Pro Local offline license** implementation;
+checkout, accounts, automated activation, and subscriptions do not exist yet.
 
 | Product | Scope |
 | --- | --- |
 | Community | Local-network KVM, IME synchronization, clipboard, and the public protocol |
-| Pro Local | Official signed and notarized builds, stable updates, and direct drag-and-drop transfer that does not use an Ieum relay |
+| Pro Local | The `alpha.21` offline license and direct Windows drag-and-drop transfer that does not use an Ieum relay |
 | Pro Cloud | Accounts, multi-device registration, remote connectivity, and an encrypted relay with explicit usage limits |
 | Teams | Organization and device policies, roles, audit history, SSO, and a management console |
 | Support | Priority support, deployment assistance, enterprise integration, and maintenance contracts |
 
-The first Pro implementation, **drag-and-drop file transfer between computers**, starts as a Windows preview in
-`alpha.20`. Desktop transfer code and protocol changes remain GPL-licensed in this repository. Paid value sits at
-the official Pro distribution, hosted relay, device management, and support boundaries. This preview sends from a
-Windows server edge to an opted-in Windows client over the existing TLS connection, verifies SHA-256, and publishes
-without overwriting into `Downloads/Ieum`. Direct-transfer bytes do not pass through an Ieum-operated server.
+The first Pro implementation, **drag-and-drop file transfer between computers**, requires a valid Pro Local key on
+both endpoints starting with `alpha.21`. Desktop transfer code, the verifier, and protocol changes remain
+GPL-licensed in this repository. A Windows server edge sends to an opted-in Windows client over the existing TLS
+connection, verifies SHA-256, and publishes without overwriting into `Downloads/Ieum`. Direct-transfer bytes do
+not pass through an Ieum-operated server.
 
-On both computers, use `alpha.20` or later and keep TLS enabled. In **Preferences → Files**, enable sending on the
-server and receiving on the client. The receiving switch is the preview's advance approval. Per-transfer prompts,
-client-to-server edge drag, pause/resume, progress UI, and native drop into an arbitrary remote application remain
-future slices. The behavior and limits are fixed in the
+On both Windows computers, use `alpha.21` or later, import the received `*.ieum-license.txt` in
+**Preferences → Files**, select **Activate**, and enable TLS. Then enable sending on the server and receiving on the
+client. The receiving switch is the current advance approval. Per-transfer prompts, client-to-server edge drag,
+pause/resume, progress UI, and native drop into an arbitrary remote application remain future slices. The behavior
+and limits are fixed in the
 [Pro Local edge file-transfer design](docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md).
+
+Offline keys are not bound to devices, do not count seats, and cannot be remotely revoked. The same supporter may
+use one file on their own PCs. The signing key, issuer, and private ledger remain with the project owner and are not
+distributed; a supporter receives only the `.ieum-license.txt` file.
+
+```mermaid
+flowchart LR
+  A["Community core<br/>KVM · Clipboard · IME"] --> B["Pro Local alpha.21<br/>Offline license · File transfer"]
+  B --> C["Pro account service<br/>Payment · Activation · Seats"]
+  C --> D["Hosted services<br/>Discovery · Relay · Managed updates"]
+```
 
 ```mermaid
 flowchart LR
@@ -450,8 +468,10 @@ Ieum will not promise unlimited lifetime relay traffic. Direct local transfer ca
 an Ieum-operated internet relay uses a monthly or annual subscription with explicit usage limits.
 
 GPL binaries may be sold, but recipients retain the right to receive corresponding source and redistribute their
-copies. If a paid server becomes necessary, it will be developed from scratch in a separate repository rather than
-moving existing GPL source, and it will communicate with the desktop through a public network API. See the
+copies. They can also modify and rebuild the public verifier, so the offline key is an entitlement for official
+binaries rather than unbreakable DRM or closed desktop source. If a paid server becomes necessary, it will be
+developed from scratch in a separate repository rather than moving existing GPL source, and it will communicate
+with the desktop through a public network API. See the
 [product and commercialization roadmap](docs/product/commercialization-roadmap.md) and the
 [GNU GPL FAQ](https://www.gnu.org/licenses/gpl-faq.en.html). This direction is not legal advice; commercial
 distribution still requires a copyright, trademark, and service-boundary review.
@@ -463,20 +483,20 @@ Ieum is currently in phase 1. Sixteen of the 33 audit issues are closed, with 17
 ```mermaid
 flowchart LR
   P1["1. v1 reliability<br/>Audit issues 16/33"] --> P2["2. Official distribution<br/>Signing, notarization, stable updates"]
-  P2 --> P3["3. Pro foundation<br/>Accounts, devices, billing, file transfer"]
-  P3 --> P4["4. Pro connectivity<br/>Discovery and encrypted relay"]
-  P4 --> P5["5. Teams<br/>Organizations, policy, audit history"]
-  P5 --> P6["6. Enterprise<br/>SSO, SCIM, SLOs"]
+  P2 --> P3["3. Pro Local<br/>Offline key and file transfer"]
+  P3 --> P4["4. Pro accounts<br/>Payment, activation, seats"]
+  P4 --> P5["5. Hosted connectivity<br/>Discovery and encrypted relay"]
+  P5 --> P6["6. Teams and Enterprise<br/>Organizations, SSO, audit, SLOs"]
 ```
 
 | Phase | Exit condition | Status |
 | --- | --- | --- |
 | 1. v1 reliability | Audit issues #6–#38, required CI, and platform acceptance evidence | **In progress — 16/33** |
 | 2. Official distribution | Windows signing, Apple notarization, stable updates, and rollback | Waiting |
-| 3. Pro foundation | Accounts, devices, subscriptions, and a file-transfer beta | **alpha.20 Windows one-way preview implemented; no sales, accounts, or billing yet** |
-| 4. Pro connectivity | Device discovery, end-to-end encrypted relay, and local fallback | Waiting |
-| 5. Teams | Organizations, roles, device policy, and audit export | Waiting |
-| 6. Enterprise | SSO, SCIM, disaster recovery, and contractual SLOs | Waiting |
+| 3. Pro Local | Offline licensing, authorization on both PCs, direct transfer, and recovery UX | **alpha.21 first slice complete; two-PC acceptance, progress, resume, and reverse initiation remain** |
+| 4. Pro accounts | Payment, login, device activation, seats, refunds, and offline grace | Waiting |
+| 5. Hosted connectivity | Device discovery, end-to-end encrypted relay, and local fallback | Waiting |
+| 6. Teams and Enterprise | Organizations, policy, audit, SSO/SCIM, disaster recovery, and contractual SLOs | Waiting |
 
 ## Build and test
 

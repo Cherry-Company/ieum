@@ -70,6 +70,8 @@ add_library(${target} STATIC
   dialogs/HotkeyDialog.cpp
   dialogs/HotkeyDialog.h
   dialogs/HotkeyDialog.ui
+  dialogs/ProLicenseUiPolicy.cpp
+  dialogs/ProLicenseUiPolicy.h
   dialogs/ScreenSettingsDialog.cpp
   dialogs/ScreenSettingsDialog.h
   dialogs/ScreenSettingsDialog.ui

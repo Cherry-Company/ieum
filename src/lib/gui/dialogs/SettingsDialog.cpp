@@ -18,11 +18,15 @@
 #include "gui/StyleUtils.h"
 #include "gui/TlsUtility.h"
 #include "gui/core/NetworkMonitor.h"
+#include "gui/dialogs/ProLicenseUiPolicy.h"
+#include "licensing/ProLicense.h"
 
 #include <QComboBox>
 #include <QDir>
+#include <QFile>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QStringDecoder>
 
 using namespace deskflow::gui;
 
@@ -124,6 +128,7 @@ void SettingsDialog::changeEvent(QEvent *e)
   if (e->type() == QEvent::LanguageChange) {
     ui->retranslateUi(this);
     updateText();
+    updateFileTransferControls();
   } else if (e->type() == QEvent::PaletteChange) {
     applyIeumDialogStyle(*this);
   }
@@ -151,6 +156,9 @@ void SettingsDialog::initConnections() const
   connect(ui->btnTlsCertPath, &QPushButton::clicked, this, &SettingsDialog::browseCertificatePath);
   connect(ui->btnBrowseLog, &QPushButton::clicked, this, &SettingsDialog::browseLogPath);
   connect(ui->btnBrowseFileTransfer, &QPushButton::clicked, this, &SettingsDialog::browseFileTransferDirectory);
+  connect(ui->btnImportProLicense, &QPushButton::clicked, this, &SettingsDialog::importProLicense);
+  connect(ui->btnActivateProLicense, &QPushButton::clicked, this, &SettingsDialog::activateProLicense);
+  connect(ui->btnRemoveProLicense, &QPushButton::clicked, this, &SettingsDialog::removeProLicense);
   connect(ui->groupLogToFile, &QGroupBox::toggled, this, &SettingsDialog::setLogToFile);
   connect(ui->comboLogLevel, &QComboBox::currentIndexChanged, this, &SettingsDialog::logLevelChanged);
   connect(ui->comboLanguage, &QComboBox::currentTextChanged, this, [](const QString &lang) {
@@ -196,6 +204,7 @@ void SettingsDialog::initConnections() const
   connect(ui->cbFileTransferReceive, &QCheckBox::toggled, this, &SettingsDialog::setButtonBoxEnabledButtons);
   connect(ui->cbFileTransferReceive, &QCheckBox::toggled, this, &SettingsDialog::updateFileTransferControls);
   connect(ui->lineFileTransferDirectory, &QLineEdit::textChanged, this, &SettingsDialog::setButtonBoxEnabledButtons);
+  connect(ui->lineProLicense, &QLineEdit::textChanged, this, &SettingsDialog::updateFileTransferControls);
 }
 
 void SettingsDialog::tailscaleToggled(bool enabled)
@@ -357,6 +366,80 @@ void SettingsDialog::browseFileTransferDirectory()
   }
 }
 
+void SettingsDialog::importProLicense()
+{
+  const auto fileName = QFileDialog::getOpenFileName(
+      this, tr("Import Pro Local license"), QString(), tr("Ieum license (*.ieum-license.txt *.txt);;All files (*)")
+  );
+  if (fileName.isEmpty()) {
+    return;
+  }
+
+  QFile file(fileName);
+  if (!file.open(QIODevice::ReadOnly)) {
+    QMessageBox::warning(this, tr("Could not import license"), tr("Ieum could not read the selected license file."));
+    return;
+  }
+
+  const auto bytes = file.read(deskflow::licensing::kMaxProLicenseBytes + 1);
+  if (bytes.size() > deskflow::licensing::kMaxProLicenseBytes) {
+    QMessageBox::warning(this, tr("Could not import license"), tr("The selected license file is too large."));
+    return;
+  }
+
+  QStringDecoder decoder(QStringDecoder::Utf8);
+  const QString decoded = decoder.decode(bytes);
+  const auto candidate = decoded.trimmed();
+  if (decoder.hasError() || candidate.contains(QLatin1Char('\n')) || candidate.contains(QLatin1Char('\r'))) {
+    QMessageBox::warning(
+        this, tr("Could not import license"), tr("The license file must contain exactly one UTF-8 license line.")
+    );
+    return;
+  }
+
+  ui->lineProLicense->setText(candidate);
+  ui->lineProLicense->setFocus();
+}
+
+void SettingsDialog::activateProLicense()
+{
+  if (!Settings::isWritable() || !deskflow::platform::isWindows()) {
+    return;
+  }
+
+  const auto candidate = ui->lineProLicense->text().trimmed();
+  const auto entitlement = deskflow::licensing::verifyProductionProLicense(candidate);
+  if (!shouldActivateProFileTransferLicense(entitlement)) {
+    QMessageBox::warning(
+        this, tr("License not activated"),
+        tr("This license is invalid, expired, not active yet, or does not include Pro Local file transfer.")
+    );
+    updateFileTransferControls();
+    return;
+  }
+
+  Settings::setValue(Settings::Pro::LicenseKey, candidate);
+  ui->lineProLicense->setText(candidate);
+  updateFileTransferControls();
+  QMessageBox::information(this, tr("Pro Local activated"), tr("File transfer is now available on this computer."));
+}
+
+void SettingsDialog::removeProLicense()
+{
+  if (!Settings::isWritable() || !deskflow::platform::isWindows()) {
+    return;
+  }
+
+  Settings::setValue(Settings::Pro::LicenseKey, QString{});
+  Settings::setValue(Settings::FileTransfer::Enabled, false);
+  Settings::setValue(Settings::FileTransfer::ReceiveEnabled, false);
+  ui->lineProLicense->clear();
+  ui->cbFileTransferEnabled->setChecked(false);
+  ui->cbFileTransferReceive->setChecked(false);
+  updateFileTransferControls();
+  setButtonBoxEnabledButtons();
+}
+
 void SettingsDialog::setLogToFile(bool logToFile)
 {
   ui->widgetLogFilename->setEnabled(logToFile);
@@ -420,8 +503,9 @@ void SettingsDialog::accept()
 void SettingsDialog::acceptWithTailscaleStatus()
 {
   bool startupApprovalRequired = false;
+  const auto canSaveFileTransfer = Settings::hasProFileTransferEntitlement() && ui->groupSecurity->isChecked();
 
-  if (ui->cbFileTransferReceive->isChecked() &&
+  if (canSaveFileTransfer && ui->cbFileTransferReceive->isChecked() &&
       !QDir::isAbsolutePath(ui->lineFileTransferDirectory->text().trimmed())) {
     QMessageBox::warning(
         this, tr("Choose a destination folder"),
@@ -494,8 +578,10 @@ void SettingsDialog::acceptWithTailscaleStatus()
   Settings::setValue(Settings::Core::EnterScreenLang, ui->comboEnterScreenLang->currentData());
   Settings::setValue(Settings::Client::ClipboardNormalizeNfc, ui->cbClipboardNormalizeNfc->isChecked());
   Settings::setValue(Settings::Client::MacInterKeyDelayMicros, ui->spinMacInterKeyDelayMicros->value());
-  Settings::setValue(Settings::FileTransfer::Enabled, ui->cbFileTransferEnabled->isChecked());
-  Settings::setValue(Settings::FileTransfer::ReceiveEnabled, ui->cbFileTransferReceive->isChecked());
+  Settings::setValue(Settings::FileTransfer::Enabled, canSaveFileTransfer && ui->cbFileTransferEnabled->isChecked());
+  Settings::setValue(
+      Settings::FileTransfer::ReceiveEnabled, canSaveFileTransfer && ui->cbFileTransferReceive->isChecked()
+  );
   Settings::setValue(
       Settings::FileTransfer::DownloadDirectory, QDir::cleanPath(ui->lineFileTransferDirectory->text().trimmed())
   );
@@ -573,6 +659,7 @@ void SettingsDialog::loadFromConfig()
   ui->cbFileTransferEnabled->setChecked(Settings::value(Settings::FileTransfer::Enabled).toBool());
   ui->cbFileTransferReceive->setChecked(Settings::value(Settings::FileTransfer::ReceiveEnabled).toBool());
   ui->lineFileTransferDirectory->setText(Settings::value(Settings::FileTransfer::DownloadDirectory).toString());
+  ui->lineProLicense->setText(Settings::value(Settings::Pro::LicenseKey).toString());
 
   const auto processMode = Settings::value(Settings::Core::ProcessMode).value<Settings::ProcessMode>();
   ui->groupService->setChecked(processMode == Settings::ProcessMode::Service);
@@ -650,10 +737,66 @@ void SettingsDialog::updateTlsControlsEnabled()
 
 void SettingsDialog::updateFileTransferControls()
 {
-  const auto enabled = Settings::isWritable() && deskflow::platform::isWindows() && ui->groupSecurity->isChecked();
-  ui->cbFileTransferEnabled->setEnabled(enabled);
-  ui->cbFileTransferReceive->setEnabled(enabled);
-  ui->widgetFileTransferDestination->setEnabled(enabled && ui->cbFileTransferReceive->isChecked());
+  const auto storedLicense = Settings::value(Settings::Pro::LicenseKey).toString().trimmed();
+  const auto storedEntitlement = deskflow::licensing::verifyProductionProLicense(storedLicense);
+  const auto state = proFileTransferUiState(
+      storedEntitlement, !storedLicense.isEmpty(), Settings::isWritable(), deskflow::platform::isWindows(),
+      ui->groupSecurity->isChecked()
+  );
+
+  const auto candidate = ui->lineProLicense->text().trimmed();
+  const auto candidateEntitlement = deskflow::licensing::verifyProductionProLicense(candidate);
+  const auto storedLicenseActive = shouldActivateProFileTransferLicense(storedEntitlement);
+  const auto candidateCanActivate = shouldActivateProFileTransferLicense(candidateEntitlement);
+  const auto candidateIsStored = candidate == storedLicense;
+
+  ui->lineProLicense->setEnabled(state.licenseActionsEnabled);
+  ui->btnImportProLicense->setEnabled(state.licenseActionsEnabled);
+  ui->btnActivateProLicense->setEnabled(state.licenseActionsEnabled && candidateCanActivate && !candidateIsStored);
+  ui->btnRemoveProLicense->setEnabled(state.removeLicenseEnabled);
+
+  QString licenseStatus;
+  if (candidateIsStored && storedLicenseActive) {
+    licenseStatus = tr("Pro Local active — %1 (%2)").arg(storedEntitlement.licenseId, storedEntitlement.recipient);
+  } else if (candidateCanActivate) {
+    licenseStatus = tr("Valid Pro Local license. Select Activate to apply it on this computer.");
+  } else if (!candidateIsStored && storedLicenseActive) {
+    licenseStatus = tr("This candidate is not valid. The existing Pro Local license remains active.");
+  } else {
+    switch (candidateEntitlement.status) {
+    case deskflow::licensing::ProLicenseStatus::Missing:
+      licenseStatus = tr("Pro Local is locked. Import a license file, then select Activate.");
+      break;
+    case deskflow::licensing::ProLicenseStatus::TooLarge:
+      licenseStatus = tr("This license is too large.");
+      break;
+    case deskflow::licensing::ProLicenseStatus::Malformed:
+      licenseStatus = tr("This license has an invalid format.");
+      break;
+    case deskflow::licensing::ProLicenseStatus::Unsupported:
+      licenseStatus = tr("This license is not supported by this version of Ieum.");
+      break;
+    case deskflow::licensing::ProLicenseStatus::InvalidSignature:
+      licenseStatus = tr("This license signature is invalid.");
+      break;
+    case deskflow::licensing::ProLicenseStatus::NotYetValid:
+      licenseStatus = tr("This license is not active yet.");
+      break;
+    case deskflow::licensing::ProLicenseStatus::Expired:
+      licenseStatus = tr("This license has expired.");
+      break;
+    case deskflow::licensing::ProLicenseStatus::Valid:
+      licenseStatus = tr("This license does not include Pro Local file transfer.");
+      break;
+    }
+  }
+  ui->lblProLicenseStatus->setText(licenseStatus);
+
+  ui->cbFileTransferEnabled->setEnabled(state.transferControlsEnabled);
+  ui->cbFileTransferReceive->setEnabled(state.transferControlsEnabled);
+  ui->widgetFileTransferDestination->setEnabled(
+      state.transferControlsEnabled && ui->cbFileTransferReceive->isChecked()
+  );
   ui->lblFileTransferTls->setEnabled(ui->groupSecurity->isChecked());
 }
 

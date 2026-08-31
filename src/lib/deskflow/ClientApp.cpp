@@ -360,7 +360,7 @@ void ClientApp::stopClient()
 void ClientApp::startFileTransferService()
 {
   if (m_fileTransferService != nullptr || m_client == nullptr ||
-      !Settings::value(Settings::Security::TlsEnabled).toBool() ||
+      !Settings::value(Settings::Security::TlsEnabled).toBool() || !Settings::hasProFileTransferEntitlement() ||
       !Settings::value(Settings::FileTransfer::ReceiveEnabled).toBool()) {
     return;
   }
@@ -370,6 +370,7 @@ void ClientApp::startFileTransferService()
           .localScreen = Settings::value(Settings::Core::ComputerName).toString().toStdString(),
           .destinationDirectory = Settings::value(Settings::FileTransfer::DownloadDirectory).toString().toStdWString(),
           .receiveEnabled = true,
+          .authorizeFileTransfer = [] { return Settings::hasProFileTransferEntitlement(); },
           .sendControl = [this](
                              const deskflow::filetransfer::FileTransferControlMessage &message
                          ) { return m_client != nullptr && m_client->sendFileTransferControl(message); },

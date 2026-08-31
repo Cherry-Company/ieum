@@ -64,14 +64,6 @@ p, li { white-space: pre-wrap; }
         <translation>维护方：</translation>
     </message>
     <message>
-        <source>Developer and contributor:</source>
-        <translation type="vanished">开发者与贡献者：</translation>
-    </message>
-    <message>
-        <source>Company:</source>
-        <translation type="vanished">公司：</translation>
-    </message>
-    <message>
         <source>Upstream contributors:</source>
         <translation>上游项目贡献者：</translation>
     </message>
@@ -361,18 +353,6 @@ Do you want to connect to the server?
 <context>
     <name>MacAccessibility</name>
     <message>
-        <source>Ieum needs Accessibility access to share the keyboard and mouse.
-
-In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. If Ieum is not listed, use the add button to select /Applications/Ieum.app.
-
-After granting access, return here and choose Try Again.</source>
-        <translation type="vanished">Ieum 需要“辅助功能”权限才能共享键盘和鼠标。
-
-请在“系统设置”的“隐私与安全性”&gt;“辅助功能”中开启 Ieum。如果列表中没有 Ieum，请点按添加按钮并选择 /Applications/Ieum.app。
-
-授权后请返回此处并选择“重试”。</translation>
-    </message>
-    <message>
         <source>The macOS permission reset timed out.</source>
         <translation>macOS 权限重置超时。</translation>
     </message>
@@ -438,40 +418,8 @@ macOS 只会删除 Ieum 的“辅助功能”记录，不会更改其他应用�
 <context>
     <name>MainWindow</name>
     <message>
-        <source>This computer&apos;s name:</source>
-        <translation type="vanished">此计算机名称：</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name can&apos;t have have spaces or special characters&lt;/p&gt;&lt;p&gt;Use Enter to save the name change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;名称不能包含空格或特殊字符&lt;/p&gt;&lt;p&gt;按 Enter 键保存更改。&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Edit Computer Name</source>
-        <translation type="vanished">编辑计算机名称</translation>
-    </message>
-    <message>
-        <source>Use this computer&apos;s keyboard and mouse
-(make this computer the server)</source>
-        <translation type="vanished">使用此计算机的键盘和鼠标
-(将此计算机设为服务器)</translation>
-    </message>
-    <message>
-        <source>Use another computer’s mouse and keyboard
-(make this computer the client)</source>
-        <translation type="vanished">使用另一台计算机的鼠标和键盘
-(将此计算机设为客户端)</translation>
-    </message>
-    <message>
-        <source>&amp;Configure Server</source>
-        <translation type="vanished">配置服务器(&amp;C)</translation>
-    </message>
-    <message>
         <source>Export server configuration</source>
         <translation>导出服务器配置</translation>
-    </message>
-    <message>
-        <source>You must select a mode</source>
-        <translation type="vanished">您必须选择一种模式</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -700,18 +648,6 @@ Valid names:
         <translation type="unfinished">建议 IP： </translation>
     </message>
     <message>
-        <source>&amp;Configure Client</source>
-        <translation type="obsolete">配置客户端(&amp;C)</translation>
-    </message>
-    <message>
-        <source>Connect to:</source>
-        <translation type="obsolete">连接到：</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;html&gt;服务器计算机的主机名或 IP 地址。&lt;br/&gt;可以包含以逗号分隔的列表。&lt;/html&gt;</translation>
-    </message>
-    <message>
         <source>read</source>
         <translation type="unfinished">读取</translation>
     </message>
@@ -926,14 +862,6 @@ Client</source>
     <message>
         <source>&lt;p&gt;%1 will continue to run in the background and can be accessed via the %1 icon in your system notifications area. This setting can be disabled.&lt;/p&gt;</source>
         <translation>&lt;p&gt;%1 将在后台继续运行，可通过系统通知区域的 %1 图标访问。此设置可以禁用。&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Please &lt;a href=&quot;%1&quot;&gt;report a bug&lt;/a&gt; and copy/paste the following error:&lt;/p&gt;&lt;pre&gt;v%2
-%3
-%4&lt;/pre&gt;</source>
-        <translation type="vanished">&lt;p&gt;请 &lt;a href=&quot;%1&quot;&gt;报告 Bug&lt;/a&gt; 并复制/粘贴以下错误：&lt;/p&gt;&lt;pre&gt;v%2
-%3
-%4&lt;/pre&gt;</translation>
     </message>
     <message>
         <source>unknown</source>
@@ -1327,10 +1255,6 @@ Client</source>
         <translation>移除(&amp;M)</translation>
     </message>
     <message>
-        <source>Advanced</source>
-        <translation type="vanished">高级</translation>
-    </message>
-    <message>
         <source>&amp;Misc</source>
         <translation>杂项(&amp;M)</translation>
     </message>
@@ -1495,10 +1419,6 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>需要客户端证书</translation>
     </message>
     <message>
-        <source>&amp;Advanced</source>
-        <translation type="vanished">高级(&amp;A)</translation>
-    </message>
-    <message>
         <source>Port</source>
         <translation>端口</translation>
     </message>
@@ -1547,6 +1467,46 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>保存日志文件到...</translation>
     </message>
     <message>
+        <source>Import Pro Local license</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ieum license (*.ieum-license.txt *.txt);;All files (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not import license</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ieum could not read the selected license file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected license file is too large.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The license file must contain exactly one UTF-8 license line.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>License not activated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license is invalid, expired, not active yet, or does not include Pro Local file transfer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pro Local activated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File transfer is now available on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Required messages</source>
         <translation>必要消息</translation>
     </message>
@@ -1585,6 +1545,46 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Reset to default values</source>
         <translation type="unfinished">重置为默认值</translation>
+    </message>
+    <message>
+        <source>Pro Local active — %1 (%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Valid Pro Local license. Select Activate to apply it on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This candidate is not valid. The existing Pro Local license remains active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license is too large.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license has an invalid format.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license is not supported by this version of Ieum.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license signature is invalid.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license is not active yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license has expired.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license does not include Pro Local file transfer.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Automatic</source>
@@ -1785,10 +1785,6 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>文件(&amp;F)</translation>
     </message>
     <message>
-        <source>&lt;b&gt;Pro Local file transfer preview&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Pro Local 文件传输预览&lt;/b&gt;</translation>
-    </message>
-    <message>
         <source>Send files by dragging them across a screen edge</source>
         <translation>将文件拖过屏幕边缘发送</translation>
     </message>
@@ -1809,10 +1805,6 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>两台电脑都必须启用 TLS。默认关闭文件接收。</translation>
     </message>
     <message>
-        <source>This preview sends from the Windows server computer to a connected Windows client.</source>
-        <translation>当前预览从 Windows 服务端电脑发送到已连接的 Windows 客户端。</translation>
-    </message>
-    <message>
         <source>Choose where received files are saved</source>
         <translation>选择接收文件的保存位置</translation>
     </message>
@@ -1827,6 +1819,42 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>&amp;System</source>
         <translation>系统(&amp;S)</translation>
+    </message>
+    <message>
+        <source>Pro Local license</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Import the license file you received, then activate it on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IEUM1 license line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Import license file…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Activate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pro Local is locked. Import a license file, then select Activate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Pro Local file transfer&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Install and activate a Pro Local license on both Windows computers.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

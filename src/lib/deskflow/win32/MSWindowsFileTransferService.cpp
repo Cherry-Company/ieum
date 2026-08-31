@@ -94,6 +94,7 @@ struct MSWindowsFileTransferService::Impl
       : localScreen(std::move(options.localScreen)),
         destinationDirectory(std::move(options.destinationDirectory)),
         receiveEnabled(options.receiveEnabled),
+        authorizeFileTransfer(std::move(options.authorizeFileTransfer)),
         sendControl(std::move(options.sendControl)),
         sendData(std::move(options.sendData)),
         createTransferId(std::move(options.createTransferId)),
@@ -106,9 +107,22 @@ struct MSWindowsFileTransferService::Impl
     }
   }
 
+  [[nodiscard]] bool isAuthorized() const noexcept
+  {
+    if (!authorizeFileTransfer) {
+      return false;
+    }
+    try {
+      return authorizeFileTransfer();
+    } catch (...) {
+      return false;
+    }
+  }
+
   std::string localScreen;
   std::filesystem::path destinationDirectory;
   bool receiveEnabled = false;
+  MSWindowsFileTransferServiceOptions::AuthorizationCheck authorizeFileTransfer;
   MSWindowsFileTransferServiceOptions::ControlSender sendControl;
   MSWindowsFileTransferServiceOptions::DataSender sendData;
   MSWindowsFileTransferServiceOptions::TransferIdGenerator createTransferId;
@@ -161,7 +175,7 @@ bool MSWindowsFileTransferService::offerLocalFiles(
     std::string targetScreen, std::vector<FileTransferSourceCandidate> candidates
 )
 {
-  if (m_impl->sessions.size() != 0 || !m_impl->sendControl || !m_impl->sendData) {
+  if (!m_impl->isAuthorized() || m_impl->sessions.size() != 0 || !m_impl->sendControl || !m_impl->sendData) {
     return false;
   }
 
@@ -204,7 +218,7 @@ bool MSWindowsFileTransferService::handleControl(const FileTransferControlMessag
 
 bool MSWindowsFileTransferService::handleOffer(const FileTransferOffer &offer)
 {
-  if (!m_impl->sendControl || offer.targetScreen != m_impl->localScreen) {
+  if (!m_impl->isAuthorized() || !m_impl->sendControl || offer.targetScreen != m_impl->localScreen) {
     return false;
   }
   if (!m_impl->sessions.registerIncoming(offer).ok()) {
@@ -251,6 +265,9 @@ bool MSWindowsFileTransferService::handleOffer(const FileTransferOffer &offer)
 
 bool MSWindowsFileTransferService::handleDecision(const FileTransferDecision &decision)
 {
+  if (!m_impl->isAuthorized()) {
+    return failSession(decision.id, FileTransferResultCode::AuthorizationFailed, true);
+  }
   if (!m_impl->sendControl || !m_impl->sendData || !m_impl->sessions.applyDecision(decision).ok()) {
     return false;
   }
@@ -319,6 +336,9 @@ bool MSWindowsFileTransferService::handleData(const FileTransferDataMessage &mes
       session->offer.sourceScreen != route.sourceScreen || session->offer.targetScreen != route.targetScreen) {
     return false;
   }
+  if (!m_impl->isAuthorized()) {
+    return failSession(route.id, FileTransferResultCode::AuthorizationFailed, true);
+  }
   const auto found = m_impl->incoming.find(route.id);
   if (found == m_impl->incoming.end()) {
     return false;
@@ -373,6 +393,9 @@ bool MSWindowsFileTransferService::processNextOutgoingChunk()
 {
   if (!m_impl->outgoing.has_value()) {
     return false;
+  }
+  if (!m_impl->isAuthorized()) {
+    return failSession(m_impl->outgoing->id, FileTransferResultCode::AuthorizationFailed, true);
   }
   auto &outgoing = *m_impl->outgoing;
   const auto *session = m_impl->sessions.find(outgoing.id);

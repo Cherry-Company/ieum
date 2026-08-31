@@ -409,36 +409,8 @@ macOS will remove only Ieum&apos;s Accessibility record. No other app permission
 <context>
     <name>MainWindow</name>
     <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name can&apos;t have have spaces or special characters&lt;/p&gt;&lt;p&gt;Use Enter to save the name change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;El nombre no puede tener espacios ni caracteres especiales&lt;/p&gt;&lt;p&gt;Use Enter para guardar el cambio de nombre.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Edit Computer Name</source>
-        <translation type="obsolete">Editar el nombre de la computadora</translation>
-    </message>
-    <message>
-        <source>Use this computer&apos;s keyboard and mouse
-(make this computer the server)</source>
-        <translation type="obsolete">Utilizar el teclado y el ratón de esta computadora
-(convertir esta computadora en servidor)</translation>
-    </message>
-    <message>
-        <source>Use another computer’s mouse and keyboard
-(make this computer the client)</source>
-        <translation type="obsolete">Usar el ratón y el teclado de otra computadora
-(convertir esta computadora en cliente)</translation>
-    </message>
-    <message>
-        <source>&amp;Configure Server</source>
-        <translation type="obsolete">&amp;Configurar el servidor</translation>
-    </message>
-    <message>
         <source>Export server configuration</source>
         <translation type="unfinished">Exportar configuración del servidor</translation>
-    </message>
-    <message>
-        <source>You must select a mode</source>
-        <translation type="obsolete">Debes seleccionar un modo</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -667,22 +639,6 @@ Nombres válidos:
 • Tengan entre 1 y 255 caracteres</translation>
     </message>
     <message>
-        <source>This computer&apos;s name:</source>
-        <translation type="obsolete">Nombre de esta computadora:</translation>
-    </message>
-    <message>
-        <source>&amp;Configure Client</source>
-        <translation type="obsolete">&amp;Configurar cliente</translation>
-    </message>
-    <message>
-        <source>Connect to:</source>
-        <translation type="obsolete">Conectarse a:</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
-        <translation type="obsolete">&lt;html&gt;Nombre de host o dirección IP del servidor.&lt;br/&gt;Puede contener una lista separada por comas.&lt;/html&gt;</translation>
-    </message>
-    <message>
         <source>read</source>
         <translation type="unfinished">leer</translation>
     </message>
@@ -894,14 +850,6 @@ Client</source>
     <message>
         <source>&lt;p&gt;%1 will continue to run in the background and can be accessed via the %1 icon in your system notifications area. This setting can be disabled.&lt;/p&gt;</source>
         <translation type="unfinished">&lt;p&gt;%1 seguirá ejecutándose en segundo plano y se podrá acceder a él mediante el icono %1 en el área de notificaciones del sistema. Esta configuración se puede desactivar.&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Please &lt;a href=&quot;%1&quot;&gt;report a bug&lt;/a&gt; and copy/paste the following error:&lt;/p&gt;&lt;pre&gt;v%2
-%3
-%4&lt;/pre&gt;</source>
-        <translation type="vanished">&lt;p&gt;Por favor, &lt;a href=&quot;%1&quot;&gt;informa de un error&lt;/a&gt; y copia y pega el siguiente error:&lt;/p&gt;&lt;pre&gt;v%2
-%3
-%4&lt;/pre&gt;</translation>
     </message>
     <message>
         <source>unknown</source>
@@ -1295,10 +1243,6 @@ Client</source>
         <translation type="unfinished">Eli&amp;minar</translation>
     </message>
     <message>
-        <source>Advanced</source>
-        <translation type="obsolete">Avanzado</translation>
-    </message>
-    <message>
         <source>&amp;Misc</source>
         <translation type="unfinished">&amp;Misc</translation>
     </message>
@@ -1461,10 +1405,6 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
     <message>
         <source>Require client certificates</source>
         <translation type="unfinished">Requerir certificados de cliente</translation>
-    </message>
-    <message>
-        <source>&amp;Advanced</source>
-        <translation type="obsolete">&amp;Avanzado</translation>
     </message>
     <message>
         <source>Port</source>
@@ -1710,11 +1650,91 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Import Pro Local license</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ieum license (*.ieum-license.txt *.txt);;All files (*)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not import license</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ieum could not read the selected license file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The selected license file is too large.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The license file must contain exactly one UTF-8 license line.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>License not activated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license is invalid, expired, not active yet, or does not include Pro Local file transfer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pro Local activated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File transfer is now available on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Tailscale is not ready</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Start Tailscale and sign in, then refresh its status before saving this setting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pro Local active — %1 (%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Valid Pro Local license. Select Activate to apply it on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This candidate is not valid. The existing Pro Local license remains active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license is too large.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license has an invalid format.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license is not supported by this version of Ieum.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license signature is invalid.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license is not active yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license has expired.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This license does not include Pro Local file transfer.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1756,10 +1776,6 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>&lt;b&gt;Pro Local file transfer preview&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Send files by dragging them across a screen edge</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1780,10 +1796,6 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>This preview sends from the Windows server computer to a connected Windows client.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Choose where received files are saved</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1793,6 +1805,42 @@ Al habilitar esta opción, se deshabilitará la interfaz gráfica de usuario (GU
     </message>
     <message>
         <source>Select an absolute folder before enabling incoming file transfers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pro Local license</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Import the license file you received, then activate it on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>IEUM1 license line</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Import license file…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Activate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pro Local is locked. Import a license file, then select Activate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Pro Local file transfer&lt;/b&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Install and activate a Pro Local license on both Windows computers.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

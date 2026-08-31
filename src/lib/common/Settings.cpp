@@ -10,6 +10,7 @@
 #include "NetworkInterfaces.h"
 #include "NetworkProtocol.h"
 #include "UrlConstants.h"
+#include "licensing/ProLicense.h"
 
 #include <QCoreApplication>
 #include <QFile>
@@ -38,6 +39,7 @@ void Settings::setSettingsFile(const QString &settingsFile)
   qInfo().noquote() << "settings file changed:" << instance()->m_settings->fileName();
 
   instance()->upgradeSettings();
+  instance()->clearUnauthorizedFileTransferPreferencesAt(QDateTime::currentDateTimeUtc());
   instance()->cleanSettings();
   instance()->cleanStateSettings();
   instance()->setupComputerName();
@@ -91,6 +93,7 @@ Settings::Settings(QObject *parent) : QObject(parent)
   m_stateSettings = new QSettings(stateFile, QSettings::IniFormat, this);
 
   upgradeSettings();
+  clearUnauthorizedFileTransferPreferencesAt(QDateTime::currentDateTimeUtc());
   cleanSettings();
   cleanStateSettings();
   setupComputerName();
@@ -179,6 +182,27 @@ void Settings::cleanStateSettings()
     m_stateSettings->sync();
 }
 
+bool Settings::hasProFileTransferEntitlementAt(const QDateTime &nowUtc) const
+{
+  return deskflow::licensing::permitsProductionFileTransfer(m_settings->value(Pro::LicenseKey).toString(), nowUtc);
+}
+
+bool Settings::clearUnauthorizedFileTransferPreferencesAt(const QDateTime &nowUtc)
+{
+  if (hasProFileTransferEntitlementAt(nowUtc)) {
+    return false;
+  }
+
+  const auto hadPreferences =
+      m_settings->contains(FileTransfer::Enabled) || m_settings->contains(FileTransfer::ReceiveEnabled);
+  m_settings->remove(FileTransfer::Enabled);
+  m_settings->remove(FileTransfer::ReceiveEnabled);
+  if (hadPreferences) {
+    m_settings->sync();
+  }
+  return hadPreferences;
+}
+
 void Settings::setupComputerName()
 {
   if (m_settings->value(Settings::Core::ComputerName).toString().isEmpty())
@@ -230,6 +254,9 @@ QVariant Settings::defaultValue(const QString &key)
       downloads = QDir::homePath();
     return QStringLiteral("%1/Ieum").arg(downloads);
   }
+
+  if (key == Pro::LicenseKey)
+    return QString();
 
   if (key == Log::Level)
     return QVariant::fromValue(LogLevel::Level::Info).toString();
@@ -304,6 +331,16 @@ QSettingsProxy &Settings::proxy()
 NetworkProtocol Settings::networkProtocol()
 {
   return networkProtocolFromString(Settings::value(Server::Protocol).toString());
+}
+
+bool Settings::hasProFileTransferEntitlement(const QDateTime &nowUtc)
+{
+  return instance()->hasProFileTransferEntitlementAt(nowUtc);
+}
+
+bool Settings::clearUnauthorizedFileTransferPreferences(const QDateTime &nowUtc)
+{
+  return instance()->clearUnauthorizedFileTransferPreferencesAt(nowUtc);
 }
 
 void Settings::save(bool emitSaving)

@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <QDateTime>
 #include <QSettings>
 
 #include <QDir>
@@ -96,6 +97,10 @@ public:
     inline static const auto Enabled = QStringLiteral("fileTransfer/enabled");
     inline static const auto ReceiveEnabled = QStringLiteral("fileTransfer/receiveEnabled");
     inline static const auto DownloadDirectory = QStringLiteral("fileTransfer/downloadDirectory");
+  };
+  struct Pro
+  {
+    inline static const auto LicenseKey = QStringLiteral("pro/licenseKey");
   };
   struct Gui
   {
@@ -221,6 +226,8 @@ public:
   static QString serverBindAddress();
   static QSettingsProxy &proxy();
   static NetworkProtocol networkProtocol();
+  static bool hasProFileTransferEntitlement(const QDateTime &nowUtc = QDateTime::currentDateTimeUtc());
+  static bool clearUnauthorizedFileTransferPreferences(const QDateTime &nowUtc = QDateTime::currentDateTimeUtc());
   static void save(bool emitSaving = true);
   static QStringList validKeys();
   static QStringList validGroups();
@@ -245,6 +252,8 @@ private:
   void upgradeSettings();
   void cleanSettings();
   void cleanStateSettings();
+  bool hasProFileTransferEntitlementAt(const QDateTime &nowUtc) const;
+  bool clearUnauthorizedFileTransferPreferencesAt(const QDateTime &nowUtc);
 
   /**
    * @brief write an initial computer name
@@ -270,6 +279,7 @@ private:
     , QStringLiteral("fileTransfer")
     , QStringLiteral("gui")
     , QStringLiteral("log")
+    , QStringLiteral("pro")
     , QStringLiteral("security")
     , QStringLiteral("server")
     , QStringLiteral("internalConfig")
@@ -317,6 +327,7 @@ private:
     , Settings::FileTransfer::Enabled
     , Settings::FileTransfer::ReceiveEnabled
     , Settings::FileTransfer::DownloadDirectory
+    , Settings::Pro::LicenseKey
     , Settings::Log::File
     , Settings::Log::Level
     , Settings::Log::ToFile

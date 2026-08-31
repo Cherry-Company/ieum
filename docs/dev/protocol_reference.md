@@ -494,18 +494,23 @@ For platform-specific implementation details, refer to:
   - Data transfer (@ref kMsgDClipboard - text, images, HTML)
   - Streaming for large data (v1.6+)
 
-- **Pro Local file transfer preview**
+- **Pro Local file transfer**
   - `DFTC` control negotiation requires protocol 1.12 or later.
   - `DFTD` data streaming requires protocol 1.13 or later.
+  - Capability negotiation only reports wire compatibility. Before an offer,
+    decision, or data frame is emitted or accepted, each endpoint independently
+    requires a current local `file-transfer` entitlement.
   - Every frame carries the 16-byte transfer ID and exact source/target screen route.
   - A source sends `Begin`, ordered chunks of at most 60 KiB, an `ItemEnd`
     containing the exact size and SHA-256 digest for each file, then `Finish`.
   - The receiver writes only into an owned hidden staging directory, verifies
     sizes and digests, flushes, and publishes without overwriting an existing
     destination file.
-  - The `alpha.20` UI enables this path only over the existing TLS connection.
-    The first preview is Windows server-to-client and does not yet expose
-    progress or pause/resume.
+  - Starting with `alpha.21`, both Windows endpoints must activate a Pro Local
+    license and explicitly enable their send/receive role. The data path uses
+    the existing TLS connection.
+  - The current screen-edge path is Windows server-to-client and does not yet
+    expose progress or pause/resume.
 
 - **Security Features**
   - TLS/SSL encryption (v1.4+)

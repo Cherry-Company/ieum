@@ -31,6 +31,7 @@ private Q_SLOTS:
   void checkValidSettings();
   void checkCleanScreenName();
   void checkCleanScreenName_LongName();
+  void cleanupTestCase();
 
 private:
   inline static const QString m_settingsPathTemp = QStringLiteral("tmp/test");
@@ -38,14 +39,11 @@ private:
   inline static const QString m_stateFile = QStringLiteral("%1/Deskflow.state").arg(m_settingsPathTemp);
   inline static const QString m_unknownStateKey = QStringLiteral("legacy/obsoleteState");
   inline static const QRect m_validWindowGeometry = QRect(20, 30, 800, 600);
+  QString m_portableSettingsFile;
 
-// Gotcha: On Windows non-portable mode, additional config files such as TLS config are saved
-// in 'Program Data' and are not stored in the same place as the settings file.
-#ifdef Q_OS_WIN
-  inline static const QString m_settingsPath = Settings::SystemDir;
-#else
+  // Keep this test process in portable mode so singleton construction never
+  // reads or migrates the developer's real user settings.
   inline static const QString m_settingsPath = m_settingsPathTemp;
-#endif
 
   inline static const QString m_expectedTlsDir = QStringLiteral("%1/tls").arg(m_settingsPath);
   inline static const QString m_expectedTlsServerDB = QStringLiteral("%1/trusted-servers").arg(m_expectedTlsDir);
