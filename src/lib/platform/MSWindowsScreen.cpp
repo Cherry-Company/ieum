@@ -187,13 +187,15 @@ MSWindowsScreen::getWindowInstance()
   return s_windowInstance;
 }
 
-bool MSWindowsScreen::installFileTransferEdgeDrop(deskflow::filetransfer::MSWindowsEdgeDropHostCallbacks callbacks)
+bool MSWindowsScreen::installFileTransferEdgeDrop(deskflow::filetransfer::FileTransferEdgeDropHandler handler)
 {
-  if (!m_isPrimary || !m_oleInitialized) {
+  if (!m_oleInitialized || !handler) {
     return false;
   }
 
-  auto host = std::make_unique<deskflow::filetransfer::MSWindowsEdgeDropHost>(s_windowInstance, std::move(callbacks));
+  auto host = std::make_unique<deskflow::filetransfer::MSWindowsEdgeDropHost>(
+      s_windowInstance, deskflow::filetransfer::MSWindowsEdgeDropHostCallbacks{.handoff = std::move(handler)}
+  );
   m_fileTransferEdgeDropHost = std::move(host);
   if (!refreshFileTransferEdgeDrop()) {
     m_fileTransferEdgeDropHost.reset();
@@ -202,9 +204,16 @@ bool MSWindowsScreen::installFileTransferEdgeDrop(deskflow::filetransfer::MSWind
   return true;
 }
 
+bool MSWindowsScreen::configureFileTransferEdgeDrop(std::uint32_t activeSides)
+{
+  m_fileTransferEdgeDropSides = activeSides;
+  return refreshFileTransferEdgeDrop();
+}
+
 void MSWindowsScreen::uninstallFileTransferEdgeDrop() noexcept
 {
   m_fileTransferEdgeDropHost.reset();
+  m_fileTransferEdgeDropSides = 0;
 }
 
 void MSWindowsScreen::enable()
@@ -686,6 +695,7 @@ void MSWindowsScreen::reconfigure(uint32_t activeSides)
   const static auto sidesText = sidesMaskToString(activeSides);
   LOG_DEBUG("active sides: %s (0x%02x)", sidesText.c_str(), activeSides);
   m_hook.setSides(activeSides);
+  m_fileTransferEdgeDropSides = activeSides;
   (void)refreshFileTransferEdgeDrop();
 }
 
@@ -1627,8 +1637,9 @@ bool MSWindowsScreen::refreshFileTransferEdgeDrop()
     return true;
   }
 
-  const auto configured =
-      m_fileTransferEdgeDropHost->configure({.x = m_x, .y = m_y, .width = m_w, .height = m_h}, activeSides());
+  const auto configured = m_fileTransferEdgeDropHost->configure(
+      {.x = m_x, .y = m_y, .width = m_w, .height = m_h}, m_fileTransferEdgeDropSides
+  );
   if (!configured) {
     LOG_WARN("failed to configure file-transfer edge drop windows");
   }

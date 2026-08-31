@@ -142,13 +142,6 @@ if(WIN32)
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
   )
 
-  create_test(
-    NAME MSWindowsFileTransferServiceTests
-    DEPENDS app
-    LIBS arch base ${extra_libs}
-    SOURCE MSWindowsFileTransferServiceTests.cpp
-    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
-  )
 endif()
 
 create_test(

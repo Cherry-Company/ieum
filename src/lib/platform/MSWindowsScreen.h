@@ -58,10 +58,12 @@ public:
   static HINSTANCE getWindowInstance();
 
   //! Install the optional file-transfer edge drop host.
-  [[nodiscard]] bool installFileTransferEdgeDrop(deskflow::filetransfer::MSWindowsEdgeDropHostCallbacks callbacks);
+  [[nodiscard]] bool installFileTransferEdgeDrop(deskflow::filetransfer::FileTransferEdgeDropHandler handler) override;
+
+  [[nodiscard]] bool configureFileTransferEdgeDrop(std::uint32_t activeSides) override;
 
   //! Remove every file-transfer edge drop window and callback.
-  void uninstallFileTransferEdgeDrop() noexcept;
+  void uninstallFileTransferEdgeDrop() noexcept override;
 
   //@}
 
@@ -359,6 +361,7 @@ private:
   MSWindowsPowerManager m_powerManager;
 
   std::unique_ptr<deskflow::filetransfer::MSWindowsEdgeDropHost> m_fileTransferEdgeDropHost;
+  std::uint32_t m_fileTransferEdgeDropSides = 0;
   bool m_oleInitialized = false;
 
   mutable std::chrono::steady_clock::time_point m_fullscreenLastCheck;

@@ -30,7 +30,7 @@ class Server;
 namespace deskflow {
 class Screen;
 namespace filetransfer {
-class MSWindowsFileTransferService;
+class FileTransferService;
 }
 } // namespace deskflow
 class ClientListener;
@@ -106,10 +106,8 @@ public:
 
 private:
   void handleScreenSwitched() const;
-#if defined(Q_OS_WIN)
   void startFileTransferService();
   void stopFileTransferService() noexcept;
-#endif
   std::unique_ptr<ISocketFactory> getSocketFactory() const;
   NetworkAddress getAddress(const NetworkAddress &address) const;
 
@@ -123,7 +121,5 @@ private:
   NetworkAddress *m_deskflowAddress = nullptr;
   std::string m_name;
   std::shared_ptr<deskflow::server::Config> m_config;
-#if defined(Q_OS_WIN)
-  std::unique_ptr<deskflow::filetransfer::MSWindowsFileTransferService> m_fileTransferService;
-#endif
+  std::unique_ptr<deskflow::filetransfer::FileTransferService> m_fileTransferService;
 };

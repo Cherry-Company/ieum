@@ -7,7 +7,6 @@
 #pragma once
 
 #include "deskflow/EdgeHandoffDecision.h"
-#include "deskflow/FileTransferSourceManifest.h"
 #include "platform/MSWindowsFileDropExtractor.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -19,7 +18,7 @@
 
 #include <chrono>
 #include <cstddef>
-#include <cstdint>
+#include <filesystem>
 #include <functional>
 #include <optional>
 #include <vector>
@@ -28,12 +27,10 @@ namespace deskflow::filetransfer {
 
 struct MSWindowsEdgeDropCallbacks
 {
-  using TargetResolver = std::function<std::optional<EdgeTarget>(POINTL)>;
-  using HandoffHandler = std::function<void(const EdgeTarget &, std::vector<FileTransferSourceCandidate>)>;
-  using StateHandler =
-      std::function<void(EdgeHandoffState, const std::optional<EdgeTarget> &, std::size_t, std::uint64_t)>;
+  using HandoffHandler = std::function<void(POINTL, std::vector<std::filesystem::path>)>;
+  using StateHandler = std::function<void(EdgeHandoffState, std::size_t)>;
 
-  TargetResolver resolveTarget;
+  Direction direction = Direction::NoDirection;
   HandoffHandler handoff;
   StateHandler stateChanged;
 };
@@ -41,7 +38,6 @@ struct MSWindowsEdgeDropCallbacks
 struct MSWindowsEdgeDropOptions
 {
   std::chrono::milliseconds dwell{250};
-  FileTransferLimits transferLimits;
   WindowsFileDropLimits dropLimits;
 };
 
@@ -49,11 +45,11 @@ class MSWindowsEdgeDropTarget final : public IDropTarget
 {
 public:
   using Clock = std::function<EdgeHandoffDecision::TimePoint()>;
-  using SourceLoader = std::function<std::optional<std::vector<FileTransferSourceCandidate>>(IDataObject *)>;
+  using PathLoader = std::function<std::optional<std::vector<std::filesystem::path>>(IDataObject *)>;
 
   explicit MSWindowsEdgeDropTarget(
       MSWindowsEdgeDropCallbacks callbacks, MSWindowsEdgeDropOptions options = {}, Clock clock = {},
-      SourceLoader sourceLoader = {}
+      PathLoader pathLoader = {}
   );
 
   HRESULT STDMETHODCALLTYPE QueryInterface(REFIID interfaceId, void **object) override;
@@ -66,25 +62,15 @@ public:
   HRESULT STDMETHODCALLTYPE Drop(IDataObject *dataObject, DWORD keyState, POINTL point, DWORD *effect) override;
 
   [[nodiscard]] EdgeHandoffState state() const noexcept;
-  [[nodiscard]] std::size_t sourceCount() const noexcept;
+  [[nodiscard]] std::size_t pathCount() const noexcept;
 
 private:
-  struct LoadedSources
-  {
-    std::vector<FileTransferSourceCandidate> sources;
-    std::uint64_t totalBytes = 0;
-  };
-
   ~MSWindowsEdgeDropTarget() = default;
 
-  [[nodiscard]] std::optional<LoadedSources> loadSources(IDataObject *dataObject) const;
-  [[nodiscard]] std::optional<std::vector<FileTransferSourceCandidate>>
-  loadNativeSources(IDataObject *dataObject) const;
-  [[nodiscard]] std::optional<EdgeTarget> resolveTarget(POINTL point) const;
+  [[nodiscard]] std::optional<std::vector<std::filesystem::path>> loadPaths(IDataObject *dataObject) const;
   [[nodiscard]] EdgeHandoffDecision::TimePoint now() const;
-
-  void observe(POINTL point);
-  void setEffect(DWORD allowedEffects, DWORD *effect) const noexcept;
+  void observe();
+  void setEffect(DWORD *effect) const noexcept;
   void clearSession(bool publish);
   void publishState() const noexcept;
 
@@ -92,10 +78,9 @@ private:
   MSWindowsEdgeDropCallbacks m_callbacks;
   MSWindowsEdgeDropOptions m_options;
   Clock m_clock;
-  SourceLoader m_sourceLoader;
+  PathLoader m_pathLoader;
   EdgeHandoffDecision m_decision;
-  std::vector<FileTransferSourceCandidate> m_sources;
-  std::uint64_t m_totalBytes = 0;
+  std::vector<std::filesystem::path> m_paths;
   bool m_dragActive = false;
 };
 

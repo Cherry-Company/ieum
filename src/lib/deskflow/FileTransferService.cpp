@@ -95,6 +95,7 @@ struct FileTransferService::Impl
         sendData(std::move(options.sendData)),
         sendEdge(std::move(options.sendEdge)),
         resolveLocalTarget(std::move(options.resolveLocalTarget)),
+        activeSidesChanged(std::move(options.activeSidesChanged)),
         platform(std::move(options.platform)),
         events(options.events),
         eventTarget(options.eventTarget),
@@ -122,6 +123,7 @@ struct FileTransferService::Impl
   FileTransferServiceOptions::DataSender sendData;
   FileTransferServiceOptions::EdgeSender sendEdge;
   FileTransferServiceOptions::LocalTargetResolver resolveLocalTarget;
+  FileTransferServiceOptions::ActiveSidesHandler activeSidesChanged;
   std::unique_ptr<IFileTransferPlatform> platform;
   IEventQueue *events = nullptr;
   void *eventTarget = nullptr;
@@ -257,6 +259,9 @@ bool FileTransferService::handleEdgeMessage(const FileTransferEdgeMessage &messa
 {
   if (const auto *capabilities = std::get_if<FileTransferEdgeCapabilities>(&message)) {
     m_impl->activeSides = capabilities->activeSides;
+    if (m_impl->activeSidesChanged) {
+      m_impl->activeSidesChanged(m_impl->activeSides);
+    }
     return true;
   }
 

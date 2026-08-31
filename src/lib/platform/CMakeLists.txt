@@ -183,6 +183,11 @@ elseif(UNIX)
   endif()
 endif()
 
+list(APPEND PLATFORM_SOURCES
+  FileTransferPlatformFactory.cpp
+  FileTransferPlatformFactory.h
+)
+
 # wayland.h is included to check for wayland support
 add_library(platform STATIC ${PLATFORM_SOURCES})
 

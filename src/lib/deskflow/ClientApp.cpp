@@ -9,6 +9,7 @@
 #include "deskflow/ClientApp.h"
 
 #include "deskflow/ClientReconnectPolicy.h"
+#include "deskflow/FileTransferService.h"
 
 #include "base/Event.h"
 #include "base/IEventQueue.h"
@@ -24,9 +25,9 @@
 #include "net/SocketException.h"
 #include "net/SocketMultiplexer.h"
 #include "net/TCPSocketFactory.h"
+#include "platform/FileTransferPlatformFactory.h"
 
 #if defined(Q_OS_WIN)
-#include "deskflow/win32/MSWindowsFileTransferService.h"
 #include "platform/MSWindowsScreen.h"
 #endif
 
@@ -250,9 +251,7 @@ void ClientApp::handleClientRefused(const Event &e)
 
 void ClientApp::handleClientDisconnected()
 {
-#if defined(Q_OS_WIN)
   stopFileTransferService();
-#endif
   m_retryCount = 0;
   LOG_DEBUG("disconnected from server");
   ipcSendConnectionState(deskflow::core::ConnectionState::Disconnected);
@@ -315,9 +314,7 @@ bool ClientApp::startClient()
       LOG_INFO("started client");
     }
 
-#if defined(Q_OS_WIN)
     startFileTransferService();
-#endif
 
     m_client->setServerAddress(getCurrentServerAddress());
     m_client->connect(m_lastServerAddressIndex);
@@ -346,9 +343,7 @@ bool ClientApp::startClient()
 void ClientApp::stopClient()
 {
   cancelClientRestart();
-#if defined(Q_OS_WIN)
   stopFileTransferService();
-#endif
   closeClient(m_client);
   closeClientScreen(m_clientScreen);
   m_client = nullptr;
@@ -356,20 +351,32 @@ void ClientApp::stopClient()
   m_retryCount = 0;
 }
 
-#if defined(Q_OS_WIN)
 void ClientApp::startFileTransferService()
 {
-  if (m_fileTransferService != nullptr || m_client == nullptr ||
-      !Settings::value(Settings::Security::TlsEnabled).toBool() || !Settings::hasProFileTransferEntitlement() ||
-      !Settings::value(Settings::FileTransfer::ReceiveEnabled).toBool()) {
+  if (m_fileTransferService != nullptr || m_client == nullptr || m_clientScreen == nullptr ||
+      !deskflow::filetransfer::supportsFileTransferPlatform() ||
+      !Settings::value(Settings::Security::TlsEnabled).toBool() || !Settings::hasProFileTransferEntitlement()) {
     return;
   }
 
-  m_fileTransferService = std::make_unique<deskflow::filetransfer::MSWindowsFileTransferService>(
-      deskflow::filetransfer::MSWindowsFileTransferServiceOptions{
+  const auto sendEnabled = Settings::value(Settings::FileTransfer::Enabled).toBool();
+  const auto receiveEnabled = Settings::value(Settings::FileTransfer::ReceiveEnabled).toBool();
+  if (!sendEnabled && !receiveEnabled) {
+    return;
+  }
+
+  auto platform = deskflow::filetransfer::createFileTransferPlatform();
+  if (platform == nullptr) {
+    return;
+  }
+  auto *platformScreen = m_clientScreen->getPlatformScreen();
+  m_fileTransferService =
+      std::make_unique<deskflow::filetransfer::FileTransferService>(deskflow::filetransfer::FileTransferServiceOptions{
           .localScreen = Settings::value(Settings::Core::ComputerName).toString().toStdString(),
-          .destinationDirectory = Settings::value(Settings::FileTransfer::DownloadDirectory).toString().toStdWString(),
-          .receiveEnabled = true,
+          .destinationDirectory = deskflow::filetransfer::fileTransferPathFromQString(
+              Settings::value(Settings::FileTransfer::DownloadDirectory).toString()
+          ),
+          .receiveEnabled = receiveEnabled,
           .authorizeFileTransfer = [] { return Settings::hasProFileTransferEntitlement(); },
           .sendControl = [this](
                              const deskflow::filetransfer::FileTransferControlMessage &message
@@ -377,17 +384,33 @@ void ClientApp::startFileTransferService()
           .sendData = [this](
                           const deskflow::filetransfer::FileTransferDataMessage &message
                       ) { return m_client != nullptr && m_client->sendFileTransferData(message); },
+          .sendEdge = [this](
+                          const deskflow::filetransfer::FileTransferEdgeMessage &message
+                      ) { return m_client != nullptr && m_client->sendFileTransferEdge(message); },
+          .activeSidesChanged = [platformScreen](
+                                    std::uint32_t activeSides
+                                ) { (void)platformScreen->configureFileTransferEdgeDrop(activeSides); },
+          .platform = std::move(platform),
           .events = getEvents(),
           .eventTarget = m_client->getEventTarget(),
-      }
-  );
+      });
+
+  if (sendEnabled && !platformScreen->installFileTransferEdgeDrop([this](auto drop) {
+        if (m_fileTransferService == nullptr || !m_fileTransferService->beginEdgeDrop(std::move(drop))) {
+          LOG_WARN("could not start local file transfer");
+        }
+      })) {
+    LOG_WARN("could not install file-transfer edge drop host");
+  }
 }
 
 void ClientApp::stopFileTransferService() noexcept
 {
+  if (m_clientScreen != nullptr) {
+    m_clientScreen->getPlatformScreen()->uninstallFileTransferEdgeDrop();
+  }
   m_fileTransferService.reset();
 }
-#endif
 
 int ClientApp::mainLoop()
 {

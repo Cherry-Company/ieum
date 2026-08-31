@@ -7,6 +7,7 @@
 #pragma once
 
 #include "base/DirectionTypes.h"
+#include "deskflow/FileTransferEdgeDrop.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -23,7 +24,6 @@
 #include <cstdint>
 #include <functional>
 #include <limits>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -97,13 +97,9 @@ struct MSWindowsEdgeDropWindow
 
 struct MSWindowsEdgeDropHostCallbacks
 {
-  using TargetResolver = std::function<std::optional<EdgeTarget>(Direction, POINTL)>;
-  using HandoffHandler = std::function<void(const EdgeTarget &, std::vector<FileTransferSourceCandidate>)>;
-  using StateHandler =
-      std::function<void(Direction, EdgeHandoffState, const std::optional<EdgeTarget> &, std::size_t, std::uint64_t)>;
+  using StateHandler = std::function<void(Direction, EdgeHandoffState, std::size_t)>;
 
-  TargetResolver resolveTarget;
-  HandoffHandler handoff;
+  FileTransferEdgeDropHandler handoff;
   StateHandler stateChanged;
 };
 

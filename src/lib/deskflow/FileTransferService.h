@@ -32,6 +32,7 @@ struct FileTransferServiceOptions
   using DataSender = std::function<bool(const FileTransferDataMessage &)>;
   using EdgeSender = std::function<bool(const FileTransferEdgeMessage &)>;
   using LocalTargetResolver = std::function<std::optional<EdgeTarget>(Direction, std::int32_t, std::int32_t)>;
+  using ActiveSidesHandler = std::function<void(std::uint32_t)>;
 
   std::string localScreen;
   std::filesystem::path destinationDirectory;
@@ -41,6 +42,7 @@ struct FileTransferServiceOptions
   DataSender sendData;
   EdgeSender sendEdge;
   LocalTargetResolver resolveLocalTarget;
+  ActiveSidesHandler activeSidesChanged;
   std::unique_ptr<IFileTransferPlatform> platform;
   IEventQueue *events = nullptr;
   void *eventTarget = nullptr;
