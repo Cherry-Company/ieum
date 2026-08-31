@@ -24528,7 +24528,7 @@
       "language": "qt-translation",
       "lineCount": 2001,
       "path": "translations/deskflow_it.ts",
-      "sizeBytes": 82094
+      "sizeBytes": 82099
     },
     {
       "binary": false,
@@ -24565,7 +24565,7 @@
   ],
   "revision": {
     "branch": "feat/pro-cross-platform-transfer-alpha22",
-    "commit": "9ad1c0b3d35531512a67738bda2945e086a14670",
+    "commit": "3ad6c89b41b1dd1d226106a0353c4ab244a68f2a",
     "dirtyTrackedFiles": true
   },
   "schemaVersion": 1,

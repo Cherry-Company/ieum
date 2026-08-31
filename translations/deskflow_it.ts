@@ -1849,7 +1849,7 @@ Le licenze vengono emesse manualmente dopo la verifica del pagamento.</translati
     </message>
     <message>
         <source>Include this claim code in your license request email.</source>
-        <translation>Includi questo codice di richiesta nell'email di richiesta della licenza.</translation>
+        <translation>Includi questo codice di richiesta nell&apos;email di richiesta della licenza.</translation>
     </message>
     <message>
         <source>Early Access claim code</source>
