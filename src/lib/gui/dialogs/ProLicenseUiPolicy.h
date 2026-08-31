@@ -8,20 +8,33 @@
 
 #include "licensing/ProLicense.h"
 
+#include <QMetaType>
+
 namespace deskflow::gui {
+
+enum class FileTransferPlatformSupport
+{
+  Unsupported,
+  Windows,
+  MacOS,
+};
 
 struct ProFileTransferUiState
 {
   bool licenseActionsEnabled{false};
   bool removeLicenseEnabled{false};
   bool transferControlsEnabled{false};
+  bool supportedPlatform{false};
+  bool purchaseActionsVisible{false};
 };
 
 [[nodiscard]] bool shouldActivateProFileTransferLicense(const licensing::ProLicenseEntitlement &entitlement) noexcept;
 
 [[nodiscard]] ProFileTransferUiState proFileTransferUiState(
     const licensing::ProLicenseEntitlement &entitlement, bool hasStoredLicense, bool settingsWritable,
-    bool windowsPlatform, bool tlsEnabled
+    FileTransferPlatformSupport platform, bool tlsEnabled
 ) noexcept;
 
 } // namespace deskflow::gui
+
+Q_DECLARE_METATYPE(deskflow::gui::FileTransferPlatformSupport)

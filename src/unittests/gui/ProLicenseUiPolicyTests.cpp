@@ -8,6 +8,7 @@
 
 #include <QTest>
 
+using deskflow::gui::FileTransferPlatformSupport;
 using deskflow::gui::proFileTransferUiState;
 using deskflow::gui::shouldActivateProFileTransferLicense;
 using deskflow::licensing::kFileTransferFeature;
@@ -30,16 +31,57 @@ private:
   }
 
 private Q_SLOTS:
-  void validLicenseUnlocksFileTransferWhenRuntimeRequirementsAreMet()
+  void supportedPlatformsExposeLockedPurchaseFlow_data()
   {
-    const auto state = proFileTransferUiState(entitlement(ProLicenseStatus::Valid), true, true, true, true);
+    QTest::addColumn<FileTransferPlatformSupport>("platform");
+    QTest::newRow("windows") << FileTransferPlatformSupport::Windows;
+    QTest::newRow("macos") << FileTransferPlatformSupport::MacOS;
+  }
 
+  void supportedPlatformsExposeLockedPurchaseFlow()
+  {
+    QFETCH(FileTransferPlatformSupport, platform);
+    const auto state = proFileTransferUiState(entitlement(ProLicenseStatus::Missing), false, true, platform, true);
+
+    QVERIFY(state.supportedPlatform);
+    QVERIFY(state.licenseActionsEnabled);
+    QVERIFY(!state.removeLicenseEnabled);
+    QVERIFY(!state.transferControlsEnabled);
+    QVERIFY(state.purchaseActionsVisible);
+  }
+
+  void perpetualEntitlementUnlocksWindowsAndMac_data()
+  {
+    QTest::addColumn<FileTransferPlatformSupport>("platform");
+    QTest::newRow("windows") << FileTransferPlatformSupport::Windows;
+    QTest::newRow("macos") << FileTransferPlatformSupport::MacOS;
+  }
+
+  void perpetualEntitlementUnlocksWindowsAndMac()
+  {
+    QFETCH(FileTransferPlatformSupport, platform);
+    const auto state = proFileTransferUiState(entitlement(ProLicenseStatus::Valid), true, true, platform, true);
+
+    QVERIFY(state.supportedPlatform);
     QVERIFY(state.licenseActionsEnabled);
     QVERIFY(state.removeLicenseEnabled);
     QVERIFY(state.transferControlsEnabled);
+    QVERIFY(!state.purchaseActionsVisible);
   }
 
-  void invalidLicenseStatesStayLocked_data()
+  void unsupportedPlatformHidesFilesAndPurchaseFlow()
+  {
+    const auto state = proFileTransferUiState(
+        entitlement(ProLicenseStatus::Missing), false, true, FileTransferPlatformSupport::Unsupported, true
+    );
+
+    QVERIFY(!state.supportedPlatform);
+    QVERIFY(!state.licenseActionsEnabled);
+    QVERIFY(!state.transferControlsEnabled);
+    QVERIFY(!state.purchaseActionsVisible);
+  }
+
+  void invalidAndMissingFeatureLicensesStayLocked_data()
   {
     QTest::addColumn<ProLicenseStatus>("status");
     QTest::newRow("missing") << ProLicenseStatus::Missing;
@@ -51,52 +93,40 @@ private Q_SLOTS:
     QTest::newRow("expired") << ProLicenseStatus::Expired;
   }
 
-  void invalidLicenseStatesStayLocked()
+  void invalidAndMissingFeatureLicensesStayLocked()
   {
     QFETCH(ProLicenseStatus, status);
-    const auto state = proFileTransferUiState(entitlement(status), true, true, true, true);
-
+    const auto state =
+        proFileTransferUiState(entitlement(status), true, true, FileTransferPlatformSupport::Windows, true);
     QVERIFY(!state.transferControlsEnabled);
+    QVERIFY(state.purchaseActionsVisible);
     QVERIFY(!shouldActivateProFileTransferLicense(entitlement(status)));
+
+    const auto missingFeature = entitlement(ProLicenseStatus::Valid, false);
+    QVERIFY(!proFileTransferUiState(missingFeature, true, true, FileTransferPlatformSupport::MacOS, true)
+                 .transferControlsEnabled);
+    QVERIFY(!shouldActivateProFileTransferLicense(missingFeature));
   }
 
-  void missingFeatureStaysLocked()
-  {
-    const auto license = entitlement(ProLicenseStatus::Valid, false);
-    const auto state = proFileTransferUiState(license, true, true, true, true);
-
-    QVERIFY(!state.transferControlsEnabled);
-    QVERIFY(!shouldActivateProFileTransferLicense(license));
-  }
-
-  void runtimeRequirementsKeepFileTransferLocked_data()
+  void runtimeRequirementsKeepTransferControlsLocked_data()
   {
     QTest::addColumn<bool>("writable");
-    QTest::addColumn<bool>("windows");
     QTest::addColumn<bool>("tls");
-    QTest::newRow("read-only") << false << true << true;
-    QTest::newRow("other-platform") << true << false << true;
-    QTest::newRow("tls-disabled") << true << true << false;
+    QTest::newRow("read-only") << false << true;
+    QTest::newRow("tls-disabled") << true << false;
   }
 
-  void runtimeRequirementsKeepFileTransferLocked()
+  void runtimeRequirementsKeepTransferControlsLocked()
   {
     QFETCH(bool, writable);
-    QFETCH(bool, windows);
     QFETCH(bool, tls);
-    const auto state = proFileTransferUiState(entitlement(ProLicenseStatus::Valid), true, writable, windows, tls);
+    const auto state = proFileTransferUiState(
+        entitlement(ProLicenseStatus::Valid), true, writable, FileTransferPlatformSupport::Windows, tls
+    );
 
     QVERIFY(!state.transferControlsEnabled);
-  }
-
-  void licenseActionsRequireWritableWindowsSettings()
-  {
-    const auto license = entitlement(ProLicenseStatus::Valid);
-
-    QVERIFY(!proFileTransferUiState(license, true, false, true, true).licenseActionsEnabled);
-    QVERIFY(!proFileTransferUiState(license, true, true, false, true).licenseActionsEnabled);
-    QVERIFY(proFileTransferUiState(license, true, true, true, false).licenseActionsEnabled);
-    QVERIFY(!proFileTransferUiState(license, false, true, true, true).removeLicenseEnabled);
+    QCOMPARE(state.licenseActionsEnabled, writable);
+    QVERIFY(!state.purchaseActionsVisible);
   }
 };
 
