@@ -6,13 +6,13 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `e89024e1b00c85957fd433fe0475816de0155c62`
-- Branch: `fix/release-privacy-evidence`
-- Tracked files: 1,023
-- Represented files: 1,020
-- Source files / lines: 650 / 107,813
-- Components / targets: 42 / 79
-- File include edges / component edges: 1,534 / 98
+- Revision: `7da88edb998faceb187fd6e29d76023be7d021a6`
+- Branch: `feat/pro-license-gate-alpha21`
+- Tracked files: 1,039
+- Represented files: 1,036
+- Source files / lines: 661 / 109,274
+- Components / targets: 44 / 83
+- File include edges / component edges: 1,547 / 101
 
 `docs/codegraph/`의 생성 산출물은 자기참조로 인한 비결정성을 막기 위해
 파일 인벤토리에서 명시적으로 제외됩니다.
@@ -59,28 +59,30 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `lib:arch` | library | Operating-system abstraction for daemon, network, logging, and threading primitives. | 28 | 6,167 | `arch` |
 | `lib:base` | library | Events, jobs, queues, logging, strings, Unicode, and timing primitives. | 32 | 3,651 | `base` |
 | `lib:client` | library | Connection to the server and dispatch of incoming KVM protocol messages. | 5 | 2,368 | `client` |
-| `lib:common` | library | Settings, network-interface selection, Tailscale integration, and shared product types. | 22 | 2,702 | `common` |
-| `lib:deskflow` | library | Shared KVM application, protocol, screen, key, clipboard, and IPC behavior. | 107 | 17,847 | `app` |
-| `lib:gui` | library | Qt windows, dialogs, widgets, validators, startup, diagnostics, updates, and IPC clients. | 111 | 17,961 | `gui` |
+| `lib:common` | library | Settings, network-interface selection, Tailscale integration, and shared product types. | 22 | 2,753 | `common` |
+| `lib:deskflow` | library | Shared KVM application, protocol, screen, key, clipboard, and IPC behavior. | 107 | 17,875 | `app` |
+| `lib:gui` | library | Qt windows, dialogs, widgets, validators, startup, diagnostics, updates, and IPC clients. | 113 | 18,253 | `gui` |
 | `lib:io` | library | Stream interfaces, buffers, filters, and framed I/O support. | 8 | 570 | `io` |
+| `lib:licensing` | library | Repository support files rooted at `src/lib/licensing`. | 4 | 385 | `licensing` |
 | `lib:mt` | library | Thread, mutex, lock, and condition-variable wrappers. | 12 | 892 | `mt` |
 | `lib:net` | library | TCP/TLS sockets, multiplexing, addresses, certificates, and fingerprint persistence. | 35 | 4,180 | `net` |
 | `lib:platform` | library | Windows, macOS, X11, libei, and portal input/clipboard adapters. | 132 | 29,530 | `platform` |
 | `lib:server` | library | Client proxies, input routing, screen topology, filters, and cursor transforms. | 46 | 9,891 | `server` |
 | `support:artwork` | resource | Brand artwork and documentation screenshots. | 5 | 253 | — |
 | `support:cmake` | build | Shared dependency, coverage, packaging, and signing CMake modules. | 4 | 746 | — |
-| `support:docs` | documentation | User, developer, security, design, release, audit, and generated documentation. | 32 | 4,980 | — |
+| `support:docs` | documentation | User, developer, security, design, release, audit, and generated documentation. | 35 | 5,849 | — |
 | `support:github` | automation | GitHub Actions workflows, composite actions, templates, and repository automation. | 27 | 4,050 | — |
-| `support:root` | support | Repository support files rooted at `.`. | 20 | 3,041 | — |
-| `support:source-build` | build | Repository support files rooted at `src`. | 3 | 170 | — |
-| `support:translations` | localization | Qt translation catalogs and translation build rules. | 8 | 11,704 | — |
+| `support:root` | support | Repository support files rooted at `.`. | 20 | 3,101 | — |
+| `support:source-build` | build | Repository support files rooted at `src`. | 3 | 172 | — |
+| `support:translations` | localization | Qt translation catalogs and translation build rules. | 8 | 11,948 | — |
 | `test:base` | test | Automated tests for the `base` surface. | 12 | 649 | `BaseExceptionTests`, `EventQueueTests`, `LogOutputtersTests`, `LogTests`, `StringTests`, `UnicodeTests` |
 | `test:client` | test | Automated tests for the `client` surface. | 3 | 670 | `ServerProxyTests` |
 | `test:codegraph-tools` | test | Automated tests for the `codegraph-tools` surface. | 1 | 461 | — |
-| `test:common` | test | Automated tests for the `common` surface. | 11 | 942 | `I18NTests`, `LogLevelTests`, `NetworkInterfacesTests`, `SettingsTests`, `TailscaleIntegrationTests` |
-| `test:deskflow` | test | Automated tests for the `deskflow` surface. | 36 | 4,800 | `CanonicalScancodeTests`, `ClientReconnectPolicyTests`, `ClipboardChunksTests`, `ClipboardTests`, `EdgeHandoffDecisionTests`, `FileTransferControlCodecTests`, `FileTransferControlProtocolTests`, `FileTransferDataProtocolTests`, `FileTransferOfferTests`, `FileTransferSessionStateTests`, `FileTransferSourceManifestTests`, `IKeyStateTests`, `IpcServerTests`, `KeyMapTests`, `KeyStateTests`, `KeyboardLayoutManagerTests`, `MSWindowsEdgeDropHostTests`, `MSWindowsEdgeDropTargetTests`, `MSWindowsFileTransferServiceTests`, `Protocol19Tests`, `X11LayoutParserTests` |
-| `test:gui` | test | Automated tests for the `gui` surface. | 26 | 1,696 | `DiagnosticTests`, `FileTailTests`, `IpcClientTests`, `KeySequenceTests`, `LogWidgetTests`, `LoggerTests`, `NetworkMonitorTests`, `ScreenSetupModelTests`, `ScreenTests`, `ServerConfigDialogTests`, `ServiceStartCoordinatorTests`, `StatusBarTests`, `StyleUtilsTests`, `VersionCheckerTests` |
+| `test:common` | test | Automated tests for the `common` surface. | 12 | 1,126 | `I18NTests`, `LogLevelTests`, `NetworkInterfacesTests`, `ProLicenseSettingsTests`, `SettingsTests`, `TailscaleIntegrationTests` |
+| `test:deskflow` | test | Automated tests for the `deskflow` surface. | 36 | 4,994 | `CanonicalScancodeTests`, `ClientReconnectPolicyTests`, `ClipboardChunksTests`, `ClipboardTests`, `EdgeHandoffDecisionTests`, `FileTransferControlCodecTests`, `FileTransferControlProtocolTests`, `FileTransferDataProtocolTests`, `FileTransferOfferTests`, `FileTransferSessionStateTests`, `FileTransferSourceManifestTests`, `IKeyStateTests`, `IpcServerTests`, `KeyMapTests`, `KeyStateTests`, `KeyboardLayoutManagerTests`, `MSWindowsEdgeDropHostTests`, `MSWindowsEdgeDropTargetTests`, `MSWindowsFileTransferServiceTests`, `Protocol19Tests`, `X11LayoutParserTests` |
+| `test:gui` | test | Automated tests for the `gui` surface. | 27 | 1,808 | `DiagnosticTests`, `FileTailTests`, `IpcClientTests`, `KeySequenceTests`, `LogWidgetTests`, `LoggerTests`, `NetworkMonitorTests`, `ProLicenseUiPolicyTests`, `ScreenSetupModelTests`, `ScreenTests`, `ServerConfigDialogTests`, `ServiceStartCoordinatorTests`, `StatusBarTests`, `StyleUtilsTests`, `VersionCheckerTests` |
 | `test:legacytests` | test | Automated tests for the `legacytests` surface. | 10 | 887 | `legacytests` |
+| `test:licensing` | test | Automated tests for the `licensing` surface. | 5 | 348 | `ProLicenseTests` |
 | `test:net` | test | Automated tests for the `net` surface. | 9 | 595 | `FingerprintDatabaseTests`, `FingerprintTests`, `NetworkAddressTests`, `SecureSocketWriteBufferTests`, `SecureUtilsTests` |
 | `test:platform` | test | Automated tests for the `platform` surface. | 14 | 1,832 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsFileDropExtractorTests`, `MSWindowsFileTransferIoTests`, `MSWindowsFileTransferSourceTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
 | `test:server` | test | Automated tests for the `server` surface. | 5 | 437 | `ServerConfigTests`, `ServerTests` |

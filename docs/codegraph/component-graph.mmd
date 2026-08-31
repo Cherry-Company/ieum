@@ -17,30 +17,32 @@ flowchart LR
     n012["lib:deskflow<br/>app"]
     n013["lib:gui<br/>gui"]
     n014["lib:io<br/>io"]
-    n015["lib:mt<br/>mt"]
-    n016["lib:net<br/>net"]
-    n017["lib:platform<br/>platform"]
-    n018["lib:server<br/>server"]
+    n015["lib:licensing<br/>licensing"]
+    n016["lib:mt<br/>mt"]
+    n017["lib:net<br/>net"]
+    n018["lib:platform<br/>platform"]
+    n019["lib:server<br/>server"]
   end
   subgraph g02["Tests"]
-    n026["test:base<br/>BaseExceptionTests, EventQueueTests, LogOutputtersTests, LogTests, StringTests, UnicodeTests"]
-    n027["test:client<br/>ServerProxyTests"]
-    n028["test:codegraph-tools"]
-    n029["test:common<br/>I18NTests, LogLevelTests, NetworkInterfacesTests, SettingsTests, TailscaleIntegrationTests"]
-    n030["test:deskflow<br/>CanonicalScancodeTests, ClientReconnectPolicyTests, ClipboardChunksTests, ClipboardTests, EdgeHandoffDecisionTests, FileTransferControlCodecTests, FileTransferControlProtocolTests, FileTransferDataProtocolTests, FileTransferOfferTests, FileTransferSessionStateTests, FileTransferSourceManifestTests, IKeyStateTests, IpcServerTests, KeyMapTests, KeyStateTests, KeyboardLayoutManagerTests, MSWindowsEdgeDropHostTests, MSWindowsEdgeDropTargetTests, MSWindowsFileTransferServiceTests, Protocol19Tests, X11LayoutParserTests"]
-    n031["test:gui<br/>DiagnosticTests, FileTailTests, IpcClientTests, KeySequenceTests, LogWidgetTests, LoggerTests, NetworkMonitorTests, ScreenSetupModelTests, ScreenTests, ServerConfigDialogTests, ServiceStartCoordinatorTests, StatusBarTests, StyleUtilsTests, VersionCheckerTests"]
-    n032["test:legacytests<br/>legacytests"]
-    n033["test:net<br/>FingerprintDatabaseTests, FingerprintTests, NetworkAddressTests, SecureSocketWriteBufferTests, SecureUtilsTests"]
-    n034["test:platform<br/>ArchNetworkWinsockTests, MSWindowsClipboardTests, MSWindowsFileDropExtractorTests, MSWindowsFileTransferIoTests, MSWindowsFileTransferSourceTests, MSWindowsMouseInputTests, OSXClipboardTests, OSXKeyStateTests, XWindowsClipboardTests"]
-    n035["test:server<br/>ServerConfigTests, ServerTests"]
+    n027["test:base<br/>BaseExceptionTests, EventQueueTests, LogOutputtersTests, LogTests, StringTests, UnicodeTests"]
+    n028["test:client<br/>ServerProxyTests"]
+    n029["test:codegraph-tools"]
+    n030["test:common<br/>I18NTests, LogLevelTests, NetworkInterfacesTests, ProLicenseSettingsTests, SettingsTests, TailscaleIntegrationTests"]
+    n031["test:deskflow<br/>CanonicalScancodeTests, ClientReconnectPolicyTests, ClipboardChunksTests, ClipboardTests, EdgeHandoffDecisionTests, FileTransferControlCodecTests, FileTransferControlProtocolTests, FileTransferDataProtocolTests, FileTransferOfferTests, FileTransferSessionStateTests, FileTransferSourceManifestTests, IKeyStateTests, IpcServerTests, KeyMapTests, KeyStateTests, KeyboardLayoutManagerTests, MSWindowsEdgeDropHostTests, MSWindowsEdgeDropTargetTests, MSWindowsFileTransferServiceTests, Protocol19Tests, X11LayoutParserTests"]
+    n032["test:gui<br/>DiagnosticTests, FileTailTests, IpcClientTests, KeySequenceTests, LogWidgetTests, LoggerTests, NetworkMonitorTests, ProLicenseUiPolicyTests, ScreenSetupModelTests, ScreenTests, ServerConfigDialogTests, ServiceStartCoordinatorTests, StatusBarTests, StyleUtilsTests, VersionCheckerTests"]
+    n033["test:legacytests<br/>legacytests"]
+    n034["test:licensing<br/>ProLicenseTests"]
+    n035["test:net<br/>FingerprintDatabaseTests, FingerprintTests, NetworkAddressTests, SecureSocketWriteBufferTests, SecureUtilsTests"]
+    n036["test:platform<br/>ArchNetworkWinsockTests, MSWindowsClipboardTests, MSWindowsFileDropExtractorTests, MSWindowsFileTransferIoTests, MSWindowsFileTransferSourceTests, MSWindowsMouseInputTests, OSXClipboardTests, OSXKeyStateTests, XWindowsClipboardTests"]
+    n037["test:server<br/>ServerConfigTests, ServerTests"]
   end
   subgraph g03["Tools"]
-    n036["tool:cgtap-logger"]
-    n037["tool:ci"]
-    n038["tool:codegraph"]
-    n039["tool:generate-codegraph"]
-    n040["tool:merge-input-timeline"]
-    n041["tool:privacy"]
+    n038["tool:cgtap-logger"]
+    n039["tool:ci"]
+    n040["tool:codegraph"]
+    n041["tool:generate-codegraph"]
+    n042["tool:merge-input-timeline"]
+    n043["tool:privacy"]
   end
   subgraph g04["Deployment"]
     n004["deploy:linux"]
@@ -49,23 +51,23 @@ flowchart LR
     n007["deploy:windows<br/>wix-custom"]
   end
   subgraph g05["Automation"]
-    n022["support:github"]
+    n023["support:github"]
   end
   subgraph g06["Localization"]
-    n025["support:translations"]
+    n026["support:translations"]
   end
   subgraph g07["Documentation"]
-    n021["support:docs"]
+    n022["support:docs"]
   end
   subgraph g08["Build support"]
-    n020["support:cmake"]
-    n024["support:source-build"]
+    n021["support:cmake"]
+    n025["support:source-build"]
   end
   subgraph g09["Resources"]
-    n019["support:artwork"]
+    n020["support:artwork"]
   end
   subgraph g10["Other support"]
-    n023["support:root"]
+    n024["support:root"]
   end
   class n000 application
   class n001 application
@@ -86,14 +88,14 @@ flowchart LR
   class n016 library
   class n017 library
   class n018 library
-  class n019 support
+  class n019 library
   class n020 support
   class n021 support
   class n022 support
   class n023 support
   class n024 support
   class n025 support
-  class n026 test
+  class n026 support
   class n027 test
   class n028 test
   class n029 test
@@ -103,107 +105,112 @@ flowchart LR
   class n033 test
   class n034 test
   class n035 test
-  class n036 support
-  class n037 support
+  class n036 test
+  class n037 test
   class n038 support
   class n039 support
   class n040 support
   class n041 support
+  class n042 support
+  class n043 support
   n000 -->|"include + link"| n008
   n000 -->|"include + link"| n009
   n000 -->|"link"| n010
   n000 -->|"include"| n011
   n000 -->|"include + link"| n012
   n000 -->|"link"| n014
-  n000 -->|"link"| n015
   n000 -->|"link"| n016
   n000 -->|"link"| n017
   n000 -->|"link"| n018
+  n000 -->|"link"| n019
   n001 -->|"include + link"| n008
   n001 -->|"include + link"| n009
   n001 -->|"include + link"| n011
   n001 -->|"include + link"| n012
   n001 -->|"link"| n014
-  n001 -->|"link"| n015
   n001 -->|"link"| n016
-  n001 -->|"include + link"| n017
+  n001 -->|"link"| n017
+  n001 -->|"include + link"| n018
   n002 -->|"include + link"| n011
   n002 -->|"include + link"| n013
-  n002 -->|"include"| n017
+  n002 -->|"include"| n018
   n008 -->|"include"| n009
   n008 -->|"include + link"| n011
   n009 -->|"include + link"| n008
   n009 -->|"include"| n011
-  n009 -->|"include"| n015
+  n009 -->|"include"| n016
   n010 -->|"include"| n008
   n010 -->|"include"| n009
   n010 -->|"include + link"| n011
   n010 -->|"include + link"| n012
   n010 -->|"include + link"| n014
-  n010 -->|"include"| n016
+  n010 -->|"include"| n017
+  n011 -->|"include + link"| n015
   n012 -->|"include + link"| n008
   n012 -->|"include + link"| n009
   n012 -->|"include + link"| n010
   n012 -->|"include + link"| n011
   n012 -->|"include"| n014
-  n012 -->|"include + link"| n015
   n012 -->|"include + link"| n016
   n012 -->|"include + link"| n017
   n012 -->|"include + link"| n018
+  n012 -->|"include + link"| n019
   n013 -->|"link"| n008
   n013 -->|"link"| n009
   n013 -->|"include + link"| n011
-  n013 -->|"include + link"| n016
-  n013 -->|"link"| n017
+  n013 -->|"include"| n015
+  n013 -->|"include + link"| n017
+  n013 -->|"link"| n018
   n014 -->|"include"| n009
   n014 -->|"link"| n011
-  n015 -->|"include"| n008
-  n015 -->|"include + link"| n009
   n016 -->|"include"| n008
-  n016 -->|"include"| n009
-  n016 -->|"include + link"| n011
-  n016 -->|"include"| n012
-  n016 -->|"include + link"| n014
-  n016 -->|"include + link"| n015
+  n016 -->|"include + link"| n009
   n017 -->|"include"| n008
   n017 -->|"include"| n009
-  n017 -->|"include + link"| n010
-  n017 -->|"include"| n011
-  n017 -->|"include + link"| n012
-  n017 -->|"link"| n014
-  n017 -->|"include"| n015
-  n017 -->|"link"| n016
+  n017 -->|"include + link"| n011
+  n017 -->|"include"| n012
+  n017 -->|"include + link"| n014
+  n017 -->|"include + link"| n016
   n018 -->|"include"| n008
   n018 -->|"include"| n009
-  n018 -->|"include + link"| n011
+  n018 -->|"include + link"| n010
+  n018 -->|"include"| n011
   n018 -->|"include + link"| n012
-  n018 -->|"include"| n014
+  n018 -->|"link"| n014
   n018 -->|"include"| n016
-  n026 -->|"include"| n008
-  n026 -->|"include"| n009
+  n018 -->|"link"| n017
+  n019 -->|"include"| n008
+  n019 -->|"include"| n009
+  n019 -->|"include + link"| n011
+  n019 -->|"include + link"| n012
+  n019 -->|"include"| n014
+  n019 -->|"include"| n017
+  n027 -->|"include"| n008
   n027 -->|"include"| n009
-  n027 -->|"include"| n010
-  n027 -->|"include"| n012
-  n027 -->|"include"| n014
-  n027 -->|"include"| n018
-  n029 -->|"include"| n011
-  n030 -->|"include"| n008
-  n030 -->|"include"| n009
+  n028 -->|"include"| n009
+  n028 -->|"include"| n010
+  n028 -->|"include"| n012
+  n028 -->|"include"| n014
+  n028 -->|"include"| n019
   n030 -->|"include"| n011
-  n030 -->|"include"| n012
-  n030 -->|"include"| n014
-  n030 -->|"include"| n017
+  n031 -->|"include"| n008
   n031 -->|"include"| n009
   n031 -->|"include"| n011
-  n031 -->|"include"| n013
-  n032 -->|"include"| n008
+  n031 -->|"include"| n012
+  n031 -->|"include"| n014
+  n031 -->|"include"| n018
   n032 -->|"include"| n009
-  n032 -->|"link"| n011
-  n032 -->|"include"| n012
+  n032 -->|"include"| n011
+  n032 -->|"include"| n013
   n033 -->|"include"| n008
-  n033 -->|"include"| n016
-  n034 -->|"include"| n008
-  n034 -->|"include"| n009
-  n034 -->|"include"| n017
-  n035 -->|"include"| n011
-  n035 -->|"include"| n018
+  n033 -->|"include"| n009
+  n033 -->|"link"| n011
+  n033 -->|"include"| n012
+  n034 -->|"include"| n015
+  n035 -->|"include"| n008
+  n035 -->|"include"| n017
+  n036 -->|"include"| n008
+  n036 -->|"include"| n009
+  n036 -->|"include"| n018
+  n037 -->|"include"| n011
+  n037 -->|"include"| n019
