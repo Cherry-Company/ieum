@@ -48,6 +48,8 @@ if(WIN32)
     MSWindowsFileTransferSource.h
     MSWindowsFileTransferIo.cpp
     MSWindowsFileTransferIo.h
+    MSWindowsFileTransferPlatform.cpp
+    MSWindowsFileTransferPlatform.h
     MSWindowsHook.cpp
     MSWindowsHook.h
     MSWindowsImeController.cpp

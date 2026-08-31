@@ -9,14 +9,25 @@
 
 #include "base/Log.h"
 
+#ifdef _WIN32
+#include "platform/MSWindowsFileTransferPlatform.h"
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <Windows.h>
+#endif
+
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -388,6 +399,126 @@ void stopsReceiveWhenAuthorizationIsWithdrawn()
   );
 }
 
+#ifdef _WIN32
+class DiskFixture final
+{
+public:
+  DiskFixture()
+  {
+    const auto base = std::filesystem::temp_directory_path();
+    for (std::uint32_t attempt = 0; attempt < 100; ++attempt) {
+      m_path = base / ("ieum-portable-service-" + std::to_string(GetCurrentProcessId()) + "-" +
+                       std::to_string(GetTickCount64()) + "-" + std::to_string(attempt));
+      std::error_code error;
+      if (std::filesystem::create_directory(m_path, error)) {
+        return;
+      }
+    }
+    throw std::runtime_error("could not create a unique disk fixture");
+  }
+
+  ~DiskFixture()
+  {
+    std::error_code error;
+    std::filesystem::remove_all(m_path, error);
+  }
+
+  [[nodiscard]] const std::filesystem::path &path() const noexcept
+  {
+    return m_path;
+  }
+
+private:
+  std::filesystem::path m_path;
+};
+
+void writeDiskFile(const std::filesystem::path &path, std::string_view contents)
+{
+  std::ofstream stream(path, std::ios::binary | std::ios::trunc);
+  stream.write(contents.data(), static_cast<std::streamsize>(contents.size()));
+  if (!stream) {
+    throw std::runtime_error("could not write disk fixture");
+  }
+}
+
+std::string readDiskFile(const std::filesystem::path &path)
+{
+  std::ifstream stream(path, std::ios::binary);
+  return {std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>()};
+}
+
+void transfersWindowsDiskWithoutDeletingTheSource()
+{
+  constexpr std::string_view payload = "Windows adapter round trip";
+  DiskFixture fixture;
+  const auto sourcePath = fixture.path() / L"한글 source.bin";
+  const auto destination = fixture.path() / L"received";
+  writeDiskFile(sourcePath, payload);
+
+  auto senderPlatform = std::make_unique<MSWindowsFileTransferPlatform>();
+  const auto inspected = senderPlatform->inspectSources({sourcePath}, 100);
+  require(inspected.ok() && inspected.sources.size() == 1, "Windows disk source should inspect");
+
+  bool authorized = true;
+  std::vector<FileTransferControlMessage> senderControl;
+  std::vector<FileTransferControlMessage> receiverControl;
+  std::vector<FileTransferDataMessage> senderData;
+  FileTransferService sender(
+      FileTransferServiceOptions{
+          .localScreen = "windows",
+          .authorizeFileTransfer = [&] { return authorized; },
+          .sendControl =
+              [&](const FileTransferControlMessage &message) {
+                senderControl.push_back(message);
+                return true;
+              },
+          .sendData =
+              [&](const FileTransferDataMessage &message) {
+                senderData.push_back(message);
+                return true;
+              },
+          .platform = std::move(senderPlatform),
+      }
+  );
+  FileTransferService receiver(
+      FileTransferServiceOptions{
+          .localScreen = "mac",
+          .destinationDirectory = destination,
+          .receiveEnabled = true,
+          .authorizeFileTransfer = [&] { return authorized; },
+          .sendControl =
+              [&](const FileTransferControlMessage &message) {
+                receiverControl.push_back(message);
+                return true;
+              },
+          .sendData = [](const FileTransferDataMessage &) { return false; },
+          .platform = std::make_unique<MSWindowsFileTransferPlatform>(),
+      }
+  );
+
+  require(sender.offerLocalFiles("mac", inspected.sources), "Windows disk sender should offer");
+  require(receiver.handleControl(senderControl.front()), "Windows disk receiver should accept");
+  require(sender.handleControl(receiverControl.front()), "Windows disk sender should begin");
+  std::size_t delivered = 0;
+  while (delivered < senderData.size()) {
+    require(receiver.handleData(senderData[delivered++]), "Windows disk receiver should apply begin");
+  }
+  while (sender.processNextOutgoingChunk()) {
+    while (delivered < senderData.size()) {
+      require(receiver.handleData(senderData[delivered++]), "Windows disk receiver should apply data");
+    }
+  }
+  while (delivered < senderData.size()) {
+    require(receiver.handleData(senderData[delivered++]), "Windows disk receiver should apply final data");
+  }
+
+  require(receiverControl.size() == 2, "Windows disk receiver should report completion");
+  require(sender.handleControl(receiverControl.back()), "Windows disk sender should apply completion");
+  require(readDiskFile(sourcePath) == payload, "file transfer must preserve source bytes");
+  require(readDiskFile(destination / sourcePath.filename()) == payload, "Windows disk destination should match");
+}
+#endif
+
 } // namespace
 
 int main()
@@ -398,6 +529,9 @@ int main()
   rejectsMissingAuthorization();
   stopsBeforeFirstChunkWhenAuthorizationIsWithdrawn();
   stopsReceiveWhenAuthorizationIsWithdrawn();
+#ifdef _WIN32
+  transfersWindowsDiskWithoutDeletingTheSource();
+#endif
   std::cout << "PASS: FileTransferServiceTests\n";
   return 0;
 }

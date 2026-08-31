@@ -32,7 +32,7 @@ if (WIN32)
   )
   create_test(
     NAME MSWindowsFileTransferSourceTests
-    DEPENDS platform
+    DEPENDS app
     LIBS base arch
     SOURCE MSWindowsFileTransferSourceTests.cpp
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"

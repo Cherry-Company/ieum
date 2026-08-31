@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
+#include "platform/MSWindowsFileTransferPlatform.h"
 #include "platform/MSWindowsFileTransferSource.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -11,6 +12,7 @@
 #endif
 #include <Windows.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
@@ -182,6 +184,26 @@ void capturesStableIdentityAndUpdatedSize()
   require(second.sources[0].size == 16, "second snapshot should see the changed size");
 }
 
+void exposesPortableInspectionAndRandomIds()
+{
+  TemporaryDirectory directory;
+  const auto path = directory.path() / L"portable.txt";
+  writeFile(path, "adapter");
+
+  MSWindowsFileTransferPlatform platform;
+  const auto result = platform.inspectSources({path}, 100);
+
+  require(result.ok(), "portable platform should inspect an ordinary file");
+  require(result.error == FileTransferIoError::None, "portable success should report no error");
+  require(result.sources.size() == 1 && result.sources.front().name == "portable.txt", "portable source should match");
+  const auto id = platform.randomId();
+  require(id.has_value(), "Windows platform should generate a transfer ID");
+  require(
+      !std::ranges::all_of(*id, [](std::uint8_t value) { return value == 0; }),
+      "Windows platform transfer ID must not be all zero"
+  );
+}
+
 } // namespace
 
 int main()
@@ -189,6 +211,7 @@ int main()
   inspectsUnicodeRegularFilesInOrder();
   rejectsListsAndPathsBeforeReturningPartialData();
   capturesStableIdentityAndUpdatedSize();
+  exposesPortableInspectionAndRandomIds();
   std::cout << "PASS: MSWindowsFileTransferSourceTests\n";
   return 0;
 }
