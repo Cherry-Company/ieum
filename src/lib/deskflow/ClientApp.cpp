@@ -198,6 +198,7 @@ void ClientApp::cancelClientRestart()
 void ClientApp::handleClientConnected()
 {
   cancelClientRestart();
+  startFileTransferService();
   LOG_DEBUG("connected to server");
   ipcSendConnectionState(deskflow::core::ConnectionState::Connected);
   m_retryCount = 0;
@@ -313,8 +314,6 @@ bool ClientApp::startClient()
       m_clientScreen = clientScreen;
       LOG_INFO("started client");
     }
-
-    startFileTransferService();
 
     m_client->setServerAddress(getCurrentServerAddress());
     m_client->connect(m_lastServerAddressIndex);

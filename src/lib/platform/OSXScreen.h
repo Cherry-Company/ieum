@@ -10,6 +10,7 @@
 
 #include "deskflow/PlatformScreen.h"
 #include "platform/OSXClipboard.h"
+#include "platform/OSXFileTransferEdgeDropHost.h"
 #include "platform/OSXPowerManager.h"
 
 #include <Carbon/Carbon.h>
@@ -102,6 +103,9 @@ public:
   bool isForegroundFullscreen() const override;
   std::optional<KeyButton> canonicalKeyButton(KeyButton button) const override;
   bool fakeRawKey(KeyButton button, KeyModifierMask mask, bool press, bool repeat) override;
+  [[nodiscard]] bool installFileTransferEdgeDrop(deskflow::filetransfer::FileTransferEdgeDropHandler handler) override;
+  [[nodiscard]] bool configureFileTransferEdgeDrop(std::uint32_t activeSides) override;
+  void uninstallFileTransferEdgeDrop() noexcept override;
 
   void waitForCarbonLoop() const;
 
@@ -115,6 +119,7 @@ private:
   bool updateScreenShape();
   bool updateScreenShape(const CGDirectDisplayID, const CGDisplayChangeSummaryFlags);
   void postMouseEvent(CGPoint &) const;
+  [[nodiscard]] bool refreshFileTransferEdgeDrop();
 
   // convenience function to send events
   void sendEvent(EventTypes type, void * = nullptr) const;
@@ -328,6 +333,9 @@ private:
   CondVar<bool> *m_carbonLoopReady;
 
   OSXPowerManager m_powerManager;
+
+  std::unique_ptr<deskflow::filetransfer::OSXFileTransferEdgeDropHost> m_fileTransferEdgeDropHost;
+  bool m_fileTransferEdgeDropEnabled = false;
 
   mutable std::chrono::steady_clock::time_point m_fullscreenLastCheck;
   mutable bool m_foregroundFullscreen = false;

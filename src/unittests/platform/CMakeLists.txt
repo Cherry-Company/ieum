@@ -53,6 +53,13 @@ elseif(APPLE)
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
   )
   create_test(
+    NAME OSXFileTransferEdgeDropHostTests
+    DEPENDS app
+    LIBS platform base arch
+    SOURCE OSXFileTransferEdgeDropHostTests.mm
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
+  )
+  create_test(
     NAME OSXClipboardTests
     DEPENDS platform
     LIBS base arch

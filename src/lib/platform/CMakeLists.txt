@@ -101,6 +101,8 @@ elseif(APPLE)
     OSXInputSourceController.mm
     OSXFileTransferPlatform.cpp
     OSXFileTransferPlatform.h
+    OSXFileTransferEdgeDropHost.h
+    OSXFileTransferEdgeDropHost.mm
     OSXMediaKeySupport.h
     OSXMediaKeySupport.m
     OSXPasteboardPeeker.h
@@ -209,6 +211,7 @@ if(UNIX)
     ${libs})
 
   if(APPLE)
+    find_package(OpenSSL ${REQUIRED_OPENSSL_VERSION} REQUIRED COMPONENTS Crypto)
     find_library(COCOA_LIBRARY Cocoa)
     find_library(SECURITY_LIBRARY Security)
     target_link_libraries(platform ${COCOA_LIBRARY} ${SECURITY_LIBRARY} OpenSSL::Crypto)
