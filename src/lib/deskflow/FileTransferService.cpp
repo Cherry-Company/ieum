@@ -11,6 +11,7 @@
 #include "base/Log.h"
 #include "deskflow/FileTransferControlEvent.h"
 #include "deskflow/FileTransferDataEvent.h"
+#include "deskflow/FileTransferEdgeEvent.h"
 #include "deskflow/FileTransferSessionState.h"
 
 #include <algorithm>
@@ -24,6 +25,8 @@ namespace deskflow::filetransfer {
 namespace {
 
 constexpr std::size_t kChunkBytes = 60 * 1024;
+constexpr std::size_t kMaximumEdgeDropItems = 100;
+constexpr double kEdgeRequestTimeoutSeconds = 5.0;
 
 FileTransferResultCode sourceResultCodeFor(FileTransferIoError error)
 {
@@ -77,6 +80,12 @@ struct FileTransferService::Impl
     std::unique_ptr<IFileTransferReader> reader;
   };
 
+  struct PendingEdgeRequest
+  {
+    TransferId requestId{};
+    std::vector<FileTransferSourceCandidate> candidates;
+  };
+
   explicit Impl(FileTransferServiceOptions options)
       : localScreen(std::move(options.localScreen)),
         destinationDirectory(std::move(options.destinationDirectory)),
@@ -84,6 +93,8 @@ struct FileTransferService::Impl
         authorizeFileTransfer(std::move(options.authorizeFileTransfer)),
         sendControl(std::move(options.sendControl)),
         sendData(std::move(options.sendData)),
+        sendEdge(std::move(options.sendEdge)),
+        resolveLocalTarget(std::move(options.resolveLocalTarget)),
         platform(std::move(options.platform)),
         events(options.events),
         eventTarget(options.eventTarget),
@@ -109,12 +120,17 @@ struct FileTransferService::Impl
   FileTransferServiceOptions::AuthorizationCheck authorizeFileTransfer;
   FileTransferServiceOptions::ControlSender sendControl;
   FileTransferServiceOptions::DataSender sendData;
+  FileTransferServiceOptions::EdgeSender sendEdge;
+  FileTransferServiceOptions::LocalTargetResolver resolveLocalTarget;
   std::unique_ptr<IFileTransferPlatform> platform;
   IEventQueue *events = nullptr;
   void *eventTarget = nullptr;
   FileTransferSessionRegistry sessions;
   std::optional<Outgoing> outgoing;
+  std::optional<PendingEdgeRequest> pendingEdge;
   std::map<TransferId, std::unique_ptr<IFileTransferWriter>> incoming;
+  EventQueueTimer *edgeTimer = nullptr;
+  std::uint32_t activeSides = 0;
   bool handlersInstalled = false;
   bool sendScheduled = false;
 };
@@ -138,6 +154,12 @@ FileTransferService::FileTransferService(FileTransferServiceOptions options)
       LOG_WARN("rejected file-transfer data message");
     }
   });
+  m_impl->events->addHandler(EventTypes::FileTransferEdgeReceived, m_impl->eventTarget, [this](const Event &event) {
+    const auto *data = dynamic_cast<const FileTransferEdgeEventData *>(event.getDataObject());
+    if (data != nullptr && !handleEdgeMessage(data->message())) {
+      LOG_WARN("rejected file-transfer edge message");
+    }
+  });
   m_impl->events->addHandler(EventTypes::FileTransferSendNextChunk, this, [this](const Event &) {
     m_impl->sendScheduled = false;
     (void)processNextOutgoingChunk();
@@ -147,11 +169,13 @@ FileTransferService::FileTransferService(FileTransferServiceOptions options)
 
 FileTransferService::~FileTransferService()
 {
+  clearPendingEdgeRequest();
   if (!m_impl->handlersInstalled) {
     return;
   }
   m_impl->events->removeHandler(EventTypes::FileTransferControlReceived, m_impl->eventTarget);
   m_impl->events->removeHandler(EventTypes::FileTransferDataReceived, m_impl->eventTarget);
+  m_impl->events->removeHandler(EventTypes::FileTransferEdgeReceived, m_impl->eventTarget);
   m_impl->events->removeHandler(EventTypes::FileTransferSendNextChunk, this);
 }
 
@@ -182,6 +206,93 @@ bool FileTransferService::offerLocalFiles(std::string targetScreen, std::vector<
   }
   LOG_INFO("offered %zu file(s) to %s", offer.items.size(), offer.targetScreen.c_str());
   return true;
+}
+
+bool FileTransferService::beginEdgeDrop(FileTransferEdgeDrop drop)
+{
+  if (!m_impl->isAuthorized() || m_impl->platform == nullptr || m_impl->sessions.size() != 0 ||
+      m_impl->pendingEdge.has_value() || !m_impl->sendControl || !m_impl->sendData ||
+      drop.direction < Direction::FirstDirection || drop.direction > Direction::LastDirection) {
+    return false;
+  }
+
+  auto inspected = m_impl->platform->inspectSources(drop.paths, kMaximumEdgeDropItems);
+  if (!inspected.ok() || inspected.sources.empty()) {
+    return false;
+  }
+
+  if (m_impl->resolveLocalTarget) {
+    const auto target = m_impl->resolveLocalTarget(drop.direction, drop.x, drop.y);
+    return target.has_value() && offerLocalFiles(target->screen, std::move(inspected.sources));
+  }
+
+  if (!m_impl->sendEdge) {
+    return false;
+  }
+  const auto requestId = m_impl->platform->randomId();
+  if (!requestId.has_value() || std::ranges::all_of(*requestId, [](std::uint8_t value) { return value == 0; })) {
+    return false;
+  }
+
+  const FileTransferEdgeTargetRequest request{
+      .requestId = *requestId,
+      .sourceScreen = m_impl->localScreen,
+      .direction = drop.direction,
+      .x = drop.x,
+      .y = drop.y,
+  };
+  m_impl->pendingEdge = Impl::PendingEdgeRequest{
+      .requestId = *requestId,
+      .candidates = std::move(inspected.sources),
+  };
+  armPendingEdgeTimer(*requestId);
+  if (!m_impl->sendEdge(FileTransferEdgeMessage{request})) {
+    clearPendingEdgeRequest();
+    return false;
+  }
+  return true;
+}
+
+bool FileTransferService::handleEdgeMessage(const FileTransferEdgeMessage &message)
+{
+  if (const auto *capabilities = std::get_if<FileTransferEdgeCapabilities>(&message)) {
+    m_impl->activeSides = capabilities->activeSides;
+    return true;
+  }
+
+  const auto *response = std::get_if<FileTransferEdgeTargetResponse>(&message);
+  if (response == nullptr || !m_impl->pendingEdge.has_value() ||
+      response->requestId != m_impl->pendingEdge->requestId || response->sourceScreen != m_impl->localScreen) {
+    return false;
+  }
+  if (!m_impl->isAuthorized()) {
+    clearPendingEdgeRequest();
+    return false;
+  }
+
+  auto candidates = std::move(m_impl->pendingEdge->candidates);
+  clearPendingEdgeRequest();
+  if (response->status != FileTransferEdgeStatus::Resolved) {
+    return true;
+  }
+  return offerLocalFiles(response->targetScreen, std::move(candidates));
+}
+
+void FileTransferService::expirePendingEdgeRequest(const TransferId &requestId)
+{
+  if (m_impl->pendingEdge.has_value() && m_impl->pendingEdge->requestId == requestId) {
+    clearPendingEdgeRequest();
+  }
+}
+
+std::size_t FileTransferService::pendingEdgeRequestCount() const noexcept
+{
+  return m_impl->pendingEdge.has_value() ? 1U : 0U;
+}
+
+std::uint32_t FileTransferService::activeSides() const noexcept
+{
+  return m_impl->activeSides;
 }
 
 bool FileTransferService::handleControl(const FileTransferControlMessage &message)
@@ -460,6 +571,29 @@ void FileTransferService::scheduleNextOutgoingChunk()
   }
   m_impl->sendScheduled = true;
   m_impl->events->addEvent(Event(EventTypes::FileTransferSendNextChunk, this));
+}
+
+void FileTransferService::armPendingEdgeTimer(const TransferId &requestId)
+{
+  if (m_impl->events == nullptr) {
+    return;
+  }
+  m_impl->edgeTimer = m_impl->events->newOneShotTimer(kEdgeRequestTimeoutSeconds, nullptr);
+  if (m_impl->edgeTimer != nullptr) {
+    m_impl->events->addHandler(EventTypes::Timer, m_impl->edgeTimer, [this, requestId](const Event &) {
+      expirePendingEdgeRequest(requestId);
+    });
+  }
+}
+
+void FileTransferService::clearPendingEdgeRequest() noexcept
+{
+  if (m_impl->edgeTimer != nullptr && m_impl->events != nullptr) {
+    m_impl->events->removeHandler(EventTypes::Timer, m_impl->edgeTimer);
+    m_impl->events->deleteTimer(m_impl->edgeTimer);
+    m_impl->edgeTimer = nullptr;
+  }
+  m_impl->pendingEdge.reset();
 }
 
 bool FileTransferService::failSession(const TransferId &id, FileTransferResultCode code, bool notifyPeer)

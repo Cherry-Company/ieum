@@ -167,7 +167,20 @@ public:
     if (paths.size() > maxItems) {
       return {.error = FileTransferIoError::TooManyPaths};
     }
-    return {.error = FileTransferIoError::OpenFailed};
+    std::vector<FileTransferSourceCandidate> sources;
+    sources.reserve(paths.size());
+    for (const auto &path : paths) {
+      const auto name = path.filename().string();
+      const auto found = m_state->sourceBytes.find(name);
+      if (found == m_state->sourceBytes.end()) {
+        return {.error = FileTransferIoError::OpenFailed};
+      }
+      auto source = candidate(name, {});
+      source.path = path;
+      source.size = found->second.size();
+      sources.push_back(std::move(source));
+    }
+    return {.sources = std::move(sources)};
   }
 
   FileTransferReaderOpenResult openReader(FileTransferSourceCandidate source, std::size_t chunkBytes) override
@@ -399,6 +412,224 @@ void stopsReceiveWhenAuthorizationIsWithdrawn()
   );
 }
 
+FileTransferService makeEdgeSender(
+    const std::shared_ptr<FakePlatformState> &state, bool &authorized,
+    std::vector<FileTransferEdgeMessage> &edgeMessages, std::vector<FileTransferControlMessage> &controls
+)
+{
+  return FileTransferService(
+      FileTransferServiceOptions{
+          .localScreen = "windows-client",
+          .authorizeFileTransfer = [&] { return authorized; },
+          .sendControl =
+              [&](const FileTransferControlMessage &message) {
+                controls.push_back(message);
+                return true;
+              },
+          .sendData = [](const FileTransferDataMessage &) { return true; },
+          .sendEdge =
+              [&](const FileTransferEdgeMessage &message) {
+                edgeMessages.push_back(message);
+                return true;
+              },
+          .platform = std::make_unique<FakeFileTransferPlatform>(state),
+      }
+  );
+}
+
+void resolvesSecondaryEdgeDropBeforeOffering()
+{
+  auto state = std::make_shared<FakePlatformState>();
+  state->sourceBytes.emplace("edge file.txt", bytes("edge payload"));
+  bool authorized = true;
+  std::vector<FileTransferEdgeMessage> edges;
+  std::vector<FileTransferControlMessage> controls;
+  auto service = makeEdgeSender(state, authorized, edges, controls);
+
+  const auto active =
+      static_cast<std::uint32_t>(DirectionMask::LeftMask) | static_cast<std::uint32_t>(DirectionMask::BottomMask);
+  require(
+      service.handleEdgeMessage(FileTransferEdgeMessage{FileTransferEdgeCapabilities{.activeSides = active}}),
+      "capabilities should apply"
+  );
+  require(service.activeSides() == active, "service should expose active edge sides");
+  require(
+      service.beginEdgeDrop(
+          FileTransferEdgeDrop{
+              .direction = Direction::Left,
+              .x = 0,
+              .y = 400,
+              .paths = {std::filesystem::current_path() / "edge file.txt"},
+          }
+      ),
+      "secondary edge drop should request a target"
+  );
+  require(edges.size() == 1 && service.pendingEdgeRequestCount() == 1, "one target request should be pending");
+  require(controls.empty() && !state->readerOpened, "source contents must stay closed before target acceptance");
+  require(
+      !service.beginEdgeDrop(
+          FileTransferEdgeDrop{
+              .direction = Direction::Left,
+              .paths = {std::filesystem::current_path() / "edge file.txt"},
+          }
+      ),
+      "a second drop must not replace a pending request"
+  );
+
+  const auto request = std::get<FileTransferEdgeTargetRequest>(edges.front());
+  auto mismatchedId = request.requestId;
+  ++mismatchedId[0];
+  require(
+      !service.handleEdgeMessage(
+          FileTransferEdgeMessage{FileTransferEdgeTargetResponse{
+              .requestId = mismatchedId,
+              .sourceScreen = request.sourceScreen,
+              .status = FileTransferEdgeStatus::NoTarget,
+          }}
+      ),
+      "stale response should be ignored"
+  );
+  require(service.pendingEdgeRequestCount() == 1, "stale response must not cancel the current request");
+
+  require(
+      service.handleEdgeMessage(
+          FileTransferEdgeMessage{FileTransferEdgeTargetResponse{
+              .requestId = request.requestId,
+              .sourceScreen = request.sourceScreen,
+              .status = FileTransferEdgeStatus::Resolved,
+              .targetScreen = "mac-server",
+          }}
+      ),
+      "matching resolved response should create an offer"
+  );
+  require(service.pendingEdgeRequestCount() == 0, "resolved request should leave no pending state");
+  require(controls.size() == 1 && std::holds_alternative<FileTransferOffer>(controls.front()), "offer should follow");
+  require(!state->readerOpened, "source contents must remain closed until the peer accepts the offer");
+}
+
+void clearsPendingEdgeDropOnTerminalPaths()
+{
+  auto beginPending = [](FileTransferService &service) {
+    require(
+        service.beginEdgeDrop(
+            FileTransferEdgeDrop{
+                .direction = Direction::Right,
+                .x = 1919,
+                .y = 500,
+                .paths = {std::filesystem::current_path() / "terminal.txt"},
+            }
+        ),
+        "terminal-path fixture should become pending"
+    );
+  };
+
+  {
+    auto state = std::make_shared<FakePlatformState>();
+    state->sourceBytes.emplace("terminal.txt", bytes("payload"));
+    bool authorized = true;
+    std::vector<FileTransferEdgeMessage> edges;
+    std::vector<FileTransferControlMessage> controls;
+    auto service = makeEdgeSender(state, authorized, edges, controls);
+    beginPending(service);
+    const auto request = std::get<FileTransferEdgeTargetRequest>(edges.front());
+    require(
+        service.handleEdgeMessage(
+            FileTransferEdgeMessage{FileTransferEdgeTargetResponse{
+                .requestId = request.requestId,
+                .sourceScreen = request.sourceScreen,
+                .status = FileTransferEdgeStatus::NoTarget,
+            }}
+        ),
+        "no-target should be handled"
+    );
+    require(service.pendingEdgeRequestCount() == 0 && controls.empty(), "no-target should clear without an offer");
+  }
+
+  {
+    auto state = std::make_shared<FakePlatformState>();
+    state->sourceBytes.emplace("terminal.txt", bytes("payload"));
+    bool authorized = true;
+    std::vector<FileTransferEdgeMessage> edges;
+    std::vector<FileTransferControlMessage> controls;
+    auto service = makeEdgeSender(state, authorized, edges, controls);
+    beginPending(service);
+    const auto request = std::get<FileTransferEdgeTargetRequest>(edges.front());
+    service.expirePendingEdgeRequest(request.requestId);
+    require(service.pendingEdgeRequestCount() == 0, "five-second expiry callback should clear matching state");
+    require(
+        !service.handleEdgeMessage(
+            FileTransferEdgeMessage{FileTransferEdgeTargetResponse{
+                .requestId = request.requestId,
+                .sourceScreen = request.sourceScreen,
+                .status = FileTransferEdgeStatus::Resolved,
+                .targetScreen = "late-target",
+            }}
+        ),
+        "late response should be ignored"
+    );
+  }
+
+  {
+    auto state = std::make_shared<FakePlatformState>();
+    state->sourceBytes.emplace("terminal.txt", bytes("payload"));
+    bool authorized = true;
+    std::vector<FileTransferEdgeMessage> edges;
+    std::vector<FileTransferControlMessage> controls;
+    auto service = makeEdgeSender(state, authorized, edges, controls);
+    beginPending(service);
+    const auto request = std::get<FileTransferEdgeTargetRequest>(edges.front());
+    authorized = false;
+    require(
+        !service.handleEdgeMessage(
+            FileTransferEdgeMessage{FileTransferEdgeTargetResponse{
+                .requestId = request.requestId,
+                .sourceScreen = request.sourceScreen,
+                .status = FileTransferEdgeStatus::Resolved,
+                .targetScreen = "mac-server",
+            }}
+        ),
+        "authorization withdrawal should reject resolution"
+    );
+    require(service.pendingEdgeRequestCount() == 0 && controls.empty(), "withdrawal should clear pending state");
+  }
+}
+
+void resolvesPrimaryEdgeDropSynchronously()
+{
+  auto state = std::make_shared<FakePlatformState>();
+  state->sourceBytes.emplace("primary.txt", bytes("payload"));
+  bool authorized = true;
+  std::vector<FileTransferControlMessage> controls;
+  FileTransferService service(
+      FileTransferServiceOptions{
+          .localScreen = "windows-primary",
+          .authorizeFileTransfer = [&] { return authorized; },
+          .sendControl =
+              [&](const FileTransferControlMessage &message) {
+                controls.push_back(message);
+                return true;
+              },
+          .sendData = [](const FileTransferDataMessage &) { return true; },
+          .resolveLocalTarget = [](Direction direction, std::int32_t, std::int32_t) -> std::optional<EdgeTarget> {
+            return EdgeTarget{.direction = direction, .screen = "mac-client"};
+          },
+          .platform = std::make_unique<FakeFileTransferPlatform>(state),
+      }
+  );
+
+  require(
+      service.beginEdgeDrop(
+          FileTransferEdgeDrop{
+              .direction = Direction::Right,
+              .paths = {std::filesystem::current_path() / "primary.txt"},
+          }
+      ),
+      "primary should resolve its edge locally"
+  );
+  require(service.pendingEdgeRequestCount() == 0, "primary resolution should not create network pending state");
+  require(controls.size() == 1 && std::holds_alternative<FileTransferOffer>(controls.front()), "primary should offer");
+}
+
 #ifdef _WIN32
 class DiskFixture final
 {
@@ -529,6 +760,9 @@ int main()
   rejectsMissingAuthorization();
   stopsBeforeFirstChunkWhenAuthorizationIsWithdrawn();
   stopsReceiveWhenAuthorizationIsWithdrawn();
+  resolvesSecondaryEdgeDropBeforeOffering();
+  clearsPendingEdgeDropOnTerminalPaths();
+  resolvesPrimaryEdgeDropSynchronously();
 #ifdef _WIN32
   transfersWindowsDiskWithoutDeletingTheSource();
 #endif
