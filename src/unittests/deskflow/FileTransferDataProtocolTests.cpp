@@ -317,7 +317,7 @@ void routesOnlyFromSourceToTarget()
 
 void exposesProtocolThirteenFeatureGate()
 {
-  require(kProtocolMinorVersion == 13, "current protocol should negotiate minor 13");
+  require(kProtocolMinorVersion == 14, "current protocol should negotiate minor 14");
   require(kProtocolFileTransferControlMinorVersion == 12, "file control feature gate should remain minor 12");
   require(kProtocolFileTransferDataMinorVersion == 13, "file data feature gate should be minor 13");
   require(std::string_view(kMsgDFileTransferData, 4) == "DFTD", "file data message code should be DFTD");

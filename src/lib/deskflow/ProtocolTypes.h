@@ -45,7 +45,7 @@ static const int16_t kProtocolMajorVersion = 1;
  * @note When incrementing the minor version, the Deskflow application version should also increment
  * @since Protocol version 1.0
  */
-static const int16_t kProtocolMinorVersion = 13;
+static const int16_t kProtocolMinorVersion = 14;
 
 //! First minor version that negotiates the canonical-scancode button flag.
 static const int16_t kProtocolCanonicalScancodeMinorVersion = 10;
@@ -58,6 +58,9 @@ static const int16_t kProtocolFileTransferControlMinorVersion = 12;
 
 //! First minor version that carries bounded file-transfer data messages.
 static const int16_t kProtocolFileTransferDataMinorVersion = 13;
+
+//! First minor version that carries bounded file-transfer edge discovery messages.
+static const int16_t kProtocolFileTransferEdgeMinorVersion = 14;
 
 /**
  * @brief Default TCP port for Deskflow connections
@@ -1100,6 +1103,20 @@ extern const char *const kMsgDFileTransferControl;
  * @since Protocol version 1.13
  */
 extern const char *const kMsgDFileTransferData;
+
+/**
+ * @brief Bounded file-transfer edge discovery message
+ *
+ * **Message Code**: `"DFTE"`
+ * **Direction**: Primary ↔ Secondary
+ * **Format**: `"DFTE%S"`
+ *
+ * Carries a versioned capability, target request, or target response payload
+ * capped at 4096 bytes before allocation.
+ *
+ * @since Protocol version 1.14
+ */
+extern const char *const kMsgDFileTransferEdge;
 
 /** @} */ // end of protocol_files group
 

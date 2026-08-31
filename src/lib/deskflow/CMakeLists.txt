@@ -66,6 +66,11 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   FileTransferDataProtocol.h
   FileTransferDataRouting.cpp
   FileTransferDataRouting.h
+  FileTransferEdgeCodec.cpp
+  FileTransferEdgeCodec.h
+  FileTransferEdgeEvent.h
+  FileTransferEdgeProtocol.cpp
+  FileTransferEdgeProtocol.h
   FileTransferOfferValidator.cpp
   FileTransferOfferValidator.h
   FileTransferPlatform.h
