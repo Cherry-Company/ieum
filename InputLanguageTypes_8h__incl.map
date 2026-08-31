@@ -1,0 +1,19 @@
+<map id="src/lib/deskflow/InputLanguageTypes.h" name="src/lib/deskflow/InputLanguageTypes.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="206,5,407,44"/>
+<area shape="rect" id="Node000002" href="$Event_8h.html" title=" " alt="" coords="115,92,212,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="270,46,199,87,196,82,274,43"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="236,92,296,117"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="298,43,281,80,277,76,295,47"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="321,92,374,117"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="317,42,337,79,331,78,315,47"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="399,92,451,117"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="335,42,397,83,392,84,335,47"/>
+<area shape="rect" id="Node000003" href="$EventTypes_8h.html" title=" " alt="" coords="5,165,106,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="144,119,87,158,84,154,147,115"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="129,165,198,189"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="165,115,166,150,161,148,162,120"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="222,165,281,189"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="179,115,228,154,223,155,177,120"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="24,237,87,262"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="57,188,58,222,53,221,54,192"/>
+</map>

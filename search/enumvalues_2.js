@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['cancelled_0',['Cancelled',['../namespacedeskflow_1_1filetransfer.html#a3127628f5b57b5b8a77d3ae5400b7330aa149e85a44aeec9140e92733d9ed694e',1,'deskflow::filetransfer::Cancelled'],['../namespacedeskflow_1_1filetransfer.html#afd36a6ac98e777cd6243bd7faef173bcaa149e85a44aeec9140e92733d9ed694e',1,'deskflow::filetransfer::Cancelled']]],
+  ['candidate_1',['Candidate',['../namespacedeskflow_1_1filetransfer.html#afd354d5bc49f631a93560941959734fca25befec7033aa9feec4a5a586d4e1366',1,'deskflow::filetransfer']]],
+  ['capacityexceeded_2',['CapacityExceeded',['../namespacedeskflow_1_1filetransfer.html#af4b1f7c66093d2d87f7f7e26a75e2521afe518b5d77e35a7d9bebb6025ba8f992',1,'deskflow::filetransfer']]],
+  ['capslock_3',['CapsLock',['../classScreenConfig.html#a9288122eb9f01fe71828c89207035bb5a8d0f4171170104d094d8b6d4f8bf49e6',1,'ScreenConfig']]],
+  ['chunktoolarge_4',['ChunkTooLarge',['../namespacedeskflow_1_1filetransfer.html#af031acb59d2f774f1e3be75d1dd2430dac86b18ee3bcaf6bb2cca217e6c576df7',1,'deskflow::filetransfer']]],
+  ['client_5',['Client',['../classSettings.html#a871632dd31afbacff3eb0a6c3e0d63bfac9b7a86f41949562eed74c335af65640',1,'Settings::Client'],['../FingerprintDialog_8h.html#ac1e109f3903cfa4101b842c1d4e41e99a577d7068826de925ea2aec01dbadf5e4',1,'Client:&#160;FingerprintDialog.h']]],
+  ['clientconnected_6',['ClientConnected',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2abeb2c179916e917c350d2dd1a8406291',1,'deskflow']]],
+  ['clientconnectionfailed_7',['ClientConnectionFailed',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a5c10b238cd32de63b15d003b782b081e',1,'deskflow']]],
+  ['clientconnectionrefused_8',['ClientConnectionRefused',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2ab6da58f2ed9f88ddbc4842fb5c1e7fcc',1,'deskflow']]],
+  ['clientdisconnected_9',['ClientDisconnected',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a9b3e510654adce623b3c8c2149dacba7',1,'deskflow']]],
+  ['clientdisconnectrequested_10',['ClientDisconnectRequested',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a9f47c2601067d823a466138cce0ed9e3',1,'deskflow']]],
+  ['clientlisteneraccepted_11',['ClientListenerAccepted',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a17685eb2fb162dd47cafb15eebdbc01a',1,'deskflow']]],
+  ['clientlistenerdisconnectedonaccept_12',['ClientListenerDisconnectedOnAccept',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a9489f5b7174a8f55e4ed7bdbfc38617c',1,'deskflow']]],
+  ['clientproxydisconnected_13',['ClientProxyDisconnected',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a2942e4107fb2c55256eaf2e96cc36a48',1,'deskflow']]],
+  ['clientproxyready_14',['ClientProxyReady',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a60fcab4d750adf8fc79537e6e61769c8',1,'deskflow']]],
+  ['clientproxyunknownfailure_15',['ClientProxyUnknownFailure',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a2bab6dbecfbdbc56bc745565cc1046ab',1,'deskflow']]],
+  ['clientproxyunknownsuccess_16',['ClientProxyUnknownSuccess',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a0bfd7cd9b871f07b663aa5e92f680681',1,'deskflow']]],
+  ['clipboardchanged_17',['ClipboardChanged',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a98f1b4fe2c8af605faaa5ce9f5c589db',1,'deskflow']]],
+  ['clipboardgrabbed_18',['ClipboardGrabbed',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2ab693bad8d2758377eff2d73976c0c121',1,'deskflow']]],
+  ['clipboardsending_19',['ClipboardSending',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a6fe8d07fdc1c600919bbf677c067ede2',1,'deskflow']]],
+  ['completed_20',['Completed',['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferWriter_1_1Impl.html#aa88e09f16232493d641d89ab1f842301a07ca5050e697392c9ed47e6453f1453f',1,'deskflow::filetransfer::MSWindowsFileTransferWriter::Impl::Completed'],['../namespacedeskflow_1_1filetransfer.html#a3127628f5b57b5b8a77d3ae5400b7330a07ca5050e697392c9ed47e6453f1453f',1,'deskflow::filetransfer::Completed'],['../namespacedeskflow_1_1filetransfer.html#afd36a6ac98e777cd6243bd7faef173bca07ca5050e697392c9ed47e6453f1453f',1,'deskflow::filetransfer::Completed']]],
+  ['connected_21',['Connected',['../namespacedeskflow_1_1core.html#a040d74fafe28c4c63082a60335b81c27a2ec0d16e4ca169baedb9b2d50ec5c6d7',1,'deskflow::core']]],
+  ['connecting_22',['Connecting',['../namespacedeskflow_1_1core.html#a040d74fafe28c4c63082a60335b81c27ae321c53b354930ba96f0243e652df458',1,'deskflow::core']]],
+  ['criticalerror_23',['CriticalError',['../namespacedeskflow_1_1gui_1_1diagnostic.html#ac346fbcf67b95fbdc8ca4ff46ab81a22ad1a0ca1171df15982f92eb111b8c1bc2',1,'deskflow::gui::diagnostic']]],
+  ['ctrl_24',['Ctrl',['../classScreenConfig.html#aa614b21714c5878160804fb6375ea814a2b61e0d5977f2e38f06e16281c802b47',1,'ScreenConfig']]]
+];

@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['backlog_0',['backlog',['../ArchNetworkWinsock_8cpp.html#a9507e1c27beffe02ed97c7b076a42f24',1,'ArchNetworkWinsock.cpp']]],
+  ['begin_1',['begin',['../structdeskflow_1_1server_1_1cursor_1_1EdgeSpan.html#a8b3932d5903657fba8dd742cd544a187',1,'deskflow::server::cursor::EdgeSpan']]],
+  ['bibitcount_2',['biBitCount',['../structCBMPInfoHeader.html#a0f1f02e5482ff399741e43c0e12cdee2',1,'CBMPInfoHeader']]],
+  ['biclrimportant_3',['biClrImportant',['../structCBMPInfoHeader.html#ae58803ac900f8dca642baa51af9ee522',1,'CBMPInfoHeader']]],
+  ['biclrused_4',['biClrUsed',['../structCBMPInfoHeader.html#a36bc22e7defdcd14b394a52d10b9b13c',1,'CBMPInfoHeader']]],
+  ['bicompression_5',['biCompression',['../structCBMPInfoHeader.html#add45102c7f339ebb00b0d61f73f575ef',1,'CBMPInfoHeader']]],
+  ['biheight_6',['biHeight',['../structCBMPInfoHeader.html#adc2e30ed66c813f2778768c8ba3c138b',1,'CBMPInfoHeader']]],
+  ['biplanes_7',['biPlanes',['../structCBMPInfoHeader.html#a995e03b7a1c3b514600ea3e0f676fb52',1,'CBMPInfoHeader']]],
+  ['bisize_8',['biSize',['../structCBMPInfoHeader.html#a69649d77280795b307f42fb28bb43783',1,'CBMPInfoHeader']]],
+  ['bisizeimage_9',['biSizeImage',['../structCBMPInfoHeader.html#ac2ce465fc837c647b9c50f7437d7317b',1,'CBMPInfoHeader']]],
+  ['biwidth_10',['biWidth',['../structCBMPInfoHeader.html#a4a19e9822b8f32a5e9558d70cf349618',1,'CBMPInfoHeader']]],
+  ['bixpelspermeter_11',['biXPelsPerMeter',['../structCBMPInfoHeader.html#aae67b93de47f697d38f8decc15175a5f',1,'CBMPInfoHeader']]],
+  ['biypelspermeter_12',['biYPelsPerMeter',['../structCBMPInfoHeader.html#ab4bd17342a4d6704cec23da8d9c282c9',1,'CBMPInfoHeader']]],
+  ['bool_13',['BOOL',['../ArchNetworkWinsock_8cpp.html#a36a00ba9910ecdadcef4246d090b3e1f',1,'ArchNetworkWinsock.cpp']]],
+  ['bottom_14',['bottom',['../structdeskflow_1_1fullscreen_1_1Bounds.html#a96afe64255bb4d27f27b0439a523b0e5',1,'deskflow::fullscreen::Bounds']]],
+  ['buf_15',['buf',['../ArchNetworkWinsock_8cpp.html#ac2b1742b0d829eff8513995ebd5a0bac',1,'ArchNetworkWinsock.cpp']]],
+  ['bytes_16',['bytes',['../structdeskflow_1_1filetransfer_1_1FileTransferControlEncodeResult.html#ab09a9ebd6f6d73bf30213e3c6071e858',1,'deskflow::filetransfer::FileTransferControlEncodeResult::bytes'],['../structdeskflow_1_1filetransfer_1_1FileTransferDataChunk.html#a80b13861d931e897109bf58a48f7f53e',1,'deskflow::filetransfer::FileTransferDataChunk::bytes'],['../structdeskflow_1_1filetransfer_1_1FileTransferDataEncodeResult.html#a74a24c1dc95377076137e7d5f7df812a',1,'deskflow::filetransfer::FileTransferDataEncodeResult::bytes'],['../structdeskflow_1_1filetransfer_1_1FileTransferSourceIdentity.html#a9aacc3b174ad10ef106dd13f3e894f22',1,'deskflow::filetransfer::FileTransferSourceIdentity::bytes'],['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferReadResult.html#a27d413fdb666c2e11d37f24e9c0fb45a',1,'deskflow::filetransfer::MSWindowsFileTransferReadResult::bytes']]]
+];

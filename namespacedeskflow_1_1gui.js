@@ -1,0 +1,37 @@
+var namespacedeskflow_1_1gui =
+[
+    [ "diagnostic", "namespacedeskflow_1_1gui_1_1diagnostic.html", "namespacedeskflow_1_1gui_1_1diagnostic" ],
+    [ "ipc", "namespacedeskflow_1_1gui_1_1ipc.html", "namespacedeskflow_1_1gui_1_1ipc" ],
+    [ "messages", "namespacedeskflow_1_1gui_1_1messages.html", "namespacedeskflow_1_1gui_1_1messages" ],
+    [ "TlsUtility", "namespacedeskflow_1_1gui_1_1TlsUtility.html", [
+      [ "certFingerprint", "namespacedeskflow_1_1gui_1_1TlsUtility.html#af89819b5e203344184b53851134fc1f3", null ],
+      [ "generateCertificate", "namespacedeskflow_1_1gui_1_1TlsUtility.html#a63117db72e713097624c35d8458e462c", null ],
+      [ "getCertKeyLength", "namespacedeskflow_1_1gui_1_1TlsUtility.html#ab7fff2c05ebaf5e0aeb48519a9e9e5c6", null ],
+      [ "isCertValid", "namespacedeskflow_1_1gui_1_1TlsUtility.html#a1768f15e74168a3e5b621f2981ba5029", null ],
+      [ "isEnabled", "namespacedeskflow_1_1gui_1_1TlsUtility.html#aedd7ad3bb197354baeb738cef4b467a5", null ]
+    ] ],
+    [ "CoreProcess", "classdeskflow_1_1gui_1_1CoreProcess.html", "classdeskflow_1_1gui_1_1CoreProcess" ],
+    [ "FileTail", "classdeskflow_1_1gui_1_1FileTail.html", "classdeskflow_1_1gui_1_1FileTail" ],
+    [ "Logger", "classdeskflow_1_1gui_1_1Logger.html", "classdeskflow_1_1gui_1_1Logger" ],
+    [ "NetworkMonitor", "classdeskflow_1_1gui_1_1NetworkMonitor.html", "classdeskflow_1_1gui_1_1NetworkMonitor" ],
+    [ "ProFileTransferUiState", "structdeskflow_1_1gui_1_1ProFileTransferUiState.html", "structdeskflow_1_1gui_1_1ProFileTransferUiState" ],
+    [ "ServiceStartCoordinator", "classdeskflow_1_1gui_1_1ServiceStartCoordinator.html", "classdeskflow_1_1gui_1_1ServiceStartCoordinator" ],
+    [ "StartupManager", "classdeskflow_1_1gui_1_1StartupManager.html", "classdeskflow_1_1gui_1_1StartupManager" ],
+    [ "applyIeumDialogStyle", "namespacedeskflow_1_1gui.html#a8d0c53254e13ae7c79d8accf289929b8", null ],
+    [ "applyIeumMainWindowStyle", "namespacedeskflow_1_1gui.html#a4b0c240a468f3d9e6667a6be73237d17", null ],
+    [ "blendedColor", "namespacedeskflow_1_1gui.html#a0ebef1efa9fe3667f55d4d0df3f662a7", null ],
+    [ "cssColor", "namespacedeskflow_1_1gui.html#ae5ae9efd51a494e538faa3c0e39a3636", null ],
+    [ "iconMode", "namespacedeskflow_1_1gui.html#a6c3353d5cbfbd26b2acd734e71d61b12", null ],
+    [ "isDarkMode", "namespacedeskflow_1_1gui.html#aafd8747004a0dc462453e60e4602a918", null ],
+    [ "printLine", "namespacedeskflow_1_1gui.html#a302e57e11bdb1ecd18afd06b9180ee7e", null ],
+    [ "productDisplayName", "namespacedeskflow_1_1gui.html#ab9fc24b3e2c5d13d62c044398d8e7999", null ],
+    [ "productTagline", "namespacedeskflow_1_1gui.html#aafbbf7780ce702681a607fd98dbf66d8", null ],
+    [ "proFileTransferUiState", "namespacedeskflow_1_1gui.html#a7706eedd538cbe39061815763a33edce", null ],
+    [ "shouldActivateProFileTransferLicense", "namespacedeskflow_1_1gui.html#a42217468b783b197cd8a1dc3e48c486a", null ],
+    [ "updateIconTheme", "namespacedeskflow_1_1gui.html#aaa991ba0f8b1c14f114fa29eb3fbdc4b", null ],
+    [ "kForceDebugMessages", "namespacedeskflow_1_1gui.html#a78e6dcd2ccaf9f1da1f4aa50905067ee", null ],
+    [ "kIgnoredMessagePrefixes", "namespacedeskflow_1_1gui.html#a895f47af209e193ef5bfc3f69236066b", null ],
+    [ "kLineSplitRegex", "namespacedeskflow_1_1gui.html#ac9ebe41f2673365ae4519947119c63c5", null ],
+    [ "kRetryDelay", "namespacedeskflow_1_1gui.html#a5b38d733ad00fd5d2681a25a8c30e6da", null ],
+    [ "kServiceStartTimeout", "namespacedeskflow_1_1gui.html#a3c42e10850c595557fdd5b95f854728c", null ]
+];

@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['data_0',['data',['../structFingerprint.html#ac0a51b5ec53e509b02bb0ff329484340',1,'Fingerprint::data'],['../ArchNetworkWinsock_8cpp.html#aa36d05423b2dd8f3c8296093b4674b63',1,'data:&#160;ArchNetworkWinsock.cpp']]],
+  ['datachunk_1',['DataChunk',['../structChunkType.html#afca93ef4079887b13f65cde55cceefd9',1,'ChunkType']]],
+  ['dataend_2',['DataEnd',['../structChunkType.html#a2a7ac1c6af05a9342bde6de53dcc7e11',1,'ChunkType']]],
+  ['datastart_3',['DataStart',['../structChunkType.html#a0e7c9c3a39dd6ea0a772bf96d4695f80',1,'ChunkType']]],
+  ['decision_4',['decision',['../structdeskflow_1_1filetransfer_1_1FileTransferDecision.html#a1d2aab582fec326fd19433745da9832d',1,'deskflow::filetransfer::FileTransferDecision::decision'],['../structdeskflow_1_1filetransfer_1_1FileTransferDecisionCreation.html#a45d89a6bd8e26a196935d70162c952d5',1,'deskflow::filetransfer::FileTransferDecisionCreation::decision']]],
+  ['defaultlocktocomputerstate_5',['DefaultLockToComputerState',['../structSettings_1_1Server.html#a6f083fd5c1a8b740729a1f18fa90a65d',1,'Settings::Server']]],
+  ['defaultlocktoscreenstate_6',['DefaultLockToScreenState',['../structSettings_1_1InternalConfig.html#a125435c0b860f9e03a613b2e152b133d',1,'Settings::InternalConfig']]],
+  ['deliverimmediately_7',['DeliverImmediately',['../structEvent_1_1EventFlags.html#a78b0f7049f5f8aa9ec6b27621f602aa8',1,'Event::EventFlags']]],
+  ['destination_8',['destination',['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferWriter_1_1Impl.html#a097dcaaf98cf787fce48d9e6857e1410',1,'deskflow::filetransfer::MSWindowsFileTransferWriter::Impl']]],
+  ['destinationdirectory_9',['destinationDirectory',['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferService_1_1Impl.html#a0920cbaef804f69e7de59524d60e6cae',1,'deskflow::filetransfer::MSWindowsFileTransferService::Impl::destinationDirectory'],['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferServiceOptions.html#a0ca9860e404e4148c5b5682db8921831',1,'deskflow::filetransfer::MSWindowsFileTransferServiceOptions::destinationDirectory']]],
+  ['destinationscreen_10',['destinationScreen',['../structdeskflow_1_1filetransfer_1_1FileTransferRouteResult.html#aee067149528a329bfb8721a89182c10f',1,'deskflow::filetransfer::FileTransferRouteResult']]],
+  ['direction_11',['direction',['../structdeskflow_1_1filetransfer_1_1EdgeTarget.html#a0179e5958af4e7be8df0aff67a87439b',1,'deskflow::filetransfer::EdgeTarget::direction'],['../structdeskflow_1_1filetransfer_1_1MSWindowsEdgeDropWindow.html#aae8cf187870e3cffea7ba258b821e2ad',1,'deskflow::filetransfer::MSWindowsEdgeDropWindow::direction']]],
+  ['disablelocktocomputer_12',['DisableLockToComputer',['../structSettings_1_1Server.html#ae8dce7a9e20e27d87babab5dd2981b4c',1,'Settings::Server']]],
+  ['disablelocktoscreen_13',['DisableLockToScreen',['../structSettings_1_1InternalConfig.html#ad17f8e9f10be2db230028ca63d20cc92',1,'Settings::InternalConfig']]],
+  ['display_14',['Display',['../structSettings_1_1Core.html#a2a0059d3e150af140d0c1760df2dffab',1,'Settings::Core']]],
+  ['displayname_15',['displayName',['../structdeskflow_1_1network_1_1InterfaceAddress.html#adfc835519ecb7793b918ebb15a1c5273',1,'deskflow::network::InterfaceAddress']]],
+  ['dnsname_16',['dnsName',['../structdeskflow_1_1network_1_1TailscalePeer.html#a0cca866251df51fbeca5fe0e80ec6821',1,'deskflow::network::TailscalePeer']]],
+  ['dontfreedata_17',['DontFreeData',['../structEvent_1_1EventFlags.html#a5831619089ed5d34a4b7618ed8dc6213',1,'Event::EventFlags']]],
+  ['downloaddirectory_18',['DownloadDirectory',['../structSettings_1_1FileTransfer.html#a374f153702354e48600964cc0bd7790a',1,'Settings::FileTransfer']]],
+  ['drop_19',['drop',['../structdeskflow_1_1filetransfer_1_1MSWindowsEdgeDropHostOptions.html#a62b524f21d125a043a1806cbecd1660a',1,'deskflow::filetransfer::MSWindowsEdgeDropHostOptions']]],
+  ['droplimits_20',['dropLimits',['../structdeskflow_1_1filetransfer_1_1MSWindowsEdgeDropOptions.html#a5ba9a5bbcbfd647dfeeeb6a74ecc6dc8',1,'deskflow::filetransfer::MSWindowsEdgeDropOptions']]],
+  ['dummywindow_21',['dummyWindow',['../OSXCocoaApp_8m.html#ad6e36ef3cf11ae31babd3a200e7445c7',1,'OSXCocoaApp.m']]],
+  ['dwell_22',['dwell',['../structdeskflow_1_1filetransfer_1_1MSWindowsEdgeDropOptions.html#a0ca83e21876ddccce7d25993cc66e5c8',1,'deskflow::filetransfer::MSWindowsEdgeDropOptions']]],
+  ['dword_23',['DWORD',['../ArchNetworkWinsock_8cpp.html#a268ed61838e67a46467dcebfee0dcbe7',1,'ArchNetworkWinsock.cpp']]],
+  ['dynamicconnectionretry_24',['DynamicConnectionRetry',['../structSettings_1_1Client.html#a61fd699998c132f63a53720201b640c0',1,'Settings::Client']]]
+];

@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['datagram_0',['DataGram',['../classIArchNetwork.html#a0ca03bdd251faa4394d521cfbe2cf02ba12fd2568bd4acd269623647787d923c1',1,'IArchNetwork']]],
+  ['datarequestfailed_1',['DataRequestFailed',['../namespacedeskflow_1_1filetransfer.html#a311bdad97c1b97a7cc97ee8d664a4ef1a1ab703d0c556e02e1ce324357318f073',1,'deskflow::filetransfer']]],
+  ['datasocketconnected_2',['DataSocketConnected',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2a004547810dfb2badbe0c7c42f3d94aed',1,'deskflow']]],
+  ['datasocketconnectionfailed_3',['DataSocketConnectionFailed',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2ac66cb6f7cff95301c5edc0f73d7cbf78',1,'deskflow']]],
+  ['datasocketsecureconnected_4',['DataSocketSecureConnected',['../namespacedeskflow.html#a34787a880fd439e02383f336665d7bc2ad5db6027d7d3f0d44b4a97a7c97e4315',1,'deskflow']]],
+  ['deactivate_5',['Deactivate',['../classInputFilter.html#a7ab848b42f51c85e2fb50bd2363c48eda109fec06829bd79d222cfc8af52aaaf1',1,'InputFilter']]],
+  ['debug_6',['Debug',['../classLogLevel.html#ab0a9f32f9109f1bfc782310ab529665faa603905470e2a5b8c13e96b579ef0dba',1,'LogLevel']]],
+  ['defaultmod_7',['DefaultMod',['../classScreenConfig.html#aa614b21714c5878160804fb6375ea814ac4640319a26ddefaa529bd0d954c6b9e',1,'ScreenConfig']]],
+  ['deliveryfailed_8',['DeliveryFailed',['../namespacedeskflow_1_1filetransfer.html#a5590530f515620eb4f09ccaec42b57afa7ff090c69a2a84f1bb8c439f5f52dc42',1,'deskflow::filetransfer']]],
+  ['desktop_9',['Desktop',['../classSettings.html#aac26728c616513838b3f9efb70a5cdd5a7d2a66d646087713b2c9250f177aa30f',1,'Settings']]],
+  ['destinationdenied_10',['DestinationDenied',['../namespacedeskflow_1_1filetransfer.html#a628b421c9bedd6f426c185308e29e610aded417953b0fd43a36dee9c6056accdf',1,'deskflow::filetransfer::DestinationDenied'],['../namespacedeskflow_1_1filetransfer.html#a2a402efc7a5147fd86c4d97fdc2216d7aded417953b0fd43a36dee9c6056accdf',1,'deskflow::filetransfer::DestinationDenied']]],
+  ['destinationunavailable_11',['DestinationUnavailable',['../namespacedeskflow_1_1filetransfer.html#a5590530f515620eb4f09ccaec42b57afa6e01666a2ff1333a6ceeab4d917a9172',1,'deskflow::filetransfer']]],
+  ['destinationunsupported_12',['DestinationUnsupported',['../namespacedeskflow_1_1filetransfer.html#a5590530f515620eb4f09ccaec42b57afaf5690901e758438967c219799d7db8ec',1,'deskflow::filetransfer']]],
+  ['disconnect_13',['Disconnect',['../classClient_1_1DisconnectRequest.html#a4eba22253c32e8d90b2cad0aaf56e97ba42ae25231906c83927831e0ef7c317ac',1,'Client::DisconnectRequest::Disconnect'],['../classServerProxy.html#a1bc5a0b70c8bbfe20fb415ee40cd9d76a42ae25231906c83927831e0ef7c317ac',1,'ServerProxy::Disconnect']]],
+  ['disconnected_14',['Disconnected',['../namespacedeskflow_1_1core.html#a040d74fafe28c4c63082a60335b81c27aef70e46fd3bbc21e3e1f0b6815e750c0',1,'deskflow::core::Disconnected'],['../namespacedeskflow_1_1filetransfer.html#a78282d4fe2ae333dc7e3b8b29df65709aef70e46fd3bbc21e3e1f0b6815e750c0',1,'deskflow::filetransfer::Disconnected']]],
+  ['diskfull_15',['DiskFull',['../namespacedeskflow_1_1filetransfer.html#a628b421c9bedd6f426c185308e29e610a4f080d03a8ddd688d27f7d7cd8e6d41e',1,'deskflow::filetransfer']]],
+  ['down_16',['down',['../classAction.html#a299e0248ee64190b156f01c61833d4daa74e8333ad11685ff3bdae589c8f6e34d',1,'Action']]],
+  ['duplicatetransfer_17',['DuplicateTransfer',['../namespacedeskflow_1_1filetransfer.html#af4b1f7c66093d2d87f7f7e26a75e2521ad92e860a328fe3e8f41e3c37b4575888',1,'deskflow::filetransfer']]]
+];

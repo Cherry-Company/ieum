@@ -1,0 +1,19 @@
+<map id="src/lib/gui/dialogs/ProLicenseUiPolicy.h" name="src/lib/gui/dialogs/ProLicenseUiPolicy.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="274,5,423,44"/>
+<area shape="rect" id="Node000002" href="$ProLicense_8h.html" title=" " alt="" coords="272,92,425,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="350,43,351,78,346,75,347,47"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,165,95,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="300,120,110,164,109,159,298,115"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="118,165,206,189"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="320,117,208,161,206,156,315,118"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="230,165,292,189"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="337,116,288,157,286,152,332,118"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="316,165,381,189"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="351,115,351,151,347,148,347,119"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="406,165,492,189"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="366,115,422,156,417,155,364,120"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="516,165,610,189"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="385,115,516,159,511,160,384,120"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="634,165,700,189"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="405,115,622,164,616,164,404,120"/>
+</map>

@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['language_0',['Language',['../structSettings_1_1Core.html#a438f42902d3451ced0dfd1ff83bb0d9a',1,'Settings::Core']]],
+  ['languagesync_1',['LanguageSync',['../structSettings_1_1Client.html#a50b1127b62ac5088157236dd298d623b',1,'Settings::Client']]],
+  ['lastversion_2',['LastVersion',['../structSettings_1_1Core.html#a22d636fbd1f06380f33e96831563a53b',1,'Settings::Core']]],
+  ['lastwritetime_3',['lastWriteTime',['../structdeskflow_1_1filetransfer_1_1FileTransferSourceCandidate.html#ae335aab3ef7eb542f079aa84d12ddfe8',1,'deskflow::filetransfer::FileTransferSourceCandidate']]],
+  ['left_4',['left',['../structdeskflow_1_1fullscreen_1_1Bounds.html#a6e240350f6bfdeccf6e7ff26a412523f',1,'deskflow::fullscreen::Bounds']]],
+  ['len_5',['len',['../ArchNetworkWinsock_8cpp.html#a116668e65e11e5e00d5ff946bfc24cb4',1,'ArchNetworkWinsock.cpp']]],
+  ['length_6',['length',['../structdeskflow_1_1filetransfer_1_1FileTransferSourceIdentity.html#ab2f9e1132c2021d203396c37a836cea6',1,'deskflow::filetransfer::FileTransferSourceIdentity']]],
+  ['level_7',['Level',['../structSettings_1_1Log.html#a8efb7ec5b4a8be2ab406ce3dd8ed5f92',1,'Settings::Log']]],
+  ['level_8',['level',['../ArchNetworkWinsock_8cpp.html#a16b9a398646d8d46205fb34769946458',1,'ArchNetworkWinsock.cpp']]],
+  ['licenseactionsenabled_9',['licenseActionsEnabled',['../structdeskflow_1_1gui_1_1ProFileTransferUiState.html#ac456cec84a6c37c62fd6db983c6675f7',1,'deskflow::gui::ProFileTransferUiState']]],
+  ['licenseid_10',['licenseId',['../structdeskflow_1_1licensing_1_1ProLicenseEntitlement.html#a8bfee2c0b1383dc01a176fafd43c1c5a',1,'deskflow::licensing::ProLicenseEntitlement']]],
+  ['licensekey_11',['LicenseKey',['../structSettings_1_1Pro.html#a5b649eb8debff67808763a73c555128f',1,'Settings::Pro']]],
+  ['localaddresses_12',['localAddresses',['../structdeskflow_1_1network_1_1TailscaleStatus.html#a0042a2772afeb5611081e17da2cde83a',1,'deskflow::network::TailscaleStatus']]],
+  ['localdnsname_13',['localDnsName',['../structdeskflow_1_1network_1_1TailscaleStatus.html#a93804c91b137434d962cbf69eefa84e3',1,'deskflow::network::TailscaleStatus']]],
+  ['localscreen_14',['localScreen',['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferService_1_1Impl.html#a78ed0de3bcfae50ce8c2e41ea17fb2e5',1,'deskflow::filetransfer::MSWindowsFileTransferService::Impl::localScreen'],['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferServiceOptions.html#a5c5d2d14a8b947ab49eefd8a3693f14c',1,'deskflow::filetransfer::MSWindowsFileTransferServiceOptions::localScreen']]],
+  ['locktoscreen_15',['LockToScreen',['../namespaceSettingsKeys.html#a68af0f7b43a00a62f03a9c80142e1545',1,'SettingsKeys']]],
+  ['logexpanded_16',['LogExpanded',['../structSettings_1_1Gui.html#af34e29ae4ea0d59206dbe9094321652f',1,'Settings::Gui']]],
+  ['logfile_17',['LogFile',['../structSettings_1_1Daemon.html#abcf7fc053c4f9ed636b2481d4f324233',1,'Settings::Daemon']]],
+  ['loglevel_18',['LogLevel',['../structSettings_1_1Daemon.html#afc62a8aba1ac94925a03d6294d36a9e7',1,'Settings::Daemon']]],
+  ['long_19',['long',['../ArchNetworkWinsock_8cpp.html#a0bc651ef7626a7868da4cbfdbe70f96f',1,'ArchNetworkWinsock.cpp']]],
+  ['lpwsanetworkevents_20',['LPWSANETWORKEVENTS',['../ArchNetworkWinsock_8cpp.html#aa1b63b60fb3f206fad88bf4f0f008d6b',1,'ArchNetworkWinsock.cpp']]]
+];

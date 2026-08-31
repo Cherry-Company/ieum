@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['readfailed_0',['ReadFailed',['../namespacedeskflow_1_1filetransfer.html#a2a402efc7a5147fd86c4d97fdc2216d7a723ee677cab1d41ba376d588d78146ed',1,'deskflow::filetransfer']]],
+  ['readytofinish_1',['ReadyToFinish',['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferWriter_1_1Impl.html#aa88e09f16232493d641d89ab1f842301a260950398e3650cf3beb8812d6fe1ab5',1,'deskflow::filetransfer::MSWindowsFileTransferWriter::Impl']]],
+  ['readytosend_2',['ReadyToSend',['../namespacedeskflow_1_1filetransfer.html#afd36a6ac98e777cd6243bd7faef173bca45ac3bfc16b1b6e85bb12de4fb36852b',1,'deskflow::filetransfer']]],
+  ['receiver_3',['Receiver',['../namespacedeskflow_1_1filetransfer.html#a5dee6feb18c08b58f5bb722fb7f96734aa9d093d11bc6e98b0c8e586ffa545c85',1,'deskflow::filetransfer']]],
+  ['receivercancelled_4',['ReceiverCancelled',['../namespacedeskflow_1_1filetransfer.html#a78282d4fe2ae333dc7e3b8b29df65709a24cd70acbecf9e6a9abaac7b124d1ee7',1,'deskflow::filetransfer']]],
+  ['receiving_5',['Receiving',['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferWriter_1_1Impl.html#aa88e09f16232493d641d89ab1f842301a338f550ea5a0bcb9ac785f48b27f4f12',1,'deskflow::filetransfer::MSWindowsFileTransferWriter::Impl::Receiving'],['../namespacedeskflow_1_1filetransfer.html#afd36a6ac98e777cd6243bd7faef173bca338f550ea5a0bcb9ac785f48b27f4f12',1,'deskflow::filetransfer::Receiving']]],
+  ['refuse_6',['Refuse',['../classClient_1_1DisconnectRequest.html#a4eba22253c32e8d90b2cad0aaf56e97badc7176d0b9ec5492c6a8f43f8a4b6d92',1,'Client::DisconnectRequest']]],
+  ['reject_7',['Reject',['../namespacedeskflow_1_1filetransfer.html#a257aef7676c1543bfbbe337492776fcead98ac12774fca5c3cbaffe276840c55f',1,'deskflow::filetransfer']]],
+  ['rejected_8',['Rejected',['../namespacedeskflow_1_1filetransfer.html#afd36a6ac98e777cd6243bd7faef173bcad37b1f6c0512e2118cee17fea015b699',1,'deskflow::filetransfer']]],
+  ['relativepath_9',['RelativePath',['../namespacedeskflow_1_1filetransfer.html#a6f09bbf39f634577f80c2eed0f78e409a50d72a7b6a8baa24bcdbf5d0334c4897',1,'deskflow::filetransfer']]],
+  ['relativesourcepath_10',['RelativeSourcePath',['../namespacedeskflow_1_1filetransfer.html#a1e76c5b7125de23bdbc8429199e0f154a752a2503b9e6f6c903fcbff8d320ee07',1,'deskflow::filetransfer']]],
+  ['reparsepoint_11',['ReparsePoint',['../namespacedeskflow_1_1filetransfer.html#a6f09bbf39f634577f80c2eed0f78e409a2452ed8906b5677e159ec14af42d4464',1,'deskflow::filetransfer']]],
+  ['restart_12',['restart',['../classInputFilter_1_1RestartServer.html#a3d9bf2b6f9d60f076b50eda11499a178a483a539068a304086309ff6deff9881a',1,'InputFilter::RestartServer']]],
+  ['restartallconnections_13',['restartAllConnections',['../classAction.html#a73c42ca584c76fc84ab95f260b7a30c3a29a278d7ee68742c0ab4759a0a5a9a8f',1,'Action']]],
+  ['retry_14',['Retry',['../classTCPSocket.html#a009d7b0c6ed5723df1423abb57b5856ba6327b4e59f58137083214a1fec358855',1,'TCPSocket']]],
+  ['retrypending_15',['RetryPending',['../namespacedeskflow_1_1core.html#a368b81c385b88a65d4ade1da45949480aa87736d05100d75e068bb9a1fb6aaf6f',1,'deskflow::core']]],
+  ['right_16',['Right',['../DirectionTypes_8h.html#a5d16bedaff50120f1b7fc0b264d62da6a92b09c7c48c520c3c55e497875da437c',1,'DirectionTypes.h']]],
+  ['right_17',['right',['../classAction.html#a299e0248ee64190b156f01c61833d4daa7c4f29407893c334a6cb7a87bf045c0d',1,'Action']]],
+  ['rightmask_18',['RightMask',['../DirectionTypes_8h.html#a1702cf626a6f3bc79a7db1382e2fbba9a209d68cc56db4e67477bb78108b826a9',1,'DirectionTypes.h']]],
+  ['routemismatch_19',['RouteMismatch',['../namespacedeskflow_1_1filetransfer.html#af4b1f7c66093d2d87f7f7e26a75e2521a167e9a4ca878f0c45d736f3313442537',1,'deskflow::filetransfer::RouteMismatch'],['../namespacedeskflow_1_1filetransfer.html#a2a402efc7a5147fd86c4d97fdc2216d7a167e9a4ca878f0c45d736f3313442537',1,'deskflow::filetransfer::RouteMismatch']]],
+  ['running_20',['Running',['../namespacedeskflow_1_1network.html#a7f8abecae99e678f061cfe701e17ee7ca5bda814c4aedb126839228f1a3d92f09',1,'deskflow::network']]]
+];

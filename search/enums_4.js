@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['filetransfercancelreason_0',['FileTransferCancelReason',['../namespacedeskflow_1_1filetransfer.html#a78282d4fe2ae333dc7e3b8b29df65709',1,'deskflow::filetransfer']]],
+  ['filetransfercodecerror_1',['FileTransferCodecError',['../namespacedeskflow_1_1filetransfer.html#a699cc9812c13ddf50e5bd27967621770',1,'deskflow::filetransfer']]],
+  ['filetransferdatacodecerror_2',['FileTransferDataCodecError',['../namespacedeskflow_1_1filetransfer.html#af031acb59d2f774f1e3be75d1dd2430d',1,'deskflow::filetransfer']]],
+  ['filetransferdataframeerror_3',['FileTransferDataFrameError',['../namespacedeskflow_1_1filetransfer.html#a55809f4972c09ac74926df05f2766f18',1,'deskflow::filetransfer']]],
+  ['filetransferdecisionvalue_4',['FileTransferDecisionValue',['../namespacedeskflow_1_1filetransfer.html#a257aef7676c1543bfbbe337492776fce',1,'deskflow::filetransfer']]],
+  ['filetransferframeerror_5',['FileTransferFrameError',['../namespacedeskflow_1_1filetransfer.html#acda7b593a55b91855189debab1282b92',1,'deskflow::filetransfer']]],
+  ['filetransferresultcode_6',['FileTransferResultCode',['../namespacedeskflow_1_1filetransfer.html#a628b421c9bedd6f426c185308e29e610',1,'deskflow::filetransfer']]],
+  ['filetransferresultstatus_7',['FileTransferResultStatus',['../namespacedeskflow_1_1filetransfer.html#a3127628f5b57b5b8a77d3ae5400b7330',1,'deskflow::filetransfer']]],
+  ['filetransferrouteerror_8',['FileTransferRouteError',['../namespacedeskflow_1_1filetransfer.html#a5590530f515620eb4f09ccaec42b57af',1,'deskflow::filetransfer']]],
+  ['filetransfersessionerror_9',['FileTransferSessionError',['../namespacedeskflow_1_1filetransfer.html#af4b1f7c66093d2d87f7f7e26a75e2521',1,'deskflow::filetransfer']]],
+  ['filetransfersessionphase_10',['FileTransferSessionPhase',['../namespacedeskflow_1_1filetransfer.html#afd36a6ac98e777cd6243bd7faef173bc',1,'deskflow::filetransfer']]],
+  ['filetransfersessionrole_11',['FileTransferSessionRole',['../namespacedeskflow_1_1filetransfer.html#a5dee6feb18c08b58f5bb722fb7f96734',1,'deskflow::filetransfer']]],
+  ['filterstatus_12',['FilterStatus',['../classInputFilter.html#a7ab848b42f51c85e2fb50bd2363c48ed',1,'InputFilter']]],
+  ['fingerprintdialogmode_13',['FingerprintDialogMode',['../FingerprintDialog_8h.html#ac1e109f3903cfa4101b842c1d4e41e99',1,'FingerprintDialog.h']]],
+  ['fix_14',['Fix',['../classScreenConfig.html#a9288122eb9f01fe71828c89207035bb5',1,'ScreenConfig::Fix'],['../gui_2config_2Screen_8cpp.html#a9288122eb9f01fe71828c89207035bb5',1,'Fix:&#160;ScreenConfig.h'],['../ServerConfig_8cpp.html#a9288122eb9f01fe71828c89207035bb5',1,'Fix:&#160;ScreenConfig.h'],['../ScreenSettingsDialog_8cpp.html#a9288122eb9f01fe71828c89207035bb5',1,'Fix:&#160;ScreenConfig.h']]],
+  ['format_15',['Format',['../classIClipboard.html#a1d014188948be557b3a3d88034d7081e',1,'IClipboard']]]
+];
