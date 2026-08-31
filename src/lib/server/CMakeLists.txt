@@ -38,10 +38,14 @@ add_library(server STATIC
   ClientProxy1_12.h
   ClientProxy1_13.cpp
   ClientProxy1_13.h
+  ClientProxy1_14.cpp
+  ClientProxy1_14.h
   ClientProxyUnknown.cpp
   ClientProxyUnknown.h
   Config.cpp
   Config.h
+  FileTransferEdgeRouting.cpp
+  FileTransferEdgeRouting.h
   CursorTransform.h
   InputFilter.cpp
   InputFilter.h

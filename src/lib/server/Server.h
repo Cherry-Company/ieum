@@ -16,6 +16,7 @@
 #include "deskflow/EdgeHandoffDecision.h"
 #include "deskflow/FileTransferControlRouting.h"
 #include "deskflow/FileTransferDataRouting.h"
+#include "deskflow/FileTransferEdgeCodec.h"
 #include "deskflow/InputLanguageTypes.h"
 #include "deskflow/KeyTypes.h"
 #include "deskflow/MouseTypes.h"
@@ -216,6 +217,10 @@ public:
   sendFileTransferData(const deskflow::filetransfer::FileTransferDataMessage &message);
   [[nodiscard]] std::optional<deskflow::filetransfer::EdgeTarget>
   resolveFileTransferEdgeTarget(Direction direction, int32_t x, int32_t y) const;
+  [[nodiscard]] std::optional<deskflow::filetransfer::EdgeTarget>
+  resolveFileTransferEdgeTarget(BaseClientProxy *source, Direction direction, int32_t x, int32_t y) const;
+  [[nodiscard]] std::uint32_t fileTransferActiveSidesFor(BaseClientProxy *source) const;
+  bool handleFileTransferEdge(BaseClientProxy *sender, const deskflow::filetransfer::FileTransferEdgeMessage &message);
 
   //@}
 
@@ -225,6 +230,9 @@ private:
 
   // get the sides of the primary screen that have neighbors
   uint32_t getActivePrimarySides() const;
+
+  void sendFileTransferEdgeCapabilities(BaseClientProxy *client) const;
+  void sendFileTransferEdgeCapabilities() const;
 
   // returns true iff mouse should be locked to the current screen
   // according to this object only, ignoring what the primary client

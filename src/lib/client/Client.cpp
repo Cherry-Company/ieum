@@ -329,6 +329,11 @@ bool Client::sendFileTransferData(const deskflow::filetransfer::FileTransferData
   return m_server != nullptr && m_server->sendFileTransferData(message);
 }
 
+bool Client::sendFileTransferEdge(const deskflow::filetransfer::FileTransferEdgeMessage &message)
+{
+  return m_server != nullptr && m_server->sendFileTransferEdge(message);
+}
+
 void Client::mouseDown(ButtonID id)
 {
   m_screen->mouseDown(id);

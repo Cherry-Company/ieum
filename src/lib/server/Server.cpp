@@ -16,6 +16,7 @@
 #include "deskflow/DeskflowException.h"
 #include "deskflow/FileTransferControlEvent.h"
 #include "deskflow/FileTransferDataEvent.h"
+#include "deskflow/FileTransferEdgeCodec.h"
 #include "deskflow/IPlatformScreen.h"
 #include "deskflow/OptionTypes.h"
 #include "deskflow/PacketStreamFilter.h"
@@ -28,6 +29,7 @@
 #include "server/ClientProxy.h"
 #include "server/ClientProxyUnknown.h"
 #include "server/CursorTransform.h"
+#include "server/FileTransferEdgeRouting.h"
 #include "server/PrimaryClient.h"
 
 #ifdef _WIN32
@@ -243,6 +245,7 @@ bool Server::setConfig(const ServerConfig &config)
   for (ClientList::const_iterator index = m_clients.begin(); index != m_clients.end(); ++index) {
     BaseClientProxy *client = index->second;
     sendOptions(client);
+    sendFileTransferEdgeCapabilities(client);
   }
 
   return true;
@@ -278,6 +281,7 @@ void Server::adoptClient(BaseClientProxy *client)
 
   // send configuration options to client
   sendOptions(client);
+  sendFileTransferEdgeCapabilities(client);
 
   // activate screen saver on new client if active on the primary screen
   if (m_activeSaver != nullptr) {
@@ -423,39 +427,84 @@ Server::sendFileTransferData(const deskflow::filetransfer::FileTransferDataMessa
 std::optional<deskflow::filetransfer::EdgeTarget>
 Server::resolveFileTransferEdgeTarget(Direction direction, int32_t x, int32_t y) const
 {
+  return resolveFileTransferEdgeTarget(m_primaryClient, direction, x, y);
+}
+
+std::optional<deskflow::filetransfer::EdgeTarget>
+Server::resolveFileTransferEdgeTarget(BaseClientProxy *source, Direction direction, int32_t x, int32_t y) const
+{
+  if (source == nullptr || !m_clientSet.contains(source)) {
+    return std::nullopt;
+  }
   if (direction < Direction::FirstDirection || direction > Direction::LastDirection) {
     return std::nullopt;
   }
 
-  auto *target = getNeighbor(m_primaryClient, direction, x, y);
-  if (target == nullptr || target == m_primaryClient ||
-      target->protocolMinorVersion() < kProtocolFileTransferDataMinorVersion) {
+  auto *target = getNeighbor(source, direction, x, y);
+  if (target == nullptr || target == source ||
+      (target != m_primaryClient && target->protocolMinorVersion() < kProtocolFileTransferDataMinorVersion)) {
     return std::nullopt;
   }
 
   return deskflow::filetransfer::EdgeTarget{.direction = direction, .screen = getName(target)};
 }
 
+std::uint32_t Server::fileTransferActiveSidesFor(BaseClientProxy *source) const
+{
+  if (source == nullptr || !m_clientSet.contains(source) || isLockedToScreenServer()) {
+    return 0;
+  }
+
+  return deskflow::server::filetransfer::configuredEdgeSides([this, source](Direction direction) {
+    return hasAnyNeighbor(source, direction);
+  });
+}
+
+bool Server::handleFileTransferEdge(
+    BaseClientProxy *sender, const deskflow::filetransfer::FileTransferEdgeMessage &message
+)
+{
+  const auto *request = std::get_if<deskflow::filetransfer::FileTransferEdgeTargetRequest>(&message);
+  if (sender == nullptr || request == nullptr || !m_clientSet.contains(sender)) {
+    return false;
+  }
+
+  const auto routed = deskflow::server::filetransfer::resolveAuthenticatedEdgeRequest(
+      *request, getName(sender),
+      [this, sender](Direction direction, std::int32_t x, std::int32_t y) {
+        return resolveFileTransferEdgeTarget(sender, direction, x, y);
+      }
+  );
+  if (!routed.authenticated) {
+    return false;
+  }
+  return sender->sendFileTransferEdge(deskflow::filetransfer::FileTransferEdgeMessage{routed.response});
+}
+
+void Server::sendFileTransferEdgeCapabilities(BaseClientProxy *client) const
+{
+  if (client == nullptr || client == m_primaryClient ||
+      !deskflow::server::filetransfer::supportsEdgeDiscovery(client->protocolMinorVersion())) {
+    return;
+  }
+  client->sendFileTransferEdge(
+      deskflow::filetransfer::FileTransferEdgeMessage{
+          deskflow::filetransfer::FileTransferEdgeCapabilities{.activeSides = fileTransferActiveSidesFor(client)}
+      }
+  );
+}
+
+void Server::sendFileTransferEdgeCapabilities() const
+{
+  for (const auto &[name, client] : m_clients) {
+    static_cast<void>(name);
+    sendFileTransferEdgeCapabilities(client);
+  }
+}
+
 uint32_t Server::getActivePrimarySides() const
 {
-  using enum DirectionMask;
-  using enum Direction;
-  uint32_t sides = 0;
-  if (!isLockedToScreenServer()) {
-    if (hasAnyNeighbor(m_primaryClient, Left)) {
-      sides |= static_cast<int>(LeftMask);
-    }
-    if (hasAnyNeighbor(m_primaryClient, Right)) {
-      sides |= static_cast<int>(RightMask);
-    }
-    if (hasAnyNeighbor(m_primaryClient, Top)) {
-      sides |= static_cast<int>(TopMask);
-    }
-    if (hasAnyNeighbor(m_primaryClient, Bottom)) {
-      sides |= static_cast<int>(BottomMask);
-    }
-  }
-  return sides;
+  return fileTransferActiveSidesFor(m_primaryClient);
 }
 
 bool Server::isLockedToScreenServer() const
@@ -2217,6 +2266,7 @@ bool Server::addClient(BaseClientProxy *client)
 
   // tell primary client about the active sides
   m_primaryClient->reconfigure(getActivePrimarySides());
+  sendFileTransferEdgeCapabilities();
 
   return true;
 }
@@ -2239,6 +2289,9 @@ bool Server::removeClient(BaseClientProxy *client)
   m_clients.erase(getName(client));
   m_clientSet.erase(i);
   std::erase_if(m_inputLanguageControlButtons, [client](const auto &entry) { return entry.first == client; });
+
+  m_primaryClient->reconfigure(getActivePrimarySides());
+  sendFileTransferEdgeCapabilities();
 
   return true;
 }

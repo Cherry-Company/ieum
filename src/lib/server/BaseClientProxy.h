@@ -10,6 +10,7 @@
 #include "deskflow/DisplayGeometry.h"
 #include "deskflow/FileTransferControlCodec.h"
 #include "deskflow/FileTransferDataCodec.h"
+#include "deskflow/FileTransferEdgeCodec.h"
 #include "deskflow/IClient.h"
 #include "deskflow/InputLanguageTypes.h"
 
@@ -87,6 +88,10 @@ public:
     return false;
   }
   virtual bool sendFileTransferData(const deskflow::filetransfer::FileTransferDataMessage &)
+  {
+    return false;
+  }
+  virtual bool sendFileTransferEdge(const deskflow::filetransfer::FileTransferEdgeMessage &)
   {
     return false;
   }
