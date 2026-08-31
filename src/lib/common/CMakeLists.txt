@@ -33,7 +33,10 @@ add_library(common STATIC
   ${CMAKE_CURRENT_BINARY_DIR}/VersionInfo.h
 )
 
-target_link_libraries(common PUBLIC Qt6::Core Qt6::Network)
+target_link_libraries(common
+  PUBLIC Qt6::Core Qt6::Network
+  PRIVATE licensing
+)
 
 target_include_directories(common
   PUBLIC

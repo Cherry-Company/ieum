@@ -16,6 +16,12 @@ void SettingsTests::initTestCase()
 {
   QVERIFY(QDir().mkpath(m_settingsPathTemp));
 
+  m_portableSettingsFile = Settings::portableSettingsFile();
+  QVERIFY(QDir().mkpath(QFileInfo(m_portableSettingsFile).absolutePath()));
+  QFile portableSettings(m_portableSettingsFile);
+  QVERIFY(portableSettings.open(QFile::WriteOnly | QFile::Truncate));
+  portableSettings.close();
+
   QFile oldSettings(m_settingsFile);
   if (oldSettings.exists())
     oldSettings.remove();
@@ -178,6 +184,11 @@ void SettingsTests::checkCleanScreenName_LongName()
   Settings::setValue(Settings::Core::ComputerName, input);
 
   QCOMPARE(Settings::value(Settings::Core::ComputerName).toString(), expected);
+}
+
+void SettingsTests::cleanupTestCase()
+{
+  QFile::remove(m_portableSettingsFile);
 }
 
 QTEST_MAIN(SettingsTests)

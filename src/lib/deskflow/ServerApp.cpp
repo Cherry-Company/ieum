@@ -407,7 +407,8 @@ void ServerApp::startFileTransferService()
   const auto tlsEnabled = Settings::value(Settings::Security::TlsEnabled).toBool();
   const auto sendEnabled = Settings::value(Settings::FileTransfer::Enabled).toBool();
   const auto receiveEnabled = Settings::value(Settings::FileTransfer::ReceiveEnabled).toBool();
-  if (!tlsEnabled || (!sendEnabled && !receiveEnabled) || m_server == nullptr || m_primaryClient == nullptr) {
+  if (!tlsEnabled || !Settings::hasProFileTransferEntitlement() || (!sendEnabled && !receiveEnabled) ||
+      m_server == nullptr || m_primaryClient == nullptr) {
     return;
   }
 
@@ -416,6 +417,7 @@ void ServerApp::startFileTransferService()
           .localScreen = m_name,
           .destinationDirectory = Settings::value(Settings::FileTransfer::DownloadDirectory).toString().toStdWString(),
           .receiveEnabled = receiveEnabled,
+          .authorizeFileTransfer = [] { return Settings::hasProFileTransferEntitlement(); },
           .sendControl = [this](
                              const deskflow::filetransfer::FileTransferControlMessage &message
                          ) { return m_server != nullptr && m_server->sendFileTransferControl(message).ok(); },

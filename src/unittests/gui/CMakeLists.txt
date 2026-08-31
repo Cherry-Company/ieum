@@ -90,3 +90,10 @@ create_test(
   SOURCE DiagnosticTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
 )
+
+create_test(
+  NAME ProLicenseUiPolicyTests
+  DEPENDS gui licensing
+  SOURCE ProLicenseUiPolicyTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)

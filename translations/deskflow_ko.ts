@@ -56,14 +56,6 @@ p, li { white-space: pre-wrap; }
         <translation>유지관리:</translation>
     </message>
     <message>
-        <source>Developer and contributor:</source>
-        <translation type="vanished">개발자 및 기여자:</translation>
-    </message>
-    <message>
-        <source>Company:</source>
-        <translation type="vanished">개발사:</translation>
-    </message>
-    <message>
         <source>Upstream contributors:</source>
         <translation>상류 프로젝트 기여자:</translation>
     </message>
@@ -361,18 +353,6 @@ Do you want to connect to the server?
 <context>
     <name>MacAccessibility</name>
     <message>
-        <source>Ieum needs Accessibility access to share the keyboard and mouse.
-
-In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. If Ieum is not listed, use the add button to select /Applications/Ieum.app.
-
-After granting access, return here and choose Try Again.</source>
-        <translation type="vanished">이음에서 키보드와 마우스를 공유하려면 손쉬운 사용 권한이 필요합니다.
-
-시스템 설정의 개인정보 보호 및 보안 &gt; 손쉬운 사용에서 이음을 켜세요. 목록에 이음이 없으면 추가 버튼을 눌러 /Applications/Ieum.app을 선택하세요.
-
-권한을 허용한 뒤 여기로 돌아와 다시 시도를 선택하세요.</translation>
-    </message>
-    <message>
         <source>The macOS permission reset timed out.</source>
         <translation>macOS 권한 초기화 시간이 초과되었습니다.</translation>
     </message>
@@ -486,40 +466,8 @@ Client</source>
         <translation>&lt;html&gt;서버 컴퓨터의 호스트 이름 또는 IP 주소입니다.&lt;br/&gt;쉼표로 구분한 목록을 사용할 수 있습니다.&lt;/html&gt;</translation>
     </message>
     <message>
-        <source>This computer&apos;s name:</source>
-        <translation type="vanished">이 컴퓨터 이름:</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Name can&apos;t have have spaces or special characters&lt;/p&gt;&lt;p&gt;Use Enter to save the name change.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;이름에는 공백이나 특수문자를 사용할 수 없습니다&lt;/p&gt;&lt;p&gt;Enter 키로 이름 변경을 저장합니다.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <source>Edit Computer Name</source>
-        <translation type="vanished">컴퓨터 이름 편집</translation>
-    </message>
-    <message>
-        <source>Use this computer&apos;s keyboard and mouse
-(make this computer the server)</source>
-        <translation type="vanished">이 컴퓨터의 키보드와 마우스를 사용
-(이 컴퓨터를 서버로 설정)</translation>
-    </message>
-    <message>
-        <source>Use another computer’s mouse and keyboard
-(make this computer the client)</source>
-        <translation type="vanished">다른 컴퓨터의 키보드와 마우스를 사용
-(이 컴퓨터를 클라이언트로 설정)</translation>
-    </message>
-    <message>
-        <source>&amp;Configure Server</source>
-        <translation type="vanished">서버 설정(&amp;C)</translation>
-    </message>
-    <message>
         <source>Export server configuration</source>
         <translation>서버 설정 내보내기</translation>
-    </message>
-    <message>
-        <source>You must select a mode</source>
-        <translation type="vanished">모드를 선택해야 합니다</translation>
     </message>
     <message>
         <source>&amp;Start</source>
@@ -748,18 +696,6 @@ Valid names:
         <translation type="unfinished">추천 IP: </translation>
     </message>
     <message>
-        <source>&amp;Configure Client</source>
-        <translation type="obsolete">클라이언트 구성 (&amp;C)</translation>
-    </message>
-    <message>
-        <source>Connect to:</source>
-        <translation type="obsolete">연결 대상:</translation>
-    </message>
-    <message>
-        <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma seperated list.&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;서버 컴퓨터의 호스트 이름 또는 IP 주소입니다.&lt;br/&gt;목록 요소는 쉼표로 구분됩니다.&lt;/html&gt;</translation>
-    </message>
-    <message>
         <source>read</source>
         <translation type="unfinished">읽기</translation>
     </message>
@@ -926,14 +862,6 @@ Additionally, check you are able to %1 the server config file: %2</source>
     <message>
         <source>&lt;p&gt;%1 will continue to run in the background and can be accessed via the %1 icon in your system notifications area. This setting can be disabled.&lt;/p&gt;</source>
         <translation>&lt;p&gt;%1은(는) 백그라운드에서 계속 실행되며, 시스템 알림 영역의 %1 아이콘을 통해 접근할 수 있습니다. 이 설정은 비활성화할 수 있습니다.&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <source>&lt;p&gt;Please &lt;a href=&quot;%1&quot;&gt;report a bug&lt;/a&gt; and copy/paste the following error:&lt;/p&gt;&lt;pre&gt;v%2
-%3
-%4&lt;/pre&gt;</source>
-        <translation type="vanished">&lt;p&gt;&lt;a href=&quot;%1&quot;&gt;버그를 신고&lt;/a&gt;하고 다음 오류를 복사/붙여넣기 해주세요:&lt;/p&gt;&lt;pre&gt;v%2
-%3
-%4&lt;/pre&gt;</translation>
     </message>
     <message>
         <source>unknown</source>
@@ -1327,10 +1255,6 @@ Additionally, check you are able to %1 the server config file: %2</source>
         <translation>삭제(&amp;M)</translation>
     </message>
     <message>
-        <source>Advanced</source>
-        <translation type="vanished">고급</translation>
-    </message>
-    <message>
         <source>&amp;Misc</source>
         <translation>기타(&amp;M)</translation>
     </message>
@@ -1495,10 +1419,6 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>클라이언트 인증서 요구</translation>
     </message>
     <message>
-        <source>&amp;Advanced</source>
-        <translation type="vanished">고급(&amp;A)</translation>
-    </message>
-    <message>
         <source>Port</source>
         <translation>포트</translation>
     </message>
@@ -1547,6 +1467,46 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>로그 파일 저장 위치...</translation>
     </message>
     <message>
+        <source>Import Pro Local license</source>
+        <translation>Pro Local 라이선스 가져오기</translation>
+    </message>
+    <message>
+        <source>Ieum license (*.ieum-license.txt *.txt);;All files (*)</source>
+        <translation>이음 라이선스 (*.ieum-license.txt *.txt);;모든 파일 (*)</translation>
+    </message>
+    <message>
+        <source>Could not import license</source>
+        <translation>라이선스를 가져올 수 없음</translation>
+    </message>
+    <message>
+        <source>Ieum could not read the selected license file.</source>
+        <translation>선택한 라이선스 파일을 읽을 수 없습니다.</translation>
+    </message>
+    <message>
+        <source>The selected license file is too large.</source>
+        <translation>선택한 라이선스 파일이 너무 큽니다.</translation>
+    </message>
+    <message>
+        <source>The license file must contain exactly one UTF-8 license line.</source>
+        <translation>라이선스 파일에는 UTF-8 라이선스 한 줄만 있어야 합니다.</translation>
+    </message>
+    <message>
+        <source>License not activated</source>
+        <translation>라이선스가 활성화되지 않음</translation>
+    </message>
+    <message>
+        <source>This license is invalid, expired, not active yet, or does not include Pro Local file transfer.</source>
+        <translation>이 라이선스는 유효하지 않거나 만료됐거나 아직 시작되지 않았거나 Pro Local 파일 전송을 포함하지 않습니다.</translation>
+    </message>
+    <message>
+        <source>Pro Local activated</source>
+        <translation>Pro Local 활성화 완료</translation>
+    </message>
+    <message>
+        <source>File transfer is now available on this computer.</source>
+        <translation>이제 이 컴퓨터에서 파일 전송을 사용할 수 있습니다.</translation>
+    </message>
+    <message>
         <source>Required messages</source>
         <translation>필수 메시지</translation>
     </message>
@@ -1585,6 +1545,46 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Reset to default values</source>
         <translation type="unfinished">기본값으로 재설정</translation>
+    </message>
+    <message>
+        <source>Pro Local active — %1 (%2)</source>
+        <translation>Pro Local 활성화됨 — %1 (%2)</translation>
+    </message>
+    <message>
+        <source>Valid Pro Local license. Select Activate to apply it on this computer.</source>
+        <translation>유효한 Pro Local 라이선스입니다. 이 컴퓨터에 적용하려면 활성화를 누르세요.</translation>
+    </message>
+    <message>
+        <source>This candidate is not valid. The existing Pro Local license remains active.</source>
+        <translation>입력한 라이선스가 유효하지 않습니다. 기존 Pro Local 라이선스는 계속 활성 상태입니다.</translation>
+    </message>
+    <message>
+        <source>This license is too large.</source>
+        <translation>이 라이선스는 너무 큽니다.</translation>
+    </message>
+    <message>
+        <source>This license has an invalid format.</source>
+        <translation>이 라이선스 형식이 올바르지 않습니다.</translation>
+    </message>
+    <message>
+        <source>This license is not supported by this version of Ieum.</source>
+        <translation>이 버전의 이음에서 지원하지 않는 라이선스입니다.</translation>
+    </message>
+    <message>
+        <source>This license signature is invalid.</source>
+        <translation>이 라이선스의 서명이 유효하지 않습니다.</translation>
+    </message>
+    <message>
+        <source>This license is not active yet.</source>
+        <translation>이 라이선스는 아직 활성 기간이 아닙니다.</translation>
+    </message>
+    <message>
+        <source>This license has expired.</source>
+        <translation>이 라이선스는 만료됐습니다.</translation>
+    </message>
+    <message>
+        <source>This license does not include Pro Local file transfer.</source>
+        <translation>이 라이선스에는 Pro Local 파일 전송이 포함되지 않습니다.</translation>
     </message>
     <message>
         <source>Automatic</source>
@@ -1653,10 +1653,6 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Using a log level higher than Info may affect performance.</source>
         <translation type="unfinished">Info보다 높은 로그 레벨을 사용하면 성능에 영향을 미칠 수 있습니다.</translation>
-    </message>
-    <message>
-        <source>Input language</source>
-        <translation type="vanished">입력 언어</translation>
     </message>
     <message>
         <source>Synchronize Korean/English input state</source>
@@ -1789,10 +1785,6 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>파일(&amp;F)</translation>
     </message>
     <message>
-        <source>&lt;b&gt;Pro Local file transfer preview&lt;/b&gt;</source>
-        <translation>&lt;b&gt;Pro Local 파일 전송 프리뷰&lt;/b&gt;</translation>
-    </message>
-    <message>
         <source>Send files by dragging them across a screen edge</source>
         <translation>파일을 화면 경계 너머로 끌어서 보내기</translation>
     </message>
@@ -1813,10 +1805,6 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>양쪽 컴퓨터에서 TLS를 켜야 합니다. 파일 수신은 기본적으로 꺼져 있습니다.</translation>
     </message>
     <message>
-        <source>This preview sends from the Windows server computer to a connected Windows client.</source>
-        <translation>이번 프리뷰는 Windows 서버 컴퓨터에서 연결된 Windows 클라이언트로 전송합니다.</translation>
-    </message>
-    <message>
         <source>Choose where received files are saved</source>
         <translation>받은 파일을 저장할 위치 선택</translation>
     </message>
@@ -1831,6 +1819,42 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>&amp;System</source>
         <translation>시스템(&amp;S)</translation>
+    </message>
+    <message>
+        <source>Pro Local license</source>
+        <translation>Pro Local 라이선스</translation>
+    </message>
+    <message>
+        <source>Import the license file you received, then activate it on this computer.</source>
+        <translation>받은 라이선스 파일을 가져온 다음 이 컴퓨터에서 활성화하세요.</translation>
+    </message>
+    <message>
+        <source>IEUM1 license line</source>
+        <translation>IEUM1 라이선스 한 줄</translation>
+    </message>
+    <message>
+        <source>Import license file…</source>
+        <translation>라이선스 파일 가져오기…</translation>
+    </message>
+    <message>
+        <source>Activate</source>
+        <translation>활성화</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>제거</translation>
+    </message>
+    <message>
+        <source>Pro Local is locked. Import a license file, then select Activate.</source>
+        <translation>Pro Local이 잠겨 있습니다. 라이선스 파일을 가져온 다음 활성화를 누르세요.</translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Pro Local file transfer&lt;/b&gt;</source>
+        <translation>&lt;b&gt;Pro Local 파일 전송&lt;/b&gt;</translation>
+    </message>
+    <message>
+        <source>Install and activate a Pro Local license on both Windows computers.</source>
+        <translation>Windows 컴퓨터 두 대 모두에서 Pro Local 라이선스를 설치하고 활성화하세요.</translation>
     </message>
 </context>
 <context>

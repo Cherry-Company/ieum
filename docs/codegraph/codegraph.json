@@ -450,6 +450,18 @@
     },
     {
       "evidence": [
+        "src/lib/common/CMakeLists.txt: target_link_libraries(common licensing)",
+        "src/lib/common/Settings.cpp: #include \"licensing/ProLicense.h\" -> src/lib/licensing/ProLicense.h"
+      ],
+      "kinds": [
+        "include",
+        "link"
+      ],
+      "source": "lib:common",
+      "target": "lib:licensing"
+    },
+    {
+      "evidence": [
         "src/lib/deskflow/App.cpp: #include \"arch/Arch.h\" -> src/lib/arch/Arch.h",
         "src/lib/deskflow/CMakeLists.txt: target_link_libraries(app arch)",
         "src/lib/deskflow/Screen.cpp: #include \"arch/win32/ArchMiscWindows.h\" -> src/lib/arch/win32/ArchMiscWindows.h",
@@ -741,6 +753,17 @@
       ],
       "source": "lib:gui",
       "target": "lib:common"
+    },
+    {
+      "evidence": [
+        "src/lib/gui/dialogs/ProLicenseUiPolicy.h: #include \"licensing/ProLicense.h\" -> src/lib/licensing/ProLicense.h",
+        "src/lib/gui/dialogs/SettingsDialog.cpp: #include \"licensing/ProLicense.h\" -> src/lib/licensing/ProLicense.h"
+      ],
+      "kinds": [
+        "include"
+      ],
+      "source": "lib:gui",
+      "target": "lib:licensing"
     },
     {
       "evidence": [
@@ -1461,6 +1484,7 @@
         "src/unittests/common/I18NTests.cpp: #include \"common/Settings.h\" -> src/lib/common/Settings.h",
         "src/unittests/common/LogLevelTests.cpp: #include \"common/LogLevel.h\" -> src/lib/common/LogLevel.h",
         "src/unittests/common/NetworkInterfacesTests.cpp: #include \"common/NetworkInterfaces.h\" -> src/lib/common/NetworkInterfaces.h",
+        "src/unittests/common/ProLicenseSettingsTests.cpp: #include \"common/Settings.h\" -> src/lib/common/Settings.h",
         "src/unittests/common/SettingsTests.h: #include \"common/Settings.h\" -> src/lib/common/Settings.h",
         "src/unittests/common/TailscaleIntegrationTests.cpp: #include \"common/TailscaleIntegration.h\" -> src/lib/common/TailscaleIntegration.h"
       ],
@@ -1614,6 +1638,7 @@
         "src/unittests/gui/KeySequenceTests.cpp: #include \"gui/KeySequence.h\" -> src/lib/gui/KeySequence.h",
         "src/unittests/gui/LogWidgetTests.cpp: #include \"gui/widgets/LogWidget.h\" -> src/lib/gui/widgets/LogWidget.h",
         "src/unittests/gui/LoggerTests.cpp: #include \"gui/Logger.h\" -> src/lib/gui/Logger.h",
+        "src/unittests/gui/ProLicenseUiPolicyTests.cpp: #include \"gui/dialogs/ProLicenseUiPolicy.h\" -> src/lib/gui/dialogs/ProLicenseUiPolicy.h",
         "src/unittests/gui/ScreenSetupModelTests.cpp: #include \"gui/ScreenSetupModel.h\" -> src/lib/gui/ScreenSetupModel.h",
         "src/unittests/gui/ScreenSetupModelTests.cpp: #include \"gui/widgets/ScreenSetupView.h\" -> src/lib/gui/widgets/ScreenSetupView.h",
         "src/unittests/gui/ServerConfigDialogTests.cpp: #include \"gui/config/ServerConfig.h\" -> src/lib/gui/config/ServerConfig.h",
@@ -1676,6 +1701,16 @@
       ],
       "source": "test:legacytests",
       "target": "lib:deskflow"
+    },
+    {
+      "evidence": [
+        "src/unittests/licensing/ProLicenseTests.cpp: #include \"licensing/ProLicense.h\" -> src/lib/licensing/ProLicense.h"
+      ],
+      "kinds": [
+        "include"
+      ],
+      "source": "test:licensing",
+      "target": "lib:licensing"
     },
     {
       "evidence": [
@@ -1944,7 +1979,7 @@
         "cmake": 1,
         "template": 2
       },
-      "lineCount": 2702,
+      "lineCount": 2753,
       "path": "src/lib/common",
       "targets": [
         "common"
@@ -1959,24 +1994,24 @@
         "c/c++ header": 61,
         "cmake": 1
       },
-      "lineCount": 17847,
+      "lineCount": 17875,
       "path": "src/lib/deskflow",
       "targets": [
         "app"
       ]
     },
     {
-      "fileCount": 111,
+      "fileCount": 113,
       "id": "lib:gui",
       "kind": "library",
       "languageCounts": {
-        "c++": 49,
-        "c/c++ header": 52,
+        "c++": 50,
+        "c/c++ header": 53,
         "cmake": 1,
         "objective-c++": 1,
         "qt-ui": 8
       },
-      "lineCount": 17961,
+      "lineCount": 18253,
       "path": "src/lib/gui",
       "targets": [
         "gui"
@@ -1995,6 +2030,21 @@
       "path": "src/lib/io",
       "targets": [
         "io"
+      ]
+    },
+    {
+      "fileCount": 4,
+      "id": "lib:licensing",
+      "kind": "library",
+      "languageCounts": {
+        "c++": 1,
+        "c/c++ header": 2,
+        "cmake": 1
+      },
+      "lineCount": 385,
+      "path": "src/lib/licensing",
+      "targets": [
+        "licensing"
       ]
     },
     {
@@ -2084,14 +2134,14 @@
       "targets": []
     },
     {
-      "fileCount": 32,
+      "fileCount": 35,
       "id": "support:docs",
       "kind": "documentation",
       "languageCounts": {
         "cmake": 3,
-        "markdown": 29
+        "markdown": 32
       },
-      "lineCount": 4980,
+      "lineCount": 5849,
       "path": "docs",
       "targets": []
     },
@@ -2121,7 +2171,7 @@
         "text": 4,
         "toml": 1
       },
-      "lineCount": 3041,
+      "lineCount": 3101,
       "path": ".",
       "targets": []
     },
@@ -2132,7 +2182,7 @@
       "languageCounts": {
         "cmake": 3
       },
-      "lineCount": 170,
+      "lineCount": 172,
       "path": "src",
       "targets": []
     },
@@ -2144,7 +2194,7 @@
         "cmake": 1,
         "qt-translation": 7
       },
-      "lineCount": 11704,
+      "lineCount": 11948,
       "path": "translations",
       "targets": []
     },
@@ -2195,20 +2245,21 @@
       "targets": []
     },
     {
-      "fileCount": 11,
+      "fileCount": 12,
       "id": "test:common",
       "kind": "test",
       "languageCounts": {
-        "c++": 5,
+        "c++": 6,
         "c/c++ header": 5,
         "cmake": 1
       },
-      "lineCount": 942,
+      "lineCount": 1126,
       "path": "src/unittests/common",
       "targets": [
         "I18NTests",
         "LogLevelTests",
         "NetworkInterfacesTests",
+        "ProLicenseSettingsTests",
         "SettingsTests",
         "TailscaleIntegrationTests"
       ]
@@ -2222,7 +2273,7 @@
         "c/c++ header": 14,
         "cmake": 1
       },
-      "lineCount": 4800,
+      "lineCount": 4994,
       "path": "src/unittests/deskflow",
       "targets": [
         "CanonicalScancodeTests",
@@ -2249,15 +2300,15 @@
       ]
     },
     {
-      "fileCount": 26,
+      "fileCount": 27,
       "id": "test:gui",
       "kind": "test",
       "languageCounts": {
-        "c++": 14,
+        "c++": 15,
         "c/c++ header": 9,
         "cmake": 3
       },
-      "lineCount": 1696,
+      "lineCount": 1808,
       "path": "src/unittests/gui",
       "targets": [
         "DiagnosticTests",
@@ -2267,6 +2318,7 @@
         "LogWidgetTests",
         "LoggerTests",
         "NetworkMonitorTests",
+        "ProLicenseUiPolicyTests",
         "ScreenSetupModelTests",
         "ScreenTests",
         "ServerConfigDialogTests",
@@ -2289,6 +2341,21 @@
       "path": "src/unittests/legacytests",
       "targets": [
         "legacytests"
+      ]
+    },
+    {
+      "fileCount": 5,
+      "id": "test:licensing",
+      "kind": "test",
+      "languageCounts": {
+        "c++": 1,
+        "c/c++ header": 3,
+        "cmake": 1
+      },
+      "lineCount": 348,
+      "path": "src/unittests/licensing",
+      "targets": [
+        "ProLicenseTests"
       ]
     },
     {
@@ -2512,6 +2579,7 @@
       "kind": "cmake-link",
       "name": "OpenSSL::Crypto",
       "sources": [
+        "src/lib/licensing/CMakeLists.txt",
         "src/lib/net/CMakeLists.txt"
       ]
     },
@@ -2537,7 +2605,8 @@
         "src/apps/deskflow-gui/CMakeLists.txt",
         "src/lib/common/CMakeLists.txt",
         "src/lib/deskflow/CMakeLists.txt",
-        "src/lib/gui/CMakeLists.txt"
+        "src/lib/gui/CMakeLists.txt",
+        "src/lib/licensing/CMakeLists.txt"
       ]
     },
     {
@@ -2782,6 +2851,7 @@
         "src/lib/deskflow/ipc/IpcServer.h",
         "src/lib/gui/FileTail.h",
         "src/lib/gui/ScreenSetupModel.h",
+        "src/lib/licensing/ProLicense.h",
         "src/lib/net/Fingerprint.h",
         "src/lib/net/SocketException.h",
         "src/lib/platform/PortalClipboard.h",
@@ -2860,6 +2930,7 @@
         "src/lib/gui/ProductIdentity.h",
         "src/lib/gui/StartupManager.cpp",
         "src/lib/gui/core/CoreProcess.cpp",
+        "src/unittests/common/ProLicenseSettingsTests.cpp",
         "src/unittests/deskflow/IpcServerTests.cpp"
       ]
     },
@@ -2921,11 +2992,21 @@
     },
     {
       "kind": "system-include",
+      "name": "QDate",
+      "sources": [
+        "src/unittests/licensing/ProLicenseTests.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
       "name": "QDateTime",
       "sources": [
         "src/lib/base/Log.cpp",
+        "src/lib/common/Settings.h",
         "src/lib/gui/Diagnostic.cpp",
-        "src/lib/gui/Logger.cpp"
+        "src/lib/gui/Logger.cpp",
+        "src/lib/licensing/ProLicense.h",
+        "src/unittests/licensing/ProLicenseTests.cpp"
       ]
     },
     {
@@ -2988,6 +3069,7 @@
         "src/lib/gui/dialogs/SettingsDialog.cpp",
         "src/unittests/base/LogOutputtersTests.cpp",
         "src/unittests/common/I18NTests.cpp",
+        "src/unittests/common/ProLicenseSettingsTests.cpp",
         "src/unittests/common/SettingsTests.cpp",
         "src/unittests/gui/DiagnosticTests.cpp",
         "src/unittests/gui/LoggerTests.cpp"
@@ -3074,6 +3156,7 @@
         "src/lib/gui/FileTail.cpp",
         "src/lib/gui/TlsUtility.cpp",
         "src/lib/gui/core/CoreProcess.cpp",
+        "src/lib/gui/dialogs/SettingsDialog.cpp",
         "src/lib/net/FingerprintDatabase.cpp",
         "src/lib/net/SecureUtils.cpp",
         "src/lib/platform/PortalClipboard.cpp",
@@ -3081,6 +3164,7 @@
         "src/unittests/base/LogOutputtersTests.cpp",
         "src/unittests/common/I18NTests.cpp",
         "src/unittests/common/LogLevelTests.cpp",
+        "src/unittests/common/ProLicenseSettingsTests.cpp",
         "src/unittests/common/SettingsTests.cpp",
         "src/unittests/gui/FileTailTests.cpp",
         "src/unittests/gui/LoggerTests.cpp",
@@ -3185,7 +3269,8 @@
       "name": "QHash",
       "sources": [
         "src/lib/deskflow/ipc/DaemonIpcServer.h",
-        "src/lib/deskflow/ipc/IpcServer.h"
+        "src/lib/deskflow/ipc/IpcServer.h",
+        "src/lib/licensing/ProLicense.h"
       ]
     },
     {
@@ -3232,7 +3317,8 @@
       "kind": "system-include",
       "name": "QJsonArray",
       "sources": [
-        "src/lib/common/TailscaleIntegration.cpp"
+        "src/lib/common/TailscaleIntegration.cpp",
+        "src/lib/licensing/ProLicense.cpp"
       ]
     },
     {
@@ -3240,7 +3326,8 @@
       "name": "QJsonDocument",
       "sources": [
         "src/lib/common/TailscaleIntegration.cpp",
-        "src/lib/gui/Diagnostic.cpp"
+        "src/lib/gui/Diagnostic.cpp",
+        "src/lib/licensing/ProLicense.cpp"
       ]
     },
     {
@@ -3248,7 +3335,15 @@
       "name": "QJsonObject",
       "sources": [
         "src/lib/common/TailscaleIntegration.cpp",
-        "src/lib/gui/Diagnostic.cpp"
+        "src/lib/gui/Diagnostic.cpp",
+        "src/lib/licensing/ProLicense.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
+      "name": "QJsonParseError",
+      "sources": [
+        "src/lib/licensing/ProLicense.cpp"
       ]
     },
     {
@@ -3600,7 +3695,8 @@
         "src/lib/gui/validators/AliasValidator.cpp",
         "src/lib/gui/validators/ComputerNameValidator.cpp",
         "src/lib/gui/validators/IpAddressValidator.cpp",
-        "src/lib/gui/validators/ScreenNameValidator.cpp"
+        "src/lib/gui/validators/ScreenNameValidator.cpp",
+        "src/lib/licensing/ProLicense.cpp"
       ]
     },
     {
@@ -3667,6 +3763,7 @@
         "src/lib/gui/Hotkey.cpp",
         "src/lib/gui/KeySequence.cpp",
         "src/lib/gui/StartupManager.cpp",
+        "src/unittests/common/ProLicenseSettingsTests.cpp",
         "src/unittests/common/SettingsTests.cpp"
       ]
     },
@@ -3778,17 +3875,20 @@
         "src/lib/gui/ipc/CoreIpcClient.cpp",
         "src/lib/gui/validators/IStringValidator.h",
         "src/lib/gui/validators/ValidationError.h",
+        "src/lib/licensing/ProLicense.h",
         "src/lib/platform/MSWindowsDebugOutputter.cpp",
         "src/lib/platform/XWindowsClipboard.h",
         "src/lib/platform/XWindowsClipboardTextConverter.cpp",
         "src/lib/platform/XWindowsKeyState.cpp",
-        "src/lib/platform/XWindowsScreen.h"
+        "src/lib/platform/XWindowsScreen.h",
+        "src/unittests/licensing/ProLicenseTests.cpp"
       ]
     },
     {
       "kind": "system-include",
       "name": "QStringDecoder",
       "sources": [
+        "src/lib/gui/dialogs/SettingsDialog.cpp",
         "src/lib/platform/MSWindowsWatchdog.cpp"
       ]
     },
@@ -3802,7 +3902,15 @@
         "src/lib/gui/Action.h",
         "src/lib/gui/ScreenSetupModel.h",
         "src/lib/gui/config/Screen.h",
-        "src/lib/gui/widgets/LogWidget.h"
+        "src/lib/gui/widgets/LogWidget.h",
+        "src/lib/licensing/ProLicense.h"
+      ]
+    },
+    {
+      "kind": "system-include",
+      "name": "QStringView",
+      "sources": [
+        "src/lib/licensing/ProLicense.h"
       ]
     },
     {
@@ -3848,6 +3956,7 @@
       "name": "QTemporaryDir",
       "sources": [
         "src/unittests/base/LogOutputtersTests.cpp",
+        "src/unittests/common/ProLicenseSettingsTests.cpp",
         "src/unittests/gui/FileTailTests.cpp",
         "src/unittests/gui/ServerConfigDialogTests.cpp"
       ]
@@ -3866,6 +3975,7 @@
         "src/unittests/common/I18NTests.h",
         "src/unittests/common/LogLevelTests.h",
         "src/unittests/common/NetworkInterfacesTests.h",
+        "src/unittests/common/ProLicenseSettingsTests.cpp",
         "src/unittests/common/SettingsTests.h",
         "src/unittests/common/TailscaleIntegrationTests.h",
         "src/unittests/deskflow/CanonicalScancodeTests.h",
@@ -3888,6 +3998,7 @@
         "src/unittests/gui/KeySequenceTests.h",
         "src/unittests/gui/LogWidgetTests.cpp",
         "src/unittests/gui/LoggerTests.h",
+        "src/unittests/gui/ProLicenseUiPolicyTests.cpp",
         "src/unittests/gui/ScreenSetupModelTests.cpp",
         "src/unittests/gui/ServerConfigDialogTests.cpp",
         "src/unittests/gui/ServiceStartCoordinatorTests.h",
@@ -3896,6 +4007,7 @@
         "src/unittests/gui/VersionCheckerTests.h",
         "src/unittests/gui/config/ScreenTests.h",
         "src/unittests/gui/core/NetworkMonitorTests.h",
+        "src/unittests/licensing/ProLicenseTests.cpp",
         "src/unittests/net/FingerprintDatabaseTests.h",
         "src/unittests/net/FingerprintTests.h",
         "src/unittests/net/NetworkAddressTests.cpp",
@@ -3937,7 +4049,15 @@
       "kind": "system-include",
       "name": "QTime",
       "sources": [
-        "src/lib/gui/Logger.cpp"
+        "src/lib/gui/Logger.cpp",
+        "src/unittests/licensing/ProLicenseTests.cpp"
+      ]
+    },
+    {
+      "kind": "system-include",
+      "name": "QTimeZone",
+      "sources": [
+        "src/unittests/licensing/ProLicenseTests.cpp"
       ]
     },
     {
@@ -3989,6 +4109,7 @@
         "src/lib/deskflow/ipc/DaemonIpcServer.cpp",
         "src/lib/gui/Diagnostic.cpp",
         "src/lib/gui/ipc/DaemonIpcClient.cpp",
+        "src/lib/licensing/ProLicense.cpp",
         "src/unittests/gui/IpcClientTests.cpp"
       ]
     },
@@ -5070,6 +5191,7 @@
         "src/lib/gui/Messages.cpp",
         "src/lib/gui/validators/LineEditValidator.h",
         "src/lib/gui/validators/ScreenNameValidator.cpp",
+        "src/lib/licensing/ProLicense.cpp",
         "src/lib/net/IListenSocket.h",
         "src/lib/net/SecureSocket.cpp",
         "src/lib/net/SecureSocket.h",
@@ -5211,6 +5333,7 @@
       "kind": "system-include",
       "name": "openssl/evp.h",
       "sources": [
+        "src/lib/licensing/ProLicense.cpp",
         "src/lib/net/SecureUtils.cpp"
       ]
     },
@@ -5265,6 +5388,7 @@
         "src/lib/deskflow/win32/MSWindowsEdgeDropHost.h",
         "src/lib/deskflow/win32/MSWindowsEdgeDropTarget.h",
         "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
+        "src/lib/licensing/ProLicense.h",
         "src/lib/platform/MSWindowsFileDropExtractor.h",
         "src/lib/platform/MSWindowsFileTransferIo.cpp",
         "src/lib/platform/MSWindowsFileTransferSource.cpp",
@@ -5869,6 +5993,27 @@
       "name": "NetworkAddressTests.moc",
       "sources": [
         "src/unittests/net/NetworkAddressTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
+      "name": "ProLicenseSettingsTests.moc",
+      "sources": [
+        "src/unittests/common/ProLicenseSettingsTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
+      "name": "ProLicenseTests.moc",
+      "sources": [
+        "src/unittests/licensing/ProLicenseTests.cpp"
+      ]
+    },
+    {
+      "kind": "unresolved-quoted-include",
+      "name": "ProLicenseUiPolicyTests.moc",
+      "sources": [
+        "src/unittests/gui/ProLicenseUiPolicyTests.cpp"
       ]
     },
     {
@@ -7253,6 +7398,12 @@
       "kind": "include",
       "source": "src/lib/common/Settings.cpp",
       "target": "src/lib/common/UrlConstants.h"
+    },
+    {
+      "evidence": "#include \"licensing/ProLicense.h\"",
+      "kind": "include",
+      "source": "src/lib/common/Settings.cpp",
+      "target": "src/lib/licensing/ProLicense.h"
     },
     {
       "evidence": "#include \"common/Constants.h\"",
@@ -9535,6 +9686,18 @@
       "target": "src/lib/gui/Hotkey.h"
     },
     {
+      "evidence": "#include \"ProLicenseUiPolicy.h\"",
+      "kind": "include",
+      "source": "src/lib/gui/dialogs/ProLicenseUiPolicy.cpp",
+      "target": "src/lib/gui/dialogs/ProLicenseUiPolicy.h"
+    },
+    {
+      "evidence": "#include \"licensing/ProLicense.h\"",
+      "kind": "include",
+      "source": "src/lib/gui/dialogs/ProLicenseUiPolicy.h",
+      "target": "src/lib/licensing/ProLicense.h"
+    },
+    {
       "evidence": "#include \"gui/config/Screen.h\"",
       "kind": "include",
       "source": "src/lib/gui/dialogs/ScreenSettingsDialog.cpp",
@@ -9685,10 +9848,22 @@
       "target": "src/lib/gui/core/NetworkMonitor.h"
     },
     {
+      "evidence": "#include \"gui/dialogs/ProLicenseUiPolicy.h\"",
+      "kind": "include",
+      "source": "src/lib/gui/dialogs/SettingsDialog.cpp",
+      "target": "src/lib/gui/dialogs/ProLicenseUiPolicy.h"
+    },
+    {
       "evidence": "#include \"SettingsDialog.h\"",
       "kind": "include",
       "source": "src/lib/gui/dialogs/SettingsDialog.cpp",
       "target": "src/lib/gui/dialogs/SettingsDialog.h"
+    },
+    {
+      "evidence": "#include \"licensing/ProLicense.h\"",
+      "kind": "include",
+      "source": "src/lib/gui/dialogs/SettingsDialog.cpp",
+      "target": "src/lib/licensing/ProLicense.h"
     },
     {
       "evidence": "#include \"common/TailscaleIntegration.h\"",
@@ -10103,6 +10278,18 @@
       "kind": "include",
       "source": "src/lib/io/StreamFilter.h",
       "target": "src/lib/io/IStream.h"
+    },
+    {
+      "evidence": "#include \"licensing/ProLicense.h\"",
+      "kind": "include",
+      "source": "src/lib/licensing/ProLicense.cpp",
+      "target": "src/lib/licensing/ProLicense.h"
+    },
+    {
+      "evidence": "#include \"licensing/ProLicensePublicKey.h\"",
+      "kind": "include",
+      "source": "src/lib/licensing/ProLicense.cpp",
+      "target": "src/lib/licensing/ProLicensePublicKey.h"
     },
     {
       "evidence": "#include \"arch/Arch.h\"",
@@ -14215,6 +14402,12 @@
       "target": "src/unittests/common/NetworkInterfacesTests.h"
     },
     {
+      "evidence": "#include \"common/Settings.h\"",
+      "kind": "include",
+      "source": "src/unittests/common/ProLicenseSettingsTests.cpp",
+      "target": "src/lib/common/Settings.h"
+    },
+    {
       "evidence": "#include \"SettingsTests.h\"",
       "kind": "include",
       "source": "src/unittests/common/SettingsTests.cpp",
@@ -14743,6 +14936,12 @@
       "target": "src/unittests/gui/LoggerTests.h"
     },
     {
+      "evidence": "#include \"gui/dialogs/ProLicenseUiPolicy.h\"",
+      "kind": "include",
+      "source": "src/unittests/gui/ProLicenseUiPolicyTests.cpp",
+      "target": "src/lib/gui/dialogs/ProLicenseUiPolicy.h"
+    },
+    {
       "evidence": "#include \"gui/ScreenSetupModel.h\"",
       "kind": "include",
       "source": "src/unittests/gui/ScreenSetupModelTests.cpp",
@@ -14933,6 +15132,30 @@
       "kind": "include",
       "source": "src/unittests/legacytests/shared/ExitTimeout.cpp",
       "target": "src/unittests/legacytests/shared/ExitTimeout.h"
+    },
+    {
+      "evidence": "#include \"licensing/ProLicense.h\"",
+      "kind": "include",
+      "source": "src/unittests/licensing/ProLicenseTests.cpp",
+      "target": "src/lib/licensing/ProLicense.h"
+    },
+    {
+      "evidence": "#include \"fixtures/invalid-signed-licenses.h\"",
+      "kind": "include",
+      "source": "src/unittests/licensing/ProLicenseTests.cpp",
+      "target": "src/unittests/licensing/fixtures/invalid-signed-licenses.h"
+    },
+    {
+      "evidence": "#include \"fixtures/test-public-key.h\"",
+      "kind": "include",
+      "source": "src/unittests/licensing/ProLicenseTests.cpp",
+      "target": "src/unittests/licensing/fixtures/test-public-key.h"
+    },
+    {
+      "evidence": "#include \"fixtures/valid-perpetual-license.h\"",
+      "kind": "include",
+      "source": "src/unittests/licensing/ProLicenseTests.cpp",
+      "target": "src/unittests/licensing/fixtures/valid-perpetual-license.h"
     },
     {
       "evidence": "#include \"net/Fingerprint.h\"",
@@ -15478,25 +15701,25 @@
       "binary": false,
       "component": "support:root",
       "language": "markdown",
-      "lineCount": 501,
+      "lineCount": 521,
       "path": "README.en.md",
-      "sizeBytes": 33034
+      "sizeBytes": 34577
     },
     {
       "binary": false,
       "component": "support:root",
       "language": "markdown",
-      "lineCount": 775,
+      "lineCount": 798,
       "path": "README.md",
-      "sizeBytes": 57989
+      "sizeBytes": 60303
     },
     {
       "binary": false,
       "component": "support:root",
       "language": "markdown",
-      "lineCount": 459,
+      "lineCount": 476,
       "path": "README.zh-CN.md",
-      "sizeBytes": 30523
+      "sizeBytes": 32008
     },
     {
       "binary": false,
@@ -15862,9 +16085,17 @@
       "binary": false,
       "component": "support:docs",
       "language": "markdown",
-      "lineCount": 575,
+      "lineCount": 69,
+      "path": "docs/dev/pro_local_file_transfer.md",
+      "sizeBytes": 4542
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 580,
       "path": "docs/dev/protocol_reference.md",
-      "sizeBytes": 33662
+      "sizeBytes": 33991
     },
     {
       "binary": false,
@@ -15886,17 +16117,17 @@
       "binary": false,
       "component": "support:docs",
       "language": "markdown",
-      "lineCount": 285,
+      "lineCount": 299,
       "path": "docs/product/commercialization-roadmap.md",
-      "sizeBytes": 14964
+      "sizeBytes": 15856
     },
     {
       "binary": false,
       "component": "support:docs",
       "language": "markdown",
-      "lineCount": 52,
+      "lineCount": 55,
       "path": "docs/release/sponsorship-impact.md",
-      "sizeBytes": 4725
+      "sizeBytes": 5026
     },
     {
       "binary": false,
@@ -15958,6 +16189,14 @@
       "binary": false,
       "component": "support:docs",
       "language": "markdown",
+      "lineCount": 550,
+      "path": "docs/superpowers/plans/2026-08-31-pro-local-offline-license-gate.md",
+      "sizeBytes": 24572
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
       "lineCount": 27,
       "path": "docs/superpowers/plans/2026-08-31-windows-data-object-bridge.md",
       "sizeBytes": 1175
@@ -16001,6 +16240,14 @@
       "lineCount": 342,
       "path": "docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md",
       "sizeBytes": 15185
+    },
+    {
+      "binary": false,
+      "component": "support:docs",
+      "language": "markdown",
+      "lineCount": 228,
+      "path": "docs/superpowers/specs/2026-08-31-pro-local-offline-license-gate-design.md",
+      "sizeBytes": 9958
     },
     {
       "binary": false,
@@ -17838,9 +18085,9 @@
       "binary": false,
       "component": "support:source-build",
       "language": "cmake",
-      "lineCount": 16,
+      "lineCount": 17,
       "path": "src/lib/CMakeLists.txt",
-      "sizeBytes": 456
+      "sizeBytes": 484
     },
     {
       "binary": false,
@@ -18366,9 +18613,9 @@
       "binary": false,
       "component": "lib:common",
       "language": "cmake",
-      "lineCount": 42,
+      "lineCount": 45,
       "path": "src/lib/common/CMakeLists.txt",
-      "sizeBytes": 964
+      "sizeBytes": 987
     },
     {
       "binary": false,
@@ -18494,17 +18741,17 @@
       "binary": false,
       "component": "lib:common",
       "language": "c++",
-      "lineCount": 460,
+      "lineCount": 497,
       "path": "src/lib/common/Settings.cpp",
-      "sizeBytes": 13879
+      "sizeBytes": 15100
     },
     {
       "binary": false,
       "component": "lib:common",
       "language": "c/c++ header",
-      "lineCount": 458,
+      "lineCount": 469,
       "path": "src/lib/common/Settings.h",
-      "sizeBytes": 21316
+      "sizeBytes": 21861
     },
     {
       "binary": false,
@@ -18614,9 +18861,9 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "c++",
-      "lineCount": 468,
+      "lineCount": 469,
       "path": "src/lib/deskflow/ClientApp.cpp",
-      "sizeBytes": 13671
+      "sizeBytes": 13810
     },
     {
       "binary": false,
@@ -19182,9 +19429,9 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "c++",
-      "lineCount": 681,
+      "lineCount": 683,
       "path": "src/lib/deskflow/ServerApp.cpp",
-      "sizeBytes": 19670
+      "sizeBytes": 19815
     },
     {
       "binary": false,
@@ -19382,17 +19629,17 @@
       "binary": false,
       "component": "lib:deskflow",
       "language": "c++",
-      "lineCount": 490,
+      "lineCount": 513,
       "path": "src/lib/deskflow/win32/MSWindowsFileTransferService.cpp",
-      "sizeBytes": 17472
+      "sizeBytes": 18275
     },
     {
       "binary": false,
       "component": "lib:deskflow",
       "language": "c/c++ header",
-      "lineCount": 70,
+      "lineCount": 72,
       "path": "src/lib/deskflow/win32/MSWindowsFileTransferService.h",
-      "sizeBytes": 2356
+      "sizeBytes": 2452
     },
     {
       "binary": false,
@@ -19414,9 +19661,9 @@
       "binary": false,
       "component": "lib:gui",
       "language": "cmake",
-      "lineCount": 147,
+      "lineCount": 149,
       "path": "src/lib/gui/CMakeLists.txt",
-      "sizeBytes": 3371
+      "sizeBytes": 3435
     },
     {
       "binary": false,
@@ -19862,6 +20109,22 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
+      "lineCount": 31,
+      "path": "src/lib/gui/dialogs/ProLicenseUiPolicy.cpp",
+      "sizeBytes": 1081
+    },
+    {
+      "binary": false,
+      "component": "lib:gui",
+      "language": "c/c++ header",
+      "lineCount": 27,
+      "path": "src/lib/gui/dialogs/ProLicenseUiPolicy.h",
+      "sizeBytes": 764
+    },
+    {
+      "binary": false,
+      "component": "lib:gui",
+      "language": "c++",
       "lineCount": 148,
       "path": "src/lib/gui/dialogs/ScreenSettingsDialog.cpp",
       "sizeBytes": 5972
@@ -19910,25 +20173,25 @@
       "binary": false,
       "component": "lib:gui",
       "language": "c++",
-      "lineCount": 915,
+      "lineCount": 1058,
       "path": "src/lib/gui/dialogs/SettingsDialog.cpp",
-      "sizeBytes": 45448
+      "sizeBytes": 51679
     },
     {
       "binary": false,
       "component": "lib:gui",
       "language": "c/c++ header",
-      "lineCount": 107,
+      "lineCount": 110,
       "path": "src/lib/gui/dialogs/SettingsDialog.h",
-      "sizeBytes": 2976
+      "sizeBytes": 3059
     },
     {
       "binary": false,
       "component": "lib:gui",
       "language": "qt-ui",
-      "lineCount": 1210,
+      "lineCount": 1296,
       "path": "src/lib/gui/dialogs/SettingsDialog.ui",
-      "sizeBytes": 38821
+      "sizeBytes": 41790
     },
     {
       "binary": false,
@@ -20345,6 +20608,38 @@
       "lineCount": 68,
       "path": "src/lib/io/StreamFilter.h",
       "sizeBytes": 2024
+    },
+    {
+      "binary": false,
+      "component": "lib:licensing",
+      "language": "cmake",
+      "lineCount": 19,
+      "path": "src/lib/licensing/CMakeLists.txt",
+      "sizeBytes": 469
+    },
+    {
+      "binary": false,
+      "component": "lib:licensing",
+      "language": "c++",
+      "lineCount": 289,
+      "path": "src/lib/licensing/ProLicense.cpp",
+      "sizeBytes": 9533
+    },
+    {
+      "binary": false,
+      "component": "lib:licensing",
+      "language": "c/c++ header",
+      "lineCount": 61,
+      "path": "src/lib/licensing/ProLicense.h",
+      "sizeBytes": 1561
+    },
+    {
+      "binary": false,
+      "component": "lib:licensing",
+      "language": "c/c++ header",
+      "lineCount": 16,
+      "path": "src/lib/licensing/ProLicensePublicKey.h",
+      "sizeBytes": 458
     },
     {
       "binary": false,
@@ -22150,9 +22445,9 @@
       "binary": false,
       "component": "support:source-build",
       "language": "cmake",
-      "lineCount": 88,
+      "lineCount": 89,
       "path": "src/unittests/CMakeLists.txt",
-      "sizeBytes": 2670
+      "sizeBytes": 2698
     },
     {
       "binary": false,
@@ -22278,9 +22573,9 @@
       "binary": false,
       "component": "test:common",
       "language": "cmake",
-      "lineCount": 37,
+      "lineCount": 44,
       "path": "src/unittests/common/CMakeLists.txt",
-      "sizeBytes": 810
+      "sizeBytes": 968
     },
     {
       "binary": false,
@@ -22334,17 +22629,25 @@
       "binary": false,
       "component": "test:common",
       "language": "c++",
-      "lineCount": 183,
+      "lineCount": 168,
+      "path": "src/unittests/common/ProLicenseSettingsTests.cpp",
+      "sizeBytes": 5390
+    },
+    {
+      "binary": false,
+      "component": "test:common",
+      "language": "c++",
+      "lineCount": 194,
       "path": "src/unittests/common/SettingsTests.cpp",
-      "sizeBytes": 6106
+      "sizeBytes": 6476
     },
     {
       "binary": false,
       "component": "test:common",
       "language": "c/c++ header",
-      "lineCount": 53,
+      "lineCount": 51,
       "path": "src/unittests/common/SettingsTests.h",
-      "sizeBytes": 2079
+      "sizeBytes": 2004
     },
     {
       "binary": false,
@@ -22582,9 +22885,9 @@
       "binary": false,
       "component": "test:deskflow",
       "language": "c++",
-      "lineCount": 281,
+      "lineCount": 475,
       "path": "src/unittests/deskflow/MSWindowsFileTransferServiceTests.cpp",
-      "sizeBytes": 9132
+      "sizeBytes": 16962
     },
     {
       "binary": false,
@@ -22654,9 +22957,9 @@
       "binary": false,
       "component": "test:gui",
       "language": "cmake",
-      "lineCount": 92,
+      "lineCount": 99,
       "path": "src/unittests/gui/CMakeLists.txt",
-      "sizeBytes": 1940
+      "sizeBytes": 2102
     },
     {
       "binary": false,
@@ -22737,6 +23040,14 @@
       "lineCount": 24,
       "path": "src/unittests/gui/LoggerTests.h",
       "sizeBytes": 746
+    },
+    {
+      "binary": false,
+      "component": "test:gui",
+      "language": "c++",
+      "lineCount": 105,
+      "path": "src/unittests/gui/ProLicenseUiPolicyTests.cpp",
+      "sizeBytes": 3587
     },
     {
       "binary": false,
@@ -22937,6 +23248,46 @@
       "lineCount": 37,
       "path": "src/unittests/legacytests/shared/ExitTimeout.h",
       "sizeBytes": 910
+    },
+    {
+      "binary": false,
+      "component": "test:licensing",
+      "language": "cmake",
+      "lineCount": 9,
+      "path": "src/unittests/licensing/CMakeLists.txt",
+      "sizeBytes": 275
+    },
+    {
+      "binary": false,
+      "component": "test:licensing",
+      "language": "c++",
+      "lineCount": 189,
+      "path": "src/unittests/licensing/ProLicenseTests.cpp",
+      "sizeBytes": 7322
+    },
+    {
+      "binary": false,
+      "component": "test:licensing",
+      "language": "c/c++ header",
+      "lineCount": 111,
+      "path": "src/unittests/licensing/fixtures/invalid-signed-licenses.h",
+      "sizeBytes": 6354
+    },
+    {
+      "binary": false,
+      "component": "test:licensing",
+      "language": "c/c++ header",
+      "lineCount": 14,
+      "path": "src/unittests/licensing/fixtures/test-public-key.h",
+      "sizeBytes": 440
+    },
+    {
+      "binary": false,
+      "component": "test:licensing",
+      "language": "c/c++ header",
+      "lineCount": 25,
+      "path": "src/unittests/licensing/fixtures/valid-perpetual-license.h",
+      "sizeBytes": 1390
     },
     {
       "binary": false,
@@ -23286,67 +23637,67 @@
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1925,
+      "lineCount": 1973,
       "path": "translations/deskflow_es.ts",
-      "sizeBytes": 84193
+      "sizeBytes": 85221
     },
     {
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1925,
+      "lineCount": 1973,
       "path": "translations/deskflow_it.ts",
-      "sizeBytes": 79688
+      "sizeBytes": 80759
     },
     {
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1925,
+      "lineCount": 1973,
       "path": "translations/deskflow_ja.ts",
-      "sizeBytes": 81403
+      "sizeBytes": 82253
     },
     {
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1961,
+      "lineCount": 1985,
       "path": "translations/deskflow_ko.ts",
-      "sizeBytes": 87306
+      "sizeBytes": 88140
     },
     {
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1925,
+      "lineCount": 1973,
       "path": "translations/deskflow_ru.ts",
-      "sizeBytes": 85837
+      "sizeBytes": 86435
     },
     {
       "binary": false,
       "component": "support:translations",
       "language": "qt-translation",
-      "lineCount": 1957,
+      "lineCount": 1985,
       "path": "translations/deskflow_zh_CN.ts",
-      "sizeBytes": 81666
+      "sizeBytes": 81755
     }
   ],
   "revision": {
-    "branch": "fix/release-privacy-evidence",
-    "commit": "e89024e1b00c85957fd433fe0475816de0155c62",
+    "branch": "feat/pro-license-gate-alpha21",
+    "commit": "7da88edb998faceb187fd6e29d76023be7d021a6",
     "dirtyTrackedFiles": false
   },
   "schemaVersion": 1,
   "summary": {
-    "componentEdges": 98,
-    "components": 42,
+    "componentEdges": 101,
+    "components": 44,
     "excludedFiles": 3,
-    "fileIncludeEdges": 1534,
-    "representedFiles": 1020,
-    "sourceFiles": 650,
-    "sourceLines": 107813,
-    "targets": 79,
-    "trackedFiles": 1023
+    "fileIncludeEdges": 1547,
+    "representedFiles": 1036,
+    "sourceFiles": 661,
+    "sourceLines": 109274,
+    "targets": 83,
+    "trackedFiles": 1039
   },
   "targets": [
     {
@@ -23614,6 +23965,24 @@
       "source": "src/unittests/platform/CMakeLists.txt"
     },
     {
+      "component": "test:common",
+      "kind": "test",
+      "name": "ProLicenseSettingsTests",
+      "source": "src/unittests/common/CMakeLists.txt"
+    },
+    {
+      "component": "test:licensing",
+      "kind": "test",
+      "name": "ProLicenseTests",
+      "source": "src/unittests/licensing/CMakeLists.txt"
+    },
+    {
+      "component": "test:gui",
+      "kind": "test",
+      "name": "ProLicenseUiPolicyTests",
+      "source": "src/unittests/gui/CMakeLists.txt"
+    },
+    {
       "component": "test:deskflow",
       "kind": "test",
       "name": "Protocol19Tests",
@@ -23794,6 +24163,12 @@
       "source": "src/unittests/legacytests/legacytests/CMakeLists.txt"
     },
     {
+      "component": "lib:licensing",
+      "kind": "library",
+      "name": "licensing",
+      "source": "src/lib/licensing/CMakeLists.txt"
+    },
+    {
       "component": "lib:mt",
       "kind": "library",
       "name": "mt",
@@ -23866,6 +24241,10 @@
       "source": "src/unittests/base/LogOutputtersTests.cpp"
     },
     {
+      "include": "ProLicenseSettingsTests.moc",
+      "source": "src/unittests/common/ProLicenseSettingsTests.cpp"
+    },
+    {
       "include": "ClientReconnectPolicyTests.moc",
       "source": "src/unittests/deskflow/ClientReconnectPolicyTests.cpp"
     },
@@ -23886,6 +24265,10 @@
       "source": "src/unittests/gui/LogWidgetTests.cpp"
     },
     {
+      "include": "ProLicenseUiPolicyTests.moc",
+      "source": "src/unittests/gui/ProLicenseUiPolicyTests.cpp"
+    },
+    {
       "include": "ScreenSetupModelTests.moc",
       "source": "src/unittests/gui/ScreenSetupModelTests.cpp"
     },
@@ -23896,6 +24279,10 @@
     {
       "include": "StatusBarTests.moc",
       "source": "src/unittests/gui/StatusBarTests.cpp"
+    },
+    {
+      "include": "ProLicenseTests.moc",
+      "source": "src/unittests/licensing/ProLicenseTests.cpp"
     },
     {
       "include": "NetworkAddressTests.moc",

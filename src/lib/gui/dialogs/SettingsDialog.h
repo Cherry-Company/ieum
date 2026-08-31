@@ -37,6 +37,9 @@ private:
   void browseCertificatePath();
   void browseLogPath();
   void browseFileTransferDirectory();
+  void importProLicense();
+  void activateProLicense();
+  void removeProLicense();
   void setLogToFile(bool logToFile);
   void accept() override;
   void acceptWithTailscaleStatus();

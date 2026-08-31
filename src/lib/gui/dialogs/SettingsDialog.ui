@@ -977,12 +977,98 @@
            <height>0</height>
           </size>
          </property>
-        </spacer>
+       </spacer>
+      </item>
+       <item>
+        <widget class="QGroupBox" name="groupProLicense">
+         <property name="title">
+          <string>Pro Local license</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayoutProLicense">
+          <item>
+           <widget class="QLabel" name="lblProLicenseHelp">
+            <property name="text">
+             <string>Import the license file you received, then activate it on this computer.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="lineProLicense">
+            <property name="maxLength">
+             <number>4096</number>
+            </property>
+            <property name="echoMode">
+             <enum>QLineEdit::Password</enum>
+            </property>
+            <property name="placeholderText">
+             <string>IEUM1 license line</string>
+            </property>
+            <property name="clearButtonEnabled">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutProLicenseActions">
+            <item>
+             <widget class="QPushButton" name="btnImportProLicense">
+              <property name="text">
+               <string>Import license file…</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnActivateProLicense">
+              <property name="text">
+               <string>Activate</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnRemoveProLicense">
+              <property name="text">
+               <string>Remove</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacerProLicenseActions">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="lblProLicenseStatus">
+            <property name="text">
+             <string>Pro Local is locked. Import a license file, then select Activate.</string>
+            </property>
+            <property name="textFormat">
+             <enum>Qt::TextFormat::PlainText</enum>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
         <widget class="QLabel" name="lblFileTransferTitle">
          <property name="text">
-          <string>&lt;b&gt;Pro Local file transfer preview&lt;/b&gt;</string>
+          <string>&lt;b&gt;Pro Local file transfer&lt;/b&gt;</string>
          </property>
         </widget>
        </item>
@@ -1055,9 +1141,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="lblFileTransferPreview">
+        <widget class="QLabel" name="lblFileTransferScope">
          <property name="text">
-          <string>This preview sends from the Windows server computer to a connected Windows client.</string>
+          <string>Install and activate a Pro Local license on both Windows computers.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>

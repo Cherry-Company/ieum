@@ -26,10 +26,12 @@ struct MSWindowsFileTransferServiceOptions
   using ControlSender = std::function<bool(const FileTransferControlMessage &)>;
   using DataSender = std::function<bool(const FileTransferDataMessage &)>;
   using TransferIdGenerator = std::function<TransferId()>;
+  using AuthorizationCheck = std::function<bool()>;
 
   std::string localScreen;
   std::filesystem::path destinationDirectory;
   bool receiveEnabled = false;
+  AuthorizationCheck authorizeFileTransfer;
   ControlSender sendControl;
   DataSender sendData;
   TransferIdGenerator createTransferId;

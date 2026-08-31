@@ -35,3 +35,10 @@ create_test(
   SOURCE TailscaleIntegrationTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/common"
 )
+
+create_test(
+  NAME ProLicenseSettingsTests
+  DEPENDS common
+  SOURCE ProLicenseSettingsTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/common"
+)

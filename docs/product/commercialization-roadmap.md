@@ -30,6 +30,10 @@ an unimplemented paid product already exists.
    official-package price. Pro Cloud pays recurring control-plane and relay
    costs, so hosted relay is subscription and quota based rather than an
    unlimited lifetime entitlement.
+9. `alpha.21` starts with a manually issued offline Pro Local license. It does
+   not count devices, contact an activation service, or support remote
+   revocation. The signing authority is intentionally kept outside Git and is
+   not distributed with the application or supporter license.
 
 ## Repository and Process Boundaries
 
@@ -84,6 +88,9 @@ GPL-covered binaries may be sold. Recipients still retain the license rights
 to obtain the corresponding source and redistribute their copies. Official
 binary convenience, signing, hosted availability, administration, and support
 are therefore the commercial differentiators rather than source restriction.
+The public verifier and feature gate can also be modified by someone building
+their own GPL copy, so the offline key is an entitlement for official binaries,
+not unbreakable DRM or a way to make the desktop source proprietary.
 
 ### Conditions before any future license change
 
@@ -195,28 +202,33 @@ secret. Required lifecycle cases are checkout, renewal, payment failure,
 cancellation, refund, plan change, grace expiry, webhook replay, and duplicate
 webhook delivery.
 
-The first planned Pro product feature is drag-and-drop file transfer between
-computers. Its desktop implementation and protocol remain in the public GPL
-repository. Official Pro distribution, hosted relay, device administration,
-and support form the paid boundary. Drag semantics, receiving-user approval,
-filename conflicts, transfer limits, cancellation, resumption, and platform
-integration are governed by a separate approved design.
+The first Pro product feature is drag-and-drop file transfer between computers.
+Its desktop implementation, offline verifier, and protocol remain in the
+public GPL repository. Official Pro distribution, hosted relay, device
+administration, and support form the paid boundary. Drag semantics,
+receiving-user approval, filename conflicts, transfer limits, cancellation,
+resumption, and platform integration are governed by a separate approved
+design.
 
 That design is now approved in
 [`docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md`](../superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md).
-The `alpha.20` implementation is the first Windows preview: a server-side edge
-drop sends bounded 60 KiB chunks over the existing TLS connection to a client
-that has explicitly enabled receiving. The receiver stages bytes in a hidden
-directory, verifies each SHA-256 digest, and publishes without overwriting into
-the configured directory (default: `Downloads/Ieum`). Direct LAN bytes do not
-use an Ieum-operated service.
+Starting with `alpha.21`, the Windows path requires a valid offline Pro Local
+entitlement on both endpoints. A server-side edge drop sends bounded 60 KiB
+chunks over the existing TLS connection to a client that has explicitly
+enabled receiving. The receiver stages bytes in a hidden directory, verifies
+each SHA-256 digest, and publishes without overwriting into the configured
+directory (default: `Downloads/Ieum`). Direct LAN bytes do not use an
+Ieum-operated service.
 
 This first slice is server-to-client only. Per-transfer approval UI,
 client-to-server edge drag, pause/resume, progress UI, native drop into an
-arbitrary remote application, hosted discovery, entitlement, billing, and
-relay remain later work. Shipping this capability in an experimental GPL alpha
-does not mean that Pro is on sale or that the Phase 1 and Phase 2 production
-gates are complete.
+arbitrary remote application, hosted discovery, account-based activation,
+billing, seats, and relay remain later work. Offline files are not device-bound
+or remotely revocable. The private issuer and signing key are intentionally not
+distributed; supporters receive only their `.ieum-license.txt` file. Shipping
+this capability in an experimental GPL alpha does not mean that an automated
+storefront is live or that the Phase 1 and Phase 2 production gates are
+complete.
 
 ## Phase 4: Discovery and Relay
 
@@ -278,8 +290,10 @@ stable. It adds:
 ## Immediate Implementation Slices
 
 Phase 1 continues through the remaining Windows, X11, Wayland, macOS,
-protocol-documentation, and translation work. The Pro Local file-transfer
-preview may be exercised in alpha releases, but it is not sold or described as
-production-ready before the Phase 1 and Phase 2 exit gates. The next Pro Local
-slices are per-transfer approval and progress UI, client-to-server initiation,
-resumable sessions, and only then entitlement packaging or hosted connectivity.
+protocol-documentation, and translation work. The Pro Local offline-license
+and file-transfer path may be exercised in alpha releases, but it is not
+described as production-ready before the Phase 1 and Phase 2 exit gates. The
+next Pro Local slices are two-PC physical acceptance, per-transfer approval and
+progress UI, client-to-server initiation, and resumable sessions. Account
+activation, payment and seats follow those local foundations; hosted discovery
+and relay come afterward.
