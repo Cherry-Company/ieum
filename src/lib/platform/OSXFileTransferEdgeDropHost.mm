@@ -294,7 +294,7 @@ bool OSXFileTransferEdgeDropHost::configure(const deskflow::DisplayLayout &displ
     return false;
   }
 
-  __block bool configured = true;
+  bool configured = true;
   onMainThread([&] {
     @autoreleasepool {
       clearPanels(m_impl->panels);

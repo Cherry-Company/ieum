@@ -151,7 +151,7 @@ std::optional<std::string> normalizedUtf8(std::string_view value)
     return std::nullopt;
   }
   QStringDecoder decoder(QStringDecoder::Utf8);
-  auto text = decoder.decode(QByteArrayView(value.data(), static_cast<qsizetype>(value.size())));
+  QString text = decoder.decode(QByteArrayView(value.data(), static_cast<qsizetype>(value.size())));
   if (decoder.hasError()) {
     return std::nullopt;
   }
