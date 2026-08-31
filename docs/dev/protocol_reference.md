@@ -506,11 +506,12 @@ For platform-specific implementation details, refer to:
   - The receiver writes only into an owned hidden staging directory, verifies
     sizes and digests, flushes, and publishes without overwriting an existing
     destination file.
-  - Starting with `alpha.21`, both Windows endpoints must activate a Pro Local
-    license and explicitly enable their send/receive role. The data path uses
-    the existing TLS connection.
-  - The current screen-edge path is Windows server-to-client and does not yet
-    expose progress or pause/resume.
+  - Starting with `alpha.22`, Windows and macOS endpoints must activate a Pro
+    Local file-transfer license and explicitly enable their send/receive role.
+    The data path uses the existing TLS connection.
+  - Protocol 1.14 adds edge-target discovery so either the primary or secondary
+    can originate a cross-platform screen-edge drop. Progress and pause/resume
+    are not yet exposed.
 
 - **Security Features**
   - TLS/SSL encryption (v1.4+)

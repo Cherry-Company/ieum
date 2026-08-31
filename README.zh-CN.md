@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.21"><strong>下载 Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.22"><strong>下载 Ieum</strong></a>
   · <a href="#首次运行时的安全与权限"><strong>安全与权限</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>赞助 Ieum</strong></a>
 </p>
@@ -32,7 +32,7 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 还试图把不同系统中的 **韩/英输入状态、输入法组合会话、物理按键位置和 Unicode 剪贴板**连接成
 一致的输入链路。
 
-> 当前版本为 `v0.1.0-alpha.21`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
+> 当前版本为 `v0.1.0-alpha.22`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
 
 ## 帮助 Ieum 完成正式发行
@@ -51,23 +51,25 @@ ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
 
 仍可选择自定义金额进行单次赞助。无论是否赞助，本地 KVM、韩语/CJK 输入同步和剪贴板核心都将保持
 开放。每个版本都会公开[赞助资金分配金额和完成的工作](docs/release/sponsorship-impact.md)。
-`alpha.21` 分配的赞助资金为 **USD 0**。
+`alpha.22` 分配的赞助资金为 **USD 0**。Early Access 的标价只有在实际收到并核实付款后才计入赞助收入。
 
-## Alpha.21 Pro Local 离线许可与文件拖放
+## Alpha.22 Windows ↔ macOS Pro Local 文件拖放
 
-从 `alpha.21` 开始，Windows 文件发送与接收属于 **Pro Local** 功能。本地 KVM、韩语/CJK 输入同步
-与剪贴板仍可在没有许可证的情况下使用。
+在 `alpha.22` 中，Windows 或 macOS 电脑都可以从已配置的屏幕边缘发起传输，不受服务端/客户端角色
+限制。文件传输属于 **Pro Local** 功能；本地 KVM、韩语/CJK 输入同步与剪贴板仍可免费使用。
 
-- 赞助者会收到一个 `*.ieum-license.txt` 文件。请在两台 Windows 电脑的 **首选项 → Files** 中导入
-  并激活，然后在两端启用 TLS，并明确开启所需的发送或接收角色。
+- 在每台参与传输的 Windows 或 macOS 电脑上，通过 **首选项 → Files** 导入并激活同一个
+  `*.ieum-license.txt`。所有电脑都要启用 TLS，并明确开启发送或接收。
 - 应用会在服务启动、提议/接受边界和数据传输期间重新检查授权。移除或过期的密钥会使当前会话失败；
   恢复密钥不会让已失败的会话复活。
 - 协议 1.12 负责提议、决定、取消和结果；协议 1.13 传输有界数据帧，每次事件循环最多处理一个
   60 KiB 数据块。
-- 发送前重新验证 Windows 文件标识、大小和修改时间。接收端写入隐藏暂存目录，验证大小与 SHA-256，
+- 发送前重新验证文件标识、大小和修改时间。接收端写入权限受限的隐藏暂存目录，验证大小与 SHA-256，
   并以避免冲突的新名称发布，不覆盖已有文件。
-- 当前屏幕边缘路径仅支持 **Windows 服务端 → Windows 客户端**。逐次确认、进度、暂停/续传、反向拖放和
-  直接放入远程应用仍是后续工作。
+- Windows→macOS 与 macOS→Windows 均可沿已配置的拓扑边缘传输。操作始终是复制，不会移动或删除源文件。
+- **Pro Local Early Access 为一次性 USD 30。** 从应用打开带 claim code 的 GitHub Sponsors 页面付款，
+  再把 GitHub 用户名与 claim code 发到 `easecompany@protonmail.ch`。所有者核实付款后通过邮件发送永久
+  文件传输许可证。本次购买不包含未来全部 Pro 功能。
 - 当前离线许可证不统计设备，也不能远程撤销。私有签发器和签名密钥仅由项目所有者保管，不会放入
   公开仓库、发布包或赞助者文件。详见 [Pro Local 文件传输说明](docs/dev/pro_local_file_transfer.md)。
 
@@ -257,16 +259,16 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.21 发布页](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.21)
+[Ieum v0.1.0-alpha.22 发布页](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.22)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.21-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.21-macos-x86_64.dmg` |
-| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.21-win-x64.msi` |
-| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.21-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.21-win-arm64.msi` |
-| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.21-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.22-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.22-macos-x86_64.dmg` |
+| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.22-win-x64.msi` |
+| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.22-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.22-win-arm64.msi` |
+| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.22-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
 
@@ -383,42 +385,39 @@ Ieum 的局域网 KVM、输入法同步、剪贴板、协议和桌面应用继�
 改成闭源代码。
 
 Pro 会增加文件传输、官方发行以及后续的连接和管理功能，不会从 Community 收回现有功能。
-`alpha.21` 是首个手动签发的 **Pro Local 离线许可证**实现；结账、账户、自动激活和订阅尚未提供。
+`alpha.22` 使用手动签发的 **Pro Local 离线许可证**开放 Windows ↔ macOS 双向文件传输。当前没有
+Ieum 账户或激活服务器；所有者核实付款后通过邮件发送许可证。
 
 | 产品 | 范围 |
 | --- | --- |
 | Community | 局域网 KVM、输入法同步、剪贴板和公开协议 |
-| Pro Local | `alpha.21` 离线许可证，以及不经过 Ieum 中继的 Windows 直接拖放传输 |
+| Pro Local | `alpha.22` 离线永久文件传输权限，以及 Windows ↔ macOS 直接边缘拖放 |
 | Pro Cloud | 账户、多设备注册、远程连接和有明确用量限制的加密中继 |
 | Teams | 组织与设备策略、角色管理、审计记录、SSO 和管理控制台 |
 | 技术支持 | 优先支持、部署协助、企业集成和维护合同 |
 
-第一个 Pro 实现——**在电脑之间拖放文件进行传输**——从 `alpha.21` 开始要求两端都具有有效的
-Pro Local 密钥。桌面端传输代码、验证器和协议仍在本仓库中以 GPL 发布。Windows 服务端的屏幕边缘
-通过现有 TLS 连接发送到已明确启用接收的 Windows 客户端，校验 SHA-256 后无覆盖地保存到
-`下载/Ieum`。直接传输的数据不会经过 Ieum 运营的服务器。
+第一个 Pro 实现是**在电脑之间拖放文件**。两端都需要有效的 Pro Local 文件；Windows 和 macOS
+都可以作为服务端或客户端。文件沿已配置的边缘通过现有 TLS 连接传输，校验 SHA-256 后以不覆盖
+现有文件的方式保存到 `下载/Ieum`。数据不会经过 Ieum 运营的服务器。逐次确认、进度界面、暂停/
+续传以及直接放入远程应用仍是后续工作。
 
-两台 Windows 电脑都需使用 `alpha.21` 或更高版本，在 **首选项 → Files** 中导入收到的
-`*.ieum-license.txt`，点击 **Activate** 并启用 TLS。随后服务端启用发送、客户端启用接收；接收
-开关就是当前的预先授权。逐次确认窗口、客户端到服务端拖放、暂停/续传、进度界面以及向任意远程
-应用执行原生放置仍属后续实现。具体行为和限制见
-[Pro Local 屏幕边缘文件传输设计](docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md)。
+Early Access 价格为**一次性 USD 30**，为购买者自己的 Windows/macOS 电脑提供永久文件传输权限。
+该优惠仅在预发布阶段限时提供，不代表未来所有 Pro 功能。**首选项 → Files → Get Pro Local Early
+Access** 会打开带应用 claim code 的 GitHub Sponsors 页面。付款后把 GitHub 用户名和 claim code
+发送到 `easecompany@protonmail.ch`；所有者核实交易后通过邮件发送 `*.ieum-license.txt`。GitHub
+不会向应用公开赞助者的私人邮箱，因此必须发送申请邮件。
 
 离线密钥不绑定设备、不统计席位，也不能远程撤销。同一赞助者可在自己的电脑上使用同一个文件。
 签名私钥、签发器和私有台账由项目所有者保管，不会分发；赞助者只会收到 `.ieum-license.txt` 文件。
 
 ```mermaid
 flowchart LR
-  A["Community 核心<br/>KVM · 剪贴板 · 输入法"] --> B["Pro Local alpha.21<br/>离线许可证 · 文件传输"]
-  B --> C["Pro 账户服务<br/>支付 · 激活 · 席位"]
-  C --> D["托管服务<br/>发现 · 中继 · 托管更新"]
-```
-
-```mermaid
-flowchart LR
-  A["Pro Local<br/>可一次性购买"] -->|"局域网直接传输<br/>无 Ieum 带宽成本"| B["另一台电脑"]
-  A --> C["Pro Cloud<br/>按月或按年订阅"]
-  C -->|"仅直连失败时使用<br/>有用量限制的中继"| B
+  C["Community Core<br/>KVM · Clipboard · IME"] --> L["Pro Local alpha.22<br/>Offline perpetual file-transfer key"]
+  S["USD 30 one-time<br/>GitHub Sponsors early access"] -->|"verified email fulfillment"| L
+  L --> W["Windows"]
+  L --> M["macOS"]
+  W <-->|"TLS · direct edge drag"| M
+  L -.-> H["Future Hosted Pro<br/>accounts · seats · relay · revocation"]
 ```
 
 Ieum 不会承诺无限量的终身中继。局域网直接传输可以放在一次性购买的官方版本中；由 Ieum 运营并
@@ -449,7 +448,7 @@ flowchart LR
 | --- | --- | --- |
 | 1. v1 稳定性 | 完成审计问题 #6–#38、必需 CI 和各平台验收记录 | **进行中 — 16/33** |
 | 2. 官方发行 | Windows 签名、Apple 公证、稳定更新和回滚 | 等待 |
-| 3. Pro Local | 离线许可、两端授权、直接传输与恢复体验 | **alpha.21 第一阶段完成；真机验收、进度、续传和反向发起仍待实现** |
+| 3. Pro Local | 离线许可、两端授权、直接传输与恢复体验 | **alpha.22 Windows ↔ macOS 基础已实现；真机验收、进度与续传仍待完成** |
 | 4. Pro 账户 | 支付、登录、设备激活、席位、退款与离线宽限期 | 等待 |
 | 5. 托管连接 | 设备发现、端到端加密中继和本地连接回退 | 等待 |
 | 6. Teams 与 Enterprise | 组织、策略、审计、SSO/SCIM、灾难恢复和合同 SLO | 等待 |

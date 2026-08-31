@@ -1839,8 +1839,36 @@ Enabling this setting will disable the server config GUI.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Install and activate a Pro Local license on both Windows computers.</source>
-        <translation type="unfinished"></translation>
+        <source>Pro Local Early Access — USD 30 one-time
+Sponsor once to receive a perpetual Pro Local file-transfer license.
+Licenses are issued manually after payment verification.</source>
+        <translation>Pro Local Early Access — 30 USD единоразово
+Поддержите проект один раз, чтобы получить бессрочную лицензию Pro Local на передачу файлов.
+Лицензия выдаётся вручную после проверки платежа.</translation>
+    </message>
+    <message>
+        <source>Include this claim code in your license request email.</source>
+        <translation>Укажите этот код заявки в письме с запросом лицензии.</translation>
+    </message>
+    <message>
+        <source>Early Access claim code</source>
+        <translation>Код заявки Early Access</translation>
+    </message>
+    <message>
+        <source>Copy claim code</source>
+        <translation>Скопировать код заявки</translation>
+    </message>
+    <message>
+        <source>Get Pro Local Early Access</source>
+        <translation>Получить Pro Local Early Access</translation>
+    </message>
+    <message>
+        <source>Email license request</source>
+        <translation>Отправить запрос лицензии по почте</translation>
+    </message>
+    <message>
+        <source>Install and activate a Pro Local license on each Windows or macOS computer.</source>
+        <translation>Установите и активируйте лицензию Pro Local на каждом компьютере Windows или macOS.</translation>
     </message>
 </context>
 <context>

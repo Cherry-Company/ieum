@@ -1840,8 +1840,36 @@ L&apos;abilitazione di questa impostazione disabiliterà l&apos;interfaccia graf
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Install and activate a Pro Local license on both Windows computers.</source>
-        <translation type="unfinished"></translation>
+        <source>Pro Local Early Access — USD 30 one-time
+Sponsor once to receive a perpetual Pro Local file-transfer license.
+Licenses are issued manually after payment verification.</source>
+        <translation>Pro Local Early Access — 30 USD una tantum
+Effettua una sola sponsorizzazione per ricevere una licenza perpetua per il trasferimento file Pro Local.
+Le licenze vengono emesse manualmente dopo la verifica del pagamento.</translation>
+    </message>
+    <message>
+        <source>Include this claim code in your license request email.</source>
+        <translation>Includi questo codice di richiesta nell'email di richiesta della licenza.</translation>
+    </message>
+    <message>
+        <source>Early Access claim code</source>
+        <translation>Codice di richiesta Early Access</translation>
+    </message>
+    <message>
+        <source>Copy claim code</source>
+        <translation>Copia codice di richiesta</translation>
+    </message>
+    <message>
+        <source>Get Pro Local Early Access</source>
+        <translation>Ottieni Pro Local Early Access</translation>
+    </message>
+    <message>
+        <source>Email license request</source>
+        <translation>Invia la richiesta di licenza via email</translation>
+    </message>
+    <message>
+        <source>Install and activate a Pro Local license on each Windows or macOS computer.</source>
+        <translation>Installa e attiva una licenza Pro Local su ogni computer Windows o macOS.</translation>
     </message>
 </context>
 <context>

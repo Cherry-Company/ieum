@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.21"><strong>Download Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.22"><strong>Download Ieum</strong></a>
   · <a href="#first-run-security-and-permissions"><strong>Security &amp; permissions</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>Sponsor Ieum</strong></a>
 </p>
@@ -32,7 +32,7 @@ Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers
 screen edge: it connects **Korean/English mode, IME composition sessions, physical key positions, and Unicode
 clipboard data** into one consistent input path across operating systems.
 
-> The current release is `v0.1.0-alpha.21`. Automated builds and unit tests pass, but the long-running physical
+> The current release is `v0.1.0-alpha.22`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
 
 ## Help Ieum reach production distribution
@@ -52,23 +52,28 @@ notarization, physical Windows ARM64 and Apple Silicon regression testing, and d
 Custom one-time amounts remain available. Local KVM, Korean/CJK input synchronization, and clipboard core remain
 open regardless of sponsorship. Every release publishes the
 [amount allocated and work completed with sponsorship funds](docs/release/sponsorship-impact.md). The amount
-allocated to `alpha.21` is **USD 0**.
+allocated to `alpha.22` is **USD 0**. The new Early Access price is not counted as sponsorship revenue until a
+payment is actually received and verified.
 
-## Alpha.21 Pro Local offline license and file drag
+## Alpha.22 Windows ↔ macOS Pro Local file drag
 
-Starting with `alpha.21`, Windows file sending and receiving are **Pro Local** features. Local KVM, Korean/CJK
+In `alpha.22`, either a Windows or macOS computer can start a transfer from a configured screen edge, regardless
+of whether it is running as the server or client. File transfer is a **Pro Local** feature. Local KVM, Korean/CJK
 input synchronization, and clipboard remain available without a license.
 
-- Supporters receive one `*.ieum-license.txt` file. Import and activate it in **Preferences → Files** on both
-  Windows PCs, enable TLS on both, and then explicitly enable the required send or receive role.
+- Import and activate the same `*.ieum-license.txt` in **Preferences → Files** on each participating Windows or
+  macOS computer. Enable TLS on every computer, then explicitly enable its send or receive role.
 - The application rechecks entitlement at service start, offer/accept boundaries, and while streaming data.
   Removing or expiring a key fails the current session; restoring a key does not resurrect it.
 - Protocol 1.12 carries offers, decisions, cancellations, and results. Protocol 1.13 carries bounded data frames,
   processing at most one 60 KiB chunk per event-loop turn.
-- The sender revalidates Windows file identity, size, and modification time before reading. The receiver uses a
+- The sender revalidates file identity, size, and modification time before reading. The receiver uses a
   hidden staging directory, verifies size and SHA-256, and publishes under a collision-safe name without overwrite.
-- The current screen-edge path is **Windows server → Windows client only**. Per-transfer prompts, progress, pause/resume, reverse
-  edge drag, and native drop into a remote application are the next slices.
+- Windows→macOS and macOS→Windows both work across configured topology edges. Every transfer is a copy; Ieum does
+  not move or delete the source file.
+- **Pro Local Early Access is a one-time USD 30 purchase.** Open its claim-tagged GitHub Sponsors page from the
+  app, then email your GitHub username and claim code to `easecompany@protonmail.ch`. The owner verifies payment
+  and emails the perpetual file-transfer license. This purchase does not include every future Pro feature.
 - Offline licenses are not device-counted or remotely revocable. The private issuer and signing key stay with the
   project owner and are not published in the repository, release, or supporter package. See the
   [Pro Local file-transfer guide](docs/dev/pro_local_file_transfer.md).
@@ -282,16 +287,16 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[이음 (Ieum) v0.1.0-alpha.21 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.21)
+[이음 (Ieum) v0.1.0-alpha.22 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.22)
 
 | Operating system | Installer |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.21-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.21-macos-x86_64.dmg` |
-| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.21-win-x64.msi` |
-| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.21-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.21-win-arm64.msi` |
-| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.21-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.22-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.22-macos-x86_64.dmg` |
+| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.22-win-x64.msi` |
+| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.22-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.22-win-arm64.msi` |
+| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.22-win-arm64-ko-KR.msi` |
 
 Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
 `SHA256SUMS.txt`.
@@ -421,30 +426,31 @@ Ieum's local KVM, IME synchronization, clipboard, protocol, and desktop app rema
 `GPL-2.0-only WITH LicenseRef-OpenSSL-Exception`. Ieum will not turn core functionality into closed code inside
 the same executable.
 
-Pro adds file transfer, official distribution, and future connectivity and administration features. It does not
-remove Community features. `alpha.21` is the first manually issued **Pro Local offline license** implementation;
-checkout, accounts, automated activation, and subscriptions do not exist yet.
+Pro adds file transfer, official distribution, and future connectivity and administration features without
+removing Community features. `alpha.22` uses a manually issued **Pro Local offline license** for bidirectional
+Windows ↔ macOS file transfer. It has no Ieum account or activation server; the owner emails the license after
+verifying payment.
 
 | Product | Scope |
 | --- | --- |
 | Community | Local-network KVM, IME synchronization, clipboard, and the public protocol |
-| Pro Local | The `alpha.21` offline license and direct Windows drag-and-drop transfer that does not use an Ieum relay |
+| Pro Local | The `alpha.22` offline perpetual file-transfer entitlement and direct Windows ↔ macOS edge drag |
 | Pro Cloud | Accounts, multi-device registration, remote connectivity, and an encrypted relay with explicit usage limits |
 | Teams | Organization and device policies, roles, audit history, SSO, and a management console |
 | Support | Priority support, deployment assistance, enterprise integration, and maintenance contracts |
 
-The first Pro implementation, **drag-and-drop file transfer between computers**, requires a valid Pro Local key on
-both endpoints starting with `alpha.21`. Desktop transfer code, the verifier, and protocol changes remain
-GPL-licensed in this repository. A Windows server edge sends to an opted-in Windows client over the existing TLS
-connection, verifies SHA-256, and publishes without overwriting into `Downloads/Ieum`. Direct-transfer bytes do
-not pass through an Ieum-operated server.
+The first Pro implementation, **drag-and-drop file transfer between computers**, requires a valid Pro Local file
+on both endpoints. Either endpoint may be Windows or macOS and may run as server or client. A configured edge sends
+over the existing TLS connection, verifies SHA-256, and publishes without overwriting into `Downloads/Ieum`.
+Direct-transfer bytes never pass through an Ieum-operated server. Per-transfer prompts, progress UI, pause/resume,
+and native drop into an arbitrary remote application remain future slices.
 
-On both Windows computers, use `alpha.21` or later, import the received `*.ieum-license.txt` in
-**Preferences → Files**, select **Activate**, and enable TLS. Then enable sending on the server and receiving on the
-client. The receiving switch is the current advance approval. Per-transfer prompts, client-to-server edge drag,
-pause/resume, progress UI, and native drop into an arbitrary remote application remain future slices. The behavior
-and limits are fixed in the
-[Pro Local edge file-transfer design](docs/superpowers/specs/2026-08-30-pro-local-edge-file-transfer-design.md).
+Early Access costs **USD 30 once** and grants a perpetual file-transfer entitlement for the buyer's Windows and
+macOS computers. The offer is available for a limited prerelease window; it does not promise every future Pro
+feature. **Preferences → Files → Get Pro Local Early Access** opens GitHub Sponsors with an app-generated claim
+code. After payment, email the GitHub username and claim to `easecompany@protonmail.ch`. The owner verifies the
+transaction and sends the `*.ieum-license.txt` file by email. GitHub does not expose a sponsor's private email to
+the app, so this request email is required.
 
 Offline keys are not bound to devices, do not count seats, and cannot be remotely revoked. The same supporter may
 use one file on their own PCs. The signing key, issuer, and private ledger remain with the project owner and are not
@@ -452,16 +458,12 @@ distributed; a supporter receives only the `.ieum-license.txt` file.
 
 ```mermaid
 flowchart LR
-  A["Community core<br/>KVM · Clipboard · IME"] --> B["Pro Local alpha.21<br/>Offline license · File transfer"]
-  B --> C["Pro account service<br/>Payment · Activation · Seats"]
-  C --> D["Hosted services<br/>Discovery · Relay · Managed updates"]
-```
-
-```mermaid
-flowchart LR
-  A["Pro Local<br/>one-time purchase possible"] -->|"direct LAN transfer<br/>no Ieum bandwidth cost"| B["Peer computer"]
-  A --> C["Pro Cloud<br/>monthly or annual subscription"]
-  C -->|"quota-controlled relay<br/>only when direct paths fail"| B
+  C["Community Core<br/>KVM · Clipboard · IME"] --> L["Pro Local alpha.22<br/>Offline perpetual file-transfer key"]
+  S["USD 30 one-time<br/>GitHub Sponsors early access"] -->|"verified email fulfillment"| L
+  L --> W["Windows"]
+  L --> M["macOS"]
+  W <-->|"TLS · direct edge drag"| M
+  L -.-> H["Future Hosted Pro<br/>accounts · seats · relay · revocation"]
 ```
 
 Ieum will not promise unlimited lifetime relay traffic. Direct local transfer can fit a one-time official package;
@@ -493,7 +495,7 @@ flowchart LR
 | --- | --- | --- |
 | 1. v1 reliability | Audit issues #6–#38, required CI, and platform acceptance evidence | **In progress — 16/33** |
 | 2. Official distribution | Windows signing, Apple notarization, stable updates, and rollback | Waiting |
-| 3. Pro Local | Offline licensing, authorization on both PCs, direct transfer, and recovery UX | **alpha.21 first slice complete; two-PC acceptance, progress, resume, and reverse initiation remain** |
+| 3. Pro Local | Offline licensing, authorization on both computers, direct transfer, and recovery UX | **alpha.22 Windows ↔ macOS foundation implemented; physical acceptance, progress, and resume remain** |
 | 4. Pro accounts | Payment, login, device activation, seats, refunds, and offline grace | Waiting |
 | 5. Hosted connectivity | Device discovery, end-to-end encrypted relay, and local fallback | Waiting |
 | 6. Teams and Enterprise | Organizations, policy, audit, SSO/SCIM, disaster recovery, and contractual SLOs | Waiting |
