@@ -99,6 +99,8 @@ elseif(APPLE)
     OSXKeyState.h
     OSXInputSourceController.h
     OSXInputSourceController.mm
+    OSXFileTransferPlatform.cpp
+    OSXFileTransferPlatform.h
     OSXMediaKeySupport.h
     OSXMediaKeySupport.m
     OSXPasteboardPeeker.h
@@ -208,7 +210,8 @@ if(UNIX)
 
   if(APPLE)
     find_library(COCOA_LIBRARY Cocoa)
-    target_link_libraries(platform ${COCOA_LIBRARY})
+    find_library(SECURITY_LIBRARY Security)
+    target_link_libraries(platform ${COCOA_LIBRARY} ${SECURITY_LIBRARY} OpenSSL::Crypto)
   else()
     if(${LIBXKBCOMMON_VERSION} VERSION_GREATER_EQUAL "1.10")
       target_compile_definitions(platform PRIVATE HAVE_XKB_KEYMAP_MOD_GET_MASK=1)

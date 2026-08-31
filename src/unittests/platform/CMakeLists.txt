@@ -46,6 +46,13 @@ if (WIN32)
   )
 elseif(APPLE)
   create_test(
+    NAME OSXFileTransferPlatformTests
+    DEPENDS app
+    LIBS platform base arch
+    SOURCE OSXFileTransferPlatformTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
+  )
+  create_test(
     NAME OSXClipboardTests
     DEPENDS platform
     LIBS base arch
