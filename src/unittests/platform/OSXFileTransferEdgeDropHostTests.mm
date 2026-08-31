@@ -82,7 +82,12 @@ void extractsOnlyBoundedLocalRegularFiles()
 
     NSURL *fileUrl = [NSURL fileURLWithPath:[NSString stringWithUTF8String:file.c_str()] isDirectory:NO];
     auto extracted = extractOSXFileDropURLs(@[ fileUrl ], 100);
-    require(extracted.ok() && extracted.paths == std::vector{file}, "local regular file URL should extract");
+    require(extracted.ok() && extracted.paths.size() == 1, "local regular file URL should extract");
+    std::error_code equivalentError;
+    require(
+        std::filesystem::equivalent(extracted.paths.front(), file, equivalentError) && !equivalentError,
+        "extracted URL should identify the original file despite filesystem Unicode normalization"
+    );
 
     NSURL *remote = [NSURL URLWithString:@"https://example.com/file.txt"];
     require(extractOSXFileDropURLs(@[ remote ], 100).error == OSXFileDropError::RemoteUrl, "remote URL should fail");

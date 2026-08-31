@@ -6,11 +6,11 @@ Ieum 코드 그래프입니다. 상세 파일 그래프는 `codegraph.json`, 사
 
 ## Snapshot
 
-- Revision: `3ad6c89b41b1dd1d226106a0353c4ab244a68f2a`
+- Revision: `b60758eec3956bd3e08617d3a90ee73df7efa8ca`
 - Branch: `feat/pro-cross-platform-transfer-alpha22`
 - Tracked files: 1,069
 - Represented files: 1,066
-- Source files / lines: 688 / 113,560
+- Source files / lines: 688 / 113,565
 - Components / targets: 44 / 89
 - File include edges / component edges: 1,615 / 103
 
@@ -84,7 +84,7 @@ platform adapters <──> deskflow/client/server <──> net/io/mt/base/arch
 | `test:legacytests` | test | Automated tests for the `legacytests` surface. | 10 | 887 | `legacytests` |
 | `test:licensing` | test | Automated tests for the `licensing` surface. | 6 | 444 | `ProEarlyAccessClaimTests`, `ProLicenseTests` |
 | `test:net` | test | Automated tests for the `net` surface. | 9 | 595 | `FingerprintDatabaseTests`, `FingerprintTests`, `NetworkAddressTests`, `SecureSocketWriteBufferTests`, `SecureUtilsTests` |
-| `test:platform` | test | Automated tests for the `platform` surface. | 16 | 2,244 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsFileDropExtractorTests`, `MSWindowsFileTransferIoTests`, `MSWindowsFileTransferSourceTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXFileTransferEdgeDropHostTests`, `OSXFileTransferPlatformTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
+| `test:platform` | test | Automated tests for the `platform` surface. | 16 | 2,249 | `ArchNetworkWinsockTests`, `MSWindowsClipboardTests`, `MSWindowsFileDropExtractorTests`, `MSWindowsFileTransferIoTests`, `MSWindowsFileTransferSourceTests`, `MSWindowsMouseInputTests`, `OSXClipboardTests`, `OSXFileTransferEdgeDropHostTests`, `OSXFileTransferPlatformTests`, `OSXKeyStateTests`, `XWindowsClipboardTests` |
 | `test:server` | test | Automated tests for the `server` surface. | 6 | 551 | `FileTransferEdgeRoutingTests`, `ServerConfigTests`, `ServerTests` |
 | `tool:cgtap-logger` | tool | Developer or diagnostic tool rooted at `tools/cgtap-logger`. | 1 | 108 | — |
 | `tool:ci` | tool | Developer or diagnostic tool rooted at `tools/ci`. | 2 | 388 | — |

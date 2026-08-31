@@ -2447,7 +2447,7 @@
         "cmake": 1,
         "objective-c++": 1
       },
-      "lineCount": 2244,
+      "lineCount": 2249,
       "path": "src/unittests/platform",
       "targets": [
         "ArchNetworkWinsockTests",
@@ -24302,9 +24302,9 @@
       "binary": false,
       "component": "test:platform",
       "language": "objective-c++",
-      "lineCount": 130,
+      "lineCount": 135,
       "path": "src/unittests/platform/OSXFileTransferEdgeDropHostTests.mm",
-      "sizeBytes": 4573
+      "sizeBytes": 4825
     },
     {
       "binary": false,
@@ -24565,7 +24565,7 @@
   ],
   "revision": {
     "branch": "feat/pro-cross-platform-transfer-alpha22",
-    "commit": "3ad6c89b41b1dd1d226106a0353c4ab244a68f2a",
+    "commit": "b60758eec3956bd3e08617d3a90ee73df7efa8ca",
     "dirtyTrackedFiles": true
   },
   "schemaVersion": 1,
@@ -24576,7 +24576,7 @@
     "fileIncludeEdges": 1615,
     "representedFiles": 1066,
     "sourceFiles": 688,
-    "sourceLines": 113560,
+    "sourceLines": 113565,
     "targets": 89,
     "trackedFiles": 1069
   },
