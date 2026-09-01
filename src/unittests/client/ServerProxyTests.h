@@ -19,6 +19,7 @@ private Q_SLOTS:
   void handleKeepAliveAlarm_timeout_queuesDisconnectRequest();
   void handleData_incompleteMessage_queuesDisconnectRequest();
   void handleData_largeBurst_queuesBoundedContinuation();
+  void parseHandshakeMessage_mouseMoveBeforeOptions_isAccepted();
   void parseHandshakeMessage_protocolError_queuesRefusalRequest();
   void handleData_truncatedHandshakePayload_queuesDisconnectRequest();
   void parseMessage_truncatedPayload_data();

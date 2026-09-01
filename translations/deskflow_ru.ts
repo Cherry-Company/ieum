@@ -363,7 +363,7 @@ Do you want to connect to the server?
     <message>
         <source>Ieum needs Accessibility access to share the keyboard and mouse.
 
-In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. After granting access, return here and choose Check Again.</source>
+Follow the numbered buttons from top to bottom. If Ieum does not appear automatically in the Accessibility list, use step 1 to open Applications, then use the + button in System Settings to select /Applications/Ieum.app. Step 2 is only needed when an older approval entry is stuck.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -379,22 +379,6 @@ If an older enabled Ieum entry remains but this version is still not trusted, ch
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Check Again</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open Accessibility Settings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Reset Previous Approval</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show Ieum in Applications</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Reset Ieum&apos;s previous Accessibility approval?
 
 macOS will remove only Ieum&apos;s Accessibility record. No other app permissions are changed. You must approve the current Ieum app again.</source>
@@ -403,6 +387,30 @@ macOS will remove only Ieum&apos;s Accessibility record. No other app permission
     <message>
         <source>Could not reset Ieum&apos;s Accessibility approval:
 %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1. Show Ieum in Applications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>2. Reset Previous Approval (if needed)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>3. Register This Ieum App</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>4. Open Accessibility Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>5. Check Permission</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

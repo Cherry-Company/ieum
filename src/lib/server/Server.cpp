@@ -281,7 +281,10 @@ void Server::adoptClient(BaseClientProxy *client)
 
   // send configuration options to client
   sendOptions(client);
-  sendFileTransferEdgeCapabilities(client);
+  // addClient() may change every screen's active edges. Broadcast only after
+  // this new client's final handshake options have been queued so no runtime
+  // file-transfer frame can overtake the handshake.
+  sendFileTransferEdgeCapabilities();
 
   // activate screen saver on new client if active on the primary screen
   if (m_activeSaver != nullptr) {
@@ -2266,7 +2269,6 @@ bool Server::addClient(BaseClientProxy *client)
 
   // tell primary client about the active sides
   m_primaryClient->reconfigure(getActivePrimarySides());
-  sendFileTransferEdgeCapabilities();
 
   return true;
 }

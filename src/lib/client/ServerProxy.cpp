@@ -240,6 +240,14 @@ ServerProxy::ConnectionResult ServerProxy::parseHandshakeMessage(const uint8_t *
     LOG_ERR("server disconnected due to a protocol error");
     requestRefuseConnection(ProtocolError, "server reported a protocol error");
     return Disconnect;
+  } else if (memcmp(code, kMsgDMouseMove, 4) == 0) {
+    // Input can race the final options frame immediately after the server
+    // adopts this client. Preserve framing but do not apply input until the
+    // handshake has completed.
+    int16_t x = 0;
+    int16_t y = 0;
+    ProtocolUtil::readfOrThrow(m_stream, kMsgDMouseMove + 4, &x, &y);
+    LOG_DEBUG("ignoring pre-handshake mouse move %d,%d", x, y);
   } else if (memcmp(code, kMsgDLanguageSynchronisation, 4) == 0) {
     setServerLanguages();
   } else {

@@ -8,6 +8,8 @@
 
 #include <QString>
 
+#include <functional>
+
 class QObject;
 
 void requestOSXNotificationPermission();
@@ -24,3 +26,5 @@ void macOSOpenAccessibilitySettings();
 void macOSRevealCurrentApplication();
 void macOSInstallApplicationReopenHandler(QObject *receiver);
 void macOSRemoveApplicationReopenHandler();
+void macOSInstallApplicationTerminationHandler(std::function<void(bool systemShutdown)> handler);
+void macOSRemoveApplicationTerminationHandler();

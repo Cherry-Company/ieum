@@ -48,6 +48,34 @@ create_test(
 )
 
 create_test(
+  NAME CoreActionPolicyTests
+  DEPENDS gui
+  SOURCE CoreActionPolicyTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+create_test(
+  NAME MacAccessibilityGuideTests
+  DEPENDS gui
+  SOURCE MacAccessibilityGuideTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+create_test(
+  NAME MacApplicationLifecyclePolicyTests
+  DEPENDS gui
+  SOURCE MacApplicationLifecyclePolicyTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+create_test(
+  NAME UpdateShutdownTests
+  DEPENDS gui
+  SOURCE UpdateShutdownTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+create_test(
   NAME ServerConfigDialogTests
   DEPENDS gui
   SOURCE ServerConfigDialogTests.cpp

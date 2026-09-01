@@ -12,6 +12,7 @@
 #include "ui_MainWindow.h"
 
 #include "Diagnostic.h"
+#include "MacApplicationLifecyclePolicy.h"
 #include "ProductIdentity.h"
 #include "StyleUtils.h"
 
@@ -28,6 +29,7 @@
 #include "common/VersionInfo.h"
 #include "gui/Messages.h"
 #include "gui/TlsUtility.h"
+#include "gui/core/CoreActionPolicy.h"
 #include "gui/core/CoreProcess.h"
 #include "gui/ipc/DaemonIpcClient.h"
 #include "gui/widgets/LogDock.h"
@@ -167,6 +169,14 @@ MainWindow::MainWindow()
   setupTrayIcon();
 #ifdef Q_OS_MACOS
   macOSInstallApplicationReopenHandler(this);
+  macOSInstallApplicationTerminationHandler([this](bool systemShutdown) {
+    if (systemShutdown) {
+      m_systemShutdownRequested = true;
+      diagnostic::completeSession();
+    } else {
+      m_quitRequested = true;
+    }
+  });
   m_trayRepairTimer->setInterval(5000);
   m_trayRepairTimer->setTimerType(Qt::VeryCoarseTimer);
   connect(m_trayRepairTimer, &QTimer::timeout, this, [this] { ensureTrayIcon(); });
@@ -211,6 +221,7 @@ MainWindow::MainWindow()
 MainWindow::~MainWindow()
 {
 #ifdef Q_OS_MACOS
+  macOSRemoveApplicationTerminationHandler();
   macOSRemoveApplicationReopenHandler();
 #endif
 
@@ -1317,7 +1328,12 @@ void MainWindow::handlePeerFingerprint(const QString &fingerprint)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-  if (Settings::value(Settings::Gui::CloseToTray).toBool() && !m_quitRequested) {
+#ifdef Q_OS_MACOS
+  const auto hideToTray = macShouldHideOnClose(event->spontaneous(), m_quitRequested, m_systemShutdownRequested);
+#else
+  const auto hideToTray = Settings::value(Settings::Gui::CloseToTray).toBool() && !m_quitRequested;
+#endif
+  if (hideToTray) {
     if (Settings::value(Settings::Gui::CloseReminder).toBool()) {
       messages::showCloseReminder(this);
       Settings::setValue(Settings::Gui::CloseReminder, false);
@@ -1388,7 +1404,7 @@ void MainWindow::coreProcessStateChanged(ProcessState state)
     clearInputLanguagePresentation();
   }
 
-  if (state == Started || state == Starting || state == RetryPending) {
+  if (coreCanStop(state)) {
     disconnect(ui->btnToggleCore, &QPushButton::clicked, m_actionStartCore, &QAction::trigger);
     connect(ui->btnToggleCore, &QPushButton::clicked, m_actionStopCore, &QAction::trigger, Qt::UniqueConnection);
 
@@ -1670,11 +1686,13 @@ void MainWindow::daemonIpcClientConnectionFailed()
 
 void MainWindow::toggleCanRunCore(bool enableButtons)
 {
-  const bool isStarted = m_coreProcess.isStarted();
-  ui->btnToggleCore->setEnabled(enableButtons || isStarted);
+  const auto state = m_coreProcess.processState();
+  const bool canStop = coreCanStop(state);
+  const bool isStarted = state == ProcessState::Started;
+  ui->btnToggleCore->setEnabled(coreToggleEnabled(state, enableButtons));
   ui->btnRestartCore->setEnabled(enableButtons && isStarted);
   m_actionStartCore->setEnabled(enableButtons);
-  m_actionStopCore->setEnabled(isStarted);
+  m_actionStopCore->setEnabled(canStop);
 }
 
 void MainWindow::remoteHostChanged(const QString &newRemoteHost)

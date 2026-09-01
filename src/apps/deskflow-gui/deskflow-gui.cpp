@@ -19,6 +19,8 @@
 #include "gui/ProductIdentity.h"
 #include "gui/StartupManager.h"
 #include "gui/StyleUtils.h"
+#include "gui/UpdateShutdown.h"
+#include "gui/dialogs/MacAccessibilityGuide.h"
 
 #include <QApplication>
 #include <QCommandLineParser>
@@ -28,6 +30,7 @@
 #include <QProcess>
 #include <QPushButton>
 #include <QSharedMemory>
+#include <QThread>
 #include <QTimer>
 
 #if defined(Q_OS_MACOS)
@@ -217,7 +220,28 @@ int main(int argc, char *argv[])
       }
     }
     socket.disconnectFromServer();
-    return parser.isSet(prepareUpdateOption) ? s_exitSuccess : s_exitDuplicate;
+    if (!parser.isSet(prepareUpdateOption)) {
+      return s_exitDuplicate;
+    }
+
+    const auto previousInstanceRunning = [&shmId] {
+      QSharedMemory probe(shmId);
+      if (!probe.create(1)) {
+        return true;
+      }
+      probe.detach();
+      return false;
+    };
+    constexpr auto kUpdateExitPollMilliseconds = 50UL;
+    constexpr auto kUpdateExitChecks = 201;
+    const auto previousInstanceExited = waitForPreviousInstanceExit(
+        previousInstanceRunning, [] { QThread::msleep(kUpdateExitPollMilliseconds); }, kUpdateExitChecks
+    );
+    if (!previousInstanceExited) {
+      qCritical("the running Ieum instance did not exit before the update timeout");
+      return s_exitFailed;
+    }
+    return s_exitSuccess;
   }
 
   // An installer may probe for a running instance when none exists.
@@ -305,8 +329,10 @@ bool checkMacAssistiveDevices()
 
   auto message = QCoreApplication::translate(
       "MacAccessibility", "Ieum needs Accessibility access to share the keyboard and mouse.\n\n"
-                          "In System Settings, turn on Ieum under Privacy & Security > Accessibility. "
-                          "After granting access, return here and choose Check Again."
+                          "Follow the numbered buttons from top to bottom. If Ieum does not appear automatically in "
+                          "the Accessibility list, use step 1 to open Applications, then use the + button in System "
+                          "Settings to select /Applications/Ieum.app. Step 2 is only needed when an older approval "
+                          "entry is stuck."
   );
 
 #if !defined(IEUM_MACOS_STABLE_CODE_IDENTITY)
@@ -325,38 +351,34 @@ bool checkMacAssistiveDevices()
 #endif
 
   while (!AXIsProcessTrusted()) {
-    requestMacAccessibility();
-
-    QMessageBox dialog(QMessageBox::Warning, productDisplayName(), message, QMessageBox::NoButton);
-    auto *checkButton =
-        dialog.addButton(QCoreApplication::translate("MacAccessibility", "Check Again"), QMessageBox::AcceptRole);
-    auto *openSettingsButton = dialog.addButton(
-        QCoreApplication::translate("MacAccessibility", "Open Accessibility Settings"), QMessageBox::ActionRole
-    );
-    auto *resetButton = dialog.addButton(
-        QCoreApplication::translate("MacAccessibility", "Reset Previous Approval"), QMessageBox::ActionRole
-    );
-    auto *revealButton = dialog.addButton(
-        QCoreApplication::translate("MacAccessibility", "Show Ieum in Applications"), QMessageBox::HelpRole
-    );
-    auto *cancelButton = dialog.addButton(QMessageBox::Cancel);
-    dialog.setDefaultButton(checkButton);
-    dialog.setEscapeButton(cancelButton);
-    dialog.exec();
-
-    if (dialog.clickedButton() == cancelButton || dialog.clickedButton() == nullptr) {
+    MacAccessibilityGuideDialog dialog(message);
+    if (dialog.exec() != QDialog::Accepted || !dialog.selectedStep().has_value()) {
       return false;
     }
-    if (dialog.clickedButton() == openSettingsButton) {
-      macOSOpenAccessibilitySettings();
-      continue;
-    }
-    if (dialog.clickedButton() == revealButton) {
+
+    switch (*dialog.selectedStep()) {
+    case MacAccessibilityStep::ShowApplication:
       macOSRevealCurrentApplication();
       continue;
-    }
-    if (dialog.clickedButton() != resetButton) {
+
+    case MacAccessibilityStep::RegisterCurrentApplication:
+      requestMacAccessibility();
+      waitForMacAccessibilityState(300);
+      // The prompt does not always insert unsigned alpha builds into TCC.
+      // Open both locations so the user can choose Ieum with the + button.
+      macOSRevealCurrentApplication();
+      macOSOpenAccessibilitySettings();
       continue;
+
+    case MacAccessibilityStep::OpenAccessibilitySettings:
+      macOSOpenAccessibilitySettings();
+      continue;
+
+    case MacAccessibilityStep::CheckPermission:
+      continue;
+
+    case MacAccessibilityStep::ResetPreviousApproval:
+      break;
     }
 
     const auto confirmation = QCoreApplication::translate(
@@ -370,11 +392,6 @@ bool checkMacAssistiveDevices()
       continue;
     }
 
-    // System Settings caches the TCC list. Open the exact pane first so the
-    // removal and the following registration are reflected in one place.
-    macOSOpenAccessibilitySettings();
-    waitForMacAccessibilityState(600);
-
     QString error;
     if (!resetMacAccessibility(error)) {
       QMessageBox::critical(
@@ -385,10 +402,7 @@ bool checkMacAssistiveDevices()
       continue;
     }
 
-    waitForMacAccessibilityState(800);
-    requestMacAccessibility();
-    waitForMacAccessibilityState(300);
-    macOSOpenAccessibilitySettings();
+    waitForMacAccessibilityState(500);
   }
 
   return true;
