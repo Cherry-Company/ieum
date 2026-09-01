@@ -159,8 +159,7 @@ void notifyApplicationTermination(bool systemShutdown)
   }
 }
 
-NSApplicationTerminateReply
-ieumApplicationShouldTerminate(id self, SEL selector, NSApplication *sender)
+NSApplicationTerminateReply ieumApplicationShouldTerminate(id self, SEL selector, NSApplication *sender)
 {
   notifyApplicationTermination(g_systemShutdown);
 
@@ -293,15 +292,14 @@ void macOSInstallApplicationTerminationHandler(std::function<void(bool systemShu
   }
 
   auto *notificationCenter = [[NSWorkspace sharedWorkspace] notificationCenter];
-  g_workspacePowerOffObserver = [notificationCenter
-      addObserverForName:NSWorkspaceWillPowerOffNotification
-                  object:nil
-                   queue:[NSOperationQueue mainQueue]
-              usingBlock:^(NSNotification *notification) {
-                (void)notification;
-                g_systemShutdown = true;
-                notifyApplicationTermination(true);
-              }];
+  g_workspacePowerOffObserver = [notificationCenter addObserverForName:NSWorkspaceWillPowerOffNotification
+                                                                object:nil
+                                                                 queue:[NSOperationQueue mainQueue]
+                                                            usingBlock:^(NSNotification *notification) {
+                                                              (void)notification;
+                                                              g_systemShutdown = true;
+                                                              notifyApplicationTermination(true);
+                                                            }];
 }
 
 void macOSRemoveApplicationTerminationHandler()

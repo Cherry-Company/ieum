@@ -12,9 +12,9 @@
 #include "ui_MainWindow.h"
 
 #include "Diagnostic.h"
+#include "MacApplicationLifecyclePolicy.h"
 #include "ProductIdentity.h"
 #include "StyleUtils.h"
-#include "MacApplicationLifecyclePolicy.h"
 
 #include "dialogs/AboutDialog.h"
 #include "dialogs/ClientConfigDialog.h"

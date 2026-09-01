@@ -8,20 +8,19 @@
 
 #include "gui/dialogs/MacAccessibilityGuide.h"
 
-using deskflow::gui::MacAccessibilityStep;
 using deskflow::gui::macAccessibilityGuideSteps;
+using deskflow::gui::MacAccessibilityStep;
 
 void MacAccessibilityGuideTests::steps_followManualRecoveryOrder()
 {
   QCOMPARE(
-      macAccessibilityGuideSteps(),
-      QList<MacAccessibilityStep>({
-          MacAccessibilityStep::ShowApplication,
-          MacAccessibilityStep::ResetPreviousApproval,
-          MacAccessibilityStep::RegisterCurrentApplication,
-          MacAccessibilityStep::OpenAccessibilitySettings,
-          MacAccessibilityStep::CheckPermission,
-      })
+      macAccessibilityGuideSteps(), QList<MacAccessibilityStep>({
+                                        MacAccessibilityStep::ShowApplication,
+                                        MacAccessibilityStep::ResetPreviousApproval,
+                                        MacAccessibilityStep::RegisterCurrentApplication,
+                                        MacAccessibilityStep::OpenAccessibilitySettings,
+                                        MacAccessibilityStep::CheckPermission,
+                                    })
   );
 }
 

@@ -16,9 +16,7 @@ void UpdateShutdownTests::waitsUntilPreviousInstanceHasExited()
 {
   int checks = 0;
   int waits = 0;
-  const auto exited = waitForPreviousInstanceExit(
-      [&checks] { return ++checks < 3; }, [&waits] { ++waits; }, 5
-  );
+  const auto exited = waitForPreviousInstanceExit([&checks] { return ++checks < 3; }, [&waits] { ++waits; }, 5);
 
   QVERIFY(exited);
   QCOMPARE(checks, 3);

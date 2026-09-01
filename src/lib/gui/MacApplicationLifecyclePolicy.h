@@ -8,8 +8,7 @@
 
 namespace deskflow::gui {
 
-[[nodiscard]] constexpr bool
-macShouldHideOnClose(bool spontaneous, bool explicitQuit, bool systemShutdown) noexcept
+[[nodiscard]] constexpr bool macShouldHideOnClose(bool spontaneous, bool explicitQuit, bool systemShutdown) noexcept
 {
   return spontaneous && !explicitQuit && !systemShutdown;
 }
