@@ -51,7 +51,7 @@ ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
 
 仍可选择自定义金额进行单次赞助。无论是否赞助，本地 KVM、韩语/CJK 输入同步和剪贴板核心都将保持
 开放。每个版本都会公开[赞助资金分配金额和完成的工作](docs/release/sponsorship-impact.md)。
-`alpha.22` 分配的赞助资金为 **USD 0**。Early Access 的标价只有在实际收到并核实付款后才计入赞助收入。
+`alpha.23` 分配的赞助资金为 **USD 0**。Early Access 的标价只有在实际收到并核实付款后才计入赞助收入。
 
 ## Alpha.22 Windows ↔ macOS Pro Local 文件拖放
 

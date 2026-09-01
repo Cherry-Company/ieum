@@ -52,7 +52,7 @@ notarization, physical Windows ARM64 and Apple Silicon regression testing, and d
 Custom one-time amounts remain available. Local KVM, Korean/CJK input synchronization, and clipboard core remain
 open regardless of sponsorship. Every release publishes the
 [amount allocated and work completed with sponsorship funds](docs/release/sponsorship-impact.md). The amount
-allocated to `alpha.22` is **USD 0**. The new Early Access price is not counted as sponsorship revenue until a
+allocated to `alpha.23` is **USD 0**. The new Early Access price is not counted as sponsorship revenue until a
 payment is actually received and verified.
 
 ## Alpha.22 Windows ↔ macOS Pro Local file drag
