@@ -305,6 +305,11 @@ public:
     return parseHandshakeMessage(code) == ConnectionResult::Disconnect;
   }
 
+  bool parseHandshakeMessageReturnsOkay(const uint8_t *code)
+  {
+    return parseHandshakeMessage(code) == ConnectionResult::Okay;
+  }
+
   void parseHandshake(const QByteArray &code)
   {
     (void)parseHandshakeMessage(reinterpret_cast<const uint8_t *>(code.constData()));
@@ -432,6 +437,21 @@ void ServerProxyTests::handleData_largeBurst_queuesBoundedContinuation()
   const auto &continuation = events.addedEvents().front();
   QVERIFY(continuation.getType() == EventTypes::StreamInputReady);
   QCOMPARE(continuation.getTarget(), stream.getEventTarget());
+}
+
+void ServerProxyTests::parseHandshakeMessage_mouseMoveBeforeOptions_isAccepted()
+{
+  RecordingEventQueue events;
+  FakeStream stream;
+  std::string payload;
+  appendU16(payload, 320);
+  appendU16(payload, 240);
+  payload.push_back('x');
+  stream.push(payload);
+  TestServerProxy proxy(undereferenceableClient(), &stream, &events);
+
+  QVERIFY(proxy.parseHandshakeMessageReturnsOkay(reinterpret_cast<const uint8_t *>(kMsgDMouseMove)));
+  QCOMPARE(stream.getSize(), uint32_t{1});
 }
 
 void ServerProxyTests::parseHandshakeMessage_protocolError_queuesRefusalRequest()

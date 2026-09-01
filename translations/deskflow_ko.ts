@@ -363,10 +363,10 @@ Do you want to connect to the server?
     <message>
         <source>Ieum needs Accessibility access to share the keyboard and mouse.
 
-In System Settings, turn on Ieum under Privacy &amp; Security &gt; Accessibility. After granting access, return here and choose Check Again.</source>
+Follow the numbered buttons from top to bottom. If Ieum does not appear automatically in the Accessibility list, use step 1 to open Applications, then use the + button in System Settings to select /Applications/Ieum.app. Step 2 is only needed when an older approval entry is stuck.</source>
         <translation>이음에서 키보드와 마우스를 공유하려면 손쉬운 사용 권한이 필요합니다.
 
-시스템 설정의 개인정보 보호 및 보안 &gt; 손쉬운 사용에서 이음을 켜세요. 권한을 허용한 뒤 여기로 돌아와 다시 확인을 선택하세요.</translation>
+번호가 붙은 버튼을 위에서 아래 순서대로 누르세요. 이음이 손쉬운 사용 목록에 자동으로 나타나지 않으면 1단계로 Applications를 연 뒤 시스템 설정의 + 버튼에서 /Applications/Ieum.app을 선택하세요. 2단계는 이전 승인 항목이 남아 있을 때만 필요합니다.</translation>
     </message>
     <message>
         <source>
@@ -399,6 +399,30 @@ If an older enabled Ieum entry remains but this version is still not trusted, ch
     <message>
         <source>Show Ieum in Applications</source>
         <translation>Applications에서 이음 보기</translation>
+    </message>
+    <message>
+        <source>1. Show Ieum in Applications</source>
+        <translation>1. Applications에서 이음 앱 보기</translation>
+    </message>
+    <message>
+        <source>2. Reset Previous Approval (if needed)</source>
+        <translation>2. 이전 승인 초기화 (필요한 경우)</translation>
+    </message>
+    <message>
+        <source>3. Register This Ieum App</source>
+        <translation>3. 현재 이음 앱 등록</translation>
+    </message>
+    <message>
+        <source>4. Open Accessibility Settings</source>
+        <translation>4. 손쉬운 사용 설정 열기</translation>
+    </message>
+    <message>
+        <source>5. Check Permission</source>
+        <translation>5. 권한 확인</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>취소</translation>
     </message>
     <message>
         <source>Reset Ieum&apos;s previous Accessibility approval?

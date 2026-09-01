@@ -15,12 +15,15 @@
 #import <UserNotifications/UNNotificationContent.h>
 #import <UserNotifications/UNNotificationTrigger.h>
 #import <UserNotifications/UNUserNotificationCenter.h>
+#import <objc/runtime.h>
 
 #import <QtGlobal>
 
 #include <QMetaObject>
 #include <QObject>
 #include <QPointer>
+
+#include <utility>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -138,6 +141,35 @@ void forceAppActive()
 namespace {
 
 IeumApplicationReopenHandler *g_applicationReopenHandler = nil;
+std::function<void(bool)> g_applicationTerminationHandler;
+IMP g_originalApplicationShouldTerminate = nullptr;
+Method g_applicationShouldTerminateMethod = nullptr;
+id g_workspacePowerOffObserver = nil;
+bool g_systemShutdown = false;
+bool g_terminationCallbackSent = false;
+
+void notifyApplicationTermination(bool systemShutdown)
+{
+  if (g_terminationCallbackSent) {
+    return;
+  }
+  g_terminationCallbackSent = true;
+  if (g_applicationTerminationHandler) {
+    g_applicationTerminationHandler(systemShutdown);
+  }
+}
+
+NSApplicationTerminateReply
+ieumApplicationShouldTerminate(id self, SEL selector, NSApplication *sender)
+{
+  notifyApplicationTermination(g_systemShutdown);
+
+  if (g_originalApplicationShouldTerminate != nullptr) {
+    using ApplicationShouldTerminate = NSApplicationTerminateReply (*)(id, SEL, NSApplication *);
+    return reinterpret_cast<ApplicationShouldTerminate>(g_originalApplicationShouldTerminate)(self, selector, sender);
+  }
+  return NSTerminateNow;
+}
 
 SMAppService *ieumLoginAgent() API_AVAILABLE(macos(13.0))
 {
@@ -241,4 +273,50 @@ void macOSRemoveApplicationReopenHandler()
                                                                       andEventID:kAEReopenApplication];
   [g_applicationReopenHandler release];
   g_applicationReopenHandler = nil;
+}
+
+void macOSInstallApplicationTerminationHandler(std::function<void(bool systemShutdown)> handler)
+{
+  macOSRemoveApplicationTerminationHandler();
+  g_applicationTerminationHandler = std::move(handler);
+  g_systemShutdown = false;
+  g_terminationCallbackSent = false;
+
+  const auto delegateClass = [[NSApp delegate] class];
+  const auto selector = @selector(applicationShouldTerminate:);
+  g_applicationShouldTerminateMethod = class_getInstanceMethod(delegateClass, selector);
+  if (g_applicationShouldTerminateMethod != nullptr) {
+    g_originalApplicationShouldTerminate = method_getImplementation(g_applicationShouldTerminateMethod);
+    method_setImplementation(g_applicationShouldTerminateMethod, reinterpret_cast<IMP>(ieumApplicationShouldTerminate));
+  } else {
+    class_addMethod(delegateClass, selector, reinterpret_cast<IMP>(ieumApplicationShouldTerminate), "q@:@");
+  }
+
+  auto *notificationCenter = [[NSWorkspace sharedWorkspace] notificationCenter];
+  g_workspacePowerOffObserver = [notificationCenter
+      addObserverForName:NSWorkspaceWillPowerOffNotification
+                  object:nil
+                   queue:[NSOperationQueue mainQueue]
+              usingBlock:^(NSNotification *notification) {
+                (void)notification;
+                g_systemShutdown = true;
+                notifyApplicationTermination(true);
+              }];
+}
+
+void macOSRemoveApplicationTerminationHandler()
+{
+  if (g_workspacePowerOffObserver != nil) {
+    [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:g_workspacePowerOffObserver];
+    g_workspacePowerOffObserver = nil;
+  }
+  if (g_applicationShouldTerminateMethod != nullptr && g_originalApplicationShouldTerminate != nullptr) {
+    method_setImplementation(g_applicationShouldTerminateMethod, g_originalApplicationShouldTerminate);
+  }
+
+  g_applicationShouldTerminateMethod = nullptr;
+  g_originalApplicationShouldTerminate = nullptr;
+  g_applicationTerminationHandler = {};
+  g_systemShutdown = false;
+  g_terminationCallbackSent = false;
 }

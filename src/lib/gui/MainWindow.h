@@ -215,6 +215,7 @@ private:
   bool m_tailscaleReady = false;
   bool m_automaticStartPending = false;
   bool m_quitRequested = false;
+  bool m_systemShutdownRequested = false;
   ServerConfig m_serverConfig;
   deskflow::gui::CoreProcess m_coreProcess;
   deskflow::network::TailscaleIntegration *m_tailscaleIntegration = nullptr;

@@ -27,6 +27,7 @@ add_library(${target} STATIC
   KeySequence.h
   Logger.cpp
   Logger.h
+  MacApplicationLifecyclePolicy.h
   MainWindow.cpp
   MainWindow.h
   MainWindow.ui
@@ -40,6 +41,8 @@ add_library(${target} STATIC
   StyleUtils.h
   TlsUtility.cpp
   TlsUtility.h
+  UpdateShutdown.cpp
+  UpdateShutdown.h
   VersionChecker.cpp
   VersionChecker.h
   config/Screen.cpp
@@ -52,6 +55,7 @@ add_library(${target} STATIC
   config/ServerConfig.h
   core/CoreProcess.cpp
   core/CoreProcess.h
+  core/CoreActionPolicy.h
   core/NetworkMonitor.cpp
   core/NetworkMonitor.h
   core/ServiceStartCoordinator.cpp
@@ -70,6 +74,8 @@ add_library(${target} STATIC
   dialogs/HotkeyDialog.cpp
   dialogs/HotkeyDialog.h
   dialogs/HotkeyDialog.ui
+  dialogs/MacAccessibilityGuide.cpp
+  dialogs/MacAccessibilityGuide.h
   dialogs/ProLicenseUiPolicy.cpp
   dialogs/ProLicenseUiPolicy.h
   dialogs/ScreenSettingsDialog.cpp
