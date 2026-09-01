@@ -70,16 +70,20 @@ FileTransferDataEncodeResult writeFileTransferDataFrame(
   if (!encoded.ok()) {
     return encoded;
   }
-  if (encoded.bytes.size() > std::numeric_limits<std::uint32_t>::max()) {
+  constexpr std::size_t kOuterHeaderBytes = 8;
+  if (encoded.bytes.size() > std::numeric_limits<std::uint32_t>::max() - kOuterHeaderBytes) {
     encoded.error = FileTransferDataCodecError::MessageTooLarge;
     encoded.bytes.clear();
     return encoded;
   }
 
   const auto payloadLength = encodeLength(static_cast<std::uint32_t>(encoded.bytes.size()));
-  stream->write(kMsgDFileTransferData, 4);
-  stream->write(payloadLength.data(), static_cast<std::uint32_t>(payloadLength.size()));
-  stream->write(encoded.bytes.data(), static_cast<std::uint32_t>(encoded.bytes.size()));
+  std::vector<std::uint8_t> frame;
+  frame.reserve(kOuterHeaderBytes + encoded.bytes.size());
+  frame.insert(frame.end(), kMsgDFileTransferData, kMsgDFileTransferData + 4);
+  frame.insert(frame.end(), payloadLength.begin(), payloadLength.end());
+  frame.insert(frame.end(), encoded.bytes.begin(), encoded.bytes.end());
+  stream->write(frame.data(), static_cast<std::uint32_t>(frame.size()));
   return encoded;
 }
 

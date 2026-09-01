@@ -108,6 +108,16 @@ function Get-ProductState {
   }
 }
 
+function Get-NumericFileVersion {
+  param(
+    [Parameter(Mandatory = $true)]
+    [string] $Path
+  )
+
+  $version = [Diagnostics.FileVersionInfo]::GetVersionInfo($Path)
+  return "$($version.FileMajorPart).$($version.FileMinorPart).$($version.FileBuildPart).$($version.FilePrivatePart)"
+}
+
 function Get-InstalledProductInfo {
   param(
     [Parameter(Mandatory = $true)]
@@ -748,6 +758,18 @@ try {
   }
   if ([string]::IsNullOrWhiteSpace($product.InstallLocation)) {
     throw 'Windows Installer did not register InstallLocation'
+  }
+
+  $expectedRuntimeVersion = "$($currentProductVersion.ToString()).0"
+  foreach ($runtimeFile in @('ieum.exe', 'ieum-core.exe', 'ieum-daemon.exe')) {
+    $runtimePath = Join-Path $product.InstallLocation $runtimeFile
+    if (-not (Test-Path -LiteralPath $runtimePath)) {
+      throw "Installed runtime executable was not found: $runtimePath"
+    }
+    $runtimeVersion = Get-NumericFileVersion -Path $runtimePath
+    if ($runtimeVersion -ne $expectedRuntimeVersion) {
+      throw "$runtimeFile remained at $runtimeVersion after upgrade; expected $expectedRuntimeVersion"
+    }
   }
 
   $core = Join-Path $product.InstallLocation 'ieum-core.exe'

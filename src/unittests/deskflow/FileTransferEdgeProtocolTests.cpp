@@ -66,6 +66,7 @@ public:
 
   void write(const void *buffer, std::uint32_t size) override
   {
+    ++m_writeCalls;
     m_written.append(static_cast<const char *>(buffer), size);
   }
 
@@ -106,6 +107,11 @@ public:
     return m_written;
   }
 
+  [[nodiscard]] std::size_t writeCalls() const noexcept
+  {
+    return m_writeCalls;
+  }
+
   [[nodiscard]] std::size_t readCalls() const noexcept
   {
     return m_readCalls;
@@ -119,6 +125,7 @@ public:
 private:
   std::deque<std::string> m_chunks;
   std::string m_written;
+  std::size_t m_writeCalls = 0;
   std::size_t m_readCalls = 0;
   std::uint32_t m_largestRead = 0;
   bool m_closed = false;
@@ -153,6 +160,7 @@ void frameRoundTripsAcrossFragmentedReads()
   const FileTransferEdgeMessage original = request();
   const auto write = writeFileTransferEdgeFrame(&output, original);
   require(write.ok(), "valid edge message should frame");
+  require(output.writeCalls() == 1, "an edge frame must be emitted as one transport packet");
   require(output.written().starts_with("DFTE"), "edge frame should use the DFTE message code");
 
   MemoryStream input;

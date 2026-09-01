@@ -72,6 +72,7 @@ public:
 
   void write(const void *buffer, std::uint32_t size) override
   {
+    ++m_writeCalls;
     m_written.append(static_cast<const char *>(buffer), size);
   }
 
@@ -112,6 +113,11 @@ public:
     return m_written;
   }
 
+  std::size_t writeCalls() const
+  {
+    return m_writeCalls;
+  }
+
   std::size_t readCalls() const
   {
     return m_readCalls;
@@ -125,6 +131,7 @@ public:
 private:
   std::deque<std::string> m_chunks;
   std::string m_written;
+  std::size_t m_writeCalls = 0;
   std::size_t m_readCalls = 0;
   std::uint32_t m_largestRead = 0;
   bool m_closed = false;
@@ -185,6 +192,7 @@ void frameRoundTripsAcrossFragmentedReads()
       FileTransferDataChunk{.route = route(), .itemIndex = 0, .offset = 7, .bytes = {10, 20, 30, 40}};
   const auto write = writeFileTransferDataFrame(&output, original);
   require(write.ok(), "valid data message should frame");
+  require(output.writeCalls() == 1, "a data frame must be emitted as one transport packet");
   require(output.written().starts_with("DFTD"), "frame should use the DFTD message code");
 
   MemoryStream input;

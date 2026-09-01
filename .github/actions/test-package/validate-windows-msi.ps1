@@ -186,27 +186,25 @@ try {
         [int] $upgradeSequenceByAction.InstallExecute[2] -ge
           [int] $upgradeSequenceByAction.RemoveExistingProducts[2] -or
         [int] $upgradeSequenceByAction.RemoveExistingProducts[2] -ge
-          [int] $upgradeSequenceByAction.StartServices[2] -or
-        [int] $upgradeSequenceByAction.StartServices[2] -ge
           [int] $upgradeSequenceByAction.InstallExecuteAgain[2] -or
+        [int] $upgradeSequenceByAction.InstallExecuteAgain[2] -ge
+          [int] $upgradeSequenceByAction.StartServices[2] -or
         $upgradeSequenceByAction.InstallExecuteAgain[1] -notmatch 'REMOVE'
       ) {
-        throw "$($msi.Name): upgrade must remove the old product while Ieum is stopped, then restart the service"
+        throw "$($msi.Name): upgrade must finish both install passes while Ieum is stopped, then restart the service"
       }
 
-      $installedFiles = @(
-        Get-MsiRows -Database $database -Query 'SELECT `FileName` FROM `File`' |
-          ForEach-Object {
-            ($_.Values[0] -split '\|')[-1].ToLowerInvariant()
-          }
-      )
+      $installedFiles = @{}
+      foreach ($row in Get-MsiRows -Database $database -Query 'SELECT `FileName`,`Version` FROM `File`') {
+        $installedFiles[($row.Values[0] -split '\|')[-1].ToLowerInvariant()] = $row.Values[1]
+      }
       foreach ($runtimeFile in @('ieum.exe', 'ieum-core.exe', 'ieum-daemon.exe')) {
-        if ($runtimeFile -notin $installedFiles) {
+        if (-not $installedFiles.ContainsKey($runtimeFile)) {
           throw "$($msi.Name): missing Ieum runtime file '$runtimeFile'"
         }
       }
       foreach ($deskflowFile in @('deskflow.exe', 'deskflow-core.exe', 'deskflow-daemon.exe')) {
-        if ($deskflowFile -in $installedFiles) {
+        if ($installedFiles.ContainsKey($deskflowFile)) {
           throw "$($msi.Name): package still installs Deskflow-owned runtime file '$deskflowFile'"
         }
       }
@@ -228,6 +226,15 @@ try {
         $continuousBuild = [int] ($properties.ProductVersion -split '\.')[2]
         if ($continuousBuild -lt 900 -or $continuousBuild -gt 998) {
           throw "$($msi.Name): continuous ProductVersion must use build slot 900-998"
+        }
+      }
+      $expectedRuntimeVersion = "$($properties.ProductVersion).0"
+      foreach ($runtimeFile in @('ieum.exe', 'ieum-core.exe', 'ieum-daemon.exe')) {
+        if ($installedFiles[$runtimeFile] -ne $expectedRuntimeVersion) {
+          throw (
+            "$($msi.Name): $runtimeFile file version '$($installedFiles[$runtimeFile])' " +
+            "!= '$expectedRuntimeVersion'; upgrades can leave the old executable installed"
+          )
         }
       }
 
