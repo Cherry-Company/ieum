@@ -6,75 +6,12 @@ if(CPACK_GENERATOR MATCHES 7Z|ZIP)
 endif()
 
 if(CPACK_GENERATOR MATCHES WIX)
-  # Windows Installer ignores a fourth ProductVersion field. Older Ieum alpha
-  # packages were all 0.1.0.0, so Windows could not order alpha.4 and alpha.5.
-  # Reserve 1000 build values per SemVer patch:
-  #   100-299 alpha, 400-599 beta, 700-899 rc, 999 stable.
   set(_ieum_release_version "@CMAKE_PROJECT_RELEASE_VERSION@")
-  if(_ieum_release_version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)-alpha\\.([0-9]+)$")
-    set(_ieum_wix_major "${CMAKE_MATCH_1}")
-    set(_ieum_wix_minor "${CMAKE_MATCH_2}")
-    set(_ieum_wix_patch "${CMAKE_MATCH_3}")
-    set(_ieum_wix_sequence "${CMAKE_MATCH_4}")
-    if(_ieum_wix_sequence GREATER 199)
-      message(FATAL_ERROR "MSI alpha sequence exceeds 199: ${_ieum_release_version}")
-    endif()
-    math(EXPR _ieum_wix_build
-      "${_ieum_wix_patch} * 1000 + 100 + ${_ieum_wix_sequence}"
-    )
-  elseif(_ieum_release_version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)-beta\\.([0-9]+)$")
-    set(_ieum_wix_major "${CMAKE_MATCH_1}")
-    set(_ieum_wix_minor "${CMAKE_MATCH_2}")
-    set(_ieum_wix_patch "${CMAKE_MATCH_3}")
-    set(_ieum_wix_sequence "${CMAKE_MATCH_4}")
-    if(_ieum_wix_sequence GREATER 199)
-      message(FATAL_ERROR "MSI beta sequence exceeds 199: ${_ieum_release_version}")
-    endif()
-    math(EXPR _ieum_wix_build
-      "${_ieum_wix_patch} * 1000 + 400 + ${_ieum_wix_sequence}"
-    )
-  elseif(_ieum_release_version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)-rc\\.([0-9]+)$")
-    set(_ieum_wix_major "${CMAKE_MATCH_1}")
-    set(_ieum_wix_minor "${CMAKE_MATCH_2}")
-    set(_ieum_wix_patch "${CMAKE_MATCH_3}")
-    set(_ieum_wix_sequence "${CMAKE_MATCH_4}")
-    if(_ieum_wix_sequence GREATER 199)
-      message(FATAL_ERROR "MSI rc sequence exceeds 199: ${_ieum_release_version}")
-    endif()
-    math(EXPR _ieum_wix_build
-      "${_ieum_wix_patch} * 1000 + 700 + ${_ieum_wix_sequence}"
-    )
-  elseif(_ieum_release_version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
-    set(_ieum_wix_major "${CMAKE_MATCH_1}")
-    set(_ieum_wix_minor "${CMAKE_MATCH_2}")
-    set(_ieum_wix_patch "${CMAKE_MATCH_3}")
-    math(EXPR _ieum_wix_build "${_ieum_wix_patch} * 1000 + 999")
-  elseif(_ieum_release_version MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)\\.([0-9]+)$")
-    # Continuous CI builds must upgrade every prerelease in the same SemVer
-    # patch line so branch CI can exercise the real installer migration. Keep
-    # them below the stable slot (999) and above the highest RC slot (899).
-    set(_ieum_wix_major "${CMAKE_MATCH_1}")
-    set(_ieum_wix_minor "${CMAKE_MATCH_2}")
-    set(_ieum_wix_patch "${CMAKE_MATCH_3}")
-    set(_ieum_wix_sequence "${CMAKE_MATCH_4}")
-    if(_ieum_wix_sequence GREATER 98)
-      set(_ieum_wix_sequence 98)
-    endif()
-    math(EXPR _ieum_wix_build
-      "${_ieum_wix_patch} * 1000 + 900 + ${_ieum_wix_sequence}"
-    )
-  else()
-    message(FATAL_ERROR
-      "Cannot map release version to Windows Installer ProductVersion: ${_ieum_release_version}"
-    )
-  endif()
-
-  if(_ieum_wix_major GREATER 255 OR _ieum_wix_minor GREATER 255 OR _ieum_wix_build GREATER 65535)
-    message(FATAL_ERROR "MSI ProductVersion is out of range: ${_ieum_release_version}")
-  endif()
-
-  set(CPACK_PACKAGE_VERSION
-    "${_ieum_wix_major}.${_ieum_wix_minor}.${_ieum_wix_build}"
+  include("@CMAKE_SOURCE_DIR@/cmake/IeumWindowsVersion.cmake")
+  ieum_compute_windows_versions(
+    "${_ieum_release_version}"
+    CPACK_PACKAGE_VERSION
+    _ieum_file_version
   )
   message(STATUS
     "Windows Installer ProductVersion: ${CPACK_PACKAGE_VERSION} (${_ieum_release_version})"

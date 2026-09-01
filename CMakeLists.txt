@@ -114,6 +114,24 @@ else()
   set(CMAKE_PROJECT_RELEASE_VERSION "${CMAKE_PROJECT_VERSION}")
 endif()
 
+if(WIN32)
+  include(cmake/IeumWindowsVersion.cmake)
+  ieum_compute_windows_versions(
+    "${CMAKE_PROJECT_RELEASE_VERSION}"
+    IEUM_WINDOWS_INSTALLER_VERSION
+    IEUM_WINDOWS_FILE_VERSION
+  )
+  string(REPLACE "." ";" _ieum_windows_file_version_parts "${IEUM_WINDOWS_FILE_VERSION}")
+  list(GET _ieum_windows_file_version_parts 0 IEUM_WINDOWS_VERSION_MAJOR)
+  list(GET _ieum_windows_file_version_parts 1 IEUM_WINDOWS_VERSION_MINOR)
+  list(GET _ieum_windows_file_version_parts 2 IEUM_WINDOWS_VERSION_BUILD)
+  list(GET _ieum_windows_file_version_parts 3 IEUM_WINDOWS_VERSION_REVISION)
+  unset(_ieum_windows_file_version_parts)
+  message(STATUS
+    "Windows versions: installer ${IEUM_WINDOWS_INSTALLER_VERSION}, files ${IEUM_WINDOWS_FILE_VERSION}"
+  )
+endif()
+
 #Unset the vars used in the project call
 unset(DESKFLOW_VERSION_MAJOR)
 unset(DESKFLOW_VERSION_MINOR)

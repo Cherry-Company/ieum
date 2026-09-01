@@ -3,7 +3,7 @@
 
 ## 후원 투명성 / Sponsorship transparency
 
-Release: v0.1.0-alpha.23
+Release: v0.1.0-alpha.24
 
 - 이번 릴리스에 배분된 GitHub Sponsors 후원금 / Sponsor funds allocated to this release: **USD 0**
 - 후원금으로 완료한 작업 / Work claimed as sponsor-funded: **없음 / None**
@@ -28,22 +28,19 @@ Release: v0.1.0-alpha.23
   after ARM64 compilation and CTest, DMG creation and mounting, `codesign --verify --deep --strict`, ARM64 Mach-O
   inspection, and artifact upload all pass. Windows x64 and ARM64 packages must also pass build, MSI structure,
   replacement-install, and service-coexistence checks.
-- alpha.23은 최종 핸드셰이크 옵션보다 먼저 마우스 이동 프레임이 도착해 `DMMV` 오류로 끊기던 경쟁을
-  제거하고, 시작 중·재시도 중에도 중지 버튼이 비활성화되지 않게 합니다. Pro Local의 라이선스·무덮어쓰기·
-  SHA-256 검증 경계는 그대로 유지합니다. / Alpha.23 removes the race that could deliver a `DMMV` mouse frame
-  before final handshake options and keeps Stop available while the core is starting or retrying. Pro Local's
-  license, no-overwrite, and SHA-256 validation boundaries remain unchanged.
-- macOS에서는 빨간 닫기 버튼이 앱을 메뉴바에 남기고, 재시작·로그아웃은 정상 종료로 기록합니다. 손쉬운
-  사용 안내는 Applications에서 현재 앱 보기, 필요 시 이전 승인 초기화, 현재 앱 등록, 설정 열기, 권한
-  확인 순으로 고정하며 자동 등록 실패 시 `+`에서 `/Applications/Ieum.app`을 직접 선택할 수 있습니다. /
-  On macOS, the red close button leaves Ieum in the menu bar, while restart and logout are recorded as clean exits.
-  The Accessibility guide uses a fixed sequence and exposes `/Applications/Ieum.app` for manual `+` selection when
-  automatic registration fails.
-- Windows 업데이트 보조 실행은 기존 GUI가 응답했다는 확인만 받지 않고 단일 인스턴스 자원이 실제로
-  해제될 때까지 기다립니다. 설치기는 서비스 중지와 제한 시간 후 Ieum GUI·코어 종료 안전장치를 계속
-  유지합니다. / The Windows update helper waits for the previous GUI's singleton resource to be released instead
-  of returning on acknowledgement alone. The installer retains service shutdown and bounded GUI/core termination
-  fallbacks.
+- alpha.24는 제어·데이터·화면 경계 파일 전송 프레임을 각각 하나의 전송 패킷으로 기록합니다. 지연이 있는
+  Tailscale 및 Windows ↔ macOS 연결에서 프레임 길이와 페이로드가 따로 도착해 `DFTD`가 잘린 것으로
+  판정되던 문제를 제거합니다. / Alpha.24 emits each control, data, and edge file-transfer frame as one transport
+  packet, preventing delayed Tailscale and Windows-to-macOS links from treating separately delivered lengths and
+  payloads as truncated `DFTD` frames.
+- Windows 실행 파일 버전은 MSI ProductVersion과 함께 릴리스마다 증가하며 alpha.24는 `0.1.124.0`입니다.
+  설치기는 기존 제품 제거와 두 번째 파일 교체 단계를 모두 끝낸 뒤에만 Ieum 서비스를 다시 시작합니다. /
+  Windows executable versions now increase with every MSI release (`0.1.124.0` for alpha.24), and the installer
+  restarts the Ieum service only after old-product removal and the second file-replacement pass both finish.
+- alpha.23의 `DMMV` 핸드셰이크 수정, 시작·재시도 중 중지 버튼, macOS 메뉴바 종료·권한 안내와 Windows
+  업데이트 준비 대기는 그대로 포함됩니다. Pro Local의 라이선스·무덮어쓰기·SHA-256 검증 경계도
+  유지합니다. / Alpha.23's handshake, Stop-button, macOS lifecycle/permission, and Windows update-preparation
+  fixes remain included, as do Pro Local's license, no-overwrite, and SHA-256 validation boundaries.
 - 저장소에 Apple Developer ID 및 공증 자격 증명이 아직 구성되지 않아 macOS 패키지는 ad-hoc 서명
   상태이며 Apple 공증을 받지 않았습니다. 따라서 이 버전은 프리릴리스이고 Gatekeeper 수동 승인이
   필요할 수 있습니다. 실제 Windows 서버와 Mac 클라이언트 사이의 한/영 입력, 장시간 커서 이동과

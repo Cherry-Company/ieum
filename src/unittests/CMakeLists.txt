@@ -54,6 +54,10 @@ function(create_test)
 endfunction()
 
 enable_testing()
+add_test(
+  NAME IeumWindowsVersionTests
+  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_SOURCE_DIR}/cmake/tests/IeumWindowsVersionTests.cmake
+)
 find_package(Qt6 ${REQUIRED_QT_VERSION} REQUIRED COMPONENTS Test)
 
 add_subdirectory(base)
