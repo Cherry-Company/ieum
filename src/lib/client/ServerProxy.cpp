@@ -21,6 +21,8 @@
 #include "deskflow/FileTransferControlProtocol.h"
 #include "deskflow/FileTransferDataEvent.h"
 #include "deskflow/FileTransferDataProtocol.h"
+#include "deskflow/FileTransferEdgeEvent.h"
+#include "deskflow/FileTransferEdgeProtocol.h"
 #include "deskflow/OptionTypes.h"
 #include "deskflow/ProtocolTypes.h"
 #include "deskflow/ProtocolUtil.h"
@@ -351,6 +353,10 @@ ServerProxy::ConnectionResult ServerProxy::parseMessage(const uint8_t *code)
     receiveFileTransferData();
   }
 
+  else if (memcmp(code, kMsgDFileTransferEdge, 4) == 0) {
+    receiveFileTransferEdge();
+  }
+
   else if (memcmp(code, kMsgCResetOptions, 4) == 0) {
     resetOptions();
   }
@@ -471,6 +477,26 @@ void ServerProxy::receiveFileTransferData()
   m_events->addEvent(Event(
       EventTypes::FileTransferDataReceived, m_clientEventTarget,
       new deskflow::filetransfer::FileTransferDataEventData(std::move(*received.message))
+  ));
+}
+
+bool ServerProxy::sendFileTransferEdge(const deskflow::filetransfer::FileTransferEdgeMessage &message)
+{
+  if (m_client->protocolMinorVersion() < kProtocolFileTransferEdgeMinorVersion) {
+    return false;
+  }
+  return deskflow::filetransfer::writeFileTransferEdgeFrame(m_stream, message).ok();
+}
+
+void ServerProxy::receiveFileTransferEdge()
+{
+  auto received = deskflow::filetransfer::readFileTransferEdgeFrame(m_stream);
+  if (!received.ok()) {
+    throw BadClientException("invalid file-transfer edge frame");
+  }
+  m_events->addEvent(Event(
+      EventTypes::FileTransferEdgeReceived, m_clientEventTarget,
+      new deskflow::filetransfer::FileTransferEdgeEventData(std::move(*received.message))
   ));
 }
 

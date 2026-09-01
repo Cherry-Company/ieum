@@ -32,7 +32,7 @@ if (WIN32)
   )
   create_test(
     NAME MSWindowsFileTransferSourceTests
-    DEPENDS platform
+    DEPENDS app
     LIBS base arch
     SOURCE MSWindowsFileTransferSourceTests.cpp
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
@@ -45,6 +45,20 @@ if (WIN32)
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
   )
 elseif(APPLE)
+  create_test(
+    NAME OSXFileTransferPlatformTests
+    DEPENDS app
+    LIBS platform base arch
+    SOURCE OSXFileTransferPlatformTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
+  )
+  create_test(
+    NAME OSXFileTransferEdgeDropHostTests
+    DEPENDS app
+    LIBS platform base arch
+    SOURCE OSXFileTransferEdgeDropHostTests.mm
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
+  )
   create_test(
     NAME OSXClipboardTests
     DEPENDS platform

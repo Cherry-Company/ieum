@@ -126,20 +126,24 @@ bool MSWindowsEdgeDropHost::createHostedWindow(const MSWindowsEdgeDropWindow &la
 MSWindowsEdgeDropCallbacks MSWindowsEdgeDropHost::callbacksFor(Direction direction) const
 {
   MSWindowsEdgeDropCallbacks callbacks;
-  callbacks.resolveTarget = [this, direction](POINTL point) {
-    return m_callbacks.resolveTarget ? m_callbacks.resolveTarget(direction, point) : std::nullopt;
-  };
-  callbacks.handoff = [this](const EdgeTarget &target, std::vector<FileTransferSourceCandidate> sources) {
+  callbacks.direction = direction;
+  callbacks.handoff = [this, direction](POINTL point, std::vector<std::filesystem::path> paths) {
     if (m_callbacks.handoff) {
-      m_callbacks.handoff(target, std::move(sources));
+      m_callbacks.handoff(
+          FileTransferEdgeDrop{
+              .direction = direction,
+              .x = point.x,
+              .y = point.y,
+              .paths = std::move(paths),
+          }
+      );
     }
   };
-  callbacks.stateChanged =
-      [this, direction](EdgeHandoffState state, const auto &target, std::size_t count, std::uint64_t totalBytes) {
-        if (m_callbacks.stateChanged) {
-          m_callbacks.stateChanged(direction, state, target, count, totalBytes);
-        }
-      };
+  callbacks.stateChanged = [this, direction](EdgeHandoffState state, std::size_t count) {
+    if (m_callbacks.stateChanged) {
+      m_callbacks.stateChanged(direction, state, count);
+    }
+  };
   return callbacks;
 }
 

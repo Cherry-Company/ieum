@@ -7,3 +7,10 @@ create_test(
   SOURCE ProLicenseTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/licensing"
 )
+
+create_test(
+  NAME ProEarlyAccessClaimTests
+  DEPENDS licensing
+  SOURCE ProEarlyAccessClaimTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/licensing"
+)

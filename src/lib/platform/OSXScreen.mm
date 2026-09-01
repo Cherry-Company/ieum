@@ -196,6 +196,7 @@ OSXScreen::OSXScreen(IEventQueue *events, bool isPrimary, bool enableLangSync)
 OSXScreen::~OSXScreen()
 {
   disable();
+  m_fileTransferEdgeDropHost.reset();
 
   m_events->adoptBuffer(nullptr);
   m_events->removeHandler(EventTypes::System, m_events->getSystemTarget());
@@ -256,6 +257,31 @@ std::optional<KeyButton> OSXScreen::canonicalKeyButton(KeyButton button) const
 bool OSXScreen::fakeRawKey(KeyButton button, KeyModifierMask mask, bool press, bool repeat)
 {
   return m_keyState->fakeRawKey(button, mask, press, repeat);
+}
+
+bool OSXScreen::installFileTransferEdgeDrop(deskflow::filetransfer::FileTransferEdgeDropHandler handler)
+{
+  if (!m_fileTransferEdgeDropEnabled || !handler) {
+    return false;
+  }
+  m_fileTransferEdgeDropHost =
+      std::make_unique<deskflow::filetransfer::OSXFileTransferEdgeDropHost>(std::move(handler));
+  if (!refreshFileTransferEdgeDrop()) {
+    m_fileTransferEdgeDropHost.reset();
+    return false;
+  }
+  return true;
+}
+
+bool OSXScreen::configureFileTransferEdgeDrop(std::uint32_t activeSides)
+{
+  m_activeSides = activeSides;
+  return refreshFileTransferEdgeDrop();
+}
+
+void OSXScreen::uninstallFileTransferEdgeDrop() noexcept
+{
+  m_fileTransferEdgeDropHost.reset();
 }
 
 void *OSXScreen::getEventTarget() const
@@ -399,6 +425,7 @@ void OSXScreen::reconfigure(uint32_t activeSides)
   const static auto sidesText = sidesMaskToString(activeSides);
   LOG_DEBUG("active sides: %s (0x%02x)", sidesText.c_str(), activeSides);
   m_activeSides = activeSides;
+  (void)refreshFileTransferEdgeDrop();
 }
 
 uint32_t OSXScreen::activeSides()
@@ -886,10 +913,16 @@ void OSXScreen::enable()
   } else {
     LOG_ERR("failed to create quartz event tap");
   }
+  m_fileTransferEdgeDropEnabled = true;
+  (void)refreshFileTransferEdgeDrop();
 }
 
 void OSXScreen::disable()
 {
+  m_fileTransferEdgeDropEnabled = false;
+  if (m_fileTransferEdgeDropHost) {
+    m_fileTransferEdgeDropHost->clear();
+  }
   showCursor();
 
   // FIXME -- stop watching jump zones, stop capturing input
@@ -1506,7 +1539,25 @@ bool OSXScreen::updateScreenShape()
       (displayCount == 1) ? "display" : "displays"
   );
 
+  (void)refreshFileTransferEdgeDrop();
+
   return true;
+}
+
+bool OSXScreen::refreshFileTransferEdgeDrop()
+{
+  if (!m_fileTransferEdgeDropHost) {
+    return true;
+  }
+  if (!m_fileTransferEdgeDropEnabled) {
+    m_fileTransferEdgeDropHost->clear();
+    return true;
+  }
+  const auto configured = m_fileTransferEdgeDropHost->configure(getDisplayLayout(), m_activeSides);
+  if (!configured) {
+    LOG_WARN("failed to configure macOS file-transfer edge drop windows");
+  }
+  return configured;
 }
 
 #pragma mark -

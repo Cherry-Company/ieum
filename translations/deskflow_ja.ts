@@ -1841,8 +1841,36 @@ Enabling this setting will disable the server config GUI.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Install and activate a Pro Local license on both Windows computers.</source>
-        <translation type="unfinished"></translation>
+        <source>Pro Local Early Access — USD 30 one-time
+Sponsor once to receive a perpetual Pro Local file-transfer license.
+Licenses are issued manually after payment verification.</source>
+        <translation>Pro Local Early Access — 30米ドル（1回限り）
+1回のスポンサー支援で、Pro Localファイル転送の永久ライセンスを受け取れます。
+お支払いの確認後、ライセンスを手動で発行します。</translation>
+    </message>
+    <message>
+        <source>Include this claim code in your license request email.</source>
+        <translation>この申請コードをライセンス申請メールに記載してください。</translation>
+    </message>
+    <message>
+        <source>Early Access claim code</source>
+        <translation>Early Access申請コード</translation>
+    </message>
+    <message>
+        <source>Copy claim code</source>
+        <translation>申請コードをコピー</translation>
+    </message>
+    <message>
+        <source>Get Pro Local Early Access</source>
+        <translation>Pro Local Early Accessを入手</translation>
+    </message>
+    <message>
+        <source>Email license request</source>
+        <translation>ライセンス申請をメール送信</translation>
+    </message>
+    <message>
+        <source>Install and activate a Pro Local license on each Windows or macOS computer.</source>
+        <translation>各WindowsまたはmacOSコンピューターにPro Localライセンスをインストールして有効化してください。</translation>
     </message>
 </context>
 <context>

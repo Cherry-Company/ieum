@@ -8,6 +8,7 @@
 
 #pragma once
 #include <QDialog>
+#include <QString>
 
 #include "common/TailscaleIntegration.h"
 #include "gui/config/ServerConfig.h"
@@ -37,6 +38,10 @@ private:
   void browseCertificatePath();
   void browseLogPath();
   void browseFileTransferDirectory();
+  void ensureProEarlyAccessClaim();
+  void openProEarlyAccessSponsor();
+  void copyProEarlyAccessClaim();
+  void emailProLicenseRequest();
   void importProLicense();
   void activateProLicense();
   void removeProLicense();
@@ -107,4 +112,5 @@ private:
   bool m_tailscaleStatusChecked = false;
   bool m_tailscaleQueryInProgress = false;
   bool m_acceptAfterTailscaleCheck = false;
+  QString m_proEarlyAccessClaim;
 };

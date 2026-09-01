@@ -48,6 +48,8 @@ if(WIN32)
     MSWindowsFileTransferSource.h
     MSWindowsFileTransferIo.cpp
     MSWindowsFileTransferIo.h
+    MSWindowsFileTransferPlatform.cpp
+    MSWindowsFileTransferPlatform.h
     MSWindowsHook.cpp
     MSWindowsHook.h
     MSWindowsImeController.cpp
@@ -97,6 +99,10 @@ elseif(APPLE)
     OSXKeyState.h
     OSXInputSourceController.h
     OSXInputSourceController.mm
+    OSXFileTransferPlatform.cpp
+    OSXFileTransferPlatform.h
+    OSXFileTransferEdgeDropHost.h
+    OSXFileTransferEdgeDropHost.mm
     OSXMediaKeySupport.h
     OSXMediaKeySupport.m
     OSXPasteboardPeeker.h
@@ -181,6 +187,11 @@ elseif(UNIX)
   endif()
 endif()
 
+list(APPEND PLATFORM_SOURCES
+  FileTransferPlatformFactory.cpp
+  FileTransferPlatformFactory.h
+)
+
 # wayland.h is included to check for wayland support
 add_library(platform STATIC ${PLATFORM_SOURCES})
 
@@ -200,8 +211,10 @@ if(UNIX)
     ${libs})
 
   if(APPLE)
+    find_package(OpenSSL ${REQUIRED_OPENSSL_VERSION} REQUIRED COMPONENTS Crypto)
     find_library(COCOA_LIBRARY Cocoa)
-    target_link_libraries(platform ${COCOA_LIBRARY})
+    find_library(SECURITY_LIBRARY Security)
+    target_link_libraries(platform ${COCOA_LIBRARY} ${SECURITY_LIBRARY} OpenSSL::Crypto)
   else()
     if(${LIBXKBCOMMON_VERSION} VERSION_GREATER_EQUAL "1.10")
       target_compile_definitions(platform PRIVATE HAVE_XKB_KEYMAP_MOD_GET_MASK=1)

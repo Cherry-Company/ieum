@@ -4,26 +4,19 @@
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
-#include "deskflow/win32/MSWindowsFileTransferService.h"
+#include "deskflow/FileTransferService.h"
 
 #include "base/Event.h"
 #include "base/IEventQueue.h"
 #include "base/Log.h"
 #include "deskflow/FileTransferControlEvent.h"
 #include "deskflow/FileTransferDataEvent.h"
+#include "deskflow/FileTransferEdgeEvent.h"
 #include "deskflow/FileTransferSessionState.h"
-#include "platform/MSWindowsFileTransferIo.h"
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-#include <Windows.h>
-#include <bcrypt.h>
 
 #include <algorithm>
 #include <map>
 #include <optional>
-#include <system_error>
 #include <type_traits>
 #include <utility>
 #include <variant>
@@ -31,43 +24,40 @@
 namespace deskflow::filetransfer {
 namespace {
 
-TransferId createRandomTransferId()
-{
-  TransferId id{};
-  const auto status =
-      BCryptGenRandom(nullptr, id.data(), static_cast<ULONG>(id.size()), BCRYPT_USE_SYSTEM_PREFERRED_RNG);
-  if (status != 0 || std::ranges::all_of(id, [](std::uint8_t value) { return value == 0; })) {
-    return {};
-  }
-  return id;
-}
+constexpr std::size_t kChunkBytes = 60 * 1024;
+constexpr std::size_t kMaximumEdgeDropItems = 100;
+constexpr double kEdgeRequestTimeoutSeconds = 5.0;
 
-FileTransferResultCode sourceResultCodeFor(MSWindowsFileTransferIoError error)
+FileTransferResultCode sourceResultCodeFor(FileTransferIoError error)
 {
   switch (error) {
-  case MSWindowsFileTransferIoError::InvalidSource:
-  case MSWindowsFileTransferIoError::OpenFailed:
-  case MSWindowsFileTransferIoError::ReadFailed:
-  case MSWindowsFileTransferIoError::SourceChanged:
+  case FileTransferIoError::EmptyPath:
+  case FileTransferIoError::RelativePath:
+  case FileTransferIoError::OpenFailed:
+  case FileTransferIoError::MetadataReadFailed:
+  case FileTransferIoError::LinkOrSpecialFile:
+  case FileTransferIoError::SourceChanged:
+  case FileTransferIoError::ReadFailed:
     return FileTransferResultCode::SourceChanged;
-  case MSWindowsFileTransferIoError::HashFailed:
+  case FileTransferIoError::HashFailed:
+  case FileTransferIoError::IntegrityMismatch:
     return FileTransferResultCode::IntegrityMismatch;
   default:
     return FileTransferResultCode::ProtocolError;
   }
 }
 
-FileTransferResultCode destinationResultCodeFor(MSWindowsFileTransferIoError error)
+FileTransferResultCode destinationResultCodeFor(FileTransferIoError error)
 {
   switch (error) {
-  case MSWindowsFileTransferIoError::InvalidDestination:
-  case MSWindowsFileTransferIoError::DestinationDenied:
-  case MSWindowsFileTransferIoError::OpenFailed:
-  case MSWindowsFileTransferIoError::WriteFailed:
-  case MSWindowsFileTransferIoError::PublishFailed:
+  case FileTransferIoError::InvalidDestination:
+  case FileTransferIoError::DestinationDenied:
+  case FileTransferIoError::OpenFailed:
+  case FileTransferIoError::WriteFailed:
+  case FileTransferIoError::PublishFailed:
     return FileTransferResultCode::DestinationDenied;
-  case MSWindowsFileTransferIoError::IntegrityMismatch:
-  case MSWindowsFileTransferIoError::HashFailed:
+  case FileTransferIoError::IntegrityMismatch:
+  case FileTransferIoError::HashFailed:
     return FileTransferResultCode::IntegrityMismatch;
   default:
     return FileTransferResultCode::ProtocolError;
@@ -81,30 +71,36 @@ const FileTransferDataRoute &routeOf(const FileTransferDataMessage &message)
 
 } // namespace
 
-struct MSWindowsFileTransferService::Impl
+struct FileTransferService::Impl
 {
   struct Outgoing
   {
     TransferId id{};
     std::uint32_t itemIndex = 0;
-    std::unique_ptr<MSWindowsFileTransferReader> reader;
+    std::unique_ptr<IFileTransferReader> reader;
   };
 
-  explicit Impl(MSWindowsFileTransferServiceOptions options)
+  struct PendingEdgeRequest
+  {
+    TransferId requestId{};
+    std::vector<FileTransferSourceCandidate> candidates;
+  };
+
+  explicit Impl(FileTransferServiceOptions options)
       : localScreen(std::move(options.localScreen)),
         destinationDirectory(std::move(options.destinationDirectory)),
         receiveEnabled(options.receiveEnabled),
         authorizeFileTransfer(std::move(options.authorizeFileTransfer)),
         sendControl(std::move(options.sendControl)),
         sendData(std::move(options.sendData)),
-        createTransferId(std::move(options.createTransferId)),
+        sendEdge(std::move(options.sendEdge)),
+        resolveLocalTarget(std::move(options.resolveLocalTarget)),
+        activeSidesChanged(std::move(options.activeSidesChanged)),
+        platform(std::move(options.platform)),
         events(options.events),
         eventTarget(options.eventTarget),
         sessions(localScreen, 1)
   {
-    if (!createTransferId) {
-      createTransferId = createRandomTransferId;
-    }
   }
 
   [[nodiscard]] bool isAuthorized() const noexcept
@@ -122,20 +118,26 @@ struct MSWindowsFileTransferService::Impl
   std::string localScreen;
   std::filesystem::path destinationDirectory;
   bool receiveEnabled = false;
-  MSWindowsFileTransferServiceOptions::AuthorizationCheck authorizeFileTransfer;
-  MSWindowsFileTransferServiceOptions::ControlSender sendControl;
-  MSWindowsFileTransferServiceOptions::DataSender sendData;
-  MSWindowsFileTransferServiceOptions::TransferIdGenerator createTransferId;
+  FileTransferServiceOptions::AuthorizationCheck authorizeFileTransfer;
+  FileTransferServiceOptions::ControlSender sendControl;
+  FileTransferServiceOptions::DataSender sendData;
+  FileTransferServiceOptions::EdgeSender sendEdge;
+  FileTransferServiceOptions::LocalTargetResolver resolveLocalTarget;
+  FileTransferServiceOptions::ActiveSidesHandler activeSidesChanged;
+  std::unique_ptr<IFileTransferPlatform> platform;
   IEventQueue *events = nullptr;
   void *eventTarget = nullptr;
   FileTransferSessionRegistry sessions;
   std::optional<Outgoing> outgoing;
-  std::map<TransferId, std::unique_ptr<MSWindowsFileTransferWriter>> incoming;
+  std::optional<PendingEdgeRequest> pendingEdge;
+  std::map<TransferId, std::unique_ptr<IFileTransferWriter>> incoming;
+  EventQueueTimer *edgeTimer = nullptr;
+  std::uint32_t activeSides = 0;
   bool handlersInstalled = false;
   bool sendScheduled = false;
 };
 
-MSWindowsFileTransferService::MSWindowsFileTransferService(MSWindowsFileTransferServiceOptions options)
+FileTransferService::FileTransferService(FileTransferServiceOptions options)
     : m_impl(std::make_unique<Impl>(std::move(options)))
 {
   if (m_impl->events == nullptr || m_impl->eventTarget == nullptr) {
@@ -154,6 +156,12 @@ MSWindowsFileTransferService::MSWindowsFileTransferService(MSWindowsFileTransfer
       LOG_WARN("rejected file-transfer data message");
     }
   });
+  m_impl->events->addHandler(EventTypes::FileTransferEdgeReceived, m_impl->eventTarget, [this](const Event &event) {
+    const auto *data = dynamic_cast<const FileTransferEdgeEventData *>(event.getDataObject());
+    if (data != nullptr && !handleEdgeMessage(data->message())) {
+      LOG_WARN("rejected file-transfer edge message");
+    }
+  });
   m_impl->events->addHandler(EventTypes::FileTransferSendNextChunk, this, [this](const Event &) {
     m_impl->sendScheduled = false;
     (void)processNextOutgoingChunk();
@@ -161,25 +169,30 @@ MSWindowsFileTransferService::MSWindowsFileTransferService(MSWindowsFileTransfer
   m_impl->handlersInstalled = true;
 }
 
-MSWindowsFileTransferService::~MSWindowsFileTransferService()
+FileTransferService::~FileTransferService()
 {
+  clearPendingEdgeRequest();
   if (!m_impl->handlersInstalled) {
     return;
   }
   m_impl->events->removeHandler(EventTypes::FileTransferControlReceived, m_impl->eventTarget);
   m_impl->events->removeHandler(EventTypes::FileTransferDataReceived, m_impl->eventTarget);
+  m_impl->events->removeHandler(EventTypes::FileTransferEdgeReceived, m_impl->eventTarget);
   m_impl->events->removeHandler(EventTypes::FileTransferSendNextChunk, this);
 }
 
-bool MSWindowsFileTransferService::offerLocalFiles(
-    std::string targetScreen, std::vector<FileTransferSourceCandidate> candidates
-)
+bool FileTransferService::offerLocalFiles(std::string targetScreen, std::vector<FileTransferSourceCandidate> candidates)
 {
-  if (!m_impl->isAuthorized() || m_impl->sessions.size() != 0 || !m_impl->sendControl || !m_impl->sendData) {
+  if (!m_impl->isAuthorized() || m_impl->platform == nullptr || m_impl->sessions.size() != 0 || !m_impl->sendControl ||
+      !m_impl->sendData) {
     return false;
   }
 
-  const auto id = m_impl->createTransferId();
+  const auto generated = m_impl->platform->randomId();
+  if (!generated.has_value() || std::ranges::all_of(*generated, [](std::uint8_t value) { return value == 0; })) {
+    return false;
+  }
+  const auto id = *generated;
   const auto manifest =
       buildFileTransferSourceManifest(id, m_impl->localScreen, std::move(targetScreen), std::move(candidates));
   if (!manifest.ok()) {
@@ -197,7 +210,97 @@ bool MSWindowsFileTransferService::offerLocalFiles(
   return true;
 }
 
-bool MSWindowsFileTransferService::handleControl(const FileTransferControlMessage &message)
+bool FileTransferService::beginEdgeDrop(FileTransferEdgeDrop drop)
+{
+  if (!m_impl->isAuthorized() || m_impl->platform == nullptr || m_impl->sessions.size() != 0 ||
+      m_impl->pendingEdge.has_value() || !m_impl->sendControl || !m_impl->sendData ||
+      drop.direction < Direction::FirstDirection || drop.direction > Direction::LastDirection) {
+    return false;
+  }
+
+  auto inspected = m_impl->platform->inspectSources(drop.paths, kMaximumEdgeDropItems);
+  if (!inspected.ok() || inspected.sources.empty()) {
+    return false;
+  }
+
+  if (m_impl->resolveLocalTarget) {
+    const auto target = m_impl->resolveLocalTarget(drop.direction, drop.x, drop.y);
+    return target.has_value() && offerLocalFiles(target->screen, std::move(inspected.sources));
+  }
+
+  if (!m_impl->sendEdge) {
+    return false;
+  }
+  const auto requestId = m_impl->platform->randomId();
+  if (!requestId.has_value() || std::ranges::all_of(*requestId, [](std::uint8_t value) { return value == 0; })) {
+    return false;
+  }
+
+  const FileTransferEdgeTargetRequest request{
+      .requestId = *requestId,
+      .sourceScreen = m_impl->localScreen,
+      .direction = drop.direction,
+      .x = drop.x,
+      .y = drop.y,
+  };
+  m_impl->pendingEdge = Impl::PendingEdgeRequest{
+      .requestId = *requestId,
+      .candidates = std::move(inspected.sources),
+  };
+  armPendingEdgeTimer(*requestId);
+  if (!m_impl->sendEdge(FileTransferEdgeMessage{request})) {
+    clearPendingEdgeRequest();
+    return false;
+  }
+  return true;
+}
+
+bool FileTransferService::handleEdgeMessage(const FileTransferEdgeMessage &message)
+{
+  if (const auto *capabilities = std::get_if<FileTransferEdgeCapabilities>(&message)) {
+    m_impl->activeSides = capabilities->activeSides;
+    if (m_impl->activeSidesChanged) {
+      m_impl->activeSidesChanged(m_impl->activeSides);
+    }
+    return true;
+  }
+
+  const auto *response = std::get_if<FileTransferEdgeTargetResponse>(&message);
+  if (response == nullptr || !m_impl->pendingEdge.has_value() ||
+      response->requestId != m_impl->pendingEdge->requestId || response->sourceScreen != m_impl->localScreen) {
+    return false;
+  }
+  if (!m_impl->isAuthorized()) {
+    clearPendingEdgeRequest();
+    return false;
+  }
+
+  auto candidates = std::move(m_impl->pendingEdge->candidates);
+  clearPendingEdgeRequest();
+  if (response->status != FileTransferEdgeStatus::Resolved) {
+    return true;
+  }
+  return offerLocalFiles(response->targetScreen, std::move(candidates));
+}
+
+void FileTransferService::expirePendingEdgeRequest(const TransferId &requestId)
+{
+  if (m_impl->pendingEdge.has_value() && m_impl->pendingEdge->requestId == requestId) {
+    clearPendingEdgeRequest();
+  }
+}
+
+std::size_t FileTransferService::pendingEdgeRequestCount() const noexcept
+{
+  return m_impl->pendingEdge.has_value() ? 1U : 0U;
+}
+
+std::uint32_t FileTransferService::activeSides() const noexcept
+{
+  return m_impl->activeSides;
+}
+
+bool FileTransferService::handleControl(const FileTransferControlMessage &message)
 {
   return std::visit(
       [this](const auto &value) -> bool {
@@ -216,34 +319,24 @@ bool MSWindowsFileTransferService::handleControl(const FileTransferControlMessag
   );
 }
 
-bool MSWindowsFileTransferService::handleOffer(const FileTransferOffer &offer)
+bool FileTransferService::handleOffer(const FileTransferOffer &offer)
 {
-  if (!m_impl->isAuthorized() || !m_impl->sendControl || offer.targetScreen != m_impl->localScreen) {
+  if (!m_impl->isAuthorized() || m_impl->platform == nullptr || !m_impl->sendControl ||
+      offer.targetScreen != m_impl->localScreen) {
     return false;
   }
   if (!m_impl->sessions.registerIncoming(offer).ok()) {
     return false;
   }
 
-  if (!m_impl->receiveEnabled) {
+  if (!m_impl->receiveEnabled || m_impl->destinationDirectory.empty() || !m_impl->destinationDirectory.is_absolute()) {
     const auto decision = m_impl->sessions.decideIncoming(offer.id, FileTransferDecisionValue::Reject);
     const auto sent = decision.ok() && m_impl->sendControl(FileTransferControlMessage{*decision.decision});
     (void)m_impl->sessions.eraseTerminal(offer.id);
     return sent;
   }
 
-  if (m_impl->destinationDirectory.empty() || !m_impl->destinationDirectory.is_absolute()) {
-    const auto decision = m_impl->sessions.decideIncoming(offer.id, FileTransferDecisionValue::Reject);
-    const auto sent = decision.ok() && m_impl->sendControl(FileTransferControlMessage{*decision.decision});
-    (void)m_impl->sessions.eraseTerminal(offer.id);
-    return sent;
-  }
-
-  std::error_code directoryError;
-  std::filesystem::create_directories(m_impl->destinationDirectory, directoryError);
-  auto writer = directoryError
-                    ? MSWindowsFileTransferWriterCreateResult{.error = MSWindowsFileTransferIoError::DestinationDenied}
-                    : MSWindowsFileTransferWriter::create(m_impl->destinationDirectory, offer);
+  auto writer = m_impl->platform->createWriter(m_impl->destinationDirectory, offer);
   if (!writer.ok()) {
     const auto decision = m_impl->sessions.decideIncoming(offer.id, FileTransferDecisionValue::Reject);
     const auto sent = decision.ok() && m_impl->sendControl(FileTransferControlMessage{*decision.decision});
@@ -263,12 +356,13 @@ bool MSWindowsFileTransferService::handleOffer(const FileTransferOffer &offer)
   return true;
 }
 
-bool MSWindowsFileTransferService::handleDecision(const FileTransferDecision &decision)
+bool FileTransferService::handleDecision(const FileTransferDecision &decision)
 {
   if (!m_impl->isAuthorized()) {
     return failSession(decision.id, FileTransferResultCode::AuthorizationFailed, true);
   }
-  if (!m_impl->sendControl || !m_impl->sendData || !m_impl->sessions.applyDecision(decision).ok()) {
+  if (m_impl->platform == nullptr || !m_impl->sendControl || !m_impl->sendData ||
+      !m_impl->sessions.applyDecision(decision).ok()) {
     return false;
   }
   if (decision.decision == FileTransferDecisionValue::Reject) {
@@ -281,7 +375,7 @@ bool MSWindowsFileTransferService::handleDecision(const FileTransferDecision &de
   if (session == nullptr || !session->sourceManifest.has_value() || session->sourceManifest->sources.empty()) {
     return failSession(decision.id, FileTransferResultCode::ProtocolError, true);
   }
-  auto opened = MSWindowsFileTransferReader::open(session->sourceManifest->sources.front());
+  auto opened = m_impl->platform->openReader(session->sourceManifest->sources.front(), kChunkBytes);
   if (!opened.ok()) {
     return failSession(decision.id, sourceResultCodeFor(opened.error), true);
   }
@@ -302,7 +396,7 @@ bool MSWindowsFileTransferService::handleDecision(const FileTransferDecision &de
   return true;
 }
 
-bool MSWindowsFileTransferService::handleCancel(const FileTransferCancel &cancel)
+bool FileTransferService::handleCancel(const FileTransferCancel &cancel)
 {
   if (!m_impl->sessions.applyCancel(cancel).ok()) {
     return false;
@@ -315,7 +409,7 @@ bool MSWindowsFileTransferService::handleCancel(const FileTransferCancel &cancel
   return true;
 }
 
-bool MSWindowsFileTransferService::handleResult(const FileTransferResult &result)
+bool FileTransferService::handleResult(const FileTransferResult &result)
 {
   if (!m_impl->sessions.applyResult(result).ok()) {
     return false;
@@ -328,7 +422,7 @@ bool MSWindowsFileTransferService::handleResult(const FileTransferResult &result
   return true;
 }
 
-bool MSWindowsFileTransferService::handleData(const FileTransferDataMessage &message)
+bool FileTransferService::handleData(const FileTransferDataMessage &message)
 {
   const auto &route = routeOf(message);
   const auto *session = m_impl->sessions.find(route.id);
@@ -344,7 +438,7 @@ bool MSWindowsFileTransferService::handleData(const FileTransferDataMessage &mes
     return false;
   }
 
-  MSWindowsFileTransferWriterMutation mutation;
+  FileTransferWriterMutation mutation;
   const auto handled = std::visit(
       [&](const auto &value) -> bool {
         using Value = std::decay_t<decltype(value)>;
@@ -389,7 +483,7 @@ bool MSWindowsFileTransferService::handleData(const FileTransferDataMessage &mes
   return sent && applied;
 }
 
-bool MSWindowsFileTransferService::processNextOutgoingChunk()
+bool FileTransferService::processNextOutgoingChunk()
 {
   if (!m_impl->outgoing.has_value()) {
     return false;
@@ -444,7 +538,7 @@ bool MSWindowsFileTransferService::processNextOutgoingChunk()
 
   ++outgoing.itemIndex;
   if (outgoing.itemIndex < manifest.sources.size()) {
-    auto opened = MSWindowsFileTransferReader::open(manifest.sources[outgoing.itemIndex]);
+    auto opened = m_impl->platform->openReader(manifest.sources[outgoing.itemIndex], kChunkBytes);
     if (!opened.ok()) {
       return failSession(outgoing.id, sourceResultCodeFor(opened.error), true);
     }
@@ -457,7 +551,6 @@ bool MSWindowsFileTransferService::processNextOutgoingChunk()
   for (const auto &source : manifest.sources) {
     totalBytes += source.size;
   }
-
   if (!m_impl->sendData(
           FileTransferDataMessage{FileTransferDataFinish{
               .route = route,
@@ -471,12 +564,12 @@ bool MSWindowsFileTransferService::processNextOutgoingChunk()
   return true;
 }
 
-std::size_t MSWindowsFileTransferService::activeSessionCount() const noexcept
+std::size_t FileTransferService::activeSessionCount() const noexcept
 {
   return m_impl->sessions.size();
 }
 
-void MSWindowsFileTransferService::scheduleNextOutgoingChunk()
+void FileTransferService::scheduleNextOutgoingChunk()
 {
   if (m_impl->events == nullptr || m_impl->sendScheduled || !m_impl->outgoing.has_value()) {
     return;
@@ -485,7 +578,30 @@ void MSWindowsFileTransferService::scheduleNextOutgoingChunk()
   m_impl->events->addEvent(Event(EventTypes::FileTransferSendNextChunk, this));
 }
 
-bool MSWindowsFileTransferService::failSession(const TransferId &id, FileTransferResultCode code, bool notifyPeer)
+void FileTransferService::armPendingEdgeTimer(const TransferId &requestId)
+{
+  if (m_impl->events == nullptr) {
+    return;
+  }
+  m_impl->edgeTimer = m_impl->events->newOneShotTimer(kEdgeRequestTimeoutSeconds, nullptr);
+  if (m_impl->edgeTimer != nullptr) {
+    m_impl->events->addHandler(EventTypes::Timer, m_impl->edgeTimer, [this, requestId](const Event &) {
+      expirePendingEdgeRequest(requestId);
+    });
+  }
+}
+
+void FileTransferService::clearPendingEdgeRequest() noexcept
+{
+  if (m_impl->edgeTimer != nullptr && m_impl->events != nullptr) {
+    m_impl->events->removeHandler(EventTypes::Timer, m_impl->edgeTimer);
+    m_impl->events->deleteTimer(m_impl->edgeTimer);
+    m_impl->edgeTimer = nullptr;
+  }
+  m_impl->pendingEdge.reset();
+}
+
+bool FileTransferService::failSession(const TransferId &id, FileTransferResultCode code, bool notifyPeer)
 {
   const auto *session = m_impl->sessions.find(id);
   if (session == nullptr) {

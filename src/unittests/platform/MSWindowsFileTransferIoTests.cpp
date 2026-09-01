@@ -6,6 +6,7 @@
 
 #include "platform/MSWindowsFileTransferIo.h"
 
+#include "platform/MSWindowsFileTransferPlatform.h"
 #include "platform/MSWindowsFileTransferSource.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -213,7 +214,10 @@ void readerStreamsSequentialChunksAndHashesTheSnapshot()
   const auto path = directory.path() / L"한글 원본.txt";
   writeFile(path, "abc");
 
-  auto opened = MSWindowsFileTransferReader::open(inspectOne(path), 2);
+  MSWindowsFileTransferPlatform platform;
+  const auto inspected = platform.inspectSources({path}, 100);
+  require(inspected.ok() && inspected.sources.size() == 1, "portable platform should inspect source");
+  auto opened = platform.openReader(inspected.sources.front(), 2);
   require(opened.ok(), "stable source should open for transfer");
 
   auto first = opened.reader->readNext();
@@ -231,8 +235,7 @@ void readerStreamsSequentialChunksAndHashesTheSnapshot()
   );
 
   require(
-      opened.reader->readNext().error == MSWindowsFileTransferIoError::WrongPhase,
-      "completed reader should reject an extra read"
+      opened.reader->readNext().error == FileTransferIoError::WrongPhase, "completed reader should reject an extra read"
   );
 }
 
@@ -268,7 +271,8 @@ void writerPublishesAtomicallyWithoutOverwritingExistingFiles()
   writeFile(existing, "keep");
 
   const auto offer = offerWith("report.txt", 3);
-  auto created = MSWindowsFileTransferWriter::create(directory.path(), offer);
+  MSWindowsFileTransferPlatform platform;
+  auto created = platform.createWriter(directory.path(), offer);
   require(created.ok(), "valid destination and offer should create a receiver");
   const auto route = routeFor(offer);
   require(created.writer->begin(FileTransferDataBegin{route}).ok(), "matching begin should start receiver");

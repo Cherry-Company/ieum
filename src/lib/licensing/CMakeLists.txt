@@ -4,6 +4,8 @@
 find_package(OpenSSL ${REQUIRED_OPENSSL_VERSION} REQUIRED COMPONENTS Crypto)
 
 add_library(licensing STATIC
+  ProEarlyAccessClaim.cpp
+  ProEarlyAccessClaim.h
   ProLicense.cpp
   ProLicense.h
   ProLicensePublicKey.h

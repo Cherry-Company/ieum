@@ -1853,8 +1853,36 @@ Enabling this setting will disable the server config GUI.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Install and activate a Pro Local license on both Windows computers.</source>
-        <translation type="unfinished"></translation>
+        <source>Pro Local Early Access — USD 30 one-time
+Sponsor once to receive a perpetual Pro Local file-transfer license.
+Licenses are issued manually after payment verification.</source>
+        <translation>Pro Local Early Access — 一次性支付 30 美元
+赞助一次即可获得永久的 Pro Local 文件传输许可证。
+核实付款后手动签发许可证。</translation>
+    </message>
+    <message>
+        <source>Include this claim code in your license request email.</source>
+        <translation>请在许可证申请邮件中附上此申请代码。</translation>
+    </message>
+    <message>
+        <source>Early Access claim code</source>
+        <translation>Early Access 申请代码</translation>
+    </message>
+    <message>
+        <source>Copy claim code</source>
+        <translation>复制申请代码</translation>
+    </message>
+    <message>
+        <source>Get Pro Local Early Access</source>
+        <translation>获取 Pro Local Early Access</translation>
+    </message>
+    <message>
+        <source>Email license request</source>
+        <translation>通过邮件申请许可证</translation>
+    </message>
+    <message>
+        <source>Install and activate a Pro Local license on each Windows or macOS computer.</source>
+        <translation>在每台 Windows 或 macOS 电脑上安装并激活 Pro Local 许可证。</translation>
     </message>
 </context>
 <context>

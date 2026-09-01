@@ -10,6 +10,7 @@
 
 #include "deskflow/ClipboardTypes.h"
 #include "deskflow/DisplayGeometry.h"
+#include "deskflow/FileTransferEdgeDrop.h"
 #include "deskflow/IKeyState.h"
 #include "deskflow/IPrimaryScreen.h"
 #include "deskflow/IScreen.h"
@@ -184,6 +185,20 @@ public:
   virtual bool fakeRawKey(KeyButton, KeyModifierMask, bool, bool)
   {
     return false;
+  }
+
+  virtual bool installFileTransferEdgeDrop(deskflow::filetransfer::FileTransferEdgeDropHandler)
+  {
+    return false;
+  }
+
+  virtual bool configureFileTransferEdgeDrop(std::uint32_t)
+  {
+    return false;
+  }
+
+  virtual void uninstallFileTransferEdgeDrop() noexcept
+  {
   }
 
   //@}

@@ -16,15 +16,18 @@ bool shouldActivateProFileTransferLicense(const licensing::ProLicenseEntitlement
 
 ProFileTransferUiState proFileTransferUiState(
     const licensing::ProLicenseEntitlement &entitlement, bool hasStoredLicense, bool settingsWritable,
-    bool windowsPlatform, bool tlsEnabled
+    FileTransferPlatformSupport platform, bool tlsEnabled
 ) noexcept
 {
-  const auto licenseActionsEnabled = settingsWritable && windowsPlatform;
+  const auto supportedPlatform = platform != FileTransferPlatformSupport::Unsupported;
+  const auto entitled = shouldActivateProFileTransferLicense(entitlement);
+  const auto licenseActionsEnabled = settingsWritable && supportedPlatform;
   return {
       .licenseActionsEnabled = licenseActionsEnabled,
       .removeLicenseEnabled = licenseActionsEnabled && hasStoredLicense,
-      .transferControlsEnabled =
-          licenseActionsEnabled && tlsEnabled && shouldActivateProFileTransferLicense(entitlement),
+      .transferControlsEnabled = licenseActionsEnabled && tlsEnabled && entitled,
+      .supportedPlatform = supportedPlatform,
+      .purchaseActionsVisible = supportedPlatform && !entitled,
   };
 }
 

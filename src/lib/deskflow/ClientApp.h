@@ -17,7 +17,7 @@ namespace deskflow {
 class Screen;
 class ClientArgs;
 namespace filetransfer {
-class MSWindowsFileTransferService;
+class FileTransferService;
 }
 } // namespace deskflow
 
@@ -88,10 +88,8 @@ public:
   double retryTime() const;
 
 private:
-#if defined(Q_OS_WIN)
   void startFileTransferService();
   void stopFileTransferService() noexcept;
-#endif
   ISocketFactory *getSocketFactory() const;
   NetworkAddress &getCurrentServerAddress();
   void tryNextServer();
@@ -105,7 +103,5 @@ private:
   size_t m_lastServerAddressIndex = 0;
   uint m_retryCount = 0;
   EventQueueTimer *m_restartTimer = nullptr;
-#if defined(Q_OS_WIN)
-  std::unique_ptr<deskflow::filetransfer::MSWindowsFileTransferService> m_fileTransferService;
-#endif
+  std::unique_ptr<deskflow::filetransfer::FileTransferService> m_fileTransferService;
 };

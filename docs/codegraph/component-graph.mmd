@@ -28,13 +28,13 @@ flowchart LR
     n028["test:client<br/>ServerProxyTests"]
     n029["test:codegraph-tools"]
     n030["test:common<br/>I18NTests, LogLevelTests, NetworkInterfacesTests, ProLicenseSettingsTests, SettingsTests, TailscaleIntegrationTests"]
-    n031["test:deskflow<br/>CanonicalScancodeTests, ClientReconnectPolicyTests, ClipboardChunksTests, ClipboardTests, EdgeHandoffDecisionTests, FileTransferControlCodecTests, FileTransferControlProtocolTests, FileTransferDataProtocolTests, FileTransferOfferTests, FileTransferSessionStateTests, FileTransferSourceManifestTests, IKeyStateTests, IpcServerTests, KeyMapTests, KeyStateTests, KeyboardLayoutManagerTests, MSWindowsEdgeDropHostTests, MSWindowsEdgeDropTargetTests, MSWindowsFileTransferServiceTests, Protocol19Tests, X11LayoutParserTests"]
+    n031["test:deskflow<br/>CanonicalScancodeTests, ClientReconnectPolicyTests, ClipboardChunksTests, ClipboardTests, EdgeHandoffDecisionTests, FileTransferControlCodecTests, FileTransferControlProtocolTests, FileTransferDataProtocolTests, FileTransferEdgeCodecTests, FileTransferEdgeProtocolTests, FileTransferOfferTests, FileTransferServiceTests, FileTransferSessionStateTests, FileTransferSourceManifestTests, IKeyStateTests, IpcServerTests, KeyMapTests, KeyStateTests, KeyboardLayoutManagerTests, MSWindowsEdgeDropHostTests, MSWindowsEdgeDropTargetTests, Protocol19Tests, X11LayoutParserTests"]
     n032["test:gui<br/>DiagnosticTests, FileTailTests, IpcClientTests, KeySequenceTests, LogWidgetTests, LoggerTests, NetworkMonitorTests, ProLicenseUiPolicyTests, ScreenSetupModelTests, ScreenTests, ServerConfigDialogTests, ServiceStartCoordinatorTests, StatusBarTests, StyleUtilsTests, VersionCheckerTests"]
     n033["test:legacytests<br/>legacytests"]
-    n034["test:licensing<br/>ProLicenseTests"]
+    n034["test:licensing<br/>ProEarlyAccessClaimTests, ProLicenseTests"]
     n035["test:net<br/>FingerprintDatabaseTests, FingerprintTests, NetworkAddressTests, SecureSocketWriteBufferTests, SecureUtilsTests"]
-    n036["test:platform<br/>ArchNetworkWinsockTests, MSWindowsClipboardTests, MSWindowsFileDropExtractorTests, MSWindowsFileTransferIoTests, MSWindowsFileTransferSourceTests, MSWindowsMouseInputTests, OSXClipboardTests, OSXKeyStateTests, XWindowsClipboardTests"]
-    n037["test:server<br/>ServerConfigTests, ServerTests"]
+    n036["test:platform<br/>ArchNetworkWinsockTests, MSWindowsClipboardTests, MSWindowsFileDropExtractorTests, MSWindowsFileTransferIoTests, MSWindowsFileTransferSourceTests, MSWindowsMouseInputTests, OSXClipboardTests, OSXFileTransferEdgeDropHostTests, OSXFileTransferPlatformTests, OSXKeyStateTests, XWindowsClipboardTests"]
+    n037["test:server<br/>FileTransferEdgeRoutingTests, ServerConfigTests, ServerTests"]
   end
   subgraph g03["Tools"]
     n038["tool:cgtap-logger"]
@@ -163,6 +163,7 @@ flowchart LR
   n013 -->|"link"| n018
   n014 -->|"include"| n009
   n014 -->|"link"| n011
+  n015 -->|"include"| n011
   n016 -->|"include"| n008
   n016 -->|"include + link"| n009
   n017 -->|"include"| n008
@@ -206,6 +207,7 @@ flowchart LR
   n033 -->|"include"| n009
   n033 -->|"link"| n011
   n033 -->|"include"| n012
+  n034 -->|"include"| n011
   n034 -->|"include"| n015
   n035 -->|"include"| n008
   n035 -->|"include"| n017

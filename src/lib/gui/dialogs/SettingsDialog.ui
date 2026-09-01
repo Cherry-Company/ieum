@@ -1062,6 +1062,94 @@
             </property>
            </widget>
           </item>
+          <item>
+           <widget class="QWidget" name="widgetProEarlyAccess" native="true">
+            <layout class="QVBoxLayout" name="verticalLayoutProEarlyAccess">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="lblProEarlyAccessOffer">
+               <property name="text">
+                <string>Pro Local Early Access — USD 30 one-time
+Sponsor once to receive a perpetual Pro Local file-transfer license.
+Licenses are issued manually after payment verification.</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::TextFormat::PlainText</enum>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayoutProEarlyAccessClaim">
+               <item>
+                <widget class="QLineEdit" name="lineProEarlyAccessClaim">
+                 <property name="toolTip">
+                  <string>Include this claim code in your license request email.</string>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                 <property name="placeholderText">
+                  <string>Early Access claim code</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btnCopyProEarlyAccessClaim">
+                 <property name="text">
+                  <string>Copy claim code</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayoutProEarlyAccessActions">
+               <item>
+                <widget class="QPushButton" name="btnGetProEarlyAccess">
+                 <property name="text">
+                  <string>Get Pro Local Early Access</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btnEmailProLicenseRequest">
+                 <property name="text">
+                  <string>Email license request</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacerProEarlyAccess">
+                 <property name="orientation">
+                  <enum>Qt::Orientation::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -1141,9 +1229,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="lblFileTransferScope">
+       <widget class="QLabel" name="lblFileTransferScope">
          <property name="text">
-          <string>Install and activate a Pro Local license on both Windows computers.</string>
+          <string>Install and activate a Pro Local license on each Windows or macOS computer.</string>
          </property>
          <property name="wordWrap">
           <bool>true</bool>

@@ -1853,8 +1853,36 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>&lt;b&gt;Pro Local 파일 전송&lt;/b&gt;</translation>
     </message>
     <message>
-        <source>Install and activate a Pro Local license on both Windows computers.</source>
-        <translation>Windows 컴퓨터 두 대 모두에서 Pro Local 라이선스를 설치하고 활성화하세요.</translation>
+        <source>Pro Local Early Access — USD 30 one-time
+Sponsor once to receive a perpetual Pro Local file-transfer license.
+Licenses are issued manually after payment verification.</source>
+        <translation>Pro Local Early Access — USD 30 일회성
+한 번 후원하면 Pro Local 파일 전송 영구 라이선스를 받을 수 있습니다.
+결제 확인 후 라이선스를 수동으로 발급합니다.</translation>
+    </message>
+    <message>
+        <source>Include this claim code in your license request email.</source>
+        <translation>라이선스 요청 이메일에 이 신청 코드를 포함하세요.</translation>
+    </message>
+    <message>
+        <source>Early Access claim code</source>
+        <translation>Early Access 신청 코드</translation>
+    </message>
+    <message>
+        <source>Copy claim code</source>
+        <translation>신청 코드 복사</translation>
+    </message>
+    <message>
+        <source>Get Pro Local Early Access</source>
+        <translation>Pro Local Early Access 받기</translation>
+    </message>
+    <message>
+        <source>Email license request</source>
+        <translation>라이선스 요청 이메일 보내기</translation>
+    </message>
+    <message>
+        <source>Install and activate a Pro Local license on each Windows or macOS computer.</source>
+        <translation>각 Windows 또는 macOS 컴퓨터에 Pro Local 라이선스를 설치하고 활성화하세요.</translation>
     </message>
 </context>
 <context>

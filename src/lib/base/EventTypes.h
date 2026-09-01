@@ -242,6 +242,9 @@ enum class EventTypes : uint32_t
   /// A bounded file-transfer data message arrived for the local screen.
   FileTransferDataReceived,
 
+  /// A bounded file-transfer edge-discovery message arrived for the local screen.
+  FileTransferEdgeReceived,
+
   /// Continue one bounded file-transfer sender chunk on the event loop.
   FileTransferSendNextChunk,
 

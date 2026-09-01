@@ -9,6 +9,7 @@
 #include "SettingsDialog.h"
 #include "common/LogLevel.h"
 #include "common/PlatformInfo.h"
+#include "common/UrlConstants.h"
 #include "ui_SettingsDialog.h"
 
 #include "common/I18N.h"
@@ -19,9 +20,13 @@
 #include "gui/TlsUtility.h"
 #include "gui/core/NetworkMonitor.h"
 #include "gui/dialogs/ProLicenseUiPolicy.h"
+#include "licensing/ProEarlyAccessClaim.h"
 #include "licensing/ProLicense.h"
 
+#include <QApplication>
+#include <QClipboard>
 #include <QComboBox>
+#include <QDesktopServices>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -46,6 +51,17 @@ void selectComboData(QComboBox *combo, const QString &data, const QString &fallb
   combo->setCurrentIndex(index < 0 ? 0 : index);
 }
 
+FileTransferPlatformSupport fileTransferPlatformSupport() noexcept
+{
+  if (deskflow::platform::isWindows()) {
+    return FileTransferPlatformSupport::Windows;
+  }
+  if (deskflow::platform::isMac()) {
+    return FileTransferPlatformSupport::MacOS;
+  }
+  return FileTransferPlatformSupport::Unsupported;
+}
+
 } // namespace
 
 SettingsDialog::SettingsDialog(QWidget *parent, const ServerConfig &serverConfig)
@@ -56,6 +72,7 @@ SettingsDialog::SettingsDialog(QWidget *parent, const ServerConfig &serverConfig
 {
 
   ui->setupUi(this);
+  ensureProEarlyAccessClaim();
   applyIeumDialogStyle(*this);
 
   ui->comboCjkRawScancode->addItem(tr("Automatic"), QStringLiteral("auto"));
@@ -156,6 +173,9 @@ void SettingsDialog::initConnections() const
   connect(ui->btnTlsCertPath, &QPushButton::clicked, this, &SettingsDialog::browseCertificatePath);
   connect(ui->btnBrowseLog, &QPushButton::clicked, this, &SettingsDialog::browseLogPath);
   connect(ui->btnBrowseFileTransfer, &QPushButton::clicked, this, &SettingsDialog::browseFileTransferDirectory);
+  connect(ui->btnGetProEarlyAccess, &QPushButton::clicked, this, &SettingsDialog::openProEarlyAccessSponsor);
+  connect(ui->btnCopyProEarlyAccessClaim, &QPushButton::clicked, this, &SettingsDialog::copyProEarlyAccessClaim);
+  connect(ui->btnEmailProLicenseRequest, &QPushButton::clicked, this, &SettingsDialog::emailProLicenseRequest);
   connect(ui->btnImportProLicense, &QPushButton::clicked, this, &SettingsDialog::importProLicense);
   connect(ui->btnActivateProLicense, &QPushButton::clicked, this, &SettingsDialog::activateProLicense);
   connect(ui->btnRemoveProLicense, &QPushButton::clicked, this, &SettingsDialog::removeProLicense);
@@ -366,6 +386,40 @@ void SettingsDialog::browseFileTransferDirectory()
   }
 }
 
+void SettingsDialog::ensureProEarlyAccessClaim()
+{
+  if (!deskflow::licensing::isValidProEarlyAccessClaim(m_proEarlyAccessClaim)) {
+    m_proEarlyAccessClaim = deskflow::licensing::createProEarlyAccessClaim();
+  }
+  ui->lineProEarlyAccessClaim->setText(m_proEarlyAccessClaim);
+}
+
+void SettingsDialog::openProEarlyAccessSponsor()
+{
+  ensureProEarlyAccessClaim();
+  const auto url = deskflow::licensing::proEarlyAccessSponsorUrl(m_proEarlyAccessClaim);
+  if (!url.isEmpty()) {
+    (void)QDesktopServices::openUrl(url);
+  }
+}
+
+void SettingsDialog::copyProEarlyAccessClaim()
+{
+  ensureProEarlyAccessClaim();
+  if (deskflow::licensing::isValidProEarlyAccessClaim(m_proEarlyAccessClaim)) {
+    QGuiApplication::clipboard()->setText(m_proEarlyAccessClaim);
+  }
+}
+
+void SettingsDialog::emailProLicenseRequest()
+{
+  ensureProEarlyAccessClaim();
+  const auto url = deskflow::licensing::proEarlyAccessMailtoUrl(m_proEarlyAccessClaim);
+  if (!url.isEmpty()) {
+    (void)QDesktopServices::openUrl(url);
+  }
+}
+
 void SettingsDialog::importProLicense()
 {
   const auto fileName = QFileDialog::getOpenFileName(
@@ -403,7 +457,7 @@ void SettingsDialog::importProLicense()
 
 void SettingsDialog::activateProLicense()
 {
-  if (!Settings::isWritable() || !deskflow::platform::isWindows()) {
+  if (!Settings::isWritable() || fileTransferPlatformSupport() == FileTransferPlatformSupport::Unsupported) {
     return;
   }
 
@@ -426,7 +480,7 @@ void SettingsDialog::activateProLicense()
 
 void SettingsDialog::removeProLicense()
 {
-  if (!Settings::isWritable() || !deskflow::platform::isWindows()) {
+  if (!Settings::isWritable() || fileTransferPlatformSupport() == FileTransferPlatformSupport::Unsupported) {
     return;
   }
 
@@ -666,7 +720,10 @@ void SettingsDialog::loadFromConfig()
 
   if (!deskflow::platform::isWindows())
     ui->groupService->setVisible(false);
-  ui->tabWidget->setTabVisible(ui->tabWidget->indexOf(ui->tabFileTransfer), deskflow::platform::isWindows());
+  ui->tabWidget->setTabVisible(
+      ui->tabWidget->indexOf(ui->tabFileTransfer),
+      fileTransferPlatformSupport() != FileTransferPlatformSupport::Unsupported
+  );
 
   if (Settings::value(Settings::Gui::SymbolicTrayIcon).toBool())
     ui->rbIconMono->setChecked(true);
@@ -740,7 +797,7 @@ void SettingsDialog::updateFileTransferControls()
   const auto storedLicense = Settings::value(Settings::Pro::LicenseKey).toString().trimmed();
   const auto storedEntitlement = deskflow::licensing::verifyProductionProLicense(storedLicense);
   const auto state = proFileTransferUiState(
-      storedEntitlement, !storedLicense.isEmpty(), Settings::isWritable(), deskflow::platform::isWindows(),
+      storedEntitlement, !storedLicense.isEmpty(), Settings::isWritable(), fileTransferPlatformSupport(),
       ui->groupSecurity->isChecked()
   );
 
@@ -754,6 +811,12 @@ void SettingsDialog::updateFileTransferControls()
   ui->btnImportProLicense->setEnabled(state.licenseActionsEnabled);
   ui->btnActivateProLicense->setEnabled(state.licenseActionsEnabled && candidateCanActivate && !candidateIsStored);
   ui->btnRemoveProLicense->setEnabled(state.removeLicenseEnabled);
+  ensureProEarlyAccessClaim();
+  ui->widgetProEarlyAccess->setVisible(state.purchaseActionsVisible);
+  const auto claimAvailable = deskflow::licensing::isValidProEarlyAccessClaim(m_proEarlyAccessClaim);
+  ui->btnGetProEarlyAccess->setEnabled(claimAvailable);
+  ui->btnCopyProEarlyAccessClaim->setEnabled(claimAvailable);
+  ui->btnEmailProLicenseRequest->setEnabled(claimAvailable);
 
   QString licenseStatus;
   if (candidateIsStored && storedLicenseActive) {
