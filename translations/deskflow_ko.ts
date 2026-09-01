@@ -385,22 +385,6 @@ If an older enabled Ieum entry remains but this version is still not trusted, ch
 켜져 있는 구버전 이음 항목이 남았는데 이 버전이 아직 승인되지 않았다면 이전 승인 초기화를 선택해 현재 /Applications/Ieum.app을 다시 등록하세요.</translation>
     </message>
     <message>
-        <source>Check Again</source>
-        <translation>다시 확인</translation>
-    </message>
-    <message>
-        <source>Open Accessibility Settings</source>
-        <translation>손쉬운 사용 설정 열기</translation>
-    </message>
-    <message>
-        <source>Reset Previous Approval</source>
-        <translation>이전 승인 초기화</translation>
-    </message>
-    <message>
-        <source>Show Ieum in Applications</source>
-        <translation>Applications에서 이음 보기</translation>
-    </message>
-    <message>
         <source>1. Show Ieum in Applications</source>
         <translation>1. Applications에서 이음 앱 보기</translation>
     </message>
