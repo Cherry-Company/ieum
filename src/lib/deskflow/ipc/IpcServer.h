@@ -43,6 +43,8 @@ protected:
    */
   void writeToClientSocket(QLocalSocket *&clientSocket, const QString &message) const;
 
+  [[nodiscard]] bool hasCurrentVersionHello(const QLocalSocket *clientSocket) const;
+
 private:
   bool acquireOwnership();
   void releaseOwnership();
@@ -55,6 +57,7 @@ private:
 
   QLocalServer *m_server;
   QSet<QLocalSocket *> m_clients;
+  QSet<const QLocalSocket *> m_currentVersionClients;
   QHash<QLocalSocket *, QByteArray> m_receiveBuffers;
   QString m_serverName;
   QStringList m_pendingMessages;

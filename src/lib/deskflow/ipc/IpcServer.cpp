@@ -210,6 +210,7 @@ void IpcServer::handleReadyRead()
   if (buffer.size() > kMaxIpcMessageBytes) {
     LOG_ERR("%s ipc server message exceeded %d bytes", m_typeName.constData(), kMaxIpcMessageBytes);
     m_receiveBuffers.remove(clientSocket);
+    m_currentVersionClients.remove(clientSocket);
     clientSocket->disconnectFromServer();
     return;
   }
@@ -234,6 +235,7 @@ void IpcServer::handleDisconnected()
   const auto clientSocket = qobject_cast<QLocalSocket *>(sender());
   LOG_DEBUG("%s ipc server client disconnected", m_typeName.constData());
   m_clients.remove(clientSocket);
+  m_currentVersionClients.remove(clientSocket);
   m_receiveBuffers.remove(clientSocket);
   clientSocket->deleteLater();
 }
@@ -243,6 +245,7 @@ void IpcServer::handleErrorOccurred()
   const auto clientSocket = qobject_cast<QLocalSocket *>(sender());
   LOG_ERR("%s ipc server client error: %s", m_typeName.constData(), clientSocket->errorString().toUtf8().constData());
   m_clients.remove(clientSocket);
+  m_currentVersionClients.remove(clientSocket);
   m_receiveBuffers.remove(clientSocket);
   clientSocket->deleteLater();
 }
@@ -259,6 +262,7 @@ void IpcServer::processMessage(QLocalSocket *clientSocket, const QString &messag
   }
 
   if (const auto &command = parts.at(0); command == QStringLiteral("hello")) {
+    m_currentVersionClients.remove(clientSocket);
     if (parts.size() < 2) {
       LOG_ERR("%s ipc client hello missing version", m_typeName.constData());
       writeToClientSocket(clientSocket, "error=missing version");
@@ -283,6 +287,7 @@ void IpcServer::processMessage(QLocalSocket *clientSocket, const QString &messag
 
     LOG_DEBUG("%s ipc server sending hello back", m_typeName.constData());
     writeToClientSocket(clientSocket, QStringLiteral("hello=%1").arg(versionId));
+    m_currentVersionClients.insert(clientSocket);
 
     // Replay messages that were queued before any clients connected.
     LOG_VERBOSE("ipc server replaying %d pending messages", m_pendingMessages.size());
@@ -300,6 +305,11 @@ void IpcServer::processMessage(QLocalSocket *clientSocket, const QString &messag
   }
 
   clientSocket->flush();
+}
+
+bool IpcServer::hasCurrentVersionHello(const QLocalSocket *clientSocket) const
+{
+  return clientSocket != nullptr && m_currentVersionClients.contains(clientSocket);
 }
 
 void IpcServer::broadcastCommand(const QString &command, const QString &args)

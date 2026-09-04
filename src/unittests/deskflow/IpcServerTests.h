@@ -19,6 +19,13 @@ private Q_SLOTS:
   void preservesCommandArgumentBoundaryFromClient();
   void redactsFileTransferEdgeDropInServerLogs();
   void returnsVersionMismatchForDifferentClientVersion();
+  void tracksExactHelloAndClearsStateOnMismatchAndDisconnect();
+  void authorizedCurrentCoreClientEmitsDecodedDrop();
+  void deniedCurrentCoreClientReceivesGenericError();
+  void legacyCoreClientRetainsCommandsButCannotSubmitDrop();
+  void preHelloCoreClientCannotSubmitDrop();
+  void malformedAndOversizedCoreDropsAreRejected();
+  void missingCoreDropArgumentIsRejected();
   void correlatesDelayedDaemonCommandResults();
   void acknowledgesLegacyDaemonCommandsAfterCompletion();
 

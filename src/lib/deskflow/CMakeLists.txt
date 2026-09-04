@@ -10,6 +10,8 @@ if(WIN32)
   set(PLATFORM_CODE
     win32/AppUtilWindows.cpp
     win32/AppUtilWindows.h
+    win32/CoreIpcClientValidator.cpp
+    win32/CoreIpcClientValidator.h
     win32/MSWindowsEdgeDropHost.cpp
     win32/MSWindowsEdgeDropHost.h
     win32/MSWindowsEdgeDropTarget.cpp
@@ -133,7 +135,7 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
 target_link_libraries(${lib_name} PUBLIC common Qt6::Core Qt6::Network)
 
 if(WIN32)
-  target_link_libraries(${lib_name} PRIVATE platform)
+  target_link_libraries(${lib_name} PRIVATE platform Advapi32 Wtsapi32)
 endif()
 
 if(UNIX)
