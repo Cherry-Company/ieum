@@ -40,6 +40,15 @@ create_test(
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
 )
 
+if(WIN32)
+  create_test(
+    NAME WindowsFileTransferDropBrokerTests
+    DEPENDS gui
+    SOURCE WindowsFileTransferDropBrokerTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+  )
+endif()
+
 create_test(
   NAME ServiceStartCoordinatorTests
   DEPENDS gui

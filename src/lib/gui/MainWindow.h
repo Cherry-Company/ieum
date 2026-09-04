@@ -44,6 +44,12 @@ namespace deskflow::gui::ipc {
 class DaemonIpcClient;
 }
 
+#ifdef Q_OS_WIN
+namespace deskflow::gui {
+class WindowsFileTransferDropBroker;
+}
+#endif
+
 namespace deskflow::network {
 class TailscaleIntegration;
 struct TailscaleStatus;
@@ -218,6 +224,9 @@ private:
   bool m_systemShutdownRequested = false;
   ServerConfig m_serverConfig;
   deskflow::gui::CoreProcess m_coreProcess;
+#ifdef Q_OS_WIN
+  std::unique_ptr<deskflow::gui::WindowsFileTransferDropBroker> m_fileTransferDropBroker;
+#endif
   deskflow::network::TailscaleIntegration *m_tailscaleIntegration = nullptr;
   TailscaleAction m_pendingTailscaleAction = TailscaleAction::None;
   QSet<QString> m_ignoredClients;

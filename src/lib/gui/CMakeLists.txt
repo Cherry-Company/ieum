@@ -6,7 +6,18 @@ set(target gui)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-if(APPLE)
+if(WIN32)
+  set(platform_sources
+    win32/WindowsFileTransferDropBroker.cpp
+    win32/WindowsFileTransferDropBroker.h
+    ../deskflow/EdgeHandoffDecision.cpp
+    ../deskflow/EdgeHandoffDecision.h
+    ../deskflow/win32/MSWindowsEdgeDropHost.cpp
+    ../deskflow/win32/MSWindowsEdgeDropHost.h
+    ../deskflow/win32/MSWindowsEdgeDropTarget.cpp
+    ../deskflow/win32/MSWindowsEdgeDropTarget.h
+  )
+elseif(APPLE)
   set (platform_sources
     OSXHelpers.h
     OSXHelpers.mm
@@ -151,5 +162,6 @@ if(WIN32)
     base
     arch
     net
+    Ole32
   )
 endif()

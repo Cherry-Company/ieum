@@ -295,19 +295,30 @@ void CoreProcess::connectCoreIpc(quint64 startGeneration)
   }
 
   if (m_coreIpcClient) {
+    setFileTransferActiveSides(0);
     m_coreIpcClient->disconnectFromServer();
     m_coreIpcClient->deleteLater();
   }
 
   auto *client = new ipc::CoreIpcClient(this);
   m_coreIpcClient = client;
-  connect(client, &ipc::CoreIpcClient::commandReceived, this, &CoreProcess::onCoreIpcMessageReceived);
+  connect(client, &ipc::CoreIpcClient::commandReceived, this, [this, client](const QString &command, const QString &args) {
+    if (m_coreIpcClient == client) {
+      onCoreIpcMessageReceived(command, args);
+    }
+  });
+  connect(client, &ipc::CoreIpcClient::fileTransferActiveSidesChanged, this, [this, client](std::uint32_t sides) {
+    if (m_coreIpcClient == client) {
+      setFileTransferActiveSides(sides);
+    }
+  });
   connect(client, &ipc::CoreIpcClient::connected, this, [this, client, startGeneration] {
     if (m_coreIpcClient != client || startGeneration != m_coreStartGeneration) {
       return;
     }
     m_duplicateRecoveryAttempts = 0;
     qDebug("connected to core ipc server");
+    client->requestFileTransferActiveSides();
     if (m_processState == ProcessState::Starting) {
       m_serviceStartCoordinator->coreConnected(startGeneration);
     }
@@ -318,6 +329,7 @@ void CoreProcess::connectCoreIpc(quint64 startGeneration)
       return;
     }
     const auto wasStarting = m_processState == ProcessState::Starting;
+    setFileTransferActiveSides(0);
     m_coreIpcClient = nullptr;
     client->deleteLater();
     if (startGeneration != m_coreStartGeneration) {
@@ -428,6 +440,7 @@ void CoreProcess::handleServiceStartFailure(const quint64 startGeneration)
   qWarning("service-managed core failed to become ready");
   clearServiceStartRequests();
   if (m_coreIpcClient) {
+    setFileTransferActiveSides(0);
     m_coreIpcClient->disconnectFromServer();
     m_coreIpcClient->deleteLater();
     m_coreIpcClient = nullptr;
@@ -681,6 +694,8 @@ void CoreProcess::stop(std::optional<ProcessMode> processModeOption, bool restar
 
   qInfo("stopping core process (%s mode)", qPrintable(processModeToString(processMode)));
 
+  setFileTransferActiveSides(0);
+
   if (m_coreIpcClient) {
     m_coreIpcClient->disconnectFromServer();
     m_coreIpcClient->deleteLater();
@@ -782,6 +797,8 @@ void CoreProcess::cleanup()
 {
   qInfo("cleaning up core process");
 
+  setFileTransferActiveSides(0);
+
   const auto isDesktop = Settings::value(Settings::Core::ProcessMode).value<ProcessMode>() == ProcessMode::Desktop;
   const auto isRunning = m_processState == ProcessState::Started;
   if (isDesktop && isRunning) {
@@ -828,7 +845,24 @@ void CoreProcess::setProcessState(ProcessState state)
       qPrintable(processStateToString(m_processState)), qPrintable(processStateToString(state))
   );
   m_processState = state;
+  if (state == ProcessState::Stopped) {
+    setFileTransferActiveSides(0);
+  }
   Q_EMIT processStateChanged(state);
+}
+
+void CoreProcess::setFileTransferActiveSides(const std::uint32_t activeSides)
+{
+  if (m_fileTransferActiveSides == activeSides) {
+    return;
+  }
+  m_fileTransferActiveSides = activeSides;
+  Q_EMIT fileTransferActiveSidesChanged(activeSides);
+}
+
+bool CoreProcess::sendFileTransferEdgeDrop(const QString &encodedValue)
+{
+  return m_coreIpcClient != nullptr && m_coreIpcClient->sendFileTransferEdgeDrop(encodedValue);
 }
 
 void CoreProcess::onCoreIpcMessageReceived(const QString &command, const QString &args)

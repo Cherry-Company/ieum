@@ -17,6 +17,8 @@
 #include <QProcess>
 #include <QTimer>
 
+#include <cstdint>
+
 namespace deskflow::gui {
 
 namespace ipc {
@@ -50,6 +52,7 @@ public:
   void applyLogLevel();
   void clearSettings();
   void retryDaemon();
+  [[nodiscard]] bool sendFileTransferEdgeDrop(const QString &encodedValue);
 
   // getters
   Settings::CoreMode mode() const
@@ -98,6 +101,7 @@ Q_SIGNALS:
   void peerFingerprint(const QString &fingerprint);
   void missingKeyboardLayouts(const QString &layouts);
   void inputLanguageStatusChanged(const QString &client, const QString &sourceId, int category, bool composing);
+  void fileTransferActiveSidesChanged(std::uint32_t activeSides);
 
 private Q_SLOTS:
   void onProcessFinished(int exitCode, QProcess::ExitStatus);
@@ -121,6 +125,7 @@ private:
   QPair<bool, QString> persistServerConfig() const;
   void setConnectionState(ConnectionState state);
   void setProcessState(ProcessState state);
+  void setFileTransferActiveSides(std::uint32_t activeSides);
   bool checkSecureSocket(const QString &line);
   void handleLogLines(const QString &text);
   QString correctedAddress(const QString &address) const;
@@ -147,6 +152,7 @@ private:
   bool m_restartRequested = false;
   quint64 m_daemonCommandGeneration = 0;
   quint64 m_coreStartGeneration = 0;
+  std::uint32_t m_fileTransferActiveSides = 0;
   int m_duplicateRecoveryAttempts = 0;
   QMetaObject::Connection m_coreStartConnection;
   deskflow::gui::ipc::CoreIpcClient *m_coreIpcClient = nullptr;

@@ -17,5 +17,8 @@ private Q_SLOTS:
   void preservesCommandArgumentBoundaryFromServer();
   void redactsFileTransferEdgeDropInClientLogs();
   void acceptsVersionMismatchHandshake();
+  void coreRequestsActiveSidesAfterExactHandshake();
+  void corePublishesValidActiveSidesAndClearsOnDisconnect();
+  void coreSendsOnlyConnectedBoundedEdgeDrops();
   void correlatesDaemonCommandResults();
 };

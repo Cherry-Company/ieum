@@ -6,7 +6,11 @@
 
 #include "IpcClientTests.h"
 
+#include "common/FileTransferEdgeDropIpc.h"
 #include "common/VersionInfo.h"
+#include "gui/config/ServerConfig.h"
+#include "gui/core/CoreProcess.h"
+#include "gui/ipc/CoreIpcClient.h"
 #include "gui/ipc/DaemonIpcClient.h"
 #include "gui/ipc/IpcClient.h"
 
@@ -77,6 +81,15 @@ class TestDaemonIpcClient final : public deskflow::gui::ipc::DaemonIpcClient
 {
 public:
   explicit TestDaemonIpcClient(const QString &socketName) : DaemonIpcClient(nullptr, socketName, 1, 0)
+  {
+  }
+};
+
+class TestCoreIpcClient final : public deskflow::gui::ipc::CoreIpcClient
+{
+public:
+  TestCoreIpcClient(QObject *parent, const QString &socketName)
+      : CoreIpcClient(parent, socketName, 1, 0)
   {
   }
 };
@@ -279,6 +292,121 @@ void IpcClientTests::acceptsVersionMismatchHandshake()
 
   QTRY_COMPARE_WITH_TIMEOUT(mismatchSpy.count(), 1, 1000);
   QVERIFY(client.isConnected());
+
+  client.disconnectFromServer();
+  server.close();
+  QLocalServer::removeServer(socketName);
+}
+
+void IpcClientTests::coreRequestsActiveSidesAfterExactHandshake()
+{
+  const auto socketName = uniqueSocketName();
+  QLocalServer::removeServer(socketName);
+
+  QLocalServer server;
+  QVERIFY(server.listen(socketName));
+  TestCoreIpcClient client(nullptr, socketName);
+  QByteArray received;
+  QLocalSocket *serverSocket = nullptr;
+
+  connect(&server, &QLocalServer::newConnection, this, [&] {
+    serverSocket = server.nextPendingConnection();
+    QVERIFY(serverSocket != nullptr);
+    connect(serverSocket, &QLocalSocket::readyRead, this, [&] { received.append(serverSocket->readAll()); });
+  });
+  connect(&client, &IpcClient::connected, &client, &deskflow::gui::ipc::CoreIpcClient::requestFileTransferActiveSides);
+
+  client.connectToServer();
+  QTRY_VERIFY_WITH_TIMEOUT(received.contains('\n'), 1000);
+  QVERIFY(!received.contains("fileTransferActiveSides\n"));
+
+  const auto versionId = QStringLiteral("%1+%2").arg(kVersion, kVersionGitSha);
+  serverSocket->write(QStringLiteral("hello=%1\n").arg(versionId).toUtf8());
+  serverSocket->flush();
+  QTRY_VERIFY_WITH_TIMEOUT(received.contains("fileTransferActiveSides\n"), 1000);
+  QCOMPARE(received.count("fileTransferActiveSides\n"), 1);
+
+  client.disconnectFromServer();
+  server.close();
+  QLocalServer::removeServer(socketName);
+}
+
+void IpcClientTests::corePublishesValidActiveSidesAndClearsOnDisconnect()
+{
+  const auto socketName = uniqueSocketName();
+  QLocalServer::removeServer(socketName);
+
+  QLocalServer server;
+  QVERIFY(server.listen(socketName));
+  TestCoreIpcClient client(nullptr, socketName);
+  QSignalSpy connectedSpy(&client, &IpcClient::connected);
+  QSignalSpy sidesSpy(&client, &deskflow::gui::ipc::CoreIpcClient::fileTransferActiveSidesChanged);
+  QLocalSocket *serverSocket = nullptr;
+
+  connect(&server, &QLocalServer::newConnection, this, [&] {
+    serverSocket = server.nextPendingConnection();
+    QVERIFY(serverSocket != nullptr);
+    connect(serverSocket, &QLocalSocket::readyRead, this, [&, serverSocket] {
+      const auto request = serverSocket->readAll();
+      if (request.startsWith("hello=")) {
+        const auto versionId = QStringLiteral("%1+%2").arg(kVersion, kVersionGitSha);
+        serverSocket->write(QStringLiteral("hello=%1\n").arg(versionId).toUtf8());
+        serverSocket->flush();
+      }
+    });
+  });
+
+  client.connectToServer();
+  QTRY_COMPARE_WITH_TIMEOUT(connectedSpy.count(), 1, 1000);
+  serverSocket->write("fileTransferActiveSides=30\n");
+  serverSocket->flush();
+  QTRY_COMPARE_WITH_TIMEOUT(sidesSpy.count(), 1, 1000);
+  QCOMPARE(sidesSpy.at(0).at(0).toUInt(), 30U);
+
+  serverSocket->disconnectFromServer();
+  QTRY_COMPARE_WITH_TIMEOUT(sidesSpy.count(), 2, 1000);
+  QCOMPARE(sidesSpy.at(1).at(0).toUInt(), 0U);
+
+  server.close();
+  QLocalServer::removeServer(socketName);
+}
+
+void IpcClientTests::coreSendsOnlyConnectedBoundedEdgeDrops()
+{
+  const auto socketName = uniqueSocketName();
+  QLocalServer::removeServer(socketName);
+
+  QLocalServer server;
+  QVERIFY(server.listen(socketName));
+  TestCoreIpcClient client(nullptr, socketName);
+  QByteArray received;
+  QLocalSocket *serverSocket = nullptr;
+  const auto encoded = deskflow::ipc::encodeFileTransferEdgeDropIpc(
+      {.direction = Direction::Left, .x = -12, .y = 34, .paths = {QStringLiteral("C:/edge drop/한글.txt")}}
+  );
+  QVERIFY(encoded.ok());
+  QVERIFY(!client.sendFileTransferEdgeDrop(encoded.encodedValue));
+
+  connect(&server, &QLocalServer::newConnection, this, [&] {
+    serverSocket = server.nextPendingConnection();
+    QVERIFY(serverSocket != nullptr);
+    connect(serverSocket, &QLocalSocket::readyRead, this, [&] {
+      received.append(serverSocket->readAll());
+      if (received.startsWith("hello=") && received.contains('\n')) {
+        const auto versionId = QStringLiteral("%1+%2").arg(kVersion, kVersionGitSha);
+        serverSocket->write(QStringLiteral("hello=%1\n").arg(versionId).toUtf8());
+        serverSocket->flush();
+      }
+    });
+  });
+
+  client.connectToServer();
+  QTRY_VERIFY_WITH_TIMEOUT(client.isConnected(), 1000);
+  received.clear();
+  QVERIFY(!client.sendFileTransferEdgeDrop(QString(60 * 1024 + 1, QLatin1Char('A'))));
+  QVERIFY(client.sendFileTransferEdgeDrop(encoded.encodedValue));
+  QTRY_VERIFY_WITH_TIMEOUT(received.contains("fileTransferEdgeDrop="), 1000);
+  QCOMPARE(QString::fromUtf8(received), QStringLiteral("fileTransferEdgeDrop=%1\n").arg(encoded.encodedValue));
 
   client.disconnectFromServer();
   server.close();
