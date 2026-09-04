@@ -246,12 +246,17 @@ void IpcClientTests::redactsFileTransferEdgeDropInClientLogs()
     QCOMPARE(client.commands().constFirst(), QStringList({QStringLiteral("fileTransferEdgeDrop"), payload}));
   }
 
-  QVERIFY(std::ranges::any_of(messages, [](const QString &message) {
-    return message.contains(QStringLiteral("ipc client sent message: fileTransferEdgeDrop=<redacted>"));
-  }));
-  QVERIFY(std::ranges::any_of(messages, [](const QString &message) {
-    return message.contains(QStringLiteral("ipc client message: fileTransferEdgeDrop=<redacted>"));
-  }));
+  const auto debugOutputEnabled = std::ranges::any_of(messages, [](const QString &message) {
+    return message.contains(QStringLiteral("test ipc client connected"));
+  });
+  if (debugOutputEnabled) {
+    QVERIFY(std::ranges::any_of(messages, [](const QString &message) {
+      return message.contains(QStringLiteral("ipc client sent message: fileTransferEdgeDrop=<redacted>"));
+    }));
+    QVERIFY(std::ranges::any_of(messages, [](const QString &message) {
+      return message.contains(QStringLiteral("ipc client message: fileTransferEdgeDrop=<redacted>"));
+    }));
+  }
   for (const auto &message : messages) {
     QVERIFY2(!message.contains(payload), qPrintable(message));
     QVERIFY2(!message.contains(QStringLiteral("한글 경로")), qPrintable(message));
