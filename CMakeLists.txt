@@ -86,6 +86,18 @@ project(
   LANGUAGES C CXX
 )
 
+# CMake's /showIncludes probe can double-decode UTF-8 diagnostics from a
+# Korean-only MSVC installation, leaving Ninja with a mojibake dependency
+# prefix and silently stale objects. Use the actual cl.exe prefix only for
+# that compiler-language installation.
+if(MSVC AND CMAKE_GENERATOR MATCHES "^Ninja")
+  get_filename_component(IEUM_MSVC_COMPILER_DIR "${CMAKE_CXX_COMPILER}" DIRECTORY)
+  if(EXISTS "${IEUM_MSVC_COMPILER_DIR}/1042/clui.dll" AND NOT EXISTS "${IEUM_MSVC_COMPILER_DIR}/1033/clui.dll")
+    set(CMAKE_CL_SHOWINCLUDES_PREFIX "참고: 포함 파일: ")
+  endif()
+  unset(IEUM_MSVC_COMPILER_DIR)
+endif()
+
 # Define Additional "PROJECT" vars for packaging and metadata
 set(CMAKE_PROJECT_PROPER_NAME "Ieum")
 set(CMAKE_PROJECT_AUTHOR "Ieum contributors")

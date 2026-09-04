@@ -13,6 +13,10 @@
 #include "deskflow/ipc/DaemonIpcServer.h"
 #include "deskflow/ipc/IpcServer.h"
 
+#ifdef Q_OS_WIN
+#include "deskflow/win32/CoreIpcClientValidator.h"
+#endif
+
 #include <QCoreApplication>
 #include <QDir>
 #include <QLocalServer>
@@ -587,6 +591,44 @@ void IpcServerTests::missingCoreDropArgumentIsRejected()
   QCOMPARE(QString::fromUtf8(client.readAll()), QStringLiteral("error\n"));
   QCOMPARE(capture.count, 0);
 }
+
+#ifdef Q_OS_WIN
+void IpcServerTests::productionValidatorRejectsUntrustedRealSocketClient()
+{
+  const auto socketName = uniqueSocketName();
+  QLocalServer::removeServer(socketName);
+
+  TestCoreIpcServer server(socketName, [](QLocalSocket *socket) {
+    return socket != nullptr && deskflow::core::ipc::CoreIpcClientValidator{}.isAuthorized(*socket);
+  });
+  QVERIFY(server.listen());
+  CapturedDrop capture;
+  captureDrops(server, this, capture);
+
+  QLocalSocket client;
+  QSignalSpy readyReadSpy(&client, &QLocalSocket::readyRead);
+  client.connectToServer(socketName);
+  QVERIFY(client.waitForConnected(1000));
+
+  const auto hello = currentHello();
+  QCOMPARE(client.write(hello), hello.size());
+  client.flush();
+  QTRY_VERIFY_WITH_TIMEOUT(!readyReadSpy.isEmpty(), 1000);
+  QCOMPARE(QString::fromUtf8(client.readAll()), QStringLiteral("hello=%1\n").arg(currentVersionId()));
+  readyReadSpy.clear();
+
+  const auto encoded = deskflow::ipc::encodeFileTransferEdgeDropIpc(dropFixture());
+  QCOMPARE(encoded.error, deskflow::ipc::FileTransferEdgeDropIpcError::None);
+  const auto request = QStringLiteral("fileTransferEdgeDrop=%1\n").arg(encoded.encodedValue).toUtf8();
+  QCOMPARE(client.write(request), request.size());
+  client.flush();
+
+  QTRY_VERIFY_WITH_TIMEOUT(!readyReadSpy.isEmpty(), 1000);
+  QCOMPARE(QString::fromUtf8(client.readAll()), QStringLiteral("error\n"));
+  QCOMPARE(capture.count, 0);
+  QCOMPARE(client.state(), QLocalSocket::ConnectedState);
+}
+#endif
 
 void IpcServerTests::correlatesDelayedDaemonCommandResults()
 {

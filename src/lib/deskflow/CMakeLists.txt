@@ -12,6 +12,7 @@ if(WIN32)
     win32/AppUtilWindows.h
     win32/CoreIpcClientValidator.cpp
     win32/CoreIpcClientValidator.h
+    win32/CoreIpcClientValidatorDetail.h
     win32/MSWindowsEdgeDropHost.cpp
     win32/MSWindowsEdgeDropHost.h
     win32/MSWindowsEdgeDropTarget.cpp

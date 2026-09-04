@@ -26,6 +26,9 @@ private Q_SLOTS:
   void preHelloCoreClientCannotSubmitDrop();
   void malformedAndOversizedCoreDropsAreRejected();
   void missingCoreDropArgumentIsRejected();
+#ifdef Q_OS_WIN
+  void productionValidatorRejectsUntrustedRealSocketClient();
+#endif
   void correlatesDelayedDaemonCommandResults();
   void acknowledgesLegacyDaemonCommandsAfterCompletion();
 

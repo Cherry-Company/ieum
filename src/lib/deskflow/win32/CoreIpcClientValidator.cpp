@@ -5,6 +5,7 @@
  */
 
 #include "deskflow/win32/CoreIpcClientValidator.h"
+#include "deskflow/win32/CoreIpcClientValidatorDetail.h"
 
 #include <QLocalSocket>
 #include <QtTypes>
@@ -49,6 +50,56 @@ private:
   HANDLE m_handle;
 };
 
+} // namespace
+
+namespace detail {
+
+bool hasInteractiveSidMembership(quintptr primaryToken) noexcept
+{
+  const auto token = reinterpret_cast<HANDLE>(primaryToken);
+  if (token == nullptr || token == INVALID_HANDLE_VALUE) {
+    return false;
+  }
+
+  HANDLE impersonationTokenRaw = nullptr;
+  if (DuplicateToken(token, SecurityImpersonation, &impersonationTokenRaw) == FALSE) {
+    return false;
+  }
+  const UniqueHandle impersonationToken(impersonationTokenRaw);
+
+  std::array<BYTE, SECURITY_MAX_SID_SIZE> interactiveSid{};
+  DWORD interactiveSidSize = static_cast<DWORD>(interactiveSid.size());
+  if (CreateWellKnownSid(WinInteractiveSid, nullptr, interactiveSid.data(), &interactiveSidSize) == FALSE) {
+    return false;
+  }
+
+  BOOL isInteractive = FALSE;
+  return CheckTokenMembership(impersonationToken.get(), interactiveSid.data(), &isInteractive) != FALSE &&
+         isInteractive != FALSE;
+}
+
+std::optional<quint32> namedPipeClientProcessId(const QLocalSocket &clientSocket) noexcept
+{
+  const auto descriptor = clientSocket.socketDescriptor();
+  if (descriptor == -1) {
+    return std::nullopt;
+  }
+  const auto pipe = reinterpret_cast<HANDLE>(static_cast<quintptr>(descriptor));
+  if (pipe == nullptr || pipe == INVALID_HANDLE_VALUE) {
+    return std::nullopt;
+  }
+
+  ULONG clientProcessId = 0;
+  if (GetNamedPipeClientProcessId(pipe, &clientProcessId) == FALSE || clientProcessId == 0) {
+    return std::nullopt;
+  }
+  return static_cast<quint32>(clientProcessId);
+}
+
+} // namespace detail
+
+namespace {
+
 bool tokenInformation(HANDLE token, TOKEN_INFORMATION_CLASS infoClass, std::vector<BYTE> &buffer)
 {
   DWORD required = 0;
@@ -82,14 +133,7 @@ bool hasExpectedSession(HANDLE token, DWORD expectedSession)
 
 bool isInteractiveToken(HANDLE token, DWORD sessionId)
 {
-  std::array<BYTE, SECURITY_MAX_SID_SIZE> interactiveSid{};
-  DWORD interactiveSidSize = static_cast<DWORD>(interactiveSid.size());
-  if (CreateWellKnownSid(WinInteractiveSid, nullptr, interactiveSid.data(), &interactiveSidSize) == FALSE) {
-    return false;
-  }
-
-  BOOL isInteractive = FALSE;
-  if (CheckTokenMembership(token, interactiveSid.data(), &isInteractive) == FALSE || isInteractive == FALSE) {
+  if (!detail::hasInteractiveSidMembership(reinterpret_cast<quintptr>(token))) {
     return false;
   }
 
@@ -201,21 +245,12 @@ bool hasExpectedImagePath(HANDLE clientProcess)
 
 bool validateClient(const QLocalSocket &clientSocket)
 {
-  const auto descriptor = clientSocket.socketDescriptor();
-  if (descriptor == -1) {
-    return false;
-  }
-  const auto pipe = reinterpret_cast<HANDLE>(static_cast<quintptr>(descriptor));
-  if (pipe == nullptr || pipe == INVALID_HANDLE_VALUE) {
+  const auto clientProcessId = detail::namedPipeClientProcessId(clientSocket);
+  if (!clientProcessId.has_value()) {
     return false;
   }
 
-  ULONG clientProcessId = 0;
-  if (GetNamedPipeClientProcessId(pipe, &clientProcessId) == FALSE || clientProcessId == 0) {
-    return false;
-  }
-
-  const UniqueHandle clientProcess(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, clientProcessId));
+  const UniqueHandle clientProcess(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, *clientProcessId));
   if (clientProcess.get() == nullptr) {
     return false;
   }
@@ -223,7 +258,7 @@ bool validateClient(const QLocalSocket &clientSocket)
   DWORD coreSession = 0;
   DWORD clientSession = 0;
   if (ProcessIdToSessionId(GetCurrentProcessId(), &coreSession) == FALSE ||
-      ProcessIdToSessionId(clientProcessId, &clientSession) == FALSE || coreSession != clientSession) {
+      ProcessIdToSessionId(*clientProcessId, &clientSession) == FALSE || coreSession != clientSession) {
     return false;
   }
 
@@ -232,7 +267,7 @@ bool validateClient(const QLocalSocket &clientSocket)
   }
 
   HANDLE clientTokenRaw = nullptr;
-  if (OpenProcessToken(clientProcess.get(), TOKEN_QUERY, &clientTokenRaw) == FALSE) {
+  if (OpenProcessToken(clientProcess.get(), TOKEN_QUERY | TOKEN_DUPLICATE, &clientTokenRaw) == FALSE) {
     return false;
   }
   const UniqueHandle clientToken(clientTokenRaw);
@@ -241,10 +276,9 @@ bool validateClient(const QLocalSocket &clientSocket)
   }
 
   DWORD exitCode = 0;
-  ULONG confirmedClientProcessId = 0;
+  const auto confirmedClientProcessId = detail::namedPipeClientProcessId(clientSocket);
   return GetExitCodeProcess(clientProcess.get(), &exitCode) != FALSE && exitCode == STILL_ACTIVE &&
-         GetNamedPipeClientProcessId(pipe, &confirmedClientProcessId) != FALSE &&
-         confirmedClientProcessId == clientProcessId;
+         confirmedClientProcessId.has_value() && *confirmedClientProcessId == *clientProcessId;
 }
 
 } // namespace
