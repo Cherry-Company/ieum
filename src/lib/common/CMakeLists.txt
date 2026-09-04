@@ -13,6 +13,8 @@ add_library(common STATIC
   Coordinate.h
   Enums.h
   ExitCodes.h
+  FileTransferEdgeDropIpc.cpp
+  FileTransferEdgeDropIpc.h
   FullscreenGeometry.h
   I18N.h
   I18N.cpp

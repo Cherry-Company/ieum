@@ -20,4 +20,14 @@ inline QStringList splitCommandMessage(const QString &message)
   return {message.left(delimiter), message.mid(delimiter + 1)};
 }
 
+inline QString sanitizeMessageForLog(const QString &message)
+{
+  const auto command = splitCommandMessage(message).first();
+  if (command == QLatin1String("fileTransferEdgeDrop")) {
+    return QStringLiteral("fileTransferEdgeDrop=<redacted>");
+  }
+
+  return message;
+}
+
 } // namespace deskflow::ipc
