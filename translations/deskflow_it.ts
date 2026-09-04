@@ -522,6 +522,10 @@ macOS will remove only Ieum&apos;s Accessibility record. No other app permission
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Open Sponsor Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Ieum Update %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1020,6 +1024,10 @@ Client</source>
     </message>
     <message>
         <source>macOS has not yet allowed Ieum to start at login. Open System Settings &gt; General &gt; Login Items and allow Ieum so its menu bar icon and KVM core return after sign-in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The browser could not be opened. The full URL was copied to the clipboard.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1655,6 +1663,10 @@ L&apos;abilitazione di questa impostazione disabiliterà l&apos;interfaccia graf
     </message>
     <message>
         <source>Could not read Tailscale status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Pro Local Sponsor Page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

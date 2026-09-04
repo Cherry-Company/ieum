@@ -519,6 +519,10 @@ A bound IP is now invalid, you may need to restart the server.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <source>Open Sponsor Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Ieum Update %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1022,6 +1026,10 @@ Client</source>
         <source>macOS has not yet allowed Ieum to start at login. Open System Settings &gt; General &gt; Login Items and allow Ieum so its menu bar icon and KVM core return after sign-in.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>The browser could not be opened. The full URL was copied to the clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScreenSettingsDialog</name>
@@ -1459,6 +1467,10 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Save log file to...</source>
         <translation>Сохранить файл журнала в...</translation>
+    </message>
+    <message>
+        <source>Open Pro Local Sponsor Page</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Import Pro Local license</source>

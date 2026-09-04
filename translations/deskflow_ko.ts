@@ -576,6 +576,10 @@ A bound IP is now invalid, you may need to restart the server.</source>
         <translation>&lt;p&gt;개인정보를 가린 진단 패스포트를 클립보드에 복사하고 내용을 미리 채운 GitHub 이슈를 열었습니다.&lt;/p&gt;&lt;p&gt;자동으로 업로드한 내용은 없습니다. GitHub에 이슈를 등록하려면 계정이 필요하며, 계정이 없으면 복사한 보고서를 다른 채널로 전달할 수 있습니다.&lt;/p&gt;&lt;p&gt;로컬 복사본: &lt;code&gt;%1&lt;/code&gt;&lt;/p&gt;</translation>
     </message>
     <message>
+        <source>Open Sponsor Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Ieum Update %1</source>
         <translation>이음 업데이트 %1</translation>
     </message>
@@ -1034,6 +1038,10 @@ Additionally, check you are able to %1 the server config file: %2</source>
         <source>macOS has not yet allowed Ieum to start at login. Open System Settings &gt; General &gt; Login Items and allow Ieum so its menu bar icon and KVM core return after sign-in.</source>
         <translation>macOS가 아직 로그인할 때 이음 실행을 허용하지 않았습니다. 로그인 뒤 메뉴 막대 아이콘과 KVM 코어가 다시 실행되도록 시스템 설정 &gt; 일반 &gt; 로그인 항목을 열어 이음을 허용하세요.</translation>
     </message>
+    <message>
+        <source>The browser could not be opened. The full URL was copied to the clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScreenSettingsDialog</name>
@@ -1473,6 +1481,10 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Save log file to...</source>
         <translation>로그 파일 저장 위치...</translation>
+    </message>
+    <message>
+        <source>Open Pro Local Sponsor Page</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Import Pro Local license</source>
