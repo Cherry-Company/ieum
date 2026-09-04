@@ -15,6 +15,7 @@
 #include "gui/ipc/IpcClient.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QSignalSpy>
@@ -381,7 +382,10 @@ void IpcClientTests::coreSendsOnlyConnectedBoundedEdgeDrops()
   QByteArray received;
   QLocalSocket *serverSocket = nullptr;
   const auto encoded = deskflow::ipc::encodeFileTransferEdgeDropIpc(
-      {.direction = Direction::Left, .x = -12, .y = 34, .paths = {QStringLiteral("C:/edge drop/한글.txt")}}
+      {.direction = Direction::Left,
+       .x = -12,
+       .y = 34,
+       .paths = {QDir::toNativeSeparators(QDir::current().absoluteFilePath(QStringLiteral("edge drop/한글.txt")))}}
   );
   QVERIFY(encoded.ok());
   QVERIFY(!client.sendFileTransferEdgeDrop(encoded.encodedValue));
