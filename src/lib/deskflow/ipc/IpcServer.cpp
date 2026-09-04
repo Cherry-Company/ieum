@@ -249,10 +249,11 @@ void IpcServer::handleErrorOccurred()
 
 void IpcServer::processMessage(QLocalSocket *clientSocket, const QString &message)
 {
-  LOG_VERBOSE("%s ipc server got message: %s", m_typeName.constData(), message.toUtf8().constData());
+  const auto sanitizedMessage = ::deskflow::ipc::sanitizeMessageForLog(message);
+  LOG_VERBOSE("%s ipc server got message: %s", m_typeName.constData(), sanitizedMessage.toUtf8().constData());
   const auto parts = ::deskflow::ipc::splitCommandMessage(message);
   if (parts.isEmpty()) {
-    LOG_ERR("%s ipc server got invalid message: %s", m_typeName.constData(), message.toUtf8().constData());
+    LOG_ERR("%s ipc server got invalid message: %s", m_typeName.constData(), sanitizedMessage.toUtf8().constData());
     writeToClientSocket(clientSocket, QStringLiteral("error"));
     return;
   }
@@ -286,7 +287,8 @@ void IpcServer::processMessage(QLocalSocket *clientSocket, const QString &messag
     // Replay messages that were queued before any clients connected.
     LOG_VERBOSE("ipc server replaying %d pending messages", m_pendingMessages.size());
     for (const auto &pending : std::as_const(m_pendingMessages)) {
-      LOG_VERBOSE("%s ipc server replaying: %s", m_typeName.constData(), pending.toUtf8().constData());
+      const auto sanitizedPending = ::deskflow::ipc::sanitizeMessageForLog(pending);
+      LOG_VERBOSE("%s ipc server replaying: %s", m_typeName.constData(), sanitizedPending.toUtf8().constData());
       writeToClientSocket(clientSocket, pending);
     }
     m_pendingMessages.clear();
@@ -303,10 +305,11 @@ void IpcServer::processMessage(QLocalSocket *clientSocket, const QString &messag
 void IpcServer::broadcastCommand(const QString &command, const QString &args)
 {
   const auto message = args.isEmpty() ? command : QStringLiteral("%1=%2").arg(command, args);
+  const auto sanitizedMessage = ::deskflow::ipc::sanitizeMessageForLog(message);
 
   if (m_clients.isEmpty()) {
     LOG_VERBOSE(
-        "%s ipc server has no clients, message queued: %s", m_typeName.constData(), message.toUtf8().constData()
+        "%s ipc server has no clients, message queued: %s", m_typeName.constData(), sanitizedMessage.toUtf8().constData()
     );
     m_pendingMessages.append(message);
     return;
@@ -314,7 +317,7 @@ void IpcServer::broadcastCommand(const QString &command, const QString &args)
 
   LOG_VERBOSE(
       "%s ipc server broadcasting message to %d clients: %s", m_typeName.constData(), m_clients.size(),
-      message.toUtf8().constData()
+      sanitizedMessage.toUtf8().constData()
   );
   for (auto *client : std::as_const(m_clients)) {
     writeToClientSocket(client, message);
@@ -329,8 +332,9 @@ void IpcServer::writeToClientSocket(QLocalSocket *&clientSocket, const QString &
   if (bytesWritten != messageData.size()) {
     LOG_ERR("%s ipc server failed to write full message to client socket", m_typeName.constData());
   } else {
+    const auto sanitizedMessage = ::deskflow::ipc::sanitizeMessageForLog(message);
     LOG_VERBOSE(
-        "%s ipc server wrote message to client socket: %s", m_typeName.constData(), message.toUtf8().constData()
+        "%s ipc server wrote message to client socket: %s", m_typeName.constData(), sanitizedMessage.toUtf8().constData()
     );
   }
 }

@@ -141,11 +141,12 @@ void IpcClient::handleReadyRead()
     const auto index = data.indexOf('\n');
     const auto message = QString::fromUtf8(data.left(index));
     data.remove(0, index + 1);
+    const auto sanitizedMessage = ::deskflow::ipc::sanitizeMessageForLog(message);
 
-    qDebug().noquote() << QStringLiteral("%1 ipc client message: %2").arg(m_typeName, message);
+    qDebug().noquote() << QStringLiteral("%1 ipc client message: %2").arg(m_typeName, sanitizedMessage);
     const auto parts = ::deskflow::ipc::splitCommandMessage(message);
     if (parts.isEmpty()) {
-      qWarning().noquote() << QStringLiteral("%1 ipc client got invalid message: %2").arg(m_typeName, message);
+      qWarning().noquote() << QStringLiteral("%1 ipc client got invalid message: %2").arg(m_typeName, sanitizedMessage);
       continue;
     }
 
@@ -214,7 +215,8 @@ void IpcClient::sendMessage(const QString &message)
   }
 
   m_socket->write(message.toUtf8() + "\n");
-  qDebug().noquote() << QStringLiteral("%1 ipc client sent message: %2").arg(m_typeName, message);
+  const auto sanitizedMessage = ::deskflow::ipc::sanitizeMessageForLog(message);
+  qDebug().noquote() << QStringLiteral("%1 ipc client sent message: %2").arg(m_typeName, sanitizedMessage);
 }
 
 } // namespace deskflow::gui::ipc

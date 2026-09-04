@@ -10,6 +10,7 @@
 #include "gui/ipc/DaemonIpcClient.h"
 #include "gui/ipc/IpcClient.h"
 
+#include <QDebug>
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QSignalSpy>
@@ -20,6 +21,33 @@ using deskflow::gui::ipc::IpcClient;
 
 namespace {
 
+QStringList *g_messages = nullptr;
+
+void captureMessage(QtMsgType, const QMessageLogContext &, const QString &message)
+{
+  if (g_messages != nullptr) {
+    g_messages->append(message);
+  }
+}
+
+class MessageCapture final
+{
+public:
+  explicit MessageCapture(QStringList &messages) : m_previous(qInstallMessageHandler(captureMessage))
+  {
+    g_messages = &messages;
+  }
+
+  ~MessageCapture()
+  {
+    g_messages = nullptr;
+    qInstallMessageHandler(m_previous);
+  }
+
+private:
+  QtMessageHandler m_previous;
+};
+
 class TestIpcClient : public IpcClient
 {
 public:
@@ -27,6 +55,8 @@ public:
       : IpcClient(nullptr, socketName, QStringLiteral("test"), retryLimit, retryDelayMs)
   {
   }
+
+  using IpcClient::sendMessage;
 
   const QList<QStringList> &commands() const
   {
@@ -153,6 +183,66 @@ void IpcClientTests::preservesCommandArgumentBoundaryFromServer()
   QCOMPARE(commands.at(2).size(), static_cast<qsizetype>(2));
   QCOMPARE(commands.at(2).at(0), QStringLiteral("logPath"));
   QCOMPARE(commands.at(2).at(1), value);
+
+  client.disconnectFromServer();
+  server.close();
+  QLocalServer::removeServer(socketName);
+}
+
+void IpcClientTests::redactsFileTransferEdgeDropInClientLogs()
+{
+  const auto socketName = uniqueSocketName();
+  QLocalServer::removeServer(socketName);
+
+  QLocalServer server;
+  QVERIFY(server.listen(socketName));
+
+  TestIpcClient client(socketName, 1, 0);
+  QByteArray received;
+  QLocalSocket *serverSocket = nullptr;
+  const auto payload = QStringLiteral(R"(C:\Users\tester\한글 경로\edge one.txt|/tmp/edge drop/two.txt)");
+  const auto sensitiveMessage = QStringLiteral("fileTransferEdgeDrop=%1").arg(payload);
+
+  connect(&server, &QLocalServer::newConnection, this, [&] {
+    serverSocket = server.nextPendingConnection();
+    QVERIFY(serverSocket != nullptr);
+    connect(serverSocket, &QLocalSocket::readyRead, this, [&] {
+      received.append(serverSocket->readAll());
+      if (received.startsWith("hello=") && received.contains('\n')) {
+        const auto versionId = QStringLiteral("%1+%2").arg(kVersion, kVersionGitSha);
+        serverSocket->write(QStringLiteral("hello=%1\n").arg(versionId).toUtf8());
+        serverSocket->flush();
+      }
+    });
+  });
+
+  QStringList messages;
+  {
+    MessageCapture capture(messages);
+    client.connectToServer();
+    QTRY_VERIFY_WITH_TIMEOUT(client.isConnected(), 1000);
+    received.clear();
+
+    client.sendMessage(sensitiveMessage);
+    QTRY_VERIFY_WITH_TIMEOUT(received.contains("fileTransferEdgeDrop="), 1000);
+    QCOMPARE(QString::fromUtf8(received), sensitiveMessage + QStringLiteral("\n"));
+
+    serverSocket->write(sensitiveMessage.toUtf8() + '\n');
+    serverSocket->flush();
+    QTRY_COMPARE_WITH_TIMEOUT(client.commands().size(), static_cast<qsizetype>(1), 1000);
+    QCOMPARE(client.commands().constFirst(), QStringList({QStringLiteral("fileTransferEdgeDrop"), payload}));
+  }
+
+  QVERIFY(std::ranges::any_of(messages, [](const QString &message) {
+    return message.contains(QStringLiteral("ipc client sent message: fileTransferEdgeDrop=<redacted>"));
+  }));
+  QVERIFY(std::ranges::any_of(messages, [](const QString &message) {
+    return message.contains(QStringLiteral("ipc client message: fileTransferEdgeDrop=<redacted>"));
+  }));
+  for (const auto &message : messages) {
+    QVERIFY2(!message.contains(payload), qPrintable(message));
+    QVERIFY2(!message.contains(QStringLiteral("한글 경로")), qPrintable(message));
+  }
 
   client.disconnectFromServer();
   server.close();

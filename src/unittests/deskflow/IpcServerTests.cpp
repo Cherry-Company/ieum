@@ -6,6 +6,7 @@
 
 #include "IpcServerTests.h"
 
+#include "base/ILogOutputter.h"
 #include "common/VersionInfo.h"
 #include "deskflow/ipc/DaemonIpcServer.h"
 #include "deskflow/ipc/IpcServer.h"
@@ -18,6 +19,49 @@
 using deskflow::core::ipc::IpcServer;
 
 namespace {
+
+class CapturingLogOutputter final : public ILogOutputter
+{
+public:
+  explicit CapturingLogOutputter(QStringList &messages) : m_messages(messages)
+  {
+  }
+
+  void open(const QString &) override
+  {
+  }
+
+  void close() override
+  {
+  }
+
+  bool write(LogLevel::Level, const QString &message) override
+  {
+    m_messages.append(message);
+    return false;
+  }
+
+private:
+  QStringList &m_messages;
+};
+
+class LogCapture final
+{
+public:
+  explicit LogCapture(QStringList &messages) : m_outputter(new CapturingLogOutputter(messages))
+  {
+    CLOG->insert(m_outputter);
+  }
+
+  ~LogCapture()
+  {
+    CLOG->remove(m_outputter);
+    delete m_outputter;
+  }
+
+private:
+  CapturingLogOutputter *m_outputter;
+};
 
 class TestIpcServer final : public IpcServer
 {
@@ -47,6 +91,11 @@ QString uniqueSocketName()
 }
 
 } // namespace
+
+void IpcServerTests::initTestCase()
+{
+  m_log.setFilter(LogLevel::Level::Verbose);
+}
 
 void IpcServerTests::refusesDuplicateWithoutDisruptingFirstServer()
 {
@@ -116,6 +165,51 @@ void IpcServerTests::preservesCommandArgumentBoundaryFromClient()
   QCOMPARE(commands.at(2).size(), static_cast<qsizetype>(2));
   QCOMPARE(commands.at(2).at(0), QStringLiteral("configFile"));
   QCOMPARE(commands.at(2).at(1), value);
+}
+
+void IpcServerTests::redactsFileTransferEdgeDropInServerLogs()
+{
+  const auto socketName = uniqueSocketName();
+  QLocalServer::removeServer(socketName);
+
+  TestIpcServer server(socketName);
+  QVERIFY(server.listen());
+
+  QLocalSocket client;
+  client.connectToServer(socketName);
+  QVERIFY(client.waitForConnected(1000));
+
+  const auto payload = QStringLiteral(R"(C:\Users\tester\한글 경로\edge one.txt|/tmp/edge drop/two.txt)");
+  const auto sensitiveMessage = QStringLiteral("fileTransferEdgeDrop=%1").arg(payload);
+  QStringList logs;
+  {
+    LogCapture capture(logs);
+
+    const auto request = QStringLiteral("%1\n").arg(sensitiveMessage).toUtf8();
+    QCOMPARE(client.write(request), request.size());
+    client.flush();
+    QTRY_COMPARE_WITH_TIMEOUT(server.commands().size(), static_cast<qsizetype>(1), 1000);
+    QCOMPARE(server.commands().constFirst(), QStringList({QStringLiteral("fileTransferEdgeDrop"), payload}));
+
+    QSignalSpy readyReadSpy(&client, &QLocalSocket::readyRead);
+    server.broadcastCommand(QStringLiteral("fileTransferEdgeDrop"), payload);
+    QTRY_VERIFY_WITH_TIMEOUT(!readyReadSpy.isEmpty(), 1000);
+    QCOMPARE(QString::fromUtf8(client.readAll()), sensitiveMessage + QStringLiteral("\n"));
+  }
+
+  QVERIFY(std::ranges::any_of(logs, [](const QString &message) {
+    return message.contains(QStringLiteral("ipc server got message: fileTransferEdgeDrop=<redacted>"));
+  }));
+  QVERIFY(std::ranges::any_of(logs, [](const QString &message) {
+    return message.contains(QStringLiteral("ipc server broadcasting message to 1 clients: fileTransferEdgeDrop=<redacted>"));
+  }));
+  QVERIFY(std::ranges::any_of(logs, [](const QString &message) {
+    return message.contains(QStringLiteral("ipc server wrote message to client socket: fileTransferEdgeDrop=<redacted>"));
+  }));
+  for (const auto &message : logs) {
+    QVERIFY2(!message.contains(payload), qPrintable(message));
+    QVERIFY2(!message.contains(QStringLiteral("한글 경로")), qPrintable(message));
+  }
 }
 
 void IpcServerTests::returnsVersionMismatchForDifferentClientVersion()

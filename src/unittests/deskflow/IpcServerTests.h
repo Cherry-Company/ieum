@@ -14,8 +14,10 @@ class IpcServerTests : public QObject
 {
   Q_OBJECT
 private Q_SLOTS:
+  void initTestCase();
   void refusesDuplicateWithoutDisruptingFirstServer();
   void preservesCommandArgumentBoundaryFromClient();
+  void redactsFileTransferEdgeDropInServerLogs();
   void returnsVersionMismatchForDifferentClientVersion();
   void correlatesDelayedDaemonCommandResults();
   void acknowledgesLegacyDaemonCommandsAfterCompletion();
