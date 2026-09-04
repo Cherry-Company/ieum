@@ -44,6 +44,13 @@ if (WIN32)
     SOURCE MSWindowsFileTransferIoTests.cpp
     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
   )
+  create_test(
+    NAME MSWindowsWatchdogRetryPolicyTests
+    DEPENDS platform
+    LIBS base arch
+    SOURCE MSWindowsWatchdogRetryPolicyTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
+  )
 elseif(APPLE)
   create_test(
     NAME OSXFileTransferPlatformTests

@@ -12,6 +12,7 @@
 #include "ui_MainWindow.h"
 
 #include "Diagnostic.h"
+#include "ExternalUrlLauncher.h"
 #include "MacApplicationLifecyclePolicy.h"
 #include "ProductIdentity.h"
 #include "StyleUtils.h"
@@ -35,6 +36,10 @@
 #include "gui/widgets/LogDock.h"
 #include "net/FingerprintDatabase.h"
 #include "widgets/StatusBar.h"
+
+#ifdef Q_OS_WIN
+#include "gui/win32/WindowsFileTransferDropBroker.h"
+#endif
 
 #include <QCheckBox>
 #include <QCloseEvent>
@@ -97,6 +102,16 @@ MainWindow::MainWindow()
       m_networkRecoveryTimer{new QTimer(this)},
       m_autoStartRetryTimer{new QTimer(this)}
 {
+#ifdef Q_OS_WIN
+  m_fileTransferDropBroker = std::make_unique<WindowsFileTransferDropBroker>([this](const QString &encodedValue) {
+    (void)m_coreProcess.sendFileTransferEdgeDrop(encodedValue);
+  });
+  connect(
+      &m_coreProcess, &CoreProcess::fileTransferActiveSidesChanged, m_fileTransferDropBroker.get(),
+      [this](std::uint32_t activeSides) { (void)m_fileTransferDropBroker->setActiveSides(activeSides); }
+  );
+#endif
+
   ui->setupUi(this);
   applyIeumMainWindowStyle(*this);
   ui->lblBrandIcon->setPixmap(QIcon::fromTheme(kRevFqdnName).pixmap(QSize(48, 48)));
@@ -758,9 +773,9 @@ void MainWindow::reportBug()
   );
 }
 
-void MainWindow::openSponsorUrl() const
+void MainWindow::openSponsorUrl()
 {
-  QDesktopServices::openUrl(QUrl(kUrlSponsor));
+  deskflow::gui::openExternalUrlOrShowFallback(this, QUrl(kUrlSponsor), tr("Open Sponsor Page"));
 }
 
 void MainWindow::openGetNewVersionUrl()

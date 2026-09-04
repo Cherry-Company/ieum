@@ -14,6 +14,7 @@
 
 #include "common/I18N.h"
 #include "common/Settings.h"
+#include "gui/ExternalUrlLauncher.h"
 #include "gui/Messages.h"
 #include "gui/StartupManager.h"
 #include "gui/StyleUtils.h"
@@ -399,7 +400,7 @@ void SettingsDialog::openProEarlyAccessSponsor()
   ensureProEarlyAccessClaim();
   const auto url = deskflow::licensing::proEarlyAccessSponsorUrl(m_proEarlyAccessClaim);
   if (!url.isEmpty()) {
-    (void)QDesktopServices::openUrl(url);
+    deskflow::gui::openExternalUrlOrShowFallback(this, url, tr("Open Pro Local Sponsor Page"));
   }
 }
 

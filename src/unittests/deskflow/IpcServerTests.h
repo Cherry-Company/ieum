@@ -14,9 +14,21 @@ class IpcServerTests : public QObject
 {
   Q_OBJECT
 private Q_SLOTS:
+  void initTestCase();
   void refusesDuplicateWithoutDisruptingFirstServer();
   void preservesCommandArgumentBoundaryFromClient();
+  void redactsFileTransferEdgeDropInServerLogs();
   void returnsVersionMismatchForDifferentClientVersion();
+  void tracksExactHelloAndClearsStateOnMismatchAndDisconnect();
+  void authorizedCurrentCoreClientEmitsDecodedDrop();
+  void deniedCurrentCoreClientReceivesGenericError();
+  void legacyCoreClientRetainsCommandsButCannotSubmitDrop();
+  void preHelloCoreClientCannotSubmitDrop();
+  void malformedAndOversizedCoreDropsAreRejected();
+  void missingCoreDropArgumentIsRejected();
+#ifdef Q_OS_WIN
+  void productionValidatorRejectsUntrustedRealSocketClient();
+#endif
   void correlatesDelayedDaemonCommandResults();
   void acknowledgesLegacyDaemonCommandsAfterCompletion();
 

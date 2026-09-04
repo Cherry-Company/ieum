@@ -12,6 +12,13 @@ create_test(
 )
 
 create_test(
+  NAME ExternalUrlLauncherTests
+  DEPENDS gui
+  SOURCE ExternalUrlLauncherTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+create_test(
   NAME LogWidgetTests
   DEPENDS gui
   SOURCE LogWidgetTests.cpp
@@ -39,6 +46,15 @@ create_test(
   SOURCE IpcClientTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
 )
+
+if(WIN32)
+  create_test(
+    NAME WindowsFileTransferDropBrokerTests
+    DEPENDS gui
+    SOURCE WindowsFileTransferDropBrokerTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+  )
+endif()
 
 create_test(
   NAME ServiceStartCoordinatorTests

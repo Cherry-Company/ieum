@@ -247,6 +247,7 @@ bool Server::setConfig(const ServerConfig &config)
     sendOptions(client);
     sendFileTransferEdgeCapabilities(client);
   }
+  notifyFileTransferActiveSides();
 
   return true;
 }
@@ -499,9 +500,23 @@ void Server::sendFileTransferEdgeCapabilities(BaseClientProxy *client) const
 
 void Server::sendFileTransferEdgeCapabilities() const
 {
+  notifyFileTransferActiveSides();
   for (const auto &[name, client] : m_clients) {
     static_cast<void>(name);
     sendFileTransferEdgeCapabilities(client);
+  }
+}
+
+void Server::setFileTransferActiveSidesHandler(std::function<void(std::uint32_t)> handler)
+{
+  m_fileTransferActiveSidesHandler = std::move(handler);
+  notifyFileTransferActiveSides();
+}
+
+void Server::notifyFileTransferActiveSides() const
+{
+  if (m_fileTransferActiveSidesHandler) {
+    m_fileTransferActiveSidesHandler(fileTransferActiveSidesFor(m_primaryClient));
   }
 }
 
@@ -1686,6 +1701,7 @@ void Server::handleLockCursorToScreenEvent(const Event &event)
     LOG_INFO("cursor %s current screen", m_lockedToScreen ? "locked to" : "unlocked from");
 
     m_primaryClient->reconfigure(getActivePrimarySides());
+    sendFileTransferEdgeCapabilities();
     if (!isLockedToScreenServer()) {
       stopRelativeMoves();
     }

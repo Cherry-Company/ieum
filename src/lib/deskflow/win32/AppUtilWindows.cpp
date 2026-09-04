@@ -38,14 +38,16 @@ AppUtilWindows::AppUtilWindows(IEventQueue *events) : m_events(events), m_exitMo
   // where the dtor is called just before the event loop starts.
   LOG_DEBUG("waiting for event thread to start");
   std::unique_lock lock(m_eventThreadStartedMutex);
-  m_eventThreadStartedCond.wait(lock, [this] { return m_eventThreadRunning; });
+  m_eventThreadStartedCond.wait(lock, [this] { return m_eventThreadRunning.load(); });
   LOG_DEBUG("event thread started");
 }
 
 AppUtilWindows::~AppUtilWindows()
 {
-  m_eventThreadRunning = false;
-  m_eventThread.join();
+  m_eventThreadRunning.store(false);
+  if (m_eventThread.joinable()) {
+    m_eventThread.join();
+  }
 }
 
 BOOL WINAPI AppUtilWindows::consoleHandler(DWORD)
@@ -193,18 +195,18 @@ void AppUtilWindows::eventLoop()
   LOG_DEBUG("windows event loop running");
   {
     std::scoped_lock lock{m_eventThreadStartedMutex};
-    m_eventThreadRunning = true;
+    m_eventThreadRunning.store(true);
   }
   m_eventThreadStartedCond.notify_one();
 
-  while (m_eventThreadRunning) {
+  while (m_eventThreadRunning.load()) {
     // Wait for 100ms at most so that we can stop the loop when the app is closing, if not already stopped.
     DWORD closeEventResult = MsgWaitForMultipleObjects(1, &hCloseEvent, FALSE, 100, QS_ALLINPUT);
 
     if (closeEventResult == WAIT_OBJECT_0) {
       LOG_DEBUG("windows event loop received close event");
       m_events->addEvent(Event(EventTypes::Quit));
-      m_eventThreadRunning = false;
+      m_eventThreadRunning.store(false);
     } else if (closeEventResult == WAIT_OBJECT_0 + 1) {
       MSG msg;
       while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {

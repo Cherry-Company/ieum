@@ -10,5 +10,8 @@
 
 #include <QString>
 
+#include <cstdint>
+
 void ipcSendToClient(const QString &command, const QString &args = "");
 void ipcSendConnectionState(deskflow::core::ConnectionState state);
+void ipcSendFileTransferActiveSides(std::uint32_t activeSides);

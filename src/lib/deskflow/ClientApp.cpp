@@ -386,14 +386,23 @@ void ClientApp::startFileTransferService()
           .sendEdge = [this](
                           const deskflow::filetransfer::FileTransferEdgeMessage &message
                       ) { return m_client != nullptr && m_client->sendFileTransferEdge(message); },
-          .activeSidesChanged = [platformScreen](
-                                    std::uint32_t activeSides
-                                ) { (void)platformScreen->configureFileTransferEdgeDrop(activeSides); },
+          .activeSidesChanged =
+              [platformScreen, sendEnabled](std::uint32_t activeSides) {
+#if defined(Q_OS_WIN)
+                static_cast<void>(platformScreen);
+                ipcSendFileTransferActiveSides(sendEnabled ? activeSides : 0);
+#else
+                (void)platformScreen->configureFileTransferEdgeDrop(sendEnabled ? activeSides : 0);
+#endif
+              },
           .platform = std::move(platform),
           .events = getEvents(),
           .eventTarget = m_client->getEventTarget(),
       });
 
+#if defined(Q_OS_WIN)
+  ipcSendFileTransferActiveSides(0);
+#else
   if (sendEnabled && !platformScreen->installFileTransferEdgeDrop([this](auto drop) {
         if (m_fileTransferService == nullptr || !m_fileTransferService->beginEdgeDrop(std::move(drop))) {
           LOG_WARN("could not start local file transfer");
@@ -401,14 +410,25 @@ void ClientApp::startFileTransferService()
       })) {
     LOG_WARN("could not install file-transfer edge drop host");
   }
+#endif
 }
 
 void ClientApp::stopFileTransferService() noexcept
 {
+#if defined(Q_OS_WIN)
+  ipcSendFileTransferActiveSides(0);
+#else
   if (m_clientScreen != nullptr) {
     m_clientScreen->getPlatformScreen()->uninstallFileTransferEdgeDrop();
   }
+#endif
   m_fileTransferService.reset();
+}
+
+bool ClientApp::beginFileTransferEdgeDrop(deskflow::filetransfer::FileTransferEdgeDrop drop)
+{
+  return m_fileTransferService != nullptr && Settings::value(Settings::FileTransfer::Enabled).toBool() &&
+         m_fileTransferService->beginEdgeDrop(std::move(drop));
 }
 
 int ClientApp::mainLoop()

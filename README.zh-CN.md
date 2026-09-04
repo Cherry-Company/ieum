@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.24"><strong>下载 Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.25"><strong>下载 Ieum</strong></a>
   · <a href="#首次运行时的安全与权限"><strong>安全与权限</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>赞助 Ieum</strong></a>
 </p>
@@ -32,7 +32,7 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 还试图把不同系统中的 **韩/英输入状态、输入法组合会话、物理按键位置和 Unicode 剪贴板**连接成
 一致的输入链路。
 
-> 当前版本为 `v0.1.0-alpha.24`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
+> 当前版本为 `v0.1.0-alpha.25`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
 
 ## 帮助 Ieum 完成正式发行
@@ -51,14 +51,14 @@ ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
 
 仍可选择自定义金额进行单次赞助。无论是否赞助，本地 KVM、韩语/CJK 输入同步和剪贴板核心都将保持
 开放。每个版本都会公开[赞助资金分配金额和完成的工作](docs/release/sponsorship-impact.md)。
-`alpha.24` 分配的赞助资金为 **USD 0**。Early Access 的标价只有在实际收到并核实付款后才计入赞助收入。
+`alpha.25` 分配的赞助资金为 **USD 0**。Early Access 的标价只有在实际收到并核实付款后才计入赞助收入。
 
-## Alpha.24 文件传输与 Windows 更新热修复
+## Alpha.25 Windows 到 macOS 文件传输与稳定性热修复
 
-`alpha.24` 修复了在 Tailscale 等高延迟链路上可能因 `DFTD` 而中止的文件帧。控制、数据和屏幕边缘帧
-现在各自作为一个传输数据包发送，使 Windows ↔ macOS 文件传输不再依赖数据包到达时机。Windows MSI
-会在移除旧产品并完成两轮文件替换后才启动服务，同时将 GUI、核心和守护进程版本提升到 `0.1.124.0`，
-避免升级后继续保留旧的可执行文件。
+`alpha.25` 由普通权限的 Windows GUI 接收屏幕边缘文件拖放，再通过经过认证的 IPC 转交给核心，
+从而绕过提升权限核心的 OLE/UIPI 限制，修复 Windows 到 macOS 无法开始传输的问题。Sponsor 链接
+打开失败时会显示并复制完整 URL；核心连续启动失败时采用最高 30 秒的指数退避。Windows 可执行文件
+版本为 `0.1.125.0`。
 
 ## Alpha.22 Windows ↔ macOS Pro Local 文件拖放
 
@@ -266,16 +266,16 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.24 发布页](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.24)
+[Ieum v0.1.0-alpha.25 发布页](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.25)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.24-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.24-macos-x86_64.dmg` |
-| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.24-win-x64.msi` |
-| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.24-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.24-win-arm64.msi` |
-| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.24-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.25-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.25-macos-x86_64.dmg` |
+| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.25-win-x64.msi` |
+| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.25-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.25-win-arm64.msi` |
+| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.25-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
 

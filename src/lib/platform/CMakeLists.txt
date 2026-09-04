@@ -69,6 +69,7 @@ if(WIN32)
     MSWindowsSession.h
     MSWindowsWatchdog.cpp
     MSWindowsWatchdog.h
+    MSWindowsWatchdogRetryPolicy.h
   )
 elseif(APPLE)
   set(PLATFORM_SOURCES

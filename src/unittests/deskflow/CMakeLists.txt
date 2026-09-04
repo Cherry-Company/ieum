@@ -127,6 +127,14 @@ create_test(
 
 if(WIN32)
   create_test(
+    NAME CoreIpcClientValidatorTests
+    DEPENDS app
+    LIBS arch base ${extra_libs}
+    SOURCE CoreIpcClientValidatorTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+  )
+
+  create_test(
     NAME MSWindowsEdgeDropTargetTests
     DEPENDS app
     LIBS arch base ${extra_libs}

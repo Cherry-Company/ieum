@@ -11,6 +11,7 @@
 #include "arch/Arch.h"
 #include "arch/IArchMultithread.h"
 #include "deskflow/App.h"
+#include "deskflow/FileTransferEdgeDrop.h"
 #include "net/NetworkAddress.h"
 #include "server/Config.h"
 
@@ -89,6 +90,7 @@ public:
   ClientListener *openClientListener(const NetworkAddress &address);
   Server *openServer(ServerConfig &config, PrimaryClient *primaryClient);
   bool startServer();
+  bool beginFileTransferEdgeDrop(deskflow::filetransfer::FileTransferEdgeDrop drop);
   Server *getServerPtr()
   {
     return m_server;
@@ -108,6 +110,7 @@ private:
   void handleScreenSwitched() const;
   void startFileTransferService();
   void stopFileTransferService() noexcept;
+  void handleFileTransferActiveSides(std::uint32_t activeSides) const;
   std::unique_ptr<ISocketFactory> getSocketFactory() const;
   NetworkAddress getAddress(const NetworkAddress &address) const;
 

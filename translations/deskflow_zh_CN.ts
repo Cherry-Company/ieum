@@ -526,6 +526,10 @@ A bound IP is now invalid, you may need to restart the server.</source>
         <translation>&lt;p&gt;已将经过隐私过滤的诊断护照复制到剪贴板，并打开已预填内容的 GitHub 问题。&lt;/p&gt;&lt;p&gt;没有自动上传任何内容。提交 GitHub 问题需要帐号；如果没有帐号，可以通过其他渠道分享已复制的报告。&lt;/p&gt;&lt;p&gt;本地副本：&lt;code&gt;%1&lt;/code&gt;&lt;/p&gt;</translation>
     </message>
     <message>
+        <source>Open Sponsor Page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Ieum Update %1</source>
         <translation>Ieum 更新 %1</translation>
     </message>
@@ -1032,6 +1036,10 @@ Client</source>
         <source>macOS has not yet allowed Ieum to start at login. Open System Settings &gt; General &gt; Login Items and allow Ieum so its menu bar icon and KVM core return after sign-in.</source>
         <translation>macOS 尚未允许 Ieum 登录时启动。请打开“系统设置”&gt;“通用”&gt;“登录项”并允许 Ieum，以便登录后恢复菜单栏图标和 KVM 核心。</translation>
     </message>
+    <message>
+        <source>The browser could not be opened. The full URL was copied to the clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScreenSettingsDialog</name>
@@ -1471,6 +1479,10 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Save log file to...</source>
         <translation>保存日志文件到...</translation>
+    </message>
+    <message>
+        <source>Open Pro Local Sponsor Page</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Import Pro Local license</source>

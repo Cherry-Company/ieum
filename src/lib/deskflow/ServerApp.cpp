@@ -440,8 +440,12 @@ void ServerApp::startFileTransferService()
       });
 
   if (!sendEnabled) {
+    handleFileTransferActiveSides(0);
     return;
   }
+#if defined(Q_OS_WIN)
+  handleFileTransferActiveSides(m_server->fileTransferActiveSidesFor(m_primaryClient));
+#else
   auto *platformScreen = m_serverScreen->getPlatformScreen();
   if (!platformScreen->installFileTransferEdgeDrop([this](auto drop) {
         if (m_fileTransferService == nullptr || !m_fileTransferService->beginEdgeDrop(std::move(drop))) {
@@ -452,14 +456,37 @@ void ServerApp::startFileTransferService()
     return;
   }
   (void)platformScreen->configureFileTransferEdgeDrop(m_server->fileTransferActiveSidesFor(m_primaryClient));
+#endif
 }
 
 void ServerApp::stopFileTransferService() noexcept
 {
+#if defined(Q_OS_WIN)
+  ipcSendFileTransferActiveSides(0);
+#else
   if (m_serverScreen != nullptr) {
     m_serverScreen->getPlatformScreen()->uninstallFileTransferEdgeDrop();
   }
+#endif
   m_fileTransferService.reset();
+}
+
+bool ServerApp::beginFileTransferEdgeDrop(deskflow::filetransfer::FileTransferEdgeDrop drop)
+{
+  return m_fileTransferService != nullptr && Settings::value(Settings::FileTransfer::Enabled).toBool() &&
+         m_fileTransferService->beginEdgeDrop(std::move(drop));
+}
+
+void ServerApp::handleFileTransferActiveSides(const std::uint32_t activeSides) const
+{
+  const auto enabled = m_fileTransferService != nullptr && Settings::value(Settings::FileTransfer::Enabled).toBool();
+#if defined(Q_OS_WIN)
+  ipcSendFileTransferActiveSides(enabled ? activeSides : 0);
+#else
+  if (m_serverScreen != nullptr) {
+    (void)m_serverScreen->getPlatformScreen()->configureFileTransferEdgeDrop(enabled ? activeSides : 0);
+  }
+#endif
 }
 
 deskflow::Screen *ServerApp::createScreen()
@@ -538,6 +565,9 @@ Server *ServerApp::openServer(ServerConfig &config, PrimaryClient *primaryClient
 {
   auto *server = new Server(config, primaryClient, m_serverScreen, getEvents());
   try {
+    server->setFileTransferActiveSidesHandler([this](const std::uint32_t activeSides) {
+      handleFileTransferActiveSides(activeSides);
+    });
     getEvents()->addHandler(EventTypes::ServerScreenSwitched, server, [this](const auto &) { handleScreenSwitched(); });
 
   } catch (std::bad_alloc &ba) {

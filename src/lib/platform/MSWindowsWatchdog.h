@@ -13,6 +13,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+#include <atomic>
 #include <functional>
 #include <memory>
 #include <mutex>
@@ -41,7 +42,7 @@ public:
   using ProcessConfigCallback = std::function<void(bool success, std::string detail)>;
 
   explicit MSWindowsWatchdog(bool foreground, FileLogOutputter &fileLogOutputter);
-  ~MSWindowsWatchdog() = default;
+  ~MSWindowsWatchdog();
 
   /**
    * @brief Start threads for main loop and and output loop.
@@ -134,7 +135,7 @@ private:
   static void shutdownExistingProcesses();
 
 private:
-  bool m_running = true;
+  std::atomic_bool m_running{false};
   std::unique_ptr<Thread> m_mainThread;
   std::unique_ptr<Thread> m_outputThread;
   std::unique_ptr<Thread> m_sasThread;
@@ -153,4 +154,6 @@ private:
   ProcessConfigCallback m_startResultCallback;
   SendSas m_sendSasFunc = nullptr;
   std::mutex m_processStateMutex;
+  std::mutex m_lifecycleMutex;
+  bool m_started = false;
 };

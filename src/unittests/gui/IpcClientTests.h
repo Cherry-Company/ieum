@@ -15,6 +15,10 @@ private Q_SLOTS:
   void connectsWhenServerStartsDuringRetryWindow();
   void emitsFailureAfterRetryLimit();
   void preservesCommandArgumentBoundaryFromServer();
+  void redactsFileTransferEdgeDropInClientLogs();
   void acceptsVersionMismatchHandshake();
+  void coreRequestsActiveSidesAfterExactHandshake();
+  void corePublishesValidActiveSidesAndClearsOnDisconnect();
+  void coreSendsOnlyConnectedBoundedEdgeDrops();
   void correlatesDaemonCommandResults();
 };
