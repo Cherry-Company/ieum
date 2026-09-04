@@ -14,6 +14,8 @@
 #include <QStringList>
 
 #include <functional>
+#include <atomic>
+#include <cstdint>
 
 class QLocalSocket;
 
@@ -28,6 +30,7 @@ public:
   ~CoreIpcServer() override;
 
   static CoreIpcServer &instance();
+  void publishFileTransferActiveSides(std::uint32_t activeSides);
 
 Q_SIGNALS:
   void reloadConfigRequested();
@@ -42,6 +45,7 @@ private:
   void processCommand(QLocalSocket *clientSocket, const QString &command, const QStringList &parts) override;
 
   ClientValidator m_clientValidator;
+  std::atomic<std::uint32_t> m_fileTransferActiveSides{0};
 };
 
 } // namespace deskflow::core::ipc

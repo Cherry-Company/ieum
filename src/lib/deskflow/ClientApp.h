@@ -9,6 +9,7 @@
 #pragma once
 
 #include "deskflow/App.h"
+#include "deskflow/FileTransferEdgeDrop.h"
 #include "net/NetworkAddress.h"
 
 #include <QList>
@@ -71,6 +72,7 @@ public:
   {
     return m_client;
   }
+  bool beginFileTransferEdgeDrop(deskflow::filetransfer::FileTransferEdgeDrop drop);
 
   //
   // Static functions

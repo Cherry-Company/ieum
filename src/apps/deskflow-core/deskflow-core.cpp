@@ -16,6 +16,7 @@
 #include "deskflow/ClientApp.h"
 #include "deskflow/ServerApp.h"
 #include "deskflow/ipc/CoreIpcServer.h"
+#include "platform/FileTransferPlatformFactory.h"
 
 #if defined(Q_OS_WIN)
 #include "arch/win32/ArchMiscWindows.h"
@@ -129,11 +130,30 @@ int main(int argc, char **argv)
   QObject::connect(
       ipcServer, &deskflow::core::ipc::IpcServer::stopProcessRequested, coreApp, &App::quit, Qt::DirectConnection
   );
+  const auto connectFileTransferEdgeDrops = [ipcServer](auto *typedApp) {
+    QObject::connect(
+        ipcServer, &deskflow::core::ipc::CoreIpcServer::fileTransferEdgeDropRequested, typedApp,
+        [typedApp](Direction direction, qint32 x, qint32 y, const QStringList &paths) {
+          deskflow::filetransfer::FileTransferEdgeDrop drop{.direction = direction, .x = x, .y = y};
+          drop.paths.reserve(static_cast<std::size_t>(paths.size()));
+          for (const auto &path : paths) {
+            drop.paths.emplace_back(deskflow::filetransfer::fileTransferPathFromQString(path));
+          }
+          if (!typedApp->beginFileTransferEdgeDrop(std::move(drop))) {
+            LOG_WARN("could not start GUI file transfer edge drop");
+          }
+        },
+        Qt::QueuedConnection
+    );
+  };
   if (auto *serverApp = dynamic_cast<ServerApp *>(coreApp); serverApp != nullptr) {
     QObject::connect(
         ipcServer, &deskflow::core::ipc::CoreIpcServer::reloadConfigRequested, serverApp, &ServerApp::reloadConfig,
         Qt::QueuedConnection
     );
+    connectFileTransferEdgeDrops(serverApp);
+  } else if (auto *clientApp = dynamic_cast<ClientApp *>(coreApp); clientApp != nullptr) {
+    connectFileTransferEdgeDrops(clientApp);
   }
 
   QThread coreThread;

@@ -63,8 +63,35 @@ CoreIpcServer &CoreIpcServer::instance()
   return *s_instance;
 }
 
+void CoreIpcServer::publishFileTransferActiveSides(const std::uint32_t activeSides)
+{
+  if (m_fileTransferActiveSides.exchange(activeSides) == activeSides) {
+    return;
+  }
+  QMetaObject::invokeMethod(
+      this,
+      [this] {
+        broadcastCommand(
+            QStringLiteral("fileTransferActiveSides"), QString::number(m_fileTransferActiveSides.load()), false
+        );
+      },
+      Qt::QueuedConnection
+  );
+}
+
 void CoreIpcServer::processCommand(QLocalSocket *clientSocket, const QString &command, const QStringList &parts)
 {
+  if (command == QStringLiteral("fileTransferActiveSides")) {
+    if (parts.size() != 1 || !hasCurrentVersionHello(clientSocket)) {
+      writeToClientSocket(clientSocket, QStringLiteral("error"));
+      return;
+    }
+    writeToClientSocket(
+        clientSocket,
+        QStringLiteral("fileTransferActiveSides=%1").arg(QString::number(m_fileTransferActiveSides.load()))
+    );
+    return;
+  }
   if (command == QStringLiteral("stop")) {
     LOG_DEBUG("core ipc server got stop message");
     writeToClientSocket(clientSocket, QStringLiteral("ok"));

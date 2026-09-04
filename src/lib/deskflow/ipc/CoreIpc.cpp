@@ -26,3 +26,8 @@ void ipcSendConnectionState(deskflow::core::ConnectionState state)
   const auto metaEnum = QMetaEnum::fromType<deskflow::core::ConnectionState>();
   ipcSendToClient(QStringLiteral("connectionState"), metaEnum.valueToKey(static_cast<int>(state)));
 }
+
+void ipcSendFileTransferActiveSides(const std::uint32_t activeSides)
+{
+  deskflow::core::ipc::CoreIpcServer::instance().publishFileTransferActiveSides(activeSides);
+}

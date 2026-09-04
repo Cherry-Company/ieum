@@ -24,6 +24,7 @@
 
 #include <chrono>
 #include <climits>
+#include <functional>
 #include <map>
 #include <optional>
 #include <set>
@@ -221,6 +222,7 @@ public:
   resolveFileTransferEdgeTarget(BaseClientProxy *source, Direction direction, int32_t x, int32_t y) const;
   [[nodiscard]] std::uint32_t fileTransferActiveSidesFor(BaseClientProxy *source) const;
   bool handleFileTransferEdge(BaseClientProxy *sender, const deskflow::filetransfer::FileTransferEdgeMessage &message);
+  void setFileTransferActiveSidesHandler(std::function<void(std::uint32_t)> handler);
 
   //@}
 
@@ -233,6 +235,7 @@ private:
 
   void sendFileTransferEdgeCapabilities(BaseClientProxy *client) const;
   void sendFileTransferEdgeCapabilities() const;
+  void notifyFileTransferActiveSides() const;
 
   // returns true iff mouse should be locked to the current screen
   // according to this object only, ignoring what the primary client
@@ -447,6 +450,7 @@ private:
   using ClientSet = std::set<BaseClientProxy *>;
   ClientList m_clients;
   ClientSet m_clientSet;
+  std::function<void(std::uint32_t)> m_fileTransferActiveSidesHandler;
 
   // all old connections that we're waiting to hangup
   using OldClients = std::map<BaseClientProxy *, EventQueueTimer *>;

@@ -25,7 +25,7 @@ public:
   ~IpcServer() override;
 
   bool listen();
-  void broadcastCommand(const QString &command, const QString &args = "");
+  void broadcastCommand(const QString &command, const QString &args = "", bool queueIfNoClients = true);
 
 Q_SIGNALS:
   void logLevelChanged(const QString &logLevel);

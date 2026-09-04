@@ -312,12 +312,15 @@ bool IpcServer::hasCurrentVersionHello(const QLocalSocket *clientSocket) const
   return clientSocket != nullptr && m_currentVersionClients.contains(clientSocket);
 }
 
-void IpcServer::broadcastCommand(const QString &command, const QString &args)
+void IpcServer::broadcastCommand(const QString &command, const QString &args, const bool queueIfNoClients)
 {
   const auto message = args.isEmpty() ? command : QStringLiteral("%1=%2").arg(command, args);
   const auto sanitizedMessage = ::deskflow::ipc::sanitizeMessageForLog(message);
 
   if (m_clients.isEmpty()) {
+    if (!queueIfNoClients) {
+      return;
+    }
     LOG_VERBOSE(
         "%s ipc server has no clients, message queued: %s", m_typeName.constData(), sanitizedMessage.toUtf8().constData()
     );
