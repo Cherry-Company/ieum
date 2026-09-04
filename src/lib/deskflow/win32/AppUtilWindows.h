@@ -13,6 +13,7 @@
 #include "Windows.h" // IWYU pragma: keep
 
 #include <condition_variable>
+#include <atomic>
 #include <mutex>
 #include <thread>
 
@@ -47,7 +48,7 @@ private:
   AppExitMode m_exitMode;
   IEventQueue *m_events;
   std::thread m_eventThread; // NOSONAR - No jthread on Windows
-  bool m_eventThreadRunning = false;
+  std::atomic_bool m_eventThreadRunning{false};
   std::condition_variable m_eventThreadStartedCond;
   std::mutex m_eventThreadStartedMutex;
 

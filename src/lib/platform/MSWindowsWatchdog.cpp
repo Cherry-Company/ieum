@@ -5,6 +5,7 @@
  */
 
 #include "platform/MSWindowsWatchdog.h"
+#include "platform/MSWindowsWatchdogRetryPolicy.h"
 
 #include "arch/Arch.h"
 #include "arch/win32/XArchWindows.h"
@@ -72,30 +73,70 @@ MSWindowsWatchdog::MSWindowsWatchdog(bool foreground, FileLogOutputter &fileLogO
   initOutputReadPipe();
 }
 
+MSWindowsWatchdog::~MSWindowsWatchdog()
+{
+  stop();
+  if (m_outputReadPipe != nullptr) {
+    CloseHandle(m_outputReadPipe);
+    m_outputReadPipe = nullptr;
+  }
+  if (m_outputWritePipe != nullptr) {
+    CloseHandle(m_outputWritePipe);
+    m_outputWritePipe = nullptr;
+  }
+}
+
 void MSWindowsWatchdog::startAsync()
 {
-  m_mainThread = std::make_unique<Thread>(new TMethodJob(this, &MSWindowsWatchdog::mainLoop, nullptr));
-  m_outputThread = std::make_unique<Thread>(new TMethodJob(this, &MSWindowsWatchdog::outputLoop, nullptr));
-  m_sasThread = std::make_unique<Thread>(new TMethodJob(this, &MSWindowsWatchdog::sasLoop, nullptr));
+  std::scoped_lock lifecycleLock{m_lifecycleMutex};
+  if (m_started) {
+    return;
+  }
+  m_running.store(true);
+  m_started = true;
+  try {
+    m_mainThread = std::make_unique<Thread>(new TMethodJob(this, &MSWindowsWatchdog::mainLoop, nullptr));
+    m_outputThread = std::make_unique<Thread>(new TMethodJob(this, &MSWindowsWatchdog::outputLoop, nullptr));
+    m_sasThread = std::make_unique<Thread>(new TMethodJob(this, &MSWindowsWatchdog::sasLoop, nullptr));
+  } catch (...) {
+    m_running.store(false);
+    if (m_mainThread) {
+      m_mainThread->wait();
+    }
+    if (m_outputThread) {
+      m_outputThread->wait();
+    }
+    if (m_sasThread) {
+      m_sasThread->wait();
+    }
+    m_mainThread.reset();
+    m_outputThread.reset();
+    m_sasThread.reset();
+    m_started = false;
+    throw;
+  }
 }
 
 void MSWindowsWatchdog::stop()
 {
-  const auto kThreadWaitSeconds = 5;
-
-  m_running = false;
-
-  if (!m_mainThread->wait(kThreadWaitSeconds)) {
-    LOG_WARN("could not stop main thread");
+  std::scoped_lock lifecycleLock{m_lifecycleMutex};
+  if (!m_started) {
+    return;
   }
-
-  if (!m_outputThread->wait(kThreadWaitSeconds)) {
-    LOG_WARN("could not stop output thread");
+  m_running.store(false);
+  if (m_mainThread) {
+    m_mainThread->wait();
   }
-
-  if (!m_sasThread->wait(kThreadWaitSeconds)) {
-    LOG_WARN("could not stop sas thread");
+  if (m_outputThread) {
+    m_outputThread->wait();
   }
+  if (m_sasThread) {
+    m_sasThread->wait();
+  }
+  m_mainThread.reset();
+  m_outputThread.reset();
+  m_sasThread.reset();
+  m_started = false;
 }
 
 HANDLE
@@ -171,7 +212,7 @@ void MSWindowsWatchdog::mainLoop(const void *)
   shutdownExistingProcesses();
 
   LOG_DEBUG("starting watchdog main loop");
-  while (m_running) {
+  while (m_running.load()) {
     ProcessConfigCallback startResultCallback;
     bool startSucceeded = false;
     std::string startDetail;
@@ -406,7 +447,7 @@ void MSWindowsWatchdog::outputLoop(const void *)
   // In future when we move to Qt process APIs, this can all be simplified.
   QStringDecoder decoder(QStringDecoder::Utf8);
 
-  while (m_running) {
+  while (m_running.load()) {
     const BOOL ok = ::ReadFile(m_outputReadPipe, raw, kBufSize, &bytesRead, nullptr);
 
     if (!ok || bytesRead == 0) {
@@ -484,8 +525,6 @@ void MSWindowsWatchdog::shutdownExistingProcesses()
 
 MSWindowsWatchdog::ProcessState MSWindowsWatchdog::handleStartError(const std::string_view &message)
 {
-  const auto kStartDelaySeconds = 1;
-
   m_startFailures++;
 
   if (!message.empty()) {
@@ -494,11 +533,10 @@ MSWindowsWatchdog::ProcessState MSWindowsWatchdog::handleStartError(const std::s
     LOG_CRIT("daemon failed to start process, unknown error");
   }
 
-  // When there has been more than one consecutive failure, slow down the retry rate.
-  if (m_startFailures > 1) {
-    m_nextStartTime = Arch::time() + kStartDelaySeconds;
-    LOG_WARN("start failed %d times, delaying start", m_startFailures);
-    LOG_DEBUG("start delay, seconds=%d, time=%f", kStartDelaySeconds, m_nextStartTime.value());
+  const auto delaySeconds = deskflow::platform::watchdogRetryDelaySeconds(m_startFailures);
+  if (delaySeconds > 0.0) {
+    m_nextStartTime = Arch::time() + delaySeconds;
+    LOG_WARN("start failed %d times, delaying start by %.0f seconds", m_startFailures, delaySeconds);
     return ProcessState::StartScheduled;
   } else {
     LOG_INFO("retrying process start immediately");
@@ -575,8 +613,13 @@ void MSWindowsWatchdog::sasLoop(const void *) // NOSONAR - Thread entry point si
     throw std::runtime_error("SendSAS function not initialized");
   }
 
-  while (m_running) {
-    if (m_processState != ProcessState::Running) {
+  while (m_running.load()) {
+    bool processRunning = false;
+    {
+      std::scoped_lock lock{m_processStateMutex};
+      processRunning = m_processState == ProcessState::Running;
+    }
+    if (!processRunning) {
       LOG_VERBOSE("watchdog not running, skipping SendSAS");
       Arch::sleep(1);
       continue;
