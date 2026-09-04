@@ -149,7 +149,8 @@ FileTransferEdgeDropIpcEncodeResult encodeFileTransferEdgeDropIpc(const FileTran
   }
 
   const auto json = encodeJson(value);
-  const auto encoded = QString::fromLatin1(json.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
+  const auto encoded =
+      QString::fromLatin1(json.toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals));
   if (encoded.toUtf8().size() > kMaxEncodedValueBytes) {
     return encodeFailure(FileTransferEdgeDropIpcError::EncodedValueTooLarge);
   }
@@ -175,8 +176,8 @@ FileTransferEdgeDropIpcDecodeResult decodeFileTransferEdgeDropIpc(const QString 
   }
 
   const auto object = document.object();
-  for (const auto &key : {QStringLiteral("v"), QStringLiteral("d"), QStringLiteral("x"), QStringLiteral("y"),
-                          QStringLiteral("p")}) {
+  for (const auto &key :
+       {QStringLiteral("v"), QStringLiteral("d"), QStringLiteral("x"), QStringLiteral("y"), QStringLiteral("p")}) {
     if (!object.contains(key)) {
       return decodeFailure(FileTransferEdgeDropIpcError::MissingField);
     }

@@ -277,10 +277,13 @@ void IpcServerTests::redactsFileTransferEdgeDropInServerLogs()
     return message.contains(QStringLiteral("ipc server got message: fileTransferEdgeDrop=<redacted>"));
   }));
   QVERIFY(std::ranges::any_of(logs, [](const QString &message) {
-    return message.contains(QStringLiteral("ipc server broadcasting message to 1 clients: fileTransferEdgeDrop=<redacted>"));
+    return message.contains(
+        QStringLiteral("ipc server broadcasting message to 1 clients: fileTransferEdgeDrop=<redacted>")
+    );
   }));
   QVERIFY(std::ranges::any_of(logs, [](const QString &message) {
-    return message.contains(QStringLiteral("ipc server wrote message to client socket: fileTransferEdgeDrop=<redacted>"));
+    return message.contains(QStringLiteral("ipc server wrote message to client socket: fileTransferEdgeDrop=<redacted>")
+    );
   }));
   for (const auto &message : logs) {
     QVERIFY2(!message.contains(payload), qPrintable(message));

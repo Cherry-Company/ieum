@@ -22,9 +22,7 @@ CoreIpcClient::CoreIpcClient(QObject *parent) : CoreIpcClient(parent, kCoreIpcNa
 {
 }
 
-CoreIpcClient::CoreIpcClient(
-    QObject *parent, const QString &socketName, const int retryLimit, const int retryDelayMs
-)
+CoreIpcClient::CoreIpcClient(QObject *parent, const QString &socketName, const int retryLimit, const int retryDelayMs)
     : IpcClient(parent, socketName, QStringLiteral("core"), retryLimit, retryDelayMs)
 {
   connect(this, &IpcClient::connected, this, [this] { m_exactVersionConnected = true; });
@@ -59,7 +57,8 @@ void CoreIpcClient::requestFileTransferActiveSides()
 
 bool CoreIpcClient::sendFileTransferEdgeDrop(const QString &encodedValue)
 {
-  if (!m_exactVersionConnected || !isConnected() || !::deskflow::ipc::decodeFileTransferEdgeDropIpc(encodedValue).ok()) {
+  if (!m_exactVersionConnected || !isConnected() ||
+      !::deskflow::ipc::decodeFileTransferEdgeDropIpc(encodedValue).ok()) {
     return false;
   }
   sendMessage(QStringLiteral("fileTransferEdgeDrop=%1").arg(encodedValue));
@@ -89,10 +88,9 @@ void CoreIpcClient::processCommand(const QString &command, const QStringList &pa
       }
     }
 
-    constexpr auto allowed = static_cast<std::uint32_t>(DirectionMask::LeftMask) |
-                             static_cast<std::uint32_t>(DirectionMask::RightMask) |
-                             static_cast<std::uint32_t>(DirectionMask::TopMask) |
-                             static_cast<std::uint32_t>(DirectionMask::BottomMask);
+    constexpr auto allowed =
+        static_cast<std::uint32_t>(DirectionMask::LeftMask) | static_cast<std::uint32_t>(DirectionMask::RightMask) |
+        static_cast<std::uint32_t>(DirectionMask::TopMask) | static_cast<std::uint32_t>(DirectionMask::BottomMask);
     const auto activeSides = static_cast<std::uint32_t>(value);
     if ((activeSides & ~allowed) != 0) {
       return;

@@ -160,9 +160,7 @@ bool isPermittedUserToken(HANDLE token, DWORD sessionId)
 
   DWORD isAppContainer = 0;
   DWORD received = 0;
-  if (GetTokenInformation(
-          token, TokenIsAppContainer, &isAppContainer, sizeof(isAppContainer), &received
-      ) == FALSE ||
+  if (GetTokenInformation(token, TokenIsAppContainer, &isAppContainer, sizeof(isAppContainer), &received) == FALSE ||
       received != sizeof(isAppContainer) || isAppContainer != 0) {
     return false;
   }
@@ -215,8 +213,7 @@ bool samePathIgnoringCase(const std::filesystem::path &left, const std::filesyst
 {
   const auto &leftNative = left.native();
   const auto &rightNative = right.native();
-  if (leftNative.size() > (std::numeric_limits<int>::max)() ||
-      rightNative.size() > (std::numeric_limits<int>::max)()) {
+  if (leftNative.size() > (std::numeric_limits<int>::max)() || rightNative.size() > (std::numeric_limits<int>::max)()) {
     return false;
   }
 

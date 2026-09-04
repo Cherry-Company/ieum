@@ -12,8 +12,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include "Windows.h" // IWYU pragma: keep
 
-#include <condition_variable>
 #include <atomic>
+#include <condition_variable>
 #include <mutex>
 #include <thread>
 

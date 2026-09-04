@@ -322,7 +322,8 @@ void IpcServer::broadcastCommand(const QString &command, const QString &args, co
       return;
     }
     LOG_VERBOSE(
-        "%s ipc server has no clients, message queued: %s", m_typeName.constData(), sanitizedMessage.toUtf8().constData()
+        "%s ipc server has no clients, message queued: %s", m_typeName.constData(),
+        sanitizedMessage.toUtf8().constData()
     );
     m_pendingMessages.append(message);
     return;
@@ -347,7 +348,8 @@ void IpcServer::writeToClientSocket(QLocalSocket *&clientSocket, const QString &
   } else {
     const auto sanitizedMessage = ::deskflow::ipc::sanitizeMessageForLog(message);
     LOG_VERBOSE(
-        "%s ipc server wrote message to client socket: %s", m_typeName.constData(), sanitizedMessage.toUtf8().constData()
+        "%s ipc server wrote message to client socket: %s", m_typeName.constData(),
+        sanitizedMessage.toUtf8().constData()
     );
   }
 }

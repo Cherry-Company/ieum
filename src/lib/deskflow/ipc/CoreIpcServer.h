@@ -13,9 +13,9 @@
 #include <QSet>
 #include <QStringList>
 
-#include <functional>
 #include <atomic>
 #include <cstdint>
+#include <functional>
 
 class QLocalSocket;
 

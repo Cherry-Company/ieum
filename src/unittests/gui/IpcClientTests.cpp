@@ -88,8 +88,7 @@ public:
 class TestCoreIpcClient final : public deskflow::gui::ipc::CoreIpcClient
 {
 public:
-  TestCoreIpcClient(QObject *parent, const QString &socketName)
-      : CoreIpcClient(parent, socketName, 1, 0)
+  TestCoreIpcClient(QObject *parent, const QString &socketName) : CoreIpcClient(parent, socketName, 1, 0)
   {
   }
 };

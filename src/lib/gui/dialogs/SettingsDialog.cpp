@@ -14,8 +14,8 @@
 
 #include "common/I18N.h"
 #include "common/Settings.h"
-#include "gui/Messages.h"
 #include "gui/ExternalUrlLauncher.h"
+#include "gui/Messages.h"
 #include "gui/StartupManager.h"
 #include "gui/StyleUtils.h"
 #include "gui/TlsUtility.h"

@@ -386,14 +386,15 @@ void ClientApp::startFileTransferService()
           .sendEdge = [this](
                           const deskflow::filetransfer::FileTransferEdgeMessage &message
                       ) { return m_client != nullptr && m_client->sendFileTransferEdge(message); },
-          .activeSidesChanged = [platformScreen, sendEnabled](std::uint32_t activeSides) {
+          .activeSidesChanged =
+              [platformScreen, sendEnabled](std::uint32_t activeSides) {
 #if defined(Q_OS_WIN)
-            static_cast<void>(platformScreen);
-            ipcSendFileTransferActiveSides(sendEnabled ? activeSides : 0);
+                static_cast<void>(platformScreen);
+                ipcSendFileTransferActiveSides(sendEnabled ? activeSides : 0);
 #else
-            (void)platformScreen->configureFileTransferEdgeDrop(sendEnabled ? activeSides : 0);
+                (void)platformScreen->configureFileTransferEdgeDrop(sendEnabled ? activeSides : 0);
 #endif
-          },
+              },
           .platform = std::move(platform),
           .events = getEvents(),
           .eventTarget = m_client->getEventTarget(),

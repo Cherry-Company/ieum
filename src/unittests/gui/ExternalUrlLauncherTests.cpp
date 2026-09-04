@@ -29,7 +29,8 @@ private Q_SLOTS:
   void preservesFullUrlForFailureFallback()
   {
     const QUrl url(QStringLiteral(
-        "https://github.com/sponsors/victoriousian/sponsorships?metadata_campaign=ieum_pro_local_ea&metadata_claim=000102030405060708090a0b0c0d0e0f"
+        "https://github.com/sponsors/victoriousian/"
+        "sponsorships?metadata_campaign=ieum_pro_local_ea&metadata_claim=000102030405060708090a0b0c0d0e0f"
     ));
     const auto result = deskflow::gui::launchExternalUrl(url, [](const QUrl &) { return false; });
     QVERIFY(!result.opened);

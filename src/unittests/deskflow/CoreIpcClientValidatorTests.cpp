@@ -93,19 +93,17 @@ void CoreIpcClientValidatorTests::convertsRealProcessPrimaryTokenForMembership()
   const auto directPrimaryError = GetLastError();
   QCOMPARE(directPrimaryResult, FALSE);
 
-  QVERIFY(deskflow::core::ipc::detail::hasInteractiveSidMembership(
-      reinterpret_cast<quintptr>(primaryToken.get())
-  ));
+  QVERIFY(deskflow::core::ipc::detail::hasInteractiveSidMembership(reinterpret_cast<quintptr>(primaryToken.get())));
 
   HANDLE queryOnlyTokenRaw = nullptr;
   QVERIFY(OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &queryOnlyTokenRaw) != FALSE);
   const UniqueHandle queryOnlyToken(queryOnlyTokenRaw);
-  QVERIFY(!deskflow::core::ipc::detail::hasInteractiveSidMembership(
-      reinterpret_cast<quintptr>(queryOnlyToken.get())
-  ));
+  QVERIFY(!deskflow::core::ipc::detail::hasInteractiveSidMembership(reinterpret_cast<quintptr>(queryOnlyToken.get())));
 
-  qInfo("direct primary-token membership failed with Win32 error %lu; duplicated-token membership succeeded",
-        directPrimaryError);
+  qInfo(
+      "direct primary-token membership failed with Win32 error %lu; duplicated-token membership succeeded",
+      directPrimaryError
+  );
 }
 
 void CoreIpcClientValidatorTests::obtainsRealClientPidFromServerSideLocalSocket()

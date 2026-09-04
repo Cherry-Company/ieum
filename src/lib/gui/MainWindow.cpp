@@ -103,9 +103,9 @@ MainWindow::MainWindow()
       m_autoStartRetryTimer{new QTimer(this)}
 {
 #ifdef Q_OS_WIN
-  m_fileTransferDropBroker = std::make_unique<WindowsFileTransferDropBroker>(
-      [this](const QString &encodedValue) { (void)m_coreProcess.sendFileTransferEdgeDrop(encodedValue); }
-  );
+  m_fileTransferDropBroker = std::make_unique<WindowsFileTransferDropBroker>([this](const QString &encodedValue) {
+    (void)m_coreProcess.sendFileTransferEdgeDrop(encodedValue);
+  });
   connect(
       &m_coreProcess, &CoreProcess::fileTransferActiveSidesChanged, m_fileTransferDropBroker.get(),
       [this](std::uint32_t activeSides) { (void)m_fileTransferDropBroker->setActiveSides(activeSides); }

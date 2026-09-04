@@ -302,11 +302,14 @@ void CoreProcess::connectCoreIpc(quint64 startGeneration)
 
   auto *client = new ipc::CoreIpcClient(this);
   m_coreIpcClient = client;
-  connect(client, &ipc::CoreIpcClient::commandReceived, this, [this, client](const QString &command, const QString &args) {
-    if (m_coreIpcClient == client) {
-      onCoreIpcMessageReceived(command, args);
-    }
-  });
+  connect(
+      client, &ipc::CoreIpcClient::commandReceived, this,
+      [this, client](const QString &command, const QString &args) {
+        if (m_coreIpcClient == client) {
+          onCoreIpcMessageReceived(command, args);
+        }
+      }
+  );
   connect(client, &ipc::CoreIpcClient::fileTransferActiveSidesChanged, this, [this, client](std::uint32_t sides) {
     if (m_coreIpcClient == client) {
       setFileTransferActiveSides(sides);

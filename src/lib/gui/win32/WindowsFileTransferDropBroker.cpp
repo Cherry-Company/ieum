@@ -18,10 +18,9 @@
 namespace deskflow::gui {
 namespace {
 
-constexpr auto kAllowedSides = static_cast<std::uint32_t>(DirectionMask::LeftMask) |
-                               static_cast<std::uint32_t>(DirectionMask::RightMask) |
-                               static_cast<std::uint32_t>(DirectionMask::TopMask) |
-                               static_cast<std::uint32_t>(DirectionMask::BottomMask);
+constexpr auto kAllowedSides =
+    static_cast<std::uint32_t>(DirectionMask::LeftMask) | static_cast<std::uint32_t>(DirectionMask::RightMask) |
+    static_cast<std::uint32_t>(DirectionMask::TopMask) | static_cast<std::uint32_t>(DirectionMask::BottomMask);
 
 class NativeDropHost final : public WindowsFileTransferDropHost
 {
@@ -45,8 +44,7 @@ private:
   filetransfer::MSWindowsEdgeDropHost m_host;
 };
 
-WindowsFileTransferDropBrokerDependencies
-withProductionDefaults(WindowsFileTransferDropBrokerDependencies dependencies)
+WindowsFileTransferDropBrokerDependencies withProductionDefaults(WindowsFileTransferDropBrokerDependencies dependencies)
 {
   if (!dependencies.oleInitialize) {
     dependencies.oleInitialize = [] { return OleInitialize(nullptr); };

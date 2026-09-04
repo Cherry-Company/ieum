@@ -64,10 +64,8 @@ QString encodeJsonObject(const QJsonObject &object)
 QJsonObject validJsonObject(const QJsonArray &paths)
 {
   return {
-      {QStringLiteral("v"), 1},
-      {QStringLiteral("d"), static_cast<int>(Direction::Left)},
-      {QStringLiteral("x"), 0},
-      {QStringLiteral("y"), 0},
+      {QStringLiteral("v"), 1},     {QStringLiteral("d"), static_cast<int>(Direction::Left)},
+      {QStringLiteral("x"), 0},     {QStringLiteral("y"), 0},
       {QStringLiteral("p"), paths},
   };
 }
@@ -170,15 +168,21 @@ void FileTransferEdgeDropIpcTests::encodesCompactUnpaddedBase64UrlJson()
   QCOMPARE(json.contains('\n'), false);
   QCOMPARE(json.contains('\r'), false);
 
-  const auto expectedJson = QStringLiteral(R"({"v":1,"d":1,"x":-7,"y":42,"p":%1})")
-                                .arg(QString::fromUtf8(QJsonDocument(QJsonArray{value.paths.first()}).toJson(QJsonDocument::Compact)))
-                                .toUtf8();
+  const auto expectedJson =
+      QStringLiteral(R"({"v":1,"d":1,"x":-7,"y":42,"p":%1})")
+          .arg(QString::fromUtf8(QJsonDocument(QJsonArray{value.paths.first()}).toJson(QJsonDocument::Compact)))
+          .toUtf8();
   QCOMPARE(json, expectedJson);
 
   const auto object = document.object();
   auto keys = object.keys();
   keys.sort();
-  QCOMPARE(keys, QStringList({QStringLiteral("d"), QStringLiteral("p"), QStringLiteral("v"), QStringLiteral("x"), QStringLiteral("y")}));
+  QCOMPARE(
+      keys,
+      QStringList(
+          {QStringLiteral("d"), QStringLiteral("p"), QStringLiteral("v"), QStringLiteral("x"), QStringLiteral("y")}
+      )
+  );
   QCOMPARE(object.value(QStringLiteral("v")).toInt(), 1);
   QCOMPARE(object.value(QStringLiteral("d")).toInt(), static_cast<int>(Direction::Left));
   QCOMPARE(object.value(QStringLiteral("x")).toInt(), -7);
@@ -231,85 +235,79 @@ void FileTransferEdgeDropIpcTests::rejectsInvalidDecodeInputs_data()
 
   const auto absolutePath = absoluteNativePath(QStringLiteral("tmp/edge drop/fixture.txt"));
   const auto windowsStylePath = QStringLiteral(R"(C:\Users\tester\한글 경로\fixture.txt)");
-  QTest::newRow("malformed-base64")
-      << QStringLiteral("%not-base64")
-      << static_cast<int>(FileTransferEdgeDropIpcError::InvalidBase64);
-  QTest::newRow("malformed-json")
-      << encodeFixtureJson(QByteArrayLiteral("{"))
-      << static_cast<int>(FileTransferEdgeDropIpcError::InvalidJson);
-  QTest::newRow("non-object-json")
-      << encodeFixtureJson(QByteArrayLiteral("[]"))
-      << static_cast<int>(FileTransferEdgeDropIpcError::InvalidJson);
-  QTest::newRow("unsupported-version")
-      << encodeMutatedJsonObject(QJsonArray{absolutePath}, QStringLiteral("v"), 2)
-      << static_cast<int>(FileTransferEdgeDropIpcError::InvalidVersion);
+  QTest::newRow("malformed-base64") << QStringLiteral("%not-base64")
+                                    << static_cast<int>(FileTransferEdgeDropIpcError::InvalidBase64);
+  QTest::newRow("malformed-json") << encodeFixtureJson(QByteArrayLiteral("{"))
+                                  << static_cast<int>(FileTransferEdgeDropIpcError::InvalidJson);
+  QTest::newRow("non-object-json") << encodeFixtureJson(QByteArrayLiteral("[]"))
+                                   << static_cast<int>(FileTransferEdgeDropIpcError::InvalidJson);
+  QTest::newRow("unsupported-version") << encodeMutatedJsonObject(QJsonArray{absolutePath}, QStringLiteral("v"), 2)
+                                       << static_cast<int>(FileTransferEdgeDropIpcError::InvalidVersion);
   QTest::newRow("unsupported-version-windows-style-path")
       << encodeMutatedJsonObject(QJsonArray{windowsStylePath}, QStringLiteral("v"), 2)
       << static_cast<int>(FileTransferEdgeDropIpcError::InvalidVersion);
-  QTest::newRow("invalid-direction")
-      << encodeMutatedJsonObject(QJsonArray{absolutePath}, QStringLiteral("d"), 0)
-      << static_cast<int>(FileTransferEdgeDropIpcError::InvalidDirection);
-  QTest::newRow("non-integral-direction")
-      << encodeMutatedJsonObject(QJsonArray{absolutePath}, QStringLiteral("d"), 1.5)
-      << static_cast<int>(FileTransferEdgeDropIpcError::InvalidInteger);
-  QTest::newRow("x-out-of-range")
-      << encodeMutatedJsonObject(QJsonArray{absolutePath}, QStringLiteral("x"), 2147483648.0)
-      << static_cast<int>(FileTransferEdgeDropIpcError::InvalidInteger);
-  QTest::newRow("y-non-integral")
-      << encodeMutatedJsonObject(QJsonArray{absolutePath}, QStringLiteral("y"), -3.25)
-      << static_cast<int>(FileTransferEdgeDropIpcError::InvalidInteger);
-  QTest::newRow("missing-field")
-      << encodeJsonObject(QJsonObject{
-             {QStringLiteral("v"), 1},
-             {QStringLiteral("d"), 1},
-             {QStringLiteral("x"), 0},
-             {QStringLiteral("y"), 0},
-         })
-      << static_cast<int>(FileTransferEdgeDropIpcError::MissingField);
-  QTest::newRow("unknown-field")
-      << encodeJsonObject(QJsonObject{
-             {QStringLiteral("v"), 1},
-             {QStringLiteral("d"), 1},
-             {QStringLiteral("x"), 0},
-             {QStringLiteral("y"), 0},
-             {QStringLiteral("p"), QJsonArray{absolutePath}},
-             {QStringLiteral("extra"), true},
-         })
-      << static_cast<int>(FileTransferEdgeDropIpcError::UnknownField);
-  QTest::newRow("paths-not-array")
-      << encodeJsonObject(QJsonObject{
-             {QStringLiteral("v"), 1},
-             {QStringLiteral("d"), 1},
-             {QStringLiteral("x"), 0},
-             {QStringLiteral("y"), 0},
-             {QStringLiteral("p"), absolutePath},
-         })
-      << static_cast<int>(FileTransferEdgeDropIpcError::InvalidFieldType);
-  QTest::newRow("empty-path")
-      << encodeJsonObject(validJsonObject(QJsonArray{QString{}}))
-      << static_cast<int>(FileTransferEdgeDropIpcError::EmptyPath);
-  QTest::newRow("relative-path")
-      << encodeJsonObject(validJsonObject(QJsonArray{QStringLiteral("relative/path.txt")}))
-      << static_cast<int>(FileTransferEdgeDropIpcError::RelativePath);
-  QTest::newRow("non-string-path")
-      << encodeJsonObject(validJsonObject(QJsonArray{17}))
-      << static_cast<int>(FileTransferEdgeDropIpcError::InvalidPathType);
+  QTest::newRow("invalid-direction") << encodeMutatedJsonObject(QJsonArray{absolutePath}, QStringLiteral("d"), 0)
+                                     << static_cast<int>(FileTransferEdgeDropIpcError::InvalidDirection);
+  QTest::newRow("non-integral-direction") << encodeMutatedJsonObject(QJsonArray{absolutePath}, QStringLiteral("d"), 1.5)
+                                          << static_cast<int>(FileTransferEdgeDropIpcError::InvalidInteger);
+  QTest::newRow("x-out-of-range") << encodeMutatedJsonObject(
+                                         QJsonArray{absolutePath}, QStringLiteral("x"), 2147483648.0
+                                     )
+                                  << static_cast<int>(FileTransferEdgeDropIpcError::InvalidInteger);
+  QTest::newRow("y-non-integral") << encodeMutatedJsonObject(QJsonArray{absolutePath}, QStringLiteral("y"), -3.25)
+                                  << static_cast<int>(FileTransferEdgeDropIpcError::InvalidInteger);
+  QTest::newRow("missing-field") << encodeJsonObject(
+                                        QJsonObject{
+                                            {QStringLiteral("v"), 1},
+                                            {QStringLiteral("d"), 1},
+                                            {QStringLiteral("x"), 0},
+                                            {QStringLiteral("y"), 0},
+                                        }
+                                    )
+                                 << static_cast<int>(FileTransferEdgeDropIpcError::MissingField);
+  QTest::newRow("unknown-field") << encodeJsonObject(
+                                        QJsonObject{
+                                            {QStringLiteral("v"), 1},
+                                            {QStringLiteral("d"), 1},
+                                            {QStringLiteral("x"), 0},
+                                            {QStringLiteral("y"), 0},
+                                            {QStringLiteral("p"), QJsonArray{absolutePath}},
+                                            {QStringLiteral("extra"), true},
+                                        }
+                                    )
+                                 << static_cast<int>(FileTransferEdgeDropIpcError::UnknownField);
+  QTest::newRow("paths-not-array") << encodeJsonObject(
+                                          QJsonObject{
+                                              {QStringLiteral("v"), 1},
+                                              {QStringLiteral("d"), 1},
+                                              {QStringLiteral("x"), 0},
+                                              {QStringLiteral("y"), 0},
+                                              {QStringLiteral("p"), absolutePath},
+                                          }
+                                      )
+                                   << static_cast<int>(FileTransferEdgeDropIpcError::InvalidFieldType);
+  QTest::newRow("empty-path") << encodeJsonObject(validJsonObject(QJsonArray{QString{}}))
+                              << static_cast<int>(FileTransferEdgeDropIpcError::EmptyPath);
+  QTest::newRow("relative-path") << encodeJsonObject(validJsonObject(QJsonArray{QStringLiteral("relative/path.txt")}))
+                                 << static_cast<int>(FileTransferEdgeDropIpcError::RelativePath);
+  QTest::newRow("non-string-path") << encodeJsonObject(validJsonObject(QJsonArray{17}))
+                                   << static_cast<int>(FileTransferEdgeDropIpcError::InvalidPathType);
   QJsonArray tooManyPaths;
   for (int index = 0; index < 101; ++index) {
     tooManyPaths.append(absoluteNativePath(QStringLiteral("tmp/edge drop/many/file-%1.txt").arg(index)));
   }
-  QTest::newRow("too-many-paths")
-      << encodeJsonObject(QJsonObject{
-             {QStringLiteral("v"), 1},
-             {QStringLiteral("d"), 1},
-             {QStringLiteral("x"), 0},
-             {QStringLiteral("y"), 0},
-             {QStringLiteral("p"), tooManyPaths},
-         })
-      << static_cast<int>(FileTransferEdgeDropIpcError::TooManyPaths);
+  QTest::newRow("too-many-paths") << encodeJsonObject(
+                                         QJsonObject{
+                                             {QStringLiteral("v"), 1},
+                                             {QStringLiteral("d"), 1},
+                                             {QStringLiteral("x"), 0},
+                                             {QStringLiteral("y"), 0},
+                                             {QStringLiteral("p"), tooManyPaths},
+                                         }
+                                     )
+                                  << static_cast<int>(FileTransferEdgeDropIpcError::TooManyPaths);
   QTest::newRow("encoded-value-too-large")
-      << QString(61441, QLatin1Char('A'))
-      << static_cast<int>(FileTransferEdgeDropIpcError::EncodedValueTooLarge);
+      << QString(61441, QLatin1Char('A')) << static_cast<int>(FileTransferEdgeDropIpcError::EncodedValueTooLarge);
 }
 
 void FileTransferEdgeDropIpcTests::rejectsInvalidDecodeInputs()
@@ -340,10 +338,7 @@ void FileTransferEdgeDropIpcTests::sanitizesSensitiveEdgeDropMessages()
       deskflow::ipc::sanitizeMessageForLog(QStringLiteral("fileTransferEdgeDropExtra=payload")),
       QStringLiteral("fileTransferEdgeDropExtra=payload")
   );
-  QCOMPARE(
-      deskflow::ipc::sanitizeMessageForLog(QStringLiteral("hello=world")),
-      QStringLiteral("hello=world")
-  );
+  QCOMPARE(deskflow::ipc::sanitizeMessageForLog(QStringLiteral("hello=world")), QStringLiteral("hello=world"));
 }
 
 QTEST_MAIN(FileTransferEdgeDropIpcTests)

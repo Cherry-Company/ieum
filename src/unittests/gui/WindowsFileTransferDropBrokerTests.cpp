@@ -143,24 +143,26 @@ void WindowsFileTransferDropBrokerTests::deliversExactlyOneEncodedUnicodeDrop()
 {
   BrokerHarness harness;
   QStringList delivered;
-  WindowsFileTransferDropBroker broker([&delivered](const QString &encoded) { delivered.append(encoded); },
-                                       harness.dependencies());
+  WindowsFileTransferDropBroker broker(
+      [&delivered](const QString &encoded) { delivered.append(encoded); }, harness.dependencies()
+  );
   QVERIFY(harness.hostCallbacks.handoff);
 
   harness.hostCallbacks.handoff(
       {.direction = Direction::Left,
        .x = -12,
        .y = 34,
-       .paths = {std::filesystem::path(L"C:\\Users\\테스트 사용자\\edge one.txt"),
-                 std::filesystem::path(L"D:\\space path\\파일 둘.bin")}}
+       .paths =
+           {std::filesystem::path(L"C:\\Users\\테스트 사용자\\edge one.txt"),
+            std::filesystem::path(L"D:\\space path\\파일 둘.bin")}}
   );
 
   QCOMPARE(delivered.size(), 1);
   QCOMPARE(
-      delivered.constFirst(),
-      QStringLiteral(
-          "eyJ2IjoxLCJkIjoxLCJ4IjotMTIsInkiOjM0LCJwIjpbIkM6XFxVc2Vyc1xc7YWM7Iqk7Yq4IOyCrOyaqeyekFxcZWRnZSBvbmUudHh0IiwiRDpcXHNwYWNlIHBhdGhcXO2MjOydvCDrkZguYmluIl19"
-      )
+      delivered.constFirst(), QStringLiteral(
+                                  "eyJ2IjoxLCJkIjoxLCJ4IjotMTIsInkiOjM0LCJwIjpbIkM6XFxVc2Vyc1xc7YWM7Iqk7Yq4IOyCrOyaqeye"
+                                  "kFxcZWRnZSBvbmUudHh0IiwiRDpcXHNwYWNlIHBhdGhcXO2MjOydvCDrkZguYmluIl19"
+                              )
   );
 }
 

@@ -13,8 +13,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
-#include <functional>
 #include <atomic>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <optional>
