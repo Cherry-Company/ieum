@@ -12,6 +12,13 @@ create_test(
 )
 
 create_test(
+  NAME ExternalUrlLauncherTests
+  DEPENDS gui
+  SOURCE ExternalUrlLauncherTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+create_test(
   NAME LogWidgetTests
   DEPENDS gui
   SOURCE LogWidgetTests.cpp

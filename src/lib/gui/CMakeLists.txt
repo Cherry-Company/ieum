@@ -30,6 +30,8 @@ add_library(${target} STATIC
   Action.h
   Diagnostic.cpp
   Diagnostic.h
+  ExternalUrlLauncher.cpp
+  ExternalUrlLauncher.h
   FileTail.cpp
   FileTail.h
   Hotkey.cpp

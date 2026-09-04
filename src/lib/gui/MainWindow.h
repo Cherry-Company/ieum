@@ -125,7 +125,7 @@ private:
   void clearSettings();
   void openAboutDialog();
   void reportBug();
-  void openSponsorUrl() const;
+  void openSponsorUrl();
   void openGetNewVersionUrl();
   void openSettings();
   void startCore();

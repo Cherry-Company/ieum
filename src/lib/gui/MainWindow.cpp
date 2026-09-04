@@ -12,6 +12,7 @@
 #include "ui_MainWindow.h"
 
 #include "Diagnostic.h"
+#include "ExternalUrlLauncher.h"
 #include "MacApplicationLifecyclePolicy.h"
 #include "ProductIdentity.h"
 #include "StyleUtils.h"
@@ -772,9 +773,9 @@ void MainWindow::reportBug()
   );
 }
 
-void MainWindow::openSponsorUrl() const
+void MainWindow::openSponsorUrl()
 {
-  QDesktopServices::openUrl(QUrl(kUrlSponsor));
+  deskflow::gui::openExternalUrlOrShowFallback(this, QUrl(kUrlSponsor), tr("Open Sponsor Page"));
 }
 
 void MainWindow::openGetNewVersionUrl()
