@@ -402,12 +402,20 @@ def scan_extracted_tree(
             try:
                 link_name = os.readlink(path)
                 link_data = link_name.encode("utf-8")
-                resolved = (path.parent / link_name).resolve(strict=True)
+                resolved = (path.parent / link_name).resolve(strict=False)
                 resolved.relative_to(root.resolve())
             except (OSError, RuntimeError, UnicodeEncodeError, ValueError) as exc:
                 raise CoverageError("archive contains an unsafe symlink member") from exc
-            resolved_entry = resolved.lstat()
-            if not (
+            try:
+                resolved_entry = resolved.lstat()
+            except FileNotFoundError:
+                # Newer 7-Zip bounds a DMG's /Applications shortcut inside the
+                # extraction root. Its absent target has no payload to inspect;
+                # the link text is still scanned below, without following it.
+                resolved_entry = None
+            except OSError as exc:
+                raise CoverageError("archive contains an unreadable symlink member") from exc
+            if resolved_entry is not None and not (
                 stat.S_ISREG(resolved_entry.st_mode)
                 or stat.S_ISDIR(resolved_entry.st_mode)
             ):

@@ -1,5 +1,5 @@
-# Publish already-built tag artifacts when the normal release job was skipped
-# after its required CI gate succeeded.
+# Publish already-built tag artifacts after their required CI gate succeeded,
+# including recovery from a failure in publication or post-fetch verification.
 
 name: Publish Existing Release Artifacts
 
@@ -11,7 +11,7 @@ on:
         required: true
         type: string
       source_run_id:
-        description: Successful tag CI run containing package-* artifacts
+        description: Completed tag CI run with a successful ci-passed gate and package-* artifacts
         required: true
         type: string
 
@@ -55,15 +55,19 @@ jobs:
           grep -Fxq "Release: $RELEASE_TAG" docs/release/sponsorship-impact.md
 
           release_sha=$(git rev-parse "refs/tags/$RELEASE_TAG^{commit}")
-          mapfile -t source_run < <(
-            gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" \
-              --jq '.head_sha, .head_branch, .event, .conclusion'
-          )
-          [[ ${#source_run[@]} -eq 4 ]]
-          [[ "${source_run[0]}" == "$release_sha" ]]
-          [[ "${source_run[1]}" == "$RELEASE_TAG" ]]
-          [[ "${source_run[2]}" == "push" ]]
-          [[ "${source_run[3]}" == "success" ]]
+          source_run="$RUNNER_TEMP/release-source-run.json"
+          source_jobs="$RUNNER_TEMP/release-source-jobs.json"
+          source_api="repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID"
+          gh api "$source_api" > "$source_run"
+          attempt=$(jq -er '.run_attempt' "$source_run")
+          [[ "$attempt" =~ ^[1-9][0-9]*$ ]]
+          gh api --paginate --slurp "$source_api/attempts/$attempt/jobs?per_page=100" > "$source_jobs"
+          python3 tools/ci/validate_release_source.py \
+            "$source_run" "$source_jobs" "$RELEASE_TAG" "$release_sha"
+          # Fail closed if the source was rerun while collecting its job evidence.
+          gh api "$source_api" > "$source_run"
+          python3 tools/ci/validate_release_source.py \
+            "$source_run" "$source_jobs" "$RELEASE_TAG" "$release_sha"
 
           printf 'IEUM_RELEASE_SHA=%s\n' "$release_sha" >> "$GITHUB_ENV"
           printf 'release_sha=%s\n' "$release_sha" >> "$GITHUB_OUTPUT"
@@ -168,17 +172,7 @@ jobs:
           done
 
       - name: Prepare package privacy inspection tools
-        shell: bash
-        run: |
-          set -euo pipefail
-          command -v 7z >/dev/null
-          command -v zstd >/dev/null
-          if ! command -v flatpak >/dev/null || ! command -v ostree >/dev/null; then
-            sudo apt-get update -qq
-            sudo apt-get install -y --no-install-recommends flatpak ostree
-          fi
-          command -v flatpak >/dev/null
-          command -v ostree >/dev/null
+        uses: ./.github/actions/setup-privacy-tools
 
       - name: Run exact release privacy gate
         id: release_privacy_gate
@@ -284,17 +278,7 @@ jobs:
           printf 'IEUM_PRIVATE_DENY_MAP_SHA256=%s\n' "$DENY_MAP_SHA256" >> "$GITHUB_ENV"
 
       - name: Prepare package privacy inspection tools
-        shell: bash
-        run: |
-          set -euo pipefail
-          command -v 7z >/dev/null
-          command -v zstd >/dev/null
-          if ! command -v flatpak >/dev/null || ! command -v ostree >/dev/null; then
-            sudo apt-get update -qq
-            sudo apt-get install -y --no-install-recommends flatpak ostree
-          fi
-          command -v flatpak >/dev/null
-          command -v ostree >/dev/null
+        uses: ./.github/actions/setup-privacy-tools
 
       - name: Download and bind live Release bytes
         shell: bash

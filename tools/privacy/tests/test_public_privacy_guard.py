@@ -255,6 +255,55 @@ class PublicPrivacyGuardTests(unittest.TestCase):
                 allow_safe_links=True,
             )
 
+    @unittest.skipIf(os.name == "nt", "Windows symlink creation requires elevation")
+    def test_dmg_dangling_internal_links_are_scanned_without_following_them(self):
+        scanner = load_scanner_module()
+        extracted = self.root / "dmg"
+        extracted.mkdir()
+        (extracted / "payload").write_text("clean", encoding="utf-8")
+        # 7-Zip 26 rewrites the DMG /Applications shortcut into this bounded form.
+        (extracted / "Applications").symlink_to(extracted / "missing-SecretOwner")
+        (extracted / "chain").symlink_to("Applications")
+        state = scanner.ScanState(
+            [scanner.Rule("private-owner", "SecretOwner", "owner identity")],
+            scanner.Limits(1024 * 1024, 8 * 1024 * 1024, 4),
+        )
+        scanner.scan_extracted_tree(state, extracted, "release.dmg", 0, allow_safe_links=True)
+        self.assertTrue(any(finding.rule_id == "private-owner" for finding in state.findings))
+        self.assertEqual(sum(record["kind"] == "archive-link" for record in state.records), 2)
+        self.assertFalse((extracted / "missing-SecretOwner").exists())
+
+    @unittest.skipIf(os.name == "nt", "Windows symlink creation requires elevation")
+    def test_dmg_dangling_escape_and_link_cycles_remain_rejected(self):
+        scanner = load_scanner_module()
+        for index, link_target in enumerate(("../missing", str(self.root / "missing-outside"), "link")):
+            with self.subTest(target=link_target):
+                extracted = self.root / f"links-{index}"
+                extracted.mkdir()
+                (extracted / "payload").write_text("clean", encoding="utf-8")
+                (extracted / "link").symlink_to(link_target)
+                state = scanner.ScanState([], scanner.Limits(1024 * 1024, 8 * 1024 * 1024, 4))
+                with self.assertRaises(scanner.CoverageError):
+                    scanner.scan_extracted_tree(state, extracted, "release.dmg", 0, allow_safe_links=True)
+
+        extracted = self.root / "indirect-cycle"
+        extracted.mkdir()
+        (extracted / "payload").write_text("clean", encoding="utf-8")
+        (extracted / "a").symlink_to("b")
+        (extracted / "b").symlink_to("a")
+        (extracted / "0-probe").symlink_to("a/missing")
+        state = scanner.ScanState([], scanner.Limits(1024 * 1024, 8 * 1024 * 1024, 4))
+        with self.assertRaises(scanner.CoverageError):
+            scanner.scan_extracted_tree(state, extracted, "release.dmg", 0, allow_safe_links=True)
+
+        special = self.root / "special"
+        special.mkdir()
+        (special / "payload").write_text("clean", encoding="utf-8")
+        os.mkfifo(special / "pipe")
+        (special / "0-link").symlink_to("pipe")
+        with self.assertRaises(scanner.CoverageError):
+            scanner.scan_extracted_tree(state, special, "release.dmg", 0, allow_safe_links=True)
+
     def test_manifest_reporter_exposes_actionable_ids_without_private_targets(self):
         private_value = "OwnerPrivateValue"
         blob_oid = "a" * 40
