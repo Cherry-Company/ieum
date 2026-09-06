@@ -49,6 +49,7 @@ add_library(${target} STATIC
   ProductIdentity.h
   ScreenSetupModel.cpp
   ScreenSetupModel.h
+  SessionLifecycle.h
   StartupManager.cpp
   StartupManager.h
   StyleUtils.h

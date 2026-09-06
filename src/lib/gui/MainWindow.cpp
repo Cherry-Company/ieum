@@ -113,6 +113,7 @@ MainWindow::MainWindow()
 #endif
 
   ui->setupUi(this);
+  qApp->installEventFilter(this);
   applyIeumMainWindowStyle(*this);
   ui->lblBrandIcon->setPixmap(QIcon::fromTheme(kRevFqdnName).pixmap(QSize(48, 48)));
 
@@ -235,6 +236,7 @@ MainWindow::MainWindow()
 }
 MainWindow::~MainWindow()
 {
+  qApp->removeEventFilter(this);
 #ifdef Q_OS_MACOS
   macOSRemoveApplicationTerminationHandler();
   macOSRemoveApplicationReopenHandler();
@@ -1346,7 +1348,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 #ifdef Q_OS_MACOS
   const auto hideToTray = macShouldHideOnClose(event->spontaneous(), m_quitRequested, m_systemShutdownRequested);
 #else
-  const auto hideToTray = Settings::value(Settings::Gui::CloseToTray).toBool() && !m_quitRequested;
+  const auto hideToTray =
+      Settings::value(Settings::Gui::CloseToTray).toBool() && !m_quitRequested && !qApp->isSavingSession();
 #endif
   if (hideToTray) {
     if (Settings::value(Settings::Gui::CloseReminder).toBool()) {
@@ -1362,7 +1365,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
   if (m_saveOnExit) {
     Settings::setValue(Settings::Gui::WindowGeometry, geometry());
-    Settings::setValue(Settings::Gui::AutoStartCore, m_coreProcess.isStarted());
+    // Start/Stop actions persist the user's intent. The core may already
+    // have stopped, or be retrying, by the time the OS closes the GUI.
   }
   qDebug() << "quitting application";
 
@@ -1501,6 +1505,13 @@ void MainWindow::changeEvent(QEvent *e)
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
+  if (obj == qApp && event->type() == QEvent::Quit) {
+    // Cocoa sends Quit after its session-saving phase has finished. Mark the
+    // application-level quit before Qt closes windows, so close-to-tray and
+    // its reminder cannot intercept logout, restart, or the native Quit menu.
+    m_quitRequested = true;
+    return false;
+  }
   if (obj != ui->lineEditName || event->type() != QEvent::KeyPress)
     return false;
   if (const auto keyEvent = static_cast<QKeyEvent *>(event); keyEvent->key() != Qt::Key_Escape)

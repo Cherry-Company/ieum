@@ -15,4 +15,7 @@ private Q_SLOTS:
   void redactSensitiveText_removesHomePathsAndAddresses();
   void redactSensitiveText_limitsUntrustedMessages();
   void sessionMarker_detectsUncleanExit();
+  void sessionMarker_previousBootIsNotAnAppCrash();
+  void sessionMarker_cleanExit();
+  void sessionShutdown_onlyConfirmedShutdownClearsMarker();
 };

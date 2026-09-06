@@ -7,6 +7,7 @@
 #pragma once
 
 #include <QString>
+#include <QSysInfo>
 #include <QUrl>
 
 namespace deskflow::gui::diagnostic {
@@ -36,7 +37,7 @@ struct Report
 };
 
 void clearSettings(bool enableRestart);
-PreviousSession beginSession();
+PreviousSession beginSession(const QByteArray &bootId = QSysInfo::bootUniqueId());
 void completeSession();
 QString redactSensitiveText(QString text);
 Report createReport(ReportKind kind, const QString &message = {}, const QString &source = {});

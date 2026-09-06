@@ -455,19 +455,19 @@ CGEventFlags OSXKeyState::getModifierStateAsOSXFlags() const
 {
   CGEventFlags modifiers = 0;
 
-  if (m_shiftPressed) {
+  if (m_shiftPressed || m_rightShiftPressed) {
     modifiers |= kCGEventFlagMaskShift;
   }
 
-  if (m_controlPressed) {
+  if (m_controlPressed || m_rightControlPressed) {
     modifiers |= kCGEventFlagMaskControl;
   }
 
-  if (m_altPressed) {
+  if (m_altPressed || m_rightAltPressed) {
     modifiers |= kCGEventFlagMaskAlternate;
   }
 
-  if (m_superPressed) {
+  if (m_superPressed || m_rightSuperPressed) {
     modifiers |= kCGEventFlagMaskCommand;
   }
 
@@ -623,6 +623,19 @@ CGEventFlags OSXKeyState::getDeviceDependedFlags() const
     modifiers |= NX_DEVICELCMDKEYMASK;
   }
 
+  if (m_rightShiftPressed) {
+    modifiers |= NX_DEVICERSHIFTKEYMASK;
+  }
+  if (m_rightControlPressed) {
+    modifiers |= NX_DEVICERCTLKEYMASK;
+  }
+  if (m_rightAltPressed) {
+    modifiers |= NX_DEVICERALTKEYMASK;
+  }
+  if (m_rightSuperPressed) {
+    modifiers |= NX_DEVICERCMDKEYMASK;
+  }
+
   return modifiers;
 }
 
@@ -656,6 +669,18 @@ void OSXKeyState::setKeyboardModifiers(CGKeyCode virtualKey, bool keyDown)
     break;
   case s_capsLockVK:
     m_capsPressed = keyDown;
+    break;
+  case kVK_RightShift:
+    m_rightShiftPressed = keyDown;
+    break;
+  case kVK_RightControl:
+    m_rightControlPressed = keyDown;
+    break;
+  case kVK_RightOption:
+    m_rightAltPressed = keyDown;
+    break;
+  case kVK_RightCommand:
+    m_rightSuperPressed = keyDown;
     break;
   default:
     LOG_VERBOSE("the key is not a modifier");
@@ -1060,6 +1085,8 @@ bool OSXKeyState::fakeRawKey(KeyButton scancode, KeyModifierMask mask, bool pres
     LOG_WARN("no mac virtual key for canonical scancode 0x%04x", scancode);
     return false;
   }
+  // Track physical transitions for mouse modifiers. A character's wire mask
+  // can omit held modifiers (for example AltGr), so it is not a key-state snapshot.
   setKeyboardModifiers(static_cast<CGKeyCode>(*virtualKey), press);
   postKeyboardKey(static_cast<CGKeyCode>(*virtualKey), press, repeat, mask);
   return true;

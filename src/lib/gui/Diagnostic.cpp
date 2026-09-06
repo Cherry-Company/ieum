@@ -69,14 +69,18 @@ QString sessionMarkerPath()
          QStringLiteral("/session-active.json");
 }
 
-PreviousSession beginSession()
+PreviousSession beginSession(const QByteArray &currentBootId)
 {
   PreviousSession previous;
+  const auto bootId = QString::fromLatin1(currentBootId);
   QFile marker(sessionMarkerPath());
   if (marker.open(QIODevice::ReadOnly)) {
     const auto document = QJsonDocument::fromJson(marker.readAll());
     const auto object = document.object();
-    previous.unexpectedExit = true;
+    const auto previousBootId = object.value(QStringLiteral("bootId")).toString();
+    // A marker from another boot does not establish an application crash.
+    // Keep detecting interrupted sessions when the OS supplies no boot ID.
+    previous.unexpectedExit = bootId.isEmpty() || previousBootId.isEmpty() || bootId == previousBootId;
     previous.startedAt = object.value(QStringLiteral("startedAt")).toString();
     previous.version = object.value(QStringLiteral("version")).toString();
     marker.close();
@@ -92,7 +96,8 @@ PreviousSession beginSession()
   if (replacement.open(QIODevice::WriteOnly | QIODevice::Text)) {
     const QJsonObject object{
         {QStringLiteral("startedAt"), QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs)},
-        {QStringLiteral("version"), QCoreApplication::applicationVersion()}
+        {QStringLiteral("version"), QCoreApplication::applicationVersion()},
+        {QStringLiteral("bootId"), bootId}
     };
     replacement.write(QJsonDocument(object).toJson(QJsonDocument::Compact));
     replacement.commit();

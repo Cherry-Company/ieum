@@ -169,6 +169,10 @@ private:
   bool m_altPressed;
   bool m_superPressed;
   bool m_capsPressed;
+  bool m_rightShiftPressed = false;
+  bool m_rightControlPressed = false;
+  bool m_rightAltPressed = false;
+  bool m_rightSuperPressed = false;
   CGEventSourceRef m_eventSource = nullptr;
   CGEventTimestamp m_lastEventTimestamp = 0;
   std::mutex m_eventSourceMutex;
