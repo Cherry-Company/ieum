@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['actiontype_0',['ActionType',['../namespaceSettingsKeys.html#a6ab6ee8b431024a9349b48ab0cac9041',1,'SettingsKeys']]],
+  ['active_1',['active',['../structClipboardChunkAssemblyState.html#a6495f3028972f9d98af9aedbd86c0f7d',1,'ClipboardChunkAssemblyState']]],
+  ['activeonrelease_2',['ActiveOnRelease',['../namespaceSettingsKeys.html#a5d2b0ad4c3074b0ac54b1a4bb406512e',1,'SettingsKeys']]],
+  ['activesides_3',['activeSides',['../structdeskflow_1_1filetransfer_1_1FileTransferEdgeCapabilities.html#abb56dd6ee9e8e96c4f09cf7b864516f5',1,'deskflow::filetransfer::FileTransferEdgeCapabilities::activeSides'],['../structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a650e9b83b80edf9422de8a171d8cb620',1,'deskflow::filetransfer::FileTransferService::Impl::activeSides']]],
+  ['activesideschanged_4',['activeSidesChanged',['../structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#ad6e9f8d9b84d48aca79a0d5c703e6842',1,'deskflow::filetransfer::FileTransferService::Impl::activeSidesChanged'],['../structdeskflow_1_1filetransfer_1_1FileTransferServiceOptions.html#acb1360673dc6488456ba77f855668918',1,'deskflow::filetransfer::FileTransferServiceOptions::activeSidesChanged']]],
+  ['addr_5',['addr',['../ArchNetworkWinsock_8cpp.html#a44ed2a3b9f41a148fe2c905da8b5d699',1,'ArchNetworkWinsock.cpp']]],
+  ['address_6',['address',['../structdeskflow_1_1network_1_1InterfaceAddress.html#a503f973fb58af89aea01a9fe8ddf5553',1,'deskflow::network::InterfaceAddress']]],
+  ['addresses_7',['addresses',['../structdeskflow_1_1network_1_1TailscalePeer.html#af5092df7c66cc2d553f3d3b52f04136d',1,'deskflow::network::TailscalePeer']]],
+  ['addrlen_8',['addrlen',['../ArchNetworkWinsock_8cpp.html#a8c91350f2366acb50b48de7e994091c0',1,'ArchNetworkWinsock.cpp']]],
+  ['aliases_9',['Aliases',['../structSettings_1_1Screen.html#a7f6d73d4aee71304fa149b953fa1a17a',1,'Settings::Screen']]],
+  ['authenticated_10',['authenticated',['../structdeskflow_1_1server_1_1filetransfer_1_1EdgeRoutingResult.html#a403636be9008e6b91f926378769fd8b5',1,'deskflow::server::filetransfer::EdgeRoutingResult']]],
+  ['authorizefiletransfer_11',['authorizeFileTransfer',['../structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a38f59c48f48efa539472a2167908a465',1,'deskflow::filetransfer::FileTransferService::Impl::authorizeFileTransfer'],['../structdeskflow_1_1filetransfer_1_1FileTransferServiceOptions.html#af97e85e6ed6c8dd519d221ba7f8a2097',1,'deskflow::filetransfer::FileTransferServiceOptions::authorizeFileTransfer']]],
+  ['autohide_12',['Autohide',['../structSettings_1_1Gui.html#a2f5f638ae1ce82b3e05c58ccd721893f',1,'Settings::Gui']]],
+  ['autolockfullscreen_13',['AutoLockFullscreen',['../structSettings_1_1Server.html#ad8a7658b8f14d5b51ecfdfa3abf88f70',1,'Settings::Server']]],
+  ['autostartcore_14',['AutoStartCore',['../structSettings_1_1Gui.html#abb43a603fadbde9f7ba0ff2fca319817',1,'Settings::Gui']]],
+  ['autoupdatecheck_15',['AutoUpdateCheck',['../structSettings_1_1Gui.html#a8b6bb5f319f02e22b891a44253f6caf2',1,'Settings::Gui']]]
+];

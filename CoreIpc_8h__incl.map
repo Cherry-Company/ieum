@@ -1,0 +1,11 @@
+<map id="src/lib/deskflow/ipc/CoreIpc.h" name="src/lib/deskflow/ipc/CoreIpc.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="122,5,256,44"/>
+<area shape="rect" id="Node000002" href="$Enums_8h.html" title=" " alt="" coords="5,92,133,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="158,47,101,86,98,81,162,43"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="156,92,222,117"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="190,42,191,77,187,75,188,47"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="246,92,306,117"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="211,42,254,81,249,81,209,47"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="34,165,104,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="71,115,72,150,66,148,67,119"/>
+</map>

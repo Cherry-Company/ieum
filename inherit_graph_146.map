@@ -1,0 +1,27 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$classEventData.html" title=" " alt="" coords="5,252,87,277"/>
+<area shape="rect" id="Node000001" href="$classChunk.html" title=" " alt="" coords="211,5,270,30"/>
+<area shape="poly" id="edge12_Node000000_Node000001" title=" " alt="" coords="48,236,55,193,70,140,95,87,112,62,133,41,151,29,171,21,213,16,209,19,173,27,153,34,136,45,117,66,100,89,75,142,60,194,53,237"/>
+<area shape="rect" id="Node000003" href="$classClient_1_1DisconnectRequest.html" title=" " alt="" coords="152,55,330,79"/>
+<area shape="poly" id="edge14_Node000000_Node000003" title=" " alt="" coords="51,236,61,202,78,163,102,124,133,90,158,78,155,82,136,94,106,127,83,165,66,204,56,237"/>
+<area shape="rect" id="Node000004" href="$classExitEventData.html" title=" " alt="" coords="189,104,293,129"/>
+<area shape="poly" id="edge15_Node000000_Node000004" title=" " alt="" coords="57,237,87,187,108,161,133,139,160,126,190,119,187,123,162,131,136,144,112,165,91,190,62,239"/>
+<area shape="rect" id="Node000005" href="$classServer_1_1KeyboardBroadcastInfo.html" title="Keyboard broadcast data." alt="" coords="140,153,342,178"/>
+<area shape="poly" id="edge16_Node000000_Node000005" title=" " alt="" coords="67,239,97,212,133,189,169,177,165,181,136,193,101,216,72,242"/>
+<area shape="rect" id="Node000006" href="$classServer_1_1LockCursorToScreenInfo.html" title="Lock cursor to screen data." alt="" coords="135,203,347,227"/>
+<area shape="poly" id="edge17_Node000000_Node000006" title=" " alt="" coords="100,247,134,238,186,226,183,230,135,243,103,251"/>
+<area shape="rect" id="Node000007" href="$classServer_1_1SwitchInDirectionInfo.html" title="Switch in direction data." alt="" coords="145,252,337,277"/>
+<area shape="poly" id="edge18_Node000000_Node000007" title=" " alt="" coords="101,262,146,263,142,266,104,267"/>
+<area shape="rect" id="Node000008" href="$classServer_1_1SwitchToScreenInfo.html" title="Switch to screen data." alt="" coords="149,301,333,326"/>
+<area shape="poly" id="edge19_Node000000_Node000008" title=" " alt="" coords="101,277,135,286,187,299,182,302,134,291,103,282"/>
+<area shape="rect" id="Node000009" href="$structdeskflow_1_1InputLanguageStatus.html" title=" " alt="" coords="139,351,342,375"/>
+<area shape="poly" id="edge20_Node000000_Node000009" title=" " alt="" coords="69,286,101,312,136,335,169,349,164,351,133,340,97,316,70,291"/>
+<area shape="rect" id="Node000010" href="$classdeskflow_1_1filetransfer_1_1FileTransferControlEventData.html" title=" " alt="" coords="141,400,340,438"/>
+<area shape="poly" id="edge21_Node000000_Node000010" title=" " alt="" coords="60,288,92,338,112,364,136,385,158,398,153,400,133,389,108,367,87,342,60,294"/>
+<area shape="rect" id="Node000011" href="$classdeskflow_1_1filetransfer_1_1FileTransferDataEventData.html" title=" " alt="" coords="149,462,333,501"/>
+<area shape="poly" id="edge22_Node000000_Node000011" title=" " alt="" coords="53,289,65,327,82,369,105,411,136,448,155,462,150,462,133,452,101,414,77,371,60,328,53,295"/>
+<area shape="rect" id="Node000012" href="$classdeskflow_1_1filetransfer_1_1FileTransferEdgeEventData.html" title=" " alt="" coords="147,525,334,564"/>
+<area shape="poly" id="edge23_Node000000_Node000012" title=" " alt="" coords="49,290,58,339,73,398,98,459,115,486,136,510,154,525,149,524,133,514,111,489,93,461,68,400,53,340,49,295"/>
+<area shape="rect" id="Node000002" href="$classClipboardChunk.html" title=" " alt="" coords="395,5,509,30"/>
+<area shape="poly" id="edge13_Node000001_Node000002" title=" " alt="" coords="285,15,397,16,392,19,287,20"/>
+</map>

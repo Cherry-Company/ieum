@@ -1,0 +1,40 @@
+<map id="src/lib/deskflow/ipc/DaemonIpcServer.cpp" name="src/lib/deskflow/ipc/DaemonIpcServer.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="695,5,850,44"/>
+<area shape="rect" id="Node000002" href="$DaemonIpcServer_8h.html" title=" " alt="" coords="168,92,305,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="694,39,320,94,319,88,696,35"/>
+<area shape="rect" id="Node000010" href="$Log_8h.html" title=" " alt="" coords="516,92,602,117"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="723,44,606,89,605,84,718,45"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="626,92,772,117"/>
+<area shape="poly" id="edge18_Node000001_Node000014" title=" " alt="" coords="757,43,722,83,719,78,752,46"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="796,92,898,117"/>
+<area shape="poly" id="edge19_Node000001_Node000015" title=" " alt="" coords="791,42,828,81,823,80,790,47"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="922,92,1063,117"/>
+<area shape="poly" id="edge20_Node000001_Node000016" title=" " alt="" coords="826,42,948,86,943,87,825,47"/>
+<area shape="rect" id="Node000017" title=" " alt="" coords="1087,92,1146,117"/>
+<area shape="poly" id="edge21_Node000001_Node000017" title=" " alt="" coords="850,39,1075,91,1070,92,850,45"/>
+<area shape="rect" id="Node000003" href="$IpcServer_8h.html" title=" " alt="" coords="74,165,162,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="215,119,152,159,149,154,219,116"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="5,237,68,262"/>
+<area shape="poly" id="edge7_Node000002_Node000005" title=" " alt="" coords="166,115,113,134,87,148,64,166,48,193,41,223,36,221,43,191,60,163,84,143,111,129,170,112"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="282,237,351,262"/>
+<area shape="poly" id="edge8_Node000002_Node000006" title=" " alt="" coords="232,115,223,151,222,170,227,188,246,211,272,230,267,230,242,215,222,191,216,171,217,150,229,119"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="236,165,309,189"/>
+<area shape="poly" id="edge9_Node000002_Node000008" title=" " alt="" coords="244,115,262,152,257,151,241,120"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="420,237,485,262"/>
+<area shape="poly" id="edge10_Node000002_Node000009" title=" " alt="" coords="255,115,425,228,420,230,253,120"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="168,237,257,262"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="134,187,188,228,183,229,133,192"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="107,189,63,229,59,225,102,191"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="151,187,272,230,267,233,150,193"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="92,237,144,262"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="120,188,120,223,115,221,116,192"/>
+<area shape="poly" id="edge17_Node000010_Node000009" title=" " alt="" coords="560,115,554,152,536,191,515,213,490,231,488,226,511,209,532,188,549,150,556,119"/>
+<area shape="rect" id="Node000011" href="$LogLevel_8h.html" title=" " alt="" coords="384,165,521,189"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="544,116,484,158,482,153,539,118"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="596,165,634,189"/>
+<area shape="poly" id="edge15_Node000010_Node000012" title=" " alt="" coords="569,115,599,153,594,152,567,120"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="658,165,716,189"/>
+<area shape="poly" id="edge16_Node000010_Node000013" title=" " alt="" coords="581,115,655,157,650,157,580,120"/>
+<area shape="poly" id="edge13_Node000011_Node000006" title=" " alt="" coords="433,189,353,232,352,227,427,190"/>
+<area shape="poly" id="edge14_Node000011_Node000009" title=" " alt="" coords="454,188,455,223,450,220,451,192"/>
+</map>
