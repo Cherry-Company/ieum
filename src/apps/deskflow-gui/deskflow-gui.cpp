@@ -17,6 +17,7 @@
 #include "gui/Messages.h"
 #include "gui/OSXHelpers.h"
 #include "gui/ProductIdentity.h"
+#include "gui/SessionLifecycle.h"
 #include "gui/StartupManager.h"
 #include "gui/StyleUtils.h"
 #include "gui/UpdateShutdown.h"
@@ -276,6 +277,7 @@ int main(int argc, char *argv[])
 #endif
 
   const auto previousSession = diagnostic::beginSession();
+  SessionLifecycle sessionLifecycle(app);
   QObject::connect(&app, &QCoreApplication::aboutToQuit, &app, [] { diagnostic::completeSession(); });
 
   // --no-reset

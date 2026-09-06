@@ -3,6 +3,13 @@
 
 if (WIN32)
   create_test(
+    NAME MSWindowsKeyInputTests
+    DEPENDS platform
+    LIBS base arch
+    SOURCE MSWindowsKeyInputTests.cpp
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
+  )
+  create_test(
     NAME ArchNetworkWinsockTests
     DEPENDS arch
     LIBS base mt version

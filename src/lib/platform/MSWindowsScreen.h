@@ -245,7 +245,6 @@ private: // HACK
   void saveMousePosition(int32_t x, int32_t y);
 
   // check if it is a modifier key repeating message
-  bool isModifierRepeat(KeyModifierMask oldState, KeyModifierMask state, WPARAM wParam) const;
 
 private:
   struct HotKeyItem

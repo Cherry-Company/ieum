@@ -7,7 +7,9 @@
 #include "DiagnosticTests.h"
 
 #include "gui/Diagnostic.h"
+#include "gui/SessionLifecycle.h"
 
+#include <QAbstractEventDispatcher>
 #include <QDir>
 #include <QStandardPaths>
 
@@ -48,6 +50,58 @@ void DiagnosticTests::sessionMarker_detectsUncleanExit()
   QCOMPARE(interruptedSession.version, QCoreApplication::applicationVersion());
 
   completeSession();
+}
+
+void DiagnosticTests::sessionMarker_previousBootIsNotAnAppCrash()
+{
+  using namespace deskflow::gui::diagnostic;
+  QStandardPaths::setTestModeEnabled(true);
+  completeSession();
+  beginSession("previous-boot");
+  QVERIFY(beginSession("previous-boot").unexpectedExit);
+  const auto previous = beginSession("current-boot");
+  completeSession();
+  QVERIFY(!previous.unexpectedExit);
+}
+
+void DiagnosticTests::sessionMarker_cleanExit()
+{
+  using namespace deskflow::gui::diagnostic;
+  QStandardPaths::setTestModeEnabled(true);
+  beginSession();
+  completeSession();
+  const auto previous = beginSession();
+  completeSession();
+  QVERIFY(!previous.unexpectedExit);
+}
+
+void DiagnosticTests::sessionShutdown_onlyConfirmedShutdownClearsMarker()
+{
+#ifdef Q_OS_WIN
+  using namespace deskflow::gui;
+  QStandardPaths::setTestModeEnabled(true);
+  diagnostic::completeSession();
+  diagnostic::beginSession();
+  SessionLifecycle lifecycle(*qApp);
+  auto *dispatcher = QAbstractEventDispatcher::instance();
+  QVERIFY(dispatcher != nullptr);
+  MSG message{};
+  qintptr result = 0;
+  message.message = WM_QUERYENDSESSION;
+  QVERIFY(!dispatcher->filterNativeEvent("windows_generic_MSG", &message, &result));
+  QVERIFY(diagnostic::beginSession().unexpectedExit);
+  message.message = WM_ENDSESSION;
+  message.wParam = FALSE;
+  QVERIFY(!dispatcher->filterNativeEvent("windows_generic_MSG", &message, &result));
+  QVERIFY(diagnostic::beginSession().unexpectedExit);
+  message.wParam = TRUE;
+  QVERIFY(!dispatcher->filterNativeEvent("windows_generic_MSG", &message, &result));
+  const auto previous = diagnostic::beginSession();
+  diagnostic::completeSession();
+  QVERIFY(!previous.unexpectedExit);
+#else
+  QSKIP("Windows session shutdown messages");
+#endif
 }
 
 QTEST_MAIN(DiagnosticTests)

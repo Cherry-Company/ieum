@@ -28,6 +28,7 @@
 #include "platform/MSWindowsDesks.h"
 #include "platform/MSWindowsEventQueueBuffer.h"
 #include "platform/MSWindowsImeController.h"
+#include "platform/MSWindowsKeyInput.h"
 #include "platform/MSWindowsKeyState.h"
 #include "platform/MSWindowsScreenSaver.h"
 
@@ -1278,7 +1279,7 @@ bool MSWindowsScreen::onKey(WPARAM wParam, LPARAM lParam)
   }
 
   // stop sending modifier keys over and over again
-  if (isModifierRepeat(oldState, state, wParam)) {
+  if (deskflow::win32::isModifierRepeat(oldState, state, (wParam >> 16) & 0xffu, down, wasDown)) {
     return true;
   }
 
@@ -1942,27 +1943,4 @@ std::string MSWindowsScreen::getSecureInputApp() const
 {
   // ignore on Windows
   return "";
-}
-
-bool MSWindowsScreen::isModifierRepeat(KeyModifierMask oldState, KeyModifierMask state, WPARAM wParam) const
-{
-  bool result = false;
-
-  if (oldState == state && state != 0) {
-    UINT virtKey = ((wParam >> 16) & 0xffu);
-    if ((state & KeyModifierShift) != 0 && (virtKey == VK_LSHIFT || virtKey == VK_RSHIFT)) {
-      result = true;
-    }
-    if ((state & KeyModifierControl) != 0 && (virtKey == VK_LCONTROL || virtKey == VK_RCONTROL)) {
-      result = true;
-    }
-    if ((state & KeyModifierAlt) != 0 && (virtKey == VK_LMENU || virtKey == VK_RMENU)) {
-      result = true;
-    }
-    if ((state & KeyModifierSuper) != 0 && (virtKey == VK_LWIN || virtKey == VK_RWIN)) {
-      result = true;
-    }
-  }
-
-  return result;
 }
