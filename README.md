@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.25"><strong>이음 다운로드</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.26"><strong>이음 다운로드</strong></a>
   · <a href="#설치와-첫-연결"><strong>설치 가이드</strong></a>
   · <a href="#설치-전-1분-보안-확인"><strong>보안·권한 안내</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>GitHub Sponsors로 후원</strong></a>
@@ -33,7 +33,7 @@
 KVM입니다. 화면 경계를 넘는 것에서 멈추지 않고, 운영체제마다 다른 **한/영 상태, IME 조합 세션,
 원시 키 위치와 유니코드 클립보드**를 하나의 입력 흐름으로 연결하는 데 초점을 둡니다.
 
-> 현재 단계는 `v0.1.0-alpha.25`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
+> 현재 단계는 `v0.1.0-alpha.26`입니다. 자동 빌드와 단위 테스트는 통과했지만 Windows/macOS 실기
 > 장시간 입력 매트릭스와 코드 서명은 아직 완료되지 않았습니다.
 
 ## 이음의 정식 배포를 함께 완성해 주세요
@@ -53,8 +53,16 @@ ARM64·Apple Silicon 실기 회귀 테스트와 안정적인 릴리스 유지**�
 월간 티어 외에 일회성 사용자 지정 금액도 선택할 수 있습니다. 후원 여부와 관계없이 로컬 KVM,
 한글·CJK 입력 동기화와 클립보드 코어는 공개 프로젝트로 유지합니다. 릴리스마다
 [배분 금액과 후원으로 완료한 작업](docs/release/sponsorship-impact.md)을 함께 공개하며, 이번
-`alpha.25`에 배분된 후원금은 **USD 0**입니다. 새 Early Access 판매가는 실제 결제가 확인되기 전까지
+`alpha.26`에 배분된 후원금은 **USD 0**입니다. 새 Early Access 판매가는 실제 결제가 확인되기 전까지
 후원 수입으로 계산하지 않습니다.
+
+### alpha.26 재시작·보조키 입력 수정
+
+`alpha.26`은 OS 종료 후 비정상 종료 안내가 잘못 표시되거나 자동 시작 설정이 꺼질 수 있는 처리를
+수정합니다. Windows에서는 트레이 실행 중에도 종료 확정 알림을 받고, macOS에서는 이전 부팅의
+실행 흔적을 앱 충돌과 구분합니다. 오른쪽 Command·Option·Control·Shift를 클릭에 반영하며,
+Windows에서 양쪽 보조키의 누름·해제가 반복 입력으로 누락되지 않도록 했습니다.
+Windows 실행 파일 버전은 `0.1.126.0`입니다. 실제 재부팅과 USB 키보드 재연결은 별도 실기 검증 대상입니다.
 
 ### alpha.25 Windows → macOS 파일 전송·안정성 핫픽스
 
@@ -236,17 +244,17 @@ Tailscale·Wi-Fi 품질과 마우스 폴링률은 환경마다 다르므로, 두
 ### 1. 설치 파일 고르기
 
 최신 테스트 릴리스는
-**[이음 (Ieum) v0.1.0-alpha.25](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.25)**입니다.
+**[이음 (Ieum) v0.1.0-alpha.26](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.26)**입니다.
 한국어 사용자는 아래 직링크를 사용하면 릴리스 자산 목록에서 파일명을 찾을 필요가 없습니다.
 
 | 기기 | 권장 다운로드 |
 | --- | --- |
-| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.25/Ieum-0.1.0-alpha.25-win-x64-ko-KR.msi) |
-| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.25/Ieum-0.1.0-alpha.25-win-arm64-ko-KR.msi) |
-| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.25/Ieum-0.1.0-alpha.25-macos-arm64.dmg) |
-| Intel Mac | [macOS Intel DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.25/Ieum-0.1.0-alpha.25-macos-x86_64.dmg) |
-| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.25) |
-| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.25) |
+| 일반 Intel/AMD Windows PC | [Windows x64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.26/Ieum-0.1.0-alpha.26-win-x64-ko-KR.msi) |
+| Snapdragon 등 ARM Windows PC | [Windows ARM64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.26/Ieum-0.1.0-alpha.26-win-arm64-ko-KR.msi) |
+| M1 이후 Apple Silicon Mac | [macOS Apple Silicon DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.26/Ieum-0.1.0-alpha.26-macos-arm64.dmg) |
+| Intel Mac | [macOS Intel DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.26/Ieum-0.1.0-alpha.26-macos-x86_64.dmg) |
+| Linux x86_64 / aarch64 | [Flatpak, DEB, RPM, Arch 패키지 목록](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.26) |
+| 영문 Windows 설치 화면 또는 Windows 무설치본 | [전체 릴리스 파일](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.26) |
 
 아키텍처를 모르겠다면 다음 위치에서 확인합니다.
 
