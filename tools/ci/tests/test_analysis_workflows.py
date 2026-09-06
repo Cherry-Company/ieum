@@ -156,9 +156,10 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
         self.assertIn("  workflow_dispatch:", workflow)
         self.assertIn("      source_run_id:", workflow)
         self.assertIn("run-id: ${{ inputs.source_run_id }}", workflow)
-        self.assertIn('[[ "${source_run[0]}" == "$release_sha" ]]', workflow)
-        self.assertIn('[[ "${source_run[1]}" == "$RELEASE_TAG" ]]', workflow)
-        self.assertIn('[[ "${source_run[3]}" == "success" ]]', workflow)
+        self.assertIn('tools/ci/validate_release_source.py', workflow)
+        self.assertIn('"$source_run" "$source_jobs" "$RELEASE_TAG" "$release_sha"', workflow)
+        self.assertIn('/attempts/$attempt/jobs?per_page=100', workflow)
+        self.assertIn('gh api --paginate --slurp', workflow)
         self.assertIn(
             "target_commitish: ${{ steps.bind.outputs.release_sha }}", workflow
         )
@@ -206,6 +207,10 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
         self.assertIn("startsWith(github.ref, 'refs/tags/v')", post_fetch)
 
     def test_release_privacy_failures_preserve_actionable_evidence(self) -> None:
+        setup = read_repository_file(".github/actions/setup-privacy-tools/action.yml")
+        self.assertIn("command -v zstd", setup)
+        self.assertIn("--no-install-recommends flatpak ostree", setup)
+        self.assertLess(setup.index("sha256sum --check --strict"), setup.index("tar -xJf"))
         for name in ("continuous-integration.yml", "release-existing-run.yml"):
             with self.subTest(workflow=name, phase="pre-release"):
                 release = job_block(read_workflow(name), "release")
@@ -215,8 +220,7 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
                 self.assertIn("tools/privacy/report_public_manifest.py", release)
                 self.assertIn("Enforce pre-release privacy gate", release)
                 self.assertIn("Prepare package privacy inspection tools", release)
-                self.assertIn("command -v zstd", release)
-                self.assertIn("--no-install-recommends flatpak ostree", release)
+                self.assertIn("uses: ./.github/actions/setup-privacy-tools", release)
 
             with self.subTest(workflow=name, phase="post-fetch"):
                 post_fetch = job_block(read_workflow(name), "privacy-post-fetch")
@@ -226,8 +230,7 @@ class AnalysisWorkflowPolicyTests(unittest.TestCase):
                 self.assertIn("tools/privacy/report_public_manifest.py", post_fetch)
                 self.assertIn("Enforce post-fetch privacy gate", post_fetch)
                 self.assertIn("Prepare package privacy inspection tools", post_fetch)
-                self.assertIn("command -v zstd", post_fetch)
-                self.assertIn("--no-install-recommends flatpak ostree", post_fetch)
+                self.assertIn("uses: ./.github/actions/setup-privacy-tools", post_fetch)
 
     def test_windows_upgrade_uses_the_previous_published_release(self) -> None:
         script = read_repository_file(
