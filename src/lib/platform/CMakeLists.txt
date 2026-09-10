@@ -79,6 +79,7 @@ elseif(APPLE)
     OSXAutoTypes.h
     OSXClipboard.cpp
     OSXClipboard.h
+    OSXCursorVisibility.h
     OSXClipboardAnyBitmapConverter.cpp
     OSXClipboardAnyBitmapConverter.h
     OSXClipboardAnyTextConverter.cpp

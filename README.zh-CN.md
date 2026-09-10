@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.26"><strong>下载 Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.27"><strong>下载 Ieum</strong></a>
   · <a href="#首次运行时的安全与权限"><strong>安全与权限</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>赞助 Ieum</strong></a>
 </p>
@@ -32,7 +32,7 @@ Ieum 让一套键盘和鼠标可以在 Windows、macOS 与 Linux 电脑之间切
 还试图把不同系统中的 **韩/英输入状态、输入法组合会话、物理按键位置和 Unicode 剪贴板**连接成
 一致的输入链路。
 
-> 当前版本为 `v0.1.0-alpha.26`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
+> 当前版本为 `v0.1.0-alpha.27`。自动构建和单元测试已经通过，但 Windows/macOS 真机长时间输入矩阵
 > 与正式代码签名尚未完成。
 
 ## 帮助 Ieum 完成正式发行
@@ -51,7 +51,13 @@ ARM64 和 Apple Silicon 真机回归测试，以及可靠的版本维护**。
 
 仍可选择自定义金额进行单次赞助。无论是否赞助，本地 KVM、韩语/CJK 输入同步和剪贴板核心都将保持
 开放。每个版本都会公开[赞助资金分配金额和完成的工作](docs/release/sponsorship-impact.md)。
-`alpha.26` 分配的赞助资金为 **USD 0**。Early Access 的标价只有在实际收到并核实付款后才计入赞助收入。
+`alpha.27` 分配的赞助资金为 **USD 0**。Early Access 的标价只有在实际收到并核实付款后才计入赞助收入。
+
+## Alpha.27 macOS 光标消失修复
+
+`alpha.27` 修复重复隐藏请求导致 macOS 光标持续不可见的问题。
+在 Mac 客户端上移动或点击本地鼠标时，会恢复被 Ieum 隐藏的光标；远程输入和光标停放移动
+不会误触发恢复。回归测试覆盖重复切换、显示失败后的重试以及并发调用。
 
 ## Alpha.26 重启与修饰键输入修复
 
@@ -273,16 +279,16 @@ flowchart LR
 
 ## 下载
 
-[Ieum v0.1.0-alpha.26 发布页](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.26)
+[Ieum v0.1.0-alpha.27 发布页](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.27)
 
 | 操作系统 | 安装文件 |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.26-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.26-macos-x86_64.dmg` |
-| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.26-win-x64.msi` |
-| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.26-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.26-win-arm64.msi` |
-| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.26-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.27-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.27-macos-x86_64.dmg` |
+| Intel/AMD 64 位 Windows | `Ieum-0.1.0-alpha.27-win-x64.msi` |
+| Intel/AMD 64 位 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.27-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.27-win-arm64.msi` |
+| ARM64 Windows，韩文安装界面 | `Ieum-0.1.0-alpha.27-win-arm64-ko-KR.msi` |
 
 发布页还提供 Windows 便携版与实验性 Linux 安装包。请使用随附的 `SHA256SUMS.txt` 校验文件。
 

@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.26"><strong>Download Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.27"><strong>Download Ieum</strong></a>
   · <a href="#first-run-security-and-permissions"><strong>Security &amp; permissions</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>Sponsor Ieum</strong></a>
 </p>
@@ -32,7 +32,7 @@ Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers
 screen edge: it connects **Korean/English mode, IME composition sessions, physical key positions, and Unicode
 clipboard data** into one consistent input path across operating systems.
 
-> The current release is `v0.1.0-alpha.26`. Automated builds and unit tests pass, but the long-running physical
+> The current release is `v0.1.0-alpha.27`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
 
 ## Help Ieum reach production distribution
@@ -52,8 +52,15 @@ notarization, physical Windows ARM64 and Apple Silicon regression testing, and d
 Custom one-time amounts remain available. Local KVM, Korean/CJK input synchronization, and clipboard core remain
 open regardless of sponsorship. Every release publishes the
 [amount allocated and work completed with sponsorship funds](docs/release/sponsorship-impact.md). The amount
-allocated to `alpha.26` is **USD 0**. The new Early Access price is not counted as sponsorship revenue until a
+allocated to `alpha.27` is **USD 0**. The new Early Access price is not counted as sponsorship revenue until a
 payment is actually received and verified.
+
+## Alpha.27 macOS cursor visibility fix
+
+`alpha.27` prevents repeated hide requests from leaving the macOS pointer invisible.
+Local mouse movement and clicks restore the cursor hidden by Ieum on a Mac client,
+while remote input and cursor parking do not trigger this recovery.
+Focused regressions cover repeated transitions, failed-show retries, and concurrent calls.
 
 ## Alpha.26 restart and modifier-input fixes
 
@@ -302,16 +309,16 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[이음 (Ieum) v0.1.0-alpha.26 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.26)
+[이음 (Ieum) v0.1.0-alpha.27 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.27)
 
 | Operating system | Installer |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.26-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.26-macos-x86_64.dmg` |
-| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.26-win-x64.msi` |
-| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.26-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.26-win-arm64.msi` |
-| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.26-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.27-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.27-macos-x86_64.dmg` |
+| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.27-win-x64.msi` |
+| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.27-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.27-win-arm64.msi` |
+| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.27-win-arm64-ko-KR.msi` |
 
 Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
 `SHA256SUMS.txt`.
