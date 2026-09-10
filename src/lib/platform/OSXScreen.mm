@@ -96,7 +96,6 @@ OSXScreen::OSXScreen(IEventQueue *events, bool isPrimary, bool enableLangSync)
       m_isOnScreen(m_isPrimary),
       m_cursorPosValid(false),
       MouseButtonEventMap(NumButtonIDs),
-      m_cursorHidden(false),
       m_keyState(nullptr),
       m_sequenceNumber(0),
       m_screensaver(nullptr),
@@ -812,48 +811,54 @@ void OSXScreen::fakeMouseWheel(ScrollDelta delta) const
 
 void OSXScreen::showCursor()
 {
-  LOG_DEBUG("showing cursor");
+  m_cursorVisibility.setHidden(false, [this] {
+    LOG_DEBUG("showing cursor");
 
-  CFStringRef propertyString = CFStringCreateWithCString(nullptr, "SetsCursorInBackground", kCFStringEncodingMacRoman);
+    CFStringRef propertyString =
+        CFStringCreateWithCString(nullptr, "SetsCursorInBackground", kCFStringEncodingMacRoman);
 
-  CGSSetConnectionProperty(_CGSDefaultConnection(), _CGSDefaultConnection(), propertyString, kCFBooleanTrue);
+    CGSSetConnectionProperty(_CGSDefaultConnection(), _CGSDefaultConnection(), propertyString, kCFBooleanTrue);
 
-  CFRelease(propertyString);
+    CFRelease(propertyString);
 
-  CGError error = CGDisplayShowCursor(m_displayID);
-  if (error != kCGErrorSuccess) {
-    LOG_ERR("failed to show cursor, error=%d", error);
-  }
+    CGError error = CGDisplayShowCursor(m_displayID);
+    if (error != kCGErrorSuccess) {
+      LOG_ERR("failed to show cursor, error=%d", error);
+    }
 
-  // appears to fix "mouse randomly not showing" bug
-  CGAssociateMouseAndMouseCursorPosition(true);
+    // appears to fix "mouse randomly not showing" bug
+    CGAssociateMouseAndMouseCursorPosition(true);
 
-  logCursorVisibility();
+    logCursorVisibility();
 
-  m_cursorHidden = false;
+    return error;
+  });
 }
 
 void OSXScreen::hideCursor()
 {
-  LOG_DEBUG("hiding cursor");
+  m_cursorVisibility.setHidden(true, [this] {
+    LOG_DEBUG("hiding cursor");
 
-  CFStringRef propertyString = CFStringCreateWithCString(nullptr, "SetsCursorInBackground", kCFStringEncodingMacRoman);
+    CFStringRef propertyString =
+        CFStringCreateWithCString(nullptr, "SetsCursorInBackground", kCFStringEncodingMacRoman);
 
-  CGSSetConnectionProperty(_CGSDefaultConnection(), _CGSDefaultConnection(), propertyString, kCFBooleanTrue);
+    CGSSetConnectionProperty(_CGSDefaultConnection(), _CGSDefaultConnection(), propertyString, kCFBooleanTrue);
 
-  CFRelease(propertyString);
+    CFRelease(propertyString);
 
-  CGError error = CGDisplayHideCursor(m_displayID);
-  if (error != kCGErrorSuccess) {
-    LOG_ERR("failed to hide cursor, error=%d", error);
-  }
+    CGError error = CGDisplayHideCursor(m_displayID);
+    if (error != kCGErrorSuccess) {
+      LOG_ERR("failed to hide cursor, error=%d", error);
+    }
 
-  // appears to fix "mouse randomly not hiding" bug
-  CGAssociateMouseAndMouseCursorPosition(true);
+    // appears to fix "mouse randomly not hiding" bug
+    CGAssociateMouseAndMouseCursorPosition(true);
 
-  logCursorVisibility();
+    logCursorVisibility();
 
-  m_cursorHidden = true;
+    return error;
+  });
 }
 
 void OSXScreen::enable()
@@ -923,8 +928,6 @@ void OSXScreen::disable()
   if (m_fileTransferEdgeDropHost) {
     m_fileTransferEdgeDropHost->clear();
   }
-  showCursor();
-
   // FIXME -- stop watching jump zones, stop capturing input
 
   if (m_eventTapRunLoop) {
@@ -944,6 +947,9 @@ void OSXScreen::disable()
     CFRelease(m_eventTapPort);
     m_eventTapPort = nullptr;
   }
+  showCursor();
+  // Always release primary capture, even if there is no hide left to balance.
+  CGAssociateMouseAndMouseCursorPosition(true);
   // FIXME -- allow system to enter power saving mode
 
   if (m_clipboardTimer != nullptr) {
@@ -1854,19 +1860,15 @@ bool OSXScreen::HotKeyItem::operator<(const HotKeyItem &x) const
 CGEventRef
 OSXScreen::handleCGInputEventSecondary(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon)
 {
-  // this fix is really screwing with the correct show/hide behavior. it
-  // should be tested better before reintroducing.
-  return event;
-
   OSXScreen *screen = (OSXScreen *)refcon;
-  if (screen->m_cursorHidden && type == kCGEventMouseMoved) {
-
-    CGPoint pos = CGEventGetLocation(event);
-    if (pos.x != screen->m_xCenter || pos.y != screen->m_yCenter) {
-
-      LOG_DEBUG("show cursor on secondary, type=%d pos=%d,%d", type, pos.x, pos.y);
-      screen->showCursor();
+  if (type == kCGEventTapDisabledByTimeout) {
+    // Permission loss is handled by the screen thread's AX timer. Calling
+    // checkAXPermissions() here could disable() and join this very thread.
+    if (AXIsProcessTrusted()) {
+      CGEventTapEnable(screen->m_eventTapPort, true);
     }
+  } else if (OSXCursorVisibility::isLocalPointerEvent(type, event)) {
+    screen->showCursor();
   }
   return event;
 }

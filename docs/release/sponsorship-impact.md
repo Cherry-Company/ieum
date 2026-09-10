@@ -3,7 +3,7 @@
 
 ## 후원 투명성 / Sponsorship transparency
 
-Release: v0.1.0-alpha.26
+Release: v0.1.0-alpha.27
 
 - 이번 릴리스에 배분된 GitHub Sponsors 후원금 / Sponsor funds allocated to this release: **USD 0**
 - 후원금으로 완료한 작업 / Work claimed as sponsor-funded: **없음 / None**
@@ -28,26 +28,21 @@ Release: v0.1.0-alpha.26
   after ARM64 compilation and CTest, DMG creation and mounting, `codesign --verify --deep --strict`, ARM64 Mach-O
   inspection, and artifact upload all pass. Windows x64 and ARM64 packages must also pass build, MSI structure,
   replacement-install, and service-coexistence checks.
-- alpha.26은 Windows가 종료를 확정할 때 트레이 실행 중에도 세션 흔적을 정리하고, macOS에서는 이전
-  부팅의 흔적만으로 앱 충돌이라고 판정하지 않습니다. 종료 시 코어의 순간 상태가 다음 자동 시작 설정을
-  덮어쓰지 않도록 했습니다. / Alpha.26 handles confirmed Windows shutdown even during tray-only startup,
-  distinguishes a previous macOS boot from an interrupted app session, and preserves the user's automatic-start
-  intent when the core stops before the GUI during shutdown.
-- Windows는 양쪽 보조키의 개별 누름·해제를 전달하고, macOS는 오른쪽 Command·Option·Control·Shift를
-  클릭 상태에 반영합니다. 한쪽 키를 떼어도 반대쪽이 눌려 있으면 보조키가 유지됩니다. / Windows preserves
-  separate left/right modifier transitions, and macOS tracks right Command, Option, Control, and Shift for mouse
-  events, retaining the modifier until both sides are released.
-- 회귀 테스트는 종료 확정·취소, 부팅 식별자 변경과 양쪽 보조키 상태를 검사합니다. 실제 재부팅과 USB
-  키보드 분리·재연결에 대한 실기 검증은 별도 수용 테스트입니다. / Regression tests cover confirmed and
-  cancelled shutdown, boot identity changes, and sided modifier state. Physical reboot and USB keyboard reconnect
-  validation remain separate acceptance tests.
-- Windows 실행 파일 버전은 MSI ProductVersion과 함께 릴리스마다 증가하며 alpha.26은 `0.1.126.0`입니다.
-  설치기는 기존 제품 제거와 두 번째 파일 교체 단계를 모두 끝낸 뒤에만 Ieum 서비스를 다시 시작합니다. /
-  Windows executable versions now increase with every MSI release (`0.1.126.0` for alpha.26), and the installer
-  restarts the Ieum service only after old-product removal and the second file-replacement pass both finish.
-- alpha.25까지의 파일 전송·설치·재시도 수정과 Pro Local의 라이선스·무덮어쓰기·SHA-256 검증 경계는
-  그대로 포함됩니다. / Transfer, installation, and retry fixes through alpha.25 remain included, along with
-  Pro Local's license, no-overwrite, and SHA-256 validation boundaries.
+- alpha.27은 macOS 커서 숨김·표시 요청을 직렬화하고, 중복 숨김으로 Quartz의 숨김 횟수가 누적되지
+  않도록 합니다. 실패한 표시 요청은 다음 복원 때 재시도합니다. / Alpha.27 serializes macOS cursor
+  visibility changes, prevents repeated hides from accumulating Quartz hide counts, and retries a failed show
+  on the next restore request.
+- Mac 클라이언트에서 로컬 마우스 이동·드래그·클릭·스크롤을 감지하면 Ieum이 숨긴 커서를 복원합니다.
+  Ieum이 생성한 원격 입력과 커서 대기 위치 이동은 복원을 유발하지 않습니다. / Local mouse movement,
+  dragging, clicks, and scrolling restore the cursor hidden by Ieum on a Mac client. Synthetic remote input
+  and cursor parking do not trigger this recovery.
+- 회귀 테스트는 반복 화면 전환, 실패 후 재시도, 이벤트 탭과 화면 스레드의 동시 복원, 로컬·합성 입력
+  구분을 검사합니다. 실제 커서를 숨기거나 움직이지 않고 실행합니다. / Focused regression tests cover
+  repeated screen transitions, retries, concurrent event-tap and screen-thread changes, and local versus
+  synthetic pointer events without hiding or moving the real cursor.
+- alpha.26까지의 종료·보조키·파일 전송 수정이 포함됩니다. Windows 실행 파일 버전은 alpha.27에서
+  `0.1.127.0`으로 증가합니다. / Shutdown, modifier, and file-transfer fixes through alpha.26 remain included.
+  The Windows executable version increases to `0.1.127.0` for alpha.27.
 - 저장소에 Apple Developer ID 및 공증 자격 증명이 아직 구성되지 않아 macOS 패키지는 ad-hoc 서명
   상태이며 Apple 공증을 받지 않았습니다. 따라서 이 버전은 프리릴리스이고 Gatekeeper 수동 승인이
   필요할 수 있습니다. 실제 Windows 서버와 Mac 클라이언트 사이의 한/영 입력, 장시간 커서 이동과

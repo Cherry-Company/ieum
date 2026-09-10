@@ -60,6 +60,13 @@ if (WIN32)
   )
 elseif(APPLE)
   create_test(
+    NAME OSXCursorVisibilityTests
+    DEPENDS platform
+    SOURCE OSXCursorVisibilityTests.cpp
+    LIBS "-framework ApplicationServices"
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/platform"
+  )
+  create_test(
     NAME OSXFileTransferPlatformTests
     DEPENDS app
     LIBS platform base arch
