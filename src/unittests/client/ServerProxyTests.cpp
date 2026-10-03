@@ -6,18 +6,25 @@
 
 #include "ServerProxyTests.h"
 
+#include "../shared/FakePlatformScreen.h"
 #include "base/Event.h"
+#include "base/EventQueueTimer.h"
 #include "base/IEventQueue.h"
 #include "client/Client.h"
 #include "client/ServerProxy.h"
 #include "deskflow/AppUtil.h"
 #include "deskflow/DeskflowException.h"
 #include "deskflow/ProtocolTypes.h"
+#include "deskflow/Screen.h"
 #include "io/IStream.h"
+#include "net/IDataSocket.h"
+#include "net/ISocketFactory.h"
+#include "net/NetworkAddress.h"
 #include "server/ClientProxy1_0.h"
 #include "server/ClientProxy1_11.h"
 #include "server/Server.h"
 
+#include <QScopeGuard>
 #include <QTest>
 
 #include <algorithm>
@@ -26,9 +33,12 @@
 #include <deque>
 #include <functional>
 #include <map>
+#include <memory>
 #include <new>
 #include <optional>
+#include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {
@@ -103,8 +113,9 @@ public:
     return static_cast<uint32_t>(bytesToRead);
   }
 
-  void write(const void *, uint32_t) override
+  void write(const void *buffer, uint32_t size) override
   {
+    m_written.append(static_cast<const char *>(buffer), size);
   }
 
   void flush() override
@@ -144,11 +155,17 @@ public:
     return m_closed;
   }
 
+  std::string takeWritten()
+  {
+    return std::exchange(m_written, {});
+  }
+
 private:
   std::deque<std::string> m_chunks;
   std::optional<size_t> m_readsBeforeFailure;
   bool m_inputShutdown = false;
   bool m_closed = false;
+  std::string m_written;
 };
 
 class RecordingEventQueue : public IEventQueue
@@ -183,9 +200,12 @@ public:
 
   bool dispatchEvent(const Event &event) override
   {
-    const auto handler = m_handlers.find(HandlerKey{event.getType(), event.getTarget()});
+    auto handler = m_handlers.find(HandlerKey{event.getType(), event.getTarget()});
     if (handler == m_handlers.end()) {
-      return false;
+      handler = m_handlers.find(HandlerKey{EventTypes::Unknown, event.getTarget()});
+      if (handler == m_handlers.end()) {
+        return false;
+      }
     }
 
     const auto callback = handler->second;
@@ -198,19 +218,23 @@ public:
     m_addedEvents.emplace_back(std::move(event));
   }
 
-  EventQueueTimer *newTimer(double, void *) override
+  EventQueueTimer *newTimer(double duration, void *) override
   {
-    return timer();
+    m_repeatingTimer = makeTimer();
+    m_repeatingDuration = duration;
+    return m_repeatingTimer;
   }
 
   EventQueueTimer *newOneShotTimer(double, void *) override
   {
     ++m_oneShotTimerCreations;
-    return timer();
+    m_lastOneShotTimer = makeTimer();
+    return m_lastOneShotTimer;
   }
 
-  void deleteTimer(EventQueueTimer *) override
+  void deleteTimer(EventQueueTimer *timer) override
   {
+    m_deletedTimers.insert(timer);
   }
 
   void addHandler(EventTypes type, void *target, const EventHandler &handler) override
@@ -245,7 +269,20 @@ public:
 
   EventQueueTimer *timer()
   {
-    return reinterpret_cast<EventQueueTimer *>(&m_timerStorage);
+    return m_lastOneShotTimer;
+  }
+
+  EventQueueTimer *repeatingTimer() const
+  {
+    return m_repeatingTimer;
+  }
+  double repeatingDuration() const
+  {
+    return m_repeatingDuration;
+  }
+  bool timerDeleted(EventQueueTimer *timer) const
+  {
+    return m_deletedTimers.contains(timer);
   }
 
   const std::vector<Event> &addedEvents() const
@@ -286,10 +323,105 @@ private:
     }
   };
 
-  int m_timerStorage = 0;
+  EventQueueTimer *makeTimer()
+  {
+    m_timers.push_back(std::make_unique<EventQueueTimer>());
+    return m_timers.back().get();
+  }
+
+  std::vector<std::unique_ptr<EventQueueTimer>> m_timers;
+  std::set<EventQueueTimer *> m_deletedTimers;
+  EventQueueTimer *m_lastOneShotTimer = nullptr;
+  EventQueueTimer *m_repeatingTimer = nullptr;
+  double m_repeatingDuration = 0.0;
   size_t m_oneShotTimerCreations = 0;
   std::map<HandlerKey, EventHandler> m_handlers;
   std::vector<Event> m_addedEvents;
+};
+
+class FakeSocket : public IDataSocket
+{
+public:
+  explicit FakeSocket(IEventQueue *events) : IDataSocket(events)
+  {
+  }
+  FakeStream stream;
+
+  void bind(const NetworkAddress &) override
+  {
+  }
+  void connect(const NetworkAddress &) override
+  {
+  }
+  bool isFatal() const override
+  {
+    return false;
+  }
+  void close() override
+  {
+    stream.close();
+  }
+  void *getEventTarget() const override
+  {
+    return const_cast<FakeSocket *>(this);
+  }
+  uint32_t read(void *buffer, uint32_t size) override
+  {
+    return stream.read(buffer, size);
+  }
+  void write(const void *buffer, uint32_t size) override
+  {
+    stream.write(buffer, size);
+  }
+  void flush() override
+  {
+  }
+  void shutdownInput() override
+  {
+    stream.shutdownInput();
+  }
+  void shutdownOutput() override
+  {
+  }
+  bool isReady() const override
+  {
+    return stream.isReady();
+  }
+  uint32_t getSize() const override
+  {
+    return stream.getSize();
+  }
+
+  void pushPacket(const std::string &payload)
+  {
+    const auto length = static_cast<uint32_t>(payload.size());
+    std::string packet;
+    for (const int shift : {24, 16, 8, 0}) {
+      packet.push_back(static_cast<char>((length >> shift) & 0xff));
+    }
+    stream.push(packet + payload);
+  }
+};
+
+class FakeSocketFactory : public ISocketFactory
+{
+public:
+  explicit FakeSocketFactory(IEventQueue *events) : m_events(events)
+  {
+  }
+  mutable FakeSocket *socket = nullptr;
+  IDataSocket *create(IArchNetwork::AddressFamily, SecurityLevel) const override
+  {
+    socket = new FakeSocket(m_events);
+    return socket;
+  }
+  IListenSocket *createListen(IArchNetwork::AddressFamily, SecurityLevel) const override
+  {
+    return nullptr;
+  }
+
+private:
+  IEventQueue *m_events;
 };
 
 class TestServerProxy : public ServerProxy
@@ -376,8 +508,75 @@ const Client::DisconnectRequest *disconnectRequest(const RecordingEventQueue &ev
 
 void ServerProxyTests::initTestCase()
 {
+  m_arch.init();
   (void)testAppUtil();
   m_log.setFilter(LogLevel::Level::Debug);
+}
+
+void ServerProxyTests::foregroundFullscreen_reportsIdleTransitionsAndCleansUp()
+{
+  const auto oldTls = Settings::value(Settings::Security::TlsEnabled);
+  const auto restoreTls = qScopeGuard([oldTls] { Settings::setValue(Settings::Security::TlsEnabled, oldTls); });
+  Settings::setValue(Settings::Security::TlsEnabled, false);
+  RecordingEventQueue events;
+  auto *platform = new FakePlatformScreen(&events);
+  deskflow::Screen screen(platform, &events);
+  auto *factory = new FakeSocketFactory(&events);
+  Client client(&events, "secondary", NetworkAddress("127.0.0.1", 24800), factory, &screen);
+  client.connect();
+  auto *socket = factory->socket;
+  QVERIFY(socket != nullptr);
+  QVERIFY(events.dispatchEvent(Event(EventTypes::DataSocketConnected, socket)));
+  std::string hello = "Barrier";
+  appendU16(hello, kProtocolMajorVersion);
+  appendU16(hello, kProtocolMinorVersion);
+  socket->pushPacket(hello);
+  QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, socket)));
+  QCOMPARE(client.protocolMinorVersion(), kProtocolMinorVersion);
+  socket->pushPacket(codeOnly(kMsgQInfo));
+  QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, socket)));
+  QVERIFY(socket->stream.takeWritten().find(std::string(kMsgCForegroundFullscreen, 4) + char{0}) != std::string::npos);
+
+  auto *timer = events.repeatingTimer();
+  QVERIFY(timer != nullptr);
+  QCOMPARE(events.repeatingDuration(), 0.1);
+  platform->fullscreen = true;
+  QVERIFY(events.dispatchEvent(Event(EventTypes::Timer, timer)));
+  QVERIFY(socket->stream.takeWritten().find(std::string(kMsgCForegroundFullscreen, 4) + char{1}) != std::string::npos);
+  QVERIFY(events.dispatchEvent(Event(EventTypes::Timer, timer)));
+  QVERIFY(socket->stream.takeWritten().empty());
+
+  platform->fullscreen = false;
+  QVERIFY(events.dispatchEvent(Event(EventTypes::Timer, timer)));
+  QVERIFY(socket->stream.takeWritten().find(std::string(kMsgCForegroundFullscreen, 4) + char{0}) != std::string::npos);
+  client.disconnect(nullptr);
+  QVERIFY(events.timerDeleted(timer));
+  QVERIFY(!events.dispatchEvent(Event(EventTypes::Timer, timer)));
+}
+
+void ServerProxyTests::foregroundFullscreen_preservesLegacyProtocol()
+{
+  const auto oldTls = Settings::value(Settings::Security::TlsEnabled);
+  const auto restoreTls = qScopeGuard([oldTls] { Settings::setValue(Settings::Security::TlsEnabled, oldTls); });
+  Settings::setValue(Settings::Security::TlsEnabled, false);
+  RecordingEventQueue events;
+  deskflow::Screen screen(new FakePlatformScreen(&events), &events);
+  auto *factory = new FakeSocketFactory(&events);
+  Client client(&events, "secondary", NetworkAddress("127.0.0.1", 24800), factory, &screen);
+  client.connect();
+  auto *socket = factory->socket;
+  QVERIFY(socket != nullptr);
+  QVERIFY(events.dispatchEvent(Event(EventTypes::DataSocketConnected, socket)));
+  std::string hello = "Barrier";
+  appendU16(hello, kProtocolMajorVersion);
+  appendU16(hello, 10);
+  socket->pushPacket(hello);
+  QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, socket)));
+  QCOMPARE(client.protocolMinorVersion(), int16_t{10});
+  socket->pushPacket(codeOnly(kMsgQInfo));
+  QVERIFY(events.dispatchEvent(Event(EventTypes::StreamInputReady, socket)));
+  QVERIFY(socket->stream.takeWritten().find(codeOnly(kMsgCForegroundFullscreen)) == std::string::npos);
+  QVERIFY(events.repeatingTimer() == nullptr);
 }
 
 void ServerProxyTests::handleKeepAliveAlarm_timeout_queuesDisconnectRequest()

@@ -17,6 +17,8 @@ struct Bounds
   double top;
   double right;
   double bottom;
+
+  bool operator==(const Bounds &) const = default;
 };
 
 inline bool coversDisplay(const Bounds &window, const Bounds &display, double edgeTolerance = 8.0)
@@ -43,7 +45,7 @@ pointerIsConfinedToDisplay(const Bounds &clip, const Bounds &display, const Boun
 {
   const auto clipWidth = clip.right - clip.left;
   const auto clipHeight = clip.bottom - clip.top;
-  if (clipWidth < 64.0 || clipHeight < 64.0) {
+  if (!std::isfinite(clipWidth) || !std::isfinite(clipHeight) || clipWidth <= 0.0 || clipHeight <= 0.0) {
     return false;
   }
 

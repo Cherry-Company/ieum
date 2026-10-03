@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "arch/Arch.h"
 #include "base/Log.h"
 
 #include <QObject>
@@ -31,7 +32,10 @@ private Q_SLOTS:
   void clientProxy_truncatedRuntimePayload_disconnects_data();
   void clientProxy_truncatedRuntimePayload_disconnects();
   void clientProxy_largeBurst_yieldsToTimerAndSecondClient();
+  void foregroundFullscreen_reportsIdleTransitionsAndCleansUp();
+  void foregroundFullscreen_preservesLegacyProtocol();
 
 private:
+  Arch m_arch;
   Log m_log;
 };

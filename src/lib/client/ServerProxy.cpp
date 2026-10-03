@@ -86,6 +86,10 @@ ServerProxy::~ServerProxy()
   // still be released
   releaseRawScancodeButtons();
   setKeepAliveRate(-1.0);
+  if (m_foregroundFullscreenTimer != nullptr) {
+    m_events->removeHandler(EventTypes::Timer, m_foregroundFullscreenTimer);
+    m_events->deleteTimer(m_foregroundFullscreenTimer);
+  }
   m_events->removeHandler(EventTypes::StreamInputReady, m_stream->getEventTarget());
   m_events->removeHandler(EventTypes::ClipboardSending, this);
   m_events->removeHandler(EventTypes::InputLanguageChanged, m_clientEventTarget);
@@ -559,6 +563,15 @@ void ServerProxy::maybeSendForegroundFullscreen(bool force)
   }
 
   using namespace std::chrono_literals;
+  if (m_foregroundFullscreenTimer == nullptr) {
+    // Report a game opened or closed while the mouse is idle. Waiting for the
+    // next motion packet leaves the server unprotected at the first edge move.
+    m_foregroundFullscreenTimer = m_events->newTimer(0.1, nullptr);
+    m_events->addHandler(EventTypes::Timer, m_foregroundFullscreenTimer, [this](const auto &) {
+      m_lastFullscreenCheck = {};
+      maybeSendForegroundFullscreen();
+    });
+  }
   const auto now = std::chrono::steady_clock::now();
   if (!force && m_lastFullscreenCheck.time_since_epoch().count() != 0 && now - m_lastFullscreenCheck < 100ms) {
     return;

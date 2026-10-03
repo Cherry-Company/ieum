@@ -23,6 +23,7 @@
 #include "deskflow/ClientApp.h"
 #include "deskflow/Clipboard.h"
 #include "deskflow/KeyMap.h"
+#include "deskflow/OptionTypes.h"
 #include "deskflow/ScreenException.h"
 #include "platform/MSWindowsClipboard.h"
 #include "platform/MSWindowsDesks.h"
@@ -234,6 +235,11 @@ void MSWindowsScreen::enable()
   m_imeTimer = m_events->newTimer(0.25, nullptr);
   m_events->addHandler(EventTypes::Timer, m_imeTimer, [this](const auto &) { m_imeController->poll(); });
 
+  m_fullscreenTimer = m_events->newTimer(0.05, nullptr);
+  m_events->addHandler(EventTypes::Timer, m_fullscreenTimer, [this](const auto &) {
+    updateFullscreenCursorConfinement();
+  });
+
   // install our clipboard snooper
   if (!AddClipboardFormatListener(m_window)) {
     LOG_WARN("failed to add the clipboard format listener: %d", GetLastError());
@@ -260,6 +266,13 @@ void MSWindowsScreen::disable()
     m_fileTransferEdgeDropHost->clear();
   }
   m_isEnabled = false;
+  releaseFullscreenCursorConfinement();
+
+  if (m_fullscreenTimer != nullptr) {
+    m_events->removeHandler(EventTypes::Timer, m_fullscreenTimer);
+    m_events->deleteTimer(m_fullscreenTimer);
+    m_fullscreenTimer = nullptr;
+  }
 
   // stop tracking the active desk
   m_desks->disable();
@@ -325,6 +338,7 @@ void MSWindowsScreen::enter()
   // now on screen
   m_isOnScreen = true;
   setupMouseKeys();
+  updateFullscreenCursorConfinement();
 }
 
 bool MSWindowsScreen::canLeave()
@@ -342,6 +356,7 @@ bool MSWindowsScreen::canLeave()
 
 void MSWindowsScreen::leave()
 {
+  releaseFullscreenCursorConfinement();
   // get keyboard layout of foreground window.  we'll use this
   // keyboard layout for translating keys sent to clients.
   m_keyLayout = AppUtilWindows::instance().getCurrentKeyboardLayout();
@@ -458,11 +473,18 @@ void MSWindowsScreen::screensaver(bool activate)
 
 void MSWindowsScreen::resetOptions()
 {
+  m_autoLockFullscreen = true;
   m_desks->resetOptions();
 }
 
 void MSWindowsScreen::setOptions(const OptionsList &options)
 {
+  for (size_t i = 0; i + 1 < options.size(); i += 2) {
+    if (options[i] == kOptionAutoLockFullscreen) {
+      m_autoLockFullscreen = options[i + 1] != 0;
+    }
+  }
+  updateFullscreenCursorConfinement();
   m_desks->setOptions(options);
 }
 
@@ -534,13 +556,16 @@ bool MSWindowsScreen::isForegroundFullscreen() const
 {
   using namespace std::chrono_literals;
   const auto now = std::chrono::steady_clock::now();
-  if (m_fullscreenLastCheck.time_since_epoch().count() != 0 && now - m_fullscreenLastCheck < 100ms) {
+  const HWND foreground = GetForegroundWindow();
+  if (foreground == m_fullscreenForeground && m_fullscreenLastCheck.time_since_epoch().count() != 0 &&
+      now - m_fullscreenLastCheck < 100ms) {
     return m_foregroundFullscreen;
   }
+  m_fullscreenForeground = foreground;
   m_fullscreenLastCheck = now;
   m_foregroundFullscreen = false;
+  m_fullscreenDisplay.reset();
 
-  const HWND foreground = GetForegroundWindow();
   if (foreground == nullptr || foreground == m_window || foreground == GetShellWindow()) {
     return false;
   }
@@ -586,10 +611,12 @@ bool MSWindowsScreen::isForegroundFullscreen() const
     if (SUCCEEDED(DwmGetWindowAttribute(candidate, DWMWA_EXTENDED_FRAME_BOUNDS, &bounds, sizeof(bounds))) &&
         coversMonitor(bounds)) {
       m_foregroundFullscreen = true;
+      m_fullscreenDisplay = displayBounds;
       break;
     }
     if (GetWindowRect(candidate, &bounds) && coversMonitor(bounds)) {
       m_foregroundFullscreen = true;
+      m_fullscreenDisplay = displayBounds;
       break;
     }
 
@@ -601,6 +628,7 @@ bool MSWindowsScreen::isForegroundFullscreen() const
         const RECT screenClientBounds{topLeft.x, topLeft.y, bottomRight.x, bottomRight.y};
         if (coversMonitor(screenClientBounds)) {
           m_foregroundFullscreen = true;
+          m_fullscreenDisplay = displayBounds;
           break;
         }
       }
@@ -608,24 +636,79 @@ bool MSWindowsScreen::isForegroundFullscreen() const
 
     RECT clip{};
     if (GetClipCursor(&clip)) {
+      const auto clipBounds = deskflow::fullscreen::Bounds{
+          static_cast<double>(clip.left), static_cast<double>(clip.top), static_cast<double>(clip.right),
+          static_cast<double>(clip.bottom)
+      };
       const RECT desktop{
           GetSystemMetrics(SM_XVIRTUALSCREEN), GetSystemMetrics(SM_YVIRTUALSCREEN),
           GetSystemMetrics(SM_XVIRTUALSCREEN) + GetSystemMetrics(SM_CXVIRTUALSCREEN),
           GetSystemMetrics(SM_YVIRTUALSCREEN) + GetSystemMetrics(SM_CYVIRTUALSCREEN)
       };
-      m_foregroundFullscreen = deskflow::fullscreen::pointerIsConfinedToDisplay(
-          {static_cast<double>(clip.left), static_cast<double>(clip.top), static_cast<double>(clip.right),
-           static_cast<double>(clip.bottom)},
-          displayBounds,
-          {static_cast<double>(desktop.left), static_cast<double>(desktop.top), static_cast<double>(desktop.right),
-           static_cast<double>(desktop.bottom)}
-      );
+      const auto desktopBounds = deskflow::fullscreen::Bounds{
+          static_cast<double>(desktop.left), static_cast<double>(desktop.top), static_cast<double>(desktop.right),
+          static_cast<double>(desktop.bottom)
+      };
+      // Our monitor restriction is not evidence that the next foreground app
+      // is a game; counting it would keep the lock alive after Alt+Tab.
+      if (m_fullscreenCursorConfinement.owns(clipBounds, desktopBounds)) {
+        continue;
+      }
+      m_foregroundFullscreen =
+          deskflow::fullscreen::pointerIsConfinedToDisplay(clipBounds, displayBounds, desktopBounds);
       if (m_foregroundFullscreen) {
+        m_fullscreenDisplay = displayBounds;
         break;
       }
     }
   }
   return m_foregroundFullscreen;
+}
+
+void MSWindowsScreen::updateFullscreenCursorConfinement(bool allowConfinement)
+{
+  std::optional<deskflow::fullscreen::Bounds> target;
+  if (allowConfinement && m_isEnabled && m_autoLockFullscreen && (!m_isPrimary || m_isOnScreen) &&
+      isForegroundFullscreen()) {
+    target = m_fullscreenDisplay;
+  }
+
+  RECT clip{};
+  if (!GetClipCursor(&clip)) {
+    return;
+  }
+  const deskflow::fullscreen::Bounds desktop{
+      static_cast<double>(GetSystemMetrics(SM_XVIRTUALSCREEN)),
+      static_cast<double>(GetSystemMetrics(SM_YVIRTUALSCREEN)),
+      static_cast<double>(GetSystemMetrics(SM_XVIRTUALSCREEN)) + GetSystemMetrics(SM_CXVIRTUALSCREEN),
+      static_cast<double>(GetSystemMetrics(SM_YVIRTUALSCREEN)) + GetSystemMetrics(SM_CYVIRTUALSCREEN)
+  };
+  const bool applied = m_fullscreenCursorConfinement.update(
+      target,
+      {static_cast<double>(clip.left), static_cast<double>(clip.top), static_cast<double>(clip.right),
+       static_cast<double>(clip.bottom)},
+      desktop,
+      [](const std::optional<deskflow::fullscreen::Bounds> &bounds) {
+        if (!bounds) {
+          return ClipCursor(nullptr) != FALSE;
+        }
+        const RECT restriction{
+            static_cast<LONG>(bounds->left), static_cast<LONG>(bounds->top), static_cast<LONG>(bounds->right),
+            static_cast<LONG>(bounds->bottom)
+        };
+        return ClipCursor(&restriction) != FALSE;
+      }
+  );
+  if (!applied) {
+    LOG_DEBUG("could not update fullscreen cursor restriction: %lu", GetLastError());
+  }
+}
+
+void MSWindowsScreen::releaseFullscreenCursorConfinement()
+{
+  updateFullscreenCursorConfinement(false);
+  // The old cached result may have been based on a clip we just released.
+  m_fullscreenLastCheck = {};
 }
 
 /*
@@ -1409,6 +1492,9 @@ bool MSWindowsScreen::onMouseButton(WPARAM wParam, LPARAM lParam)
 //   example)
 bool MSWindowsScreen::onMouseMove(int32_t mx, int32_t my)
 {
+  if (m_isOnScreen) {
+    updateFullscreenCursorConfinement();
+  }
   // compute motion delta (relative to the last known
   // mouse position)
   int32_t x = mx - m_xCursor;
@@ -1613,6 +1699,7 @@ bool MSWindowsScreen::ignore() const
 
 void MSWindowsScreen::updateScreenShape()
 {
+  m_fullscreenLastCheck = {};
   // get shape and center
   m_w = GetSystemMetrics(SM_CXVIRTUALSCREEN);
   m_h = GetSystemMetrics(SM_CYVIRTUALSCREEN);

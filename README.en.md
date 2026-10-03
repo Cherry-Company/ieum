@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.27"><strong>Download Ieum</strong></a>
+  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.28"><strong>Download Ieum</strong></a>
   · <a href="#first-run-security-and-permissions"><strong>Security &amp; permissions</strong></a>
   · <a href="https://github.com/sponsors/victoriousian"><strong>Sponsor Ieum</strong></a>
 </p>
@@ -32,7 +32,7 @@ Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers
 screen edge: it connects **Korean/English mode, IME composition sessions, physical key positions, and Unicode
 clipboard data** into one consistent input path across operating systems.
 
-> The current release is `v0.1.0-alpha.27`. Automated builds and unit tests pass, but the long-running physical
+> The current release is `v0.1.0-alpha.28`. Automated builds and unit tests pass, but the long-running physical
 > Windows/macOS input matrix and production code signing are not complete.
 
 ## Help Ieum reach production distribution
@@ -52,8 +52,17 @@ notarization, physical Windows ARM64 and Apple Silicon regression testing, and d
 Custom one-time amounts remain available. Local KVM, Korean/CJK input synchronization, and clipboard core remain
 open regardless of sponsorship. Every release publishes the
 [amount allocated and work completed with sponsorship funds](docs/release/sponsorship-impact.md). The amount
-allocated to `alpha.27` is **USD 0**. The new Early Access price is not counted as sponsorship revenue until a
+allocated to `alpha.28` is **USD 0**. The new Early Access price is not counted as sponsorship revenue until a
 payment is actually received and verified.
+
+## Alpha.28 cursor-coordinate and fullscreen-game fixes
+
+`alpha.28` corrects Windows absolute-input pixel conversion and clamps coordinates to physical displays so
+movement into monitor gaps does not accumulate an offset. Fullscreen and borderless-window state updates
+continue while the mouse is idle, and an active lock cancels pending switches between computers.
+On Windows, Ieum confines the cursor to the game's monitor and restores its restriction after Alt+Tab,
+game exit, or stopping Ieum while preserving the game's own capture. Windows executables use version
+`0.1.128.0`. Long-running Windows↔Mac movement and individual games remain physical acceptance-test items.
 
 ## Alpha.27 macOS cursor visibility fix
 
@@ -309,16 +318,16 @@ claim those hardware results before the matrix is run.
 
 ## Download
 
-[이음 (Ieum) v0.1.0-alpha.27 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.27)
+[이음 (Ieum) v0.1.0-alpha.28 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.28)
 
 | Operating system | Installer |
 | --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.27-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.27-macos-x86_64.dmg` |
-| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.27-win-x64.msi` |
-| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.27-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.27-win-arm64.msi` |
-| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.27-win-arm64-ko-KR.msi` |
+| Apple Silicon Mac | `Ieum-0.1.0-alpha.28-macos-arm64.dmg` |
+| Intel Mac | `Ieum-0.1.0-alpha.28-macos-x86_64.dmg` |
+| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.28-win-x64.msi` |
+| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.28-win-x64-ko-KR.msi` |
+| ARM64 Windows | `Ieum-0.1.0-alpha.28-win-arm64.msi` |
+| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.28-win-arm64-ko-KR.msi` |
 
 Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
 `SHA256SUMS.txt`.

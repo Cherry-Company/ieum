@@ -2,6 +2,13 @@
 # SPDX-License-Identifier: MIT
 
 create_test(
+  NAME FullscreenCursorConfinementTests
+  DEPENDS common
+  SOURCE FullscreenCursorConfinementTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/common"
+)
+
+create_test(
   NAME FileTransferEdgeDropIpcTests
   DEPENDS common
   SOURCE FileTransferEdgeDropIpcTests.cpp
