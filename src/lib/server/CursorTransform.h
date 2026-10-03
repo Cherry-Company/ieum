@@ -34,6 +34,45 @@ inline int32_t clampCoordinate(int32_t coordinate, int32_t origin, int32_t exten
   return static_cast<int32_t>(std::clamp(static_cast<int64_t>(coordinate), lower, upper));
 }
 
+inline void clampToDisplayLayout(
+    const deskflow::DisplayLayout &layout, const deskflow::DisplayGeometry &desktop, int32_t &x, int32_t &y
+)
+{
+  x = clampCoordinate(x, desktop.x, desktop.width);
+  y = clampCoordinate(y, desktop.y, desktop.height);
+
+  int32_t closestX = x;
+  int32_t closestY = y;
+  double closestDistance = std::numeric_limits<double>::infinity();
+  for (const auto &display : layout) {
+    if (display.width <= 0 || display.height <= 0 || display.x < desktop.x || display.y < desktop.y ||
+        static_cast<int64_t>(display.x) + display.width > static_cast<int64_t>(desktop.x) + desktop.width ||
+        static_cast<int64_t>(display.y) + display.height > static_cast<int64_t>(desktop.y) + desktop.height) {
+      continue;
+    }
+
+    const auto candidateX = clampCoordinate(x, display.x, display.width);
+    const auto candidateY = clampCoordinate(y, display.y, display.height);
+    if (candidateX == x && candidateY == y) {
+      return;
+    }
+
+    const auto dx = static_cast<double>(candidateX) - x;
+    const auto dy = static_cast<double>(candidateY) - y;
+    const auto distance = dx * dx + dy * dy;
+    if (distance < closestDistance) {
+      closestX = candidateX;
+      closestY = candidateY;
+      closestDistance = distance;
+    }
+  }
+
+  // With an old peer or an invalid layout, keep the desktop fallback. With
+  // physical displays, never track a position the OS must silently relocate.
+  x = closestX;
+  y = closestY;
+}
+
 inline float toFraction(int32_t coordinate, int32_t origin, int32_t extent)
 {
   if (extent <= 0) {

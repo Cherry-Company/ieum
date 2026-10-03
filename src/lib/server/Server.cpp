@@ -611,6 +611,7 @@ void Server::switchScreen(BaseClientProxy *dst, int32_t x, int32_t y, bool forSc
   }
   x = clampedX;
   y = clampedY;
+  cursor::clampToDisplayLayout(dst->getDisplayLayout(), {dx, dy, dw, dh}, x, y);
 
   assert(m_active != nullptr);
 
@@ -1040,6 +1041,14 @@ bool Server::isSwitchOkay(
     return false;
   }
 
+  // Evaluate the automatic lock before arming a delay or double tap. Otherwise
+  // an earlier foreground capture can go unobserved while a switch is pending.
+  if (isLockedToScreen()) {
+    LOG_VERBOSE("locked to screen");
+    stopSwitch();
+    return false;
+  }
+
   // should we switch or not?
   bool preventSwitch = false;
   bool allowSwitch = false;
@@ -1095,13 +1104,6 @@ bool Server::isSwitchOkay(
       preventSwitch = true;
       stopSwitch();
     }
-  }
-
-  // ignore if mouse is locked to screen and don't try to switch later
-  if (!preventSwitch && isLockedToScreen()) {
-    LOG_VERBOSE("locked to screen");
-    preventSwitch = true;
-    stopSwitch();
   }
 
   return !preventSwitch;
@@ -1282,6 +1284,7 @@ void Server::stopRelativeMoves()
     m_active->getShape(ax, ay, aw, ah);
     m_x = ax + (aw >> 1);
     m_y = ay + (ah >> 1);
+    cursor::clampToDisplayLayout(m_active->getDisplayLayout(), {ax, ay, aw, ah}, m_x, m_y);
     m_xDelta = 0;
     m_yDelta = 0;
     m_xDelta2 = 0;
@@ -1407,6 +1410,7 @@ void Server::handleShapeChanged(BaseClientProxy *client)
   }
   x = cursor::clampCoordinate(x, shapeX, shapeWidth);
   y = cursor::clampCoordinate(y, shapeY, shapeHeight);
+  cursor::clampToDisplayLayout(client->getDisplayLayout(), {shapeX, shapeY, shapeWidth, shapeHeight}, x, y);
   client->setJumpCursorPos(x, y);
 
   // update the mouse coordinates
@@ -1545,6 +1549,10 @@ void Server::handleWheelEvent(const Event &event)
 
 void Server::handleSwitchWaitTimeout()
 {
+  if (m_switchScreen == nullptr || m_switchWaitTimer == nullptr) {
+    return;
+  }
+
   // ignore if mouse is locked to screen
   if (isLockedToScreen()) {
     LOG_VERBOSE("locked to screen");
@@ -2009,6 +2017,13 @@ bool Server::onMouseMovePrimary(int32_t x, int32_t y)
   m_x = x;
   m_y = y;
 
+  // Observe capture while moving inside the display too, so its release grace
+  // period also covers transient game overlays before the next edge event.
+  if (isLockedToScreen()) {
+    stopSwitch();
+    return false;
+  }
+
   // get screen shape
   int32_t ax;
   int32_t ay;
@@ -2237,6 +2252,7 @@ void Server::onMouseMoveSecondary(int32_t dx, int32_t dy)
       m_y = ay + ah - 1;
       LOG_VERBOSE("clamp to bottom of \"%s\"", getName(m_active).c_str());
     }
+    cursor::clampToDisplayLayout(m_active->getDisplayLayout(), {ax, ay, aw, ah}, m_x, m_y);
 
     // warp cursor if it moved.
     if (m_x != xOld || m_y != yOld) {

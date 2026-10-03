@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "common/FullscreenCursorConfinement.h"
 #include "deskflow/PlatformScreen.h"
 #include "deskflow/win32/MSWindowsEdgeDropHost.h"
 #include "platform/MSWindowsHook.h"
@@ -151,6 +152,9 @@ protected:
   void fakeLocalKey(KeyButton button, bool press) const;
 
 private:
+  void updateFullscreenCursorConfinement(bool allowConfinement = true);
+  void releaseFullscreenCursorConfinement();
+
   // initialization and shutdown operations
   HCURSOR createBlankCursor() const;
   void destroyCursor(HCURSOR cursor) const;
@@ -365,4 +369,9 @@ private:
 
   mutable std::chrono::steady_clock::time_point m_fullscreenLastCheck;
   mutable bool m_foregroundFullscreen = false;
+  mutable HWND m_fullscreenForeground = nullptr;
+  mutable std::optional<deskflow::fullscreen::Bounds> m_fullscreenDisplay;
+  deskflow::fullscreen::CursorConfinement m_fullscreenCursorConfinement;
+  EventQueueTimer *m_fullscreenTimer = nullptr;
+  bool m_autoLockFullscreen = true;
 };

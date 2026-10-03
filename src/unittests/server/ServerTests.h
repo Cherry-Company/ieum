@@ -4,12 +4,16 @@
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 
+#include "arch/Arch.h"
+#include "base/Log.h"
+
 #include <QTest>
 
 class ServerTests : public QObject
 {
   Q_OBJECT
 private Q_SLOTS:
+  void initTestCase();
   void SwitchToScreenInfo_alloc_screen();
   void KeyboardBroadcastInfo_alloc_stateAndSceens();
   void cursorTransform_clampsOutOfBounds();
@@ -19,6 +23,14 @@ private Q_SLOTS:
   void cursorTransform_mapsStackedEdgeDisplaysContinuously();
   void cursorTransform_collapsesPhysicalEdgeGaps();
   void cursorTransform_preservesSubpixelMotion();
+  void cursorTransform_projectsDesktopGapsOntoPhysicalDisplays();
+  void cursorTransform_preservesValidDisplayPositions();
   void fullscreenGeometry_distinguishesFullscreenFromMaximized();
   void fullscreenGeometry_detectsPointerCapture();
+  void screenSwitch_tracksPhysicalPositionAfterGapEntry();
+  void screenSwitch_fullscreenCancelsPendingSwitch();
+
+private:
+  Arch m_arch;
+  Log m_log;
 };

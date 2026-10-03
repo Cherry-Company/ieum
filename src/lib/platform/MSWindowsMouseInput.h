@@ -19,7 +19,16 @@ inline uint32_t normalizeAbsoluteMouseCoordinate(int32_t value, int32_t origin, 
 
   const int64_t maximum = static_cast<int64_t>(extent) - 1;
   const int64_t offset = std::clamp(static_cast<int64_t>(value) - static_cast<int64_t>(origin), int64_t{0}, maximum);
-  return static_cast<uint32_t>((offset * 65535 + maximum / 2) / maximum);
+  if (offset == 0) {
+    return 0;
+  }
+  if (offset == maximum) {
+    return 65535;
+  }
+
+  // SendInput maps 65536 buckets to extent pixels. Aim at the pixel's
+  // center so decoding cannot land on the previous pixel through rounding.
+  return static_cast<uint32_t>((offset * 65536 + 32768) / extent);
 }
 
 } // namespace deskflow::win32

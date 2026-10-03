@@ -7,9 +7,195 @@
 
 #include "ServerTests.h"
 
+#include "../shared/FakePlatformScreen.h"
+#include "base/EventQueue.h"
 #include "common/FullscreenGeometry.h"
+#include "deskflow/AppUtil.h"
+#include "deskflow/Screen.h"
+#include "io/IStream.h"
+#include "server/ClientProxy1_11.h"
 #include "server/CursorTransform.h"
+#include "server/PrimaryClient.h"
 #include "server/Server.h"
+
+namespace {
+
+class TestAppUtil : public AppUtil
+{
+public:
+  int run() override
+  {
+    return 0;
+  }
+  void startNode() override
+  {
+  }
+  std::vector<std::string> getKeyboardLayoutList() override
+  {
+    return {"en"};
+  }
+  std::string getCurrentLanguageCode() override
+  {
+    return "en";
+  }
+};
+
+class SinkStream : public deskflow::IStream
+{
+public:
+  void close() override
+  {
+  }
+  uint32_t read(void *, uint32_t) override
+  {
+    return 0;
+  }
+  void write(const void *, uint32_t) override
+  {
+  }
+  void flush() override
+  {
+  }
+  void shutdownInput() override
+  {
+  }
+  void shutdownOutput() override
+  {
+  }
+  void *getEventTarget() const override
+  {
+    return const_cast<SinkStream *>(this);
+  }
+  bool isReady() const override
+  {
+    return false;
+  }
+  uint32_t getSize() const override
+  {
+    return 0;
+  }
+};
+
+class CursorClient : public ClientProxy1_11
+{
+public:
+  CursorClient(IEventQueue *events, Server *server) : ClientProxy1_11("secondary", new SinkStream, server, events)
+  {
+  }
+  deskflow::DisplayGeometry shape{-1920, -1080, 3840, 2160};
+  deskflow::DisplayLayout displays{{-1920, -1080, 1920, 1080}, {0, 0, 1920, 1080}};
+  QPoint position{100, -500};
+  int entries = 0;
+
+  void getShape(int32_t &x, int32_t &y, int32_t &width, int32_t &height) const override
+  {
+    x = shape.x;
+    y = shape.y;
+    width = shape.width;
+    height = shape.height;
+  }
+  void getCursorPos(int32_t &x, int32_t &y) const override
+  {
+    x = position.x();
+    y = position.y();
+  }
+  deskflow::DisplayLayout getDisplayLayout() const override
+  {
+    return displays;
+  }
+  void enter(int32_t x, int32_t y, uint32_t, KeyModifierMask, bool) override
+  {
+    position = {x, y};
+    ++entries;
+  }
+  void mouseMove(int32_t x, int32_t y) override
+  {
+    position = {x, y};
+  }
+};
+
+void dispatchMotion(EventQueue &events, EventTypes type, void *target, int32_t x, int32_t y)
+{
+  Event event(type, target, IPrimaryScreen::MotionInfo::alloc(x, y));
+  events.dispatchEvent(event);
+  Event::deleteData(event);
+}
+
+} // namespace
+
+void ServerTests::initTestCase()
+{
+  m_arch.init();
+  static TestAppUtil appUtil;
+}
+
+void ServerTests::screenSwitch_tracksPhysicalPositionAfterGapEntry()
+{
+  EventQueue events;
+  deskflow::server::Config config(&events);
+  QVERIFY(config.addScreen("primary"));
+  QVERIFY(config.addScreen("secondary"));
+  QVERIFY(config.addOption("", kOptionClipboardSharing, 0));
+  QVERIFY(config.addOption("", kOptionDisableLockToScreen, 1));
+  auto *platform = new FakePlatformScreen(&events, true);
+  deskflow::Screen screen(platform, &events);
+  PrimaryClient primary("primary", &screen);
+  Server server(config, &primary, &screen, &events);
+  auto *client = new CursorClient(&events, &server);
+  server.adoptClient(client);
+
+  Server::SwitchToScreenInfo jumpInfo("secondary");
+  Event jump(EventTypes::ServerSwitchToScreen, config.getInputFilter(), &jumpInfo, Event::EventFlags::DontFreeData);
+  QVERIFY(events.dispatchEvent(jump));
+  Event::deleteData(jump);
+  QCOMPARE(client->entries, 1);
+  QCOMPARE(client->position, QPoint(-1, -500));
+
+  for (int i = 0; i < 100; ++i) {
+    dispatchMotion(events, EventTypes::PrimaryScreenMotionOnSecondary, platform, 10, 0);
+    QCOMPARE(client->position, QPoint(-1, -500));
+  }
+  dispatchMotion(events, EventTypes::PrimaryScreenMotionOnSecondary, platform, -10, 0);
+  QCOMPARE(client->position, QPoint(-11, -500));
+}
+
+void ServerTests::screenSwitch_fullscreenCancelsPendingSwitch()
+{
+  EventQueue events;
+  deskflow::server::Config config(&events);
+  QVERIFY(config.addScreen("primary"));
+  QVERIFY(config.addScreen("secondary"));
+  QVERIFY(config.connect("primary", Direction::Right, 0.0f, 1.0f, "secondary", 0.0f, 1.0f));
+  QVERIFY(config.addOption("", kOptionClipboardSharing, 0));
+  QVERIFY(config.addOption("", kOptionDisableLockToScreen, 1));
+  QVERIFY(config.addOption("", kOptionScreenSwitchDelay, 200));
+  auto *platform = new FakePlatformScreen(&events, true);
+  deskflow::Screen screen(platform, &events);
+  PrimaryClient primary("primary", &screen);
+  Server server(config, &primary, &screen, &events);
+  auto *client = new CursorClient(&events, &server);
+  server.adoptClient(client);
+
+  dispatchMotion(events, EventTypes::PrimaryScreenMotionOnPrimary, platform, 1919, 500);
+  QCOMPARE(client->entries, 0);
+  platform->fullscreen = true;
+  dispatchMotion(events, EventTypes::PrimaryScreenMotionOnPrimary, platform, 1000, 500);
+  dispatchMotion(events, EventTypes::PrimaryScreenMotionOnPrimary, platform, 1919, 500);
+  QCOMPARE(client->entries, 0);
+
+  platform->fullscreen = false;
+  dispatchMotion(events, EventTypes::PrimaryScreenMotionOnPrimary, platform, 1919, 500);
+  QCOMPARE(client->entries, 0);
+  QTest::qWait(1550);
+  // A queued event from the cancelled timer must not switch or dereference
+  // the cleared destination once the automatic capture grace period expires.
+  QVERIFY(events.dispatchEvent(Event(EventTypes::Timer, &server)));
+  QCOMPARE(client->entries, 0);
+
+  dispatchMotion(events, EventTypes::PrimaryScreenMotionOnPrimary, platform, 1919, 500);
+  QVERIFY(events.dispatchEvent(Event(EventTypes::Timer, &server)));
+  QCOMPARE(client->entries, 1);
+}
 
 void ServerTests::SwitchToScreenInfo_alloc_screen()
 {
@@ -177,6 +363,60 @@ void ServerTests::cursorTransform_preservesSubpixelMotion()
   QCOMPARE(remainder, 0.0);
 }
 
+void ServerTests::cursorTransform_projectsDesktopGapsOntoPhysicalDisplays()
+{
+  using deskflow::server::cursor::clampToDisplayLayout;
+  const deskflow::DisplayGeometry desktop{-1920, -1080, 3840, 2160};
+  const deskflow::DisplayLayout displays{{-1920, -1080, 1920, 1080}, {0, 0, 1920, 1080}};
+
+  int32_t x = 100;
+  int32_t y = -500;
+  clampToDisplayLayout(displays, desktop, x, y);
+  QCOMPARE(x, -1);
+  QCOMPARE(y, -500);
+
+  x = -500;
+  y = 100;
+  clampToDisplayLayout(displays, desktop, x, y);
+  QCOMPARE(x, -500);
+  QCOMPARE(y, -1);
+
+  // Repeated motion into a desktop gap must stay at the actual display edge
+  // instead of accumulating an invisible offset before the return crossing.
+  for (int i = 0; i < 100; ++i) {
+    y += 10;
+    clampToDisplayLayout(displays, desktop, x, y);
+    QCOMPARE(x, -500);
+    QCOMPARE(y, -1);
+  }
+}
+
+void ServerTests::cursorTransform_preservesValidDisplayPositions()
+{
+  using deskflow::server::cursor::clampToDisplayLayout;
+  const deskflow::DisplayGeometry desktop{-1920, -1080, 3840, 2160};
+  const deskflow::DisplayLayout displays{{-1920, -1080, 1920, 1080}, {0, 0, 1920, 1080}};
+
+  int32_t x = -400;
+  int32_t y = -300;
+  clampToDisplayLayout(displays, desktop, x, y);
+  QCOMPARE(x, -400);
+  QCOMPARE(y, -300);
+
+  x = 3000;
+  y = 500;
+  clampToDisplayLayout(displays, desktop, x, y);
+  QCOMPARE(x, 1919);
+  QCOMPARE(y, 500);
+
+  // Legacy peers have only their aggregate desktop; keep that fallback.
+  x = 100;
+  y = -500;
+  clampToDisplayLayout({}, desktop, x, y);
+  QCOMPARE(x, 100);
+  QCOMPARE(y, -500);
+}
+
 void ServerTests::fullscreenGeometry_distinguishesFullscreenFromMaximized()
 {
   using deskflow::fullscreen::Bounds;
@@ -199,7 +439,10 @@ void ServerTests::fullscreenGeometry_detectsPointerCapture()
   QVERIFY(pointerIsConfinedToDisplay(gameDisplay, gameDisplay, desktop));
   QVERIFY(pointerIsConfinedToDisplay({2100.0, 100.0, 3700.0, 1000.0}, gameDisplay, desktop));
   QVERIFY(!pointerIsConfinedToDisplay(desktop, gameDisplay, desktop));
-  QVERIFY(!pointerIsConfinedToDisplay({2000.0, 100.0, 2030.0, 130.0}, gameDisplay, desktop));
+  QVERIFY(pointerIsConfinedToDisplay({2000.0, 100.0, 2030.0, 130.0}, gameDisplay, desktop));
+  // FPS games may pin the pointer to a single pixel while consuming raw input.
+  QVERIFY(pointerIsConfinedToDisplay({2880.0, 540.0, 2881.0, 541.0}, gameDisplay, desktop));
+  QVERIFY(!pointerIsConfinedToDisplay({2880.0, 540.0, 2880.0, 540.0}, gameDisplay, desktop));
 }
 
 QTEST_MAIN(ServerTests)
