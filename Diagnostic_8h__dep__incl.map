@@ -1,0 +1,14 @@
+<map id="src/lib/gui/Diagnostic.h" name="src/lib/gui/Diagnostic.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="228,5,382,30"/>
+<area shape="rect" id="Node000002" href="$deskflow-gui_8cpp.html" title=" " alt="" coords="271,151,420,189"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="210,26,153,35,93,45,43,60,25,69,13,80,8,90,13,101,29,114,53,125,120,143,197,155,273,164,267,165,196,160,119,149,51,130,26,119,8,104,3,90,8,76,22,65,41,55,92,40,152,29,215,24"/>
+<area shape="rect" id="Node000003" href="$Diagnostic_8cpp.html" title=" " alt="" coords="22,78,191,103"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="256,38,140,80,138,75,260,34"/>
+<area shape="rect" id="Node000004" href="$MainWindow_8cpp.html" title=" " alt="" coords="215,78,395,103"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="307,44,308,79,303,76,304,48"/>
+<area shape="rect" id="Node000005" href="$Messages_8cpp.html" title=" " alt="" coords="419,78,586,103"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="352,33,473,77,467,78,352,38"/>
+<area shape="rect" id="Node000006" href="$SessionLifecycle_8h.html" title=" " alt="" coords="610,78,800,103"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="387,31,641,76,636,78,386,36"/>
+<area shape="poly" id="edge6_Node000006_Node000002" title=" " alt="" coords="639,106,420,155,420,150,634,107"/>
+</map>

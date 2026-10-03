@@ -1,0 +1,5 @@
+<map id="deskflow::filetransfer::FileTransferDataItemEnd" name="deskflow::filetransfer::FileTransferDataItemEnd">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,114,179,153"/>
+<area shape="rect" id="Node000002" href="$structdeskflow_1_1filetransfer_1_1FileTransferDataRoute.html" title=" " alt="" coords="12,5,172,44"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,58,95,114,89,113,90,61"/>
+</map>

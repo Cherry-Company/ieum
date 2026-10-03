@@ -1,0 +1,21 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,203,74,227"/>
+<area shape="rect" id="Node000001" href="$classAboutDialog.html" title=" " alt="" coords="178,5,270,30"/>
+<area shape="poly" id="edge157_Node000000_Node000001" title=" " alt="" coords="43,187,53,153,68,114,90,74,120,41,147,26,179,19,176,22,149,31,123,45,94,78,73,116,58,155,49,188"/>
+<area shape="rect" id="Node000002" href="$classActionDialog.html" title=" " alt="" coords="176,55,272,79"/>
+<area shape="poly" id="edge158_Node000000_Node000002" title=" " alt="" coords="49,187,76,138,96,112,120,90,147,76,178,70,174,73,149,81,123,95,100,115,81,140,54,190"/>
+<area shape="rect" id="Node000003" href="$classClientConfigDialog.html" title="The ClientConfigDialog class Simple dialog to allow users to configure the Client settings." alt="" coords="159,104,289,129"/>
+<area shape="poly" id="edge159_Node000000_Node000003" title=" " alt="" coords="59,189,87,163,120,139,160,125,157,129,123,144,90,167,64,192"/>
+<area shape="rect" id="Node000004" href="$classFingerprintDialog.html" title=" " alt="" coords="164,153,284,178"/>
+<area shape="poly" id="edge160_Node000000_Node000004" title=" " alt="" coords="87,198,121,188,171,177,167,181,122,194,90,202"/>
+<area shape="rect" id="Node000005" href="$classHotkeyDialog.html" title=" " alt="" coords="174,203,274,227"/>
+<area shape="poly" id="edge161_Node000000_Node000005" title=" " alt="" coords="89,213,176,213,172,217,90,217"/>
+<area shape="rect" id="Node000006" href="$classScreenSettingsDialog.html" title=" " alt="" coords="150,252,298,277"/>
+<area shape="poly" id="edge162_Node000000_Node000006" title=" " alt="" coords="88,227,122,236,171,250,167,253,121,242,90,232"/>
+<area shape="rect" id="Node000007" href="$classServerConfigDialog.html" title=" " alt="" coords="157,301,291,326"/>
+<area shape="poly" id="edge163_Node000000_Node000007" title=" " alt="" coords="61,237,90,263,123,286,159,301,154,303,120,291,87,267,62,242"/>
+<area shape="rect" id="Node000008" href="$classSettingsDialog.html" title=" " alt="" coords="171,351,277,375"/>
+<area shape="poly" id="edge164_Node000000_Node000008" title=" " alt="" coords="52,239,81,290,100,315,123,335,146,347,173,357,168,358,144,352,120,340,96,318,76,292,51,244"/>
+<area shape="rect" id="Node000009" href="$classdeskflow_1_1gui_1_1MacAccessibilityGuideDialog.html" title=" " alt="" coords="122,400,326,438"/>
+<area shape="poly" id="edge165_Node000000_Node000009" title=" " alt="" coords="47,240,58,275,73,313,95,352,123,385,142,399,137,399,120,389,90,355,69,316,53,277,46,245"/>
+</map>

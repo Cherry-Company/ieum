@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['candidateposition_0',['candidatePosition',['../structdeskflow_1_1filetransfer_1_1FileTransferSourceManifestResult.html#aa92cd0f353ea82d5732511a3272b783e',1,'deskflow::filetransfer::FileTransferSourceManifestResult']]],
+  ['candidates_1',['candidates',['../structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl_1_1PendingEdgeRequest.html#a76ae51226d1252a3255c802e8a034f51',1,'deskflow::filetransfer::FileTransferService::Impl::PendingEdgeRequest']]],
+  ['certificate_2',['Certificate',['../structSettings_1_1Security.html#a6b3caec9e2768a7f5623b0b19e2d7944',1,'Settings::Security']]],
+  ['checkpeers_3',['CheckPeers',['../structSettings_1_1Security.html#a304e2acc7f61d45f7396e9f8aca908c7',1,'Settings::Security']]],
+  ['chunkbytes_4',['chunkBytes',['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferReader_1_1Impl.html#a56f8b54ef87a9a5811e3e35a18ee267c',1,'deskflow::filetransfer::MSWindowsFileTransferReader::Impl']]],
+  ['cjkrawscancode_5',['CjkRawScancode',['../structSettings_1_1Client.html#ad837a9fa8dcbd1f4f9148ecf3f235ef4',1,'Settings::Client']]],
+  ['clipboardnormalizenfc_6',['ClipboardNormalizeNfc',['../structSettings_1_1Client.html#abe6293c05d2473f0230db66e4f8a3632',1,'Settings::Client']]],
+  ['clipboardsharing_7',['ClipboardSharing',['../structSettings_1_1InternalConfig.html#afc8ad303ace765f0bb0223ec51be29f4',1,'Settings::InternalConfig']]],
+  ['clipboardsharingsize_8',['ClipboardSharingSize',['../structSettings_1_1InternalConfig.html#a457a9b4d9b6c2fed5d743fb5ae9ac1ac',1,'Settings::InternalConfig']]],
+  ['clipboardsize_9',['ClipboardSize',['../structSettings_1_1Server.html#ab3368d47d97816afafbba3db5071ff35',1,'Settings::Server']]],
+  ['closereminder_10',['CloseReminder',['../structSettings_1_1Gui.html#aa38501d12ea2f102a9ff82a722c55d08',1,'Settings::Gui']]],
+  ['closetotray_11',['CloseToTray',['../structSettings_1_1Gui.html#ad13866ec8710e35b73149cd35baae69d',1,'Settings::Gui']]],
+  ['cmd_12',['cmd',['../ArchNetworkWinsock_8cpp.html#a85092d82ab6ea85dad51ba78cbda36a0',1,'ArchNetworkWinsock.cpp']]],
+  ['code_13',['code',['../structdeskflow_1_1filetransfer_1_1FileTransferResult.html#a1db2e2e282db426b3a873f7d2f71c1d2',1,'deskflow::filetransfer::FileTransferResult']]],
+  ['codecerror_14',['codecError',['../structdeskflow_1_1filetransfer_1_1FileTransferFrameReadResult.html#a519d72931e7b7ffee0759bd4237e3392',1,'deskflow::filetransfer::FileTransferFrameReadResult::codecError'],['../structdeskflow_1_1filetransfer_1_1FileTransferDataFrameReadResult.html#afc51ba43de65e8070c03ea9f4e7e7d00',1,'deskflow::filetransfer::FileTransferDataFrameReadResult::codecError'],['../structdeskflow_1_1filetransfer_1_1FileTransferEdgeFrameReadResult.html#a111d5cc5574f3b9816a03f6dc7806242',1,'deskflow::filetransfer::FileTransferEdgeFrameReadResult::codecError']]],
+  ['complete_15',['complete',['../structdeskflow_1_1filetransfer_1_1FileTransferReadResult.html#ac9ee9b9a41a7ff9500795a576a7af374',1,'deskflow::filetransfer::FileTransferReadResult::complete'],['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferReader_1_1Impl.html#a2062daf5f6fcd255135d25b9fbd79e3f',1,'deskflow::filetransfer::MSWindowsFileTransferReader::Impl::complete'],['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferReadResult.html#a69c322b8bac87b6ecc7786181a34bd51',1,'deskflow::filetransfer::MSWindowsFileTransferReadResult::complete']]],
+  ['computername_16',['ComputerName',['../structSettings_1_1Core.html#a1dca5c3929372601e8237ed5ec24e099',1,'Settings::Core']]],
+  ['configfile_17',['ConfigFile',['../structSettings_1_1Daemon.html#a88aa431f45261baea31f1c24c87668cd',1,'Settings::Daemon']]],
+  ['configoption_18',['configOption',['../structCoreArgs.html#a79230ec384dd83b877382b679948e189',1,'CoreArgs']]],
+  ['coremode_19',['CoreMode',['../structSettings_1_1Core.html#a4b34ca6a00d57ae4cdf2df6d3a695446',1,'Settings::Core']]],
+  ['createhost_20',['createHost',['../structdeskflow_1_1gui_1_1WindowsFileTransferDropBrokerDependencies.html#ae5754f32cd0028f55cd630e910c6f0bd',1,'deskflow::gui::WindowsFileTransferDropBrokerDependencies']]],
+  ['currentfile_21',['currentFile',['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferWriter_1_1Impl.html#a90c310b5b8b63841ede92db1b386f500',1,'deskflow::filetransfer::MSWindowsFileTransferWriter::Impl']]],
+  ['currenthash_22',['currentHash',['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferWriter_1_1Impl.html#a25fcf1535d56ffae38244acfe63f9d80',1,'deskflow::filetransfer::MSWindowsFileTransferWriter::Impl']]],
+  ['currentitem_23',['currentItem',['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferWriter_1_1Impl.html#aaf8764bf9f87f1ac835df0d46f381602',1,'deskflow::filetransfer::MSWindowsFileTransferWriter::Impl']]],
+  ['currentoffset_24',['currentOffset',['../structdeskflow_1_1filetransfer_1_1MSWindowsFileTransferWriter_1_1Impl.html#ab501dd7c806c615a5df8001f79920473',1,'deskflow::filetransfer::MSWindowsFileTransferWriter::Impl']]]
+];

@@ -1,0 +1,5 @@
+<map id="deskflow::InputLanguageStatus" name="deskflow::InputLanguageStatus">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,78,209,103"/>
+<area shape="rect" id="Node000002" href="$classEventData.html" title=" " alt="" coords="66,5,148,30"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,44,109,79,105,77,105,48"/>
+</map>

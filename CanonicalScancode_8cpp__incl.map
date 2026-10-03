@@ -1,0 +1,19 @@
+<map id="src/lib/deskflow/CanonicalScancode.cpp" name="src/lib/deskflow/CanonicalScancode.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="323,5,497,44"/>
+<area shape="rect" id="Node000002" href="$CanonicalScancode_8h.html" title=" " alt="" coords="103,92,306,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="358,46,251,89,248,84,363,43"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="330,92,404,117"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="402,43,383,80,379,76,398,46"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="429,92,479,117"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="422,42,443,79,437,78,420,47"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="504,92,564,117"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="440,42,505,83,500,84,440,47"/>
+<area shape="rect" id="Node000003" href="$KeyTypes_8h.html" title=" " alt="" coords="5,165,151,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="182,119,114,159,111,155,186,115"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="174,165,235,189"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="206,115,207,150,202,148,203,119"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="260,165,326,189"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="220,115,269,155,264,155,219,120"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="46,237,110,262"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="80,188,81,223,75,221,76,192"/>
+</map>

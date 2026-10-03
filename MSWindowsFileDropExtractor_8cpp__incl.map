@@ -1,0 +1,27 @@
+<map id="src/lib/platform/MSWindowsFileDropExtractor.cpp" name="src/lib/platform/MSWindowsFileDropExtractor.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="470,5,656,44"/>
+<area shape="rect" id="Node000002" href="$MSWindowsFileDropExtractor_8h.html" title=" " alt="" coords="238,92,433,131"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="515,44,401,89,399,84,510,45"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="456,99,513,124"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="548,43,507,90,504,85,543,46"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="537,99,589,124"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="565,43,565,85,561,82,561,47"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="614,99,667,124"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="581,42,622,88,617,87,579,47"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="692,99,744,124"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="598,42,686,91,681,91,597,47"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,179,92,203"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="266,134,107,177,105,172,265,129"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="116,179,178,203"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="292,131,190,175,189,170,287,132"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="202,179,279,203"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="315,130,268,171,265,166,310,132"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="303,179,367,203"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="337,129,337,164,333,161,333,133"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="392,179,471,203"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="359,129,408,169,402,168,358,134"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="495,179,562,203"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="382,129,488,172,483,173,381,134"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="586,179,642,203"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="403,129,573,177,568,178,402,134"/>
+</map>

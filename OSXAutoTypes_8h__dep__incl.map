@@ -1,0 +1,13 @@
+<map id="src/lib/platform/OSXAutoTypes.h" name="src/lib/platform/OSXAutoTypes.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="196,5,362,44"/>
+<area shape="rect" id="Node000002" href="$IOSXKeyResource_8cpp.html" title=" " alt="" coords="5,92,171,131"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="221,53,131,94,129,89,224,49"/>
+<area shape="rect" id="Node000003" href="$OSXInputSourceController_8mm.html" title=" " alt="" coords="194,92,363,131"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="280,58,281,93,276,90,277,62"/>
+<area shape="rect" id="Node000004" href="$OSXKeyState_8h.html" title=" " alt="" coords="386,99,590,124"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="340,48,462,98,456,99,339,53"/>
+<area shape="rect" id="Node000005" href="$OSXKeyState_8cpp.html" title=" " alt="" coords="261,179,478,203"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="460,132,388,180,386,176,455,133"/>
+<area shape="rect" id="Node000006" href="$OSXScreen_8mm.html" title=" " alt="" coords="502,179,708,203"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="519,130,590,178,585,178,517,135"/>
+</map>

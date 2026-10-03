@@ -1,0 +1,9 @@
+<map id="src/lib/deskflow/FileTransferService.h" name="src/lib/deskflow/FileTransferService.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="228,5,413,44"/>
+<area shape="rect" id="Node000002" href="$ClientApp_8cpp.html" title=" " alt="" coords="5,99,204,124"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="261,51,135,101,133,96,256,49"/>
+<area shape="rect" id="Node000003" href="$FileTransferService_8cpp.html" title=" " alt="" coords="228,92,413,131"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="322,58,323,93,318,90,319,62"/>
+<area shape="rect" id="Node000004" href="$ServerApp_8cpp.html" title=" " alt="" coords="437,99,639,124"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="383,47,510,98,505,99,382,53"/>
+</map>

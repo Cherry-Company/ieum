@@ -1,0 +1,43 @@
+<map id="src/lib/gui/widgets/LogWidget.cpp" name="src/lib/gui/widgets/LogWidget.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="712,5,838,44"/>
+<area shape="rect" id="Node000002" href="$LogWidget_8h.html" title=" " alt="" coords="195,92,288,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="711,38,304,97,303,91,711,33"/>
+<area shape="rect" id="Node000007" href="$Logger_8h.html" title=" " alt="" coords="36,92,129,117"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="711,36,145,99,144,94,711,30"/>
+<area shape="rect" id="Node000008" href="$StyleUtils_8h.html" title=" " alt="" coords="586,92,696,117"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="745,44,676,86,674,81,740,45"/>
+<area shape="rect" id="Node000017" title=" " alt="" coords="721,92,828,117"/>
+<area shape="poly" id="edge18_Node000001_Node000017" title=" " alt="" coords="776,43,777,78,773,75,773,47"/>
+<area shape="rect" id="Node000018" title=" " alt="" coords="852,92,937,117"/>
+<area shape="poly" id="edge19_Node000001_Node000018" title=" " alt="" coords="804,42,867,84,862,83,803,47"/>
+<area shape="rect" id="Node000019" title=" " alt="" coords="961,92,1058,117"/>
+<area shape="poly" id="edge20_Node000001_Node000019" title=" " alt="" coords="832,42,962,87,957,87,831,47"/>
+<area shape="rect" id="Node000020" title=" " alt="" coords="1083,92,1184,117"/>
+<area shape="poly" id="edge21_Node000001_Node000020" title=" " alt="" coords="839,37,1070,89,1065,89,838,42"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,165,75,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="209,120,89,162,87,157,207,115"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="98,165,184,189"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="227,116,172,158,169,153,222,118"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="209,165,274,189"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="243,115,244,151,239,148,239,119"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="297,165,370,189"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="257,115,309,155,304,155,256,120"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="78,116,57,153,53,150,73,119"/>
+<area shape="poly" id="edge16_Node000008_Node000006" title=" " alt="" coords="593,117,385,167,384,161,587,117"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="393,165,442,189"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="607,117,457,166,455,161,602,118"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="466,165,561,189"/>
+<area shape="poly" id="edge10_Node000008_Node000010" title=" " alt="" coords="623,117,549,159,547,154,618,118"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="585,165,698,189"/>
+<area shape="poly" id="edge11_Node000008_Node000011" title=" " alt="" coords="643,115,643,151,639,147,639,119"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="721,165,836,189"/>
+<area shape="poly" id="edge12_Node000008_Node000012" title=" " alt="" coords="665,115,745,158,740,157,663,120"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="860,165,916,189"/>
+<area shape="poly" id="edge13_Node000008_Node000013" title=" " alt="" coords="682,115,847,163,842,163,682,120"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="940,165,1012,189"/>
+<area shape="poly" id="edge14_Node000008_Node000014" title=" " alt="" coords="697,114,928,164,922,164,697,119"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="1036,165,1129,189"/>
+<area shape="poly" id="edge15_Node000008_Node000015" title=" " alt="" coords="697,112,710,114,1023,164,1018,164,709,119,697,117"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="1154,165,1300,189"/>
+<area shape="poly" id="edge17_Node000008_Node000016" title=" " alt="" coords="697,112,710,114,922,139,1141,164,1135,164,922,144,709,119,697,118"/>
+</map>

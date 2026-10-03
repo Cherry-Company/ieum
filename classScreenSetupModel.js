@@ -1,0 +1,26 @@
+var classScreenSetupModel =
+[
+    [ "ScreenSetupModel", "classScreenSetupModel.html#a6a5b61f67e1c21f61f677a76cfdf9fe1", null ],
+    [ "addScreen", "classScreenSetupModel.html#a4e750b6cf198be9d44c29433ce0d9532", null ],
+    [ "columnCount", "classScreenSetupModel.html#a05a60efa6245b6189f71dc2f4dc913dd", null ],
+    [ "columnCount", "classScreenSetupModel.html#a71a912ab4130b6caf46948689301a85d", null ],
+    [ "data", "classScreenSetupModel.html#aa52c7d2552312f20893a436f2d8a6666", null ],
+    [ "dropMimeData", "classScreenSetupModel.html#aa49751d31f444debbbcad8e7ea08ebe6", null ],
+    [ "encodeScreenDrag", "classScreenSetupModel.html#a2e84c928ebf73edbec1759d0d758eab5", null ],
+    [ "flags", "classScreenSetupModel.html#a09ac2635cbce07775618b69c5f9b7836", null ],
+    [ "isFull", "classScreenSetupModel.html#ac0f529cae821155e8a40d252f498a8b3", null ],
+    [ "isInBounds", "classScreenSetupModel.html#ab39ae4a7a248e1e8d22cd5ee05f39802", null ],
+    [ "mimeData", "classScreenSetupModel.html#aa19979a38cbba64efd03386c06b7bb12", null ],
+    [ "mimeType", "classScreenSetupModel.html#ac3716420418f8a20317a2de843e98d48", null ],
+    [ "mimeTypes", "classScreenSetupModel.html#a0fb7687eda91d24dd617445bd0ac8be7", null ],
+    [ "rowCount", "classScreenSetupModel.html#ae00e9bc1a1e3bfe09b11e3176af84d29", null ],
+    [ "rowCount", "classScreenSetupModel.html#a726bf08b08735264dc0067459c4ee87f", null ],
+    [ "screenAt", "classScreenSetupModel.html#a6ef0735be8209b640803784f49502e29", null ],
+    [ "screenAt", "classScreenSetupModel.html#ad92f19b24fff32b762c0c93f2d70b82f", null ],
+    [ "screenAt", "classScreenSetupModel.html#a2a81f3ef16cdc8ebc5f3b7f497b7cf7b", null ],
+    [ "screenAt", "classScreenSetupModel.html#af01e84fae0281ccab667d2b93591b6cf", null ],
+    [ "screensChanged", "classScreenSetupModel.html#a552871041ae601b0b193940333382f78", null ],
+    [ "supportedDropActions", "classScreenSetupModel.html#a7467442d5926d17c37e5d110deb8a3f9", null ],
+    [ "ScreenSetupView", "classScreenSetupModel.html#a24c810d6d27c2c954bdad39ee23d3b0c", null ],
+    [ "ServerConfigDialog", "classScreenSetupModel.html#a57ca9109e2da3343064777dee953741b", null ]
+];
