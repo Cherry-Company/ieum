@@ -385,6 +385,15 @@ jobs:
           elif [ "${{matrix.target.like}}" == "fedora" ]; then
             dnf install -y git
           elif [ "${{matrix.target.like}}" == "suse" ]; then
+            if [ "$(uname -m)" == "aarch64" ]; then
+              # Keep ARM repository metadata and RPMs on the same official
+              # origin while rolling mirrors carry inconsistent noarch files.
+              find /etc/zypp/repos.d -type f -name '*.repo' \
+                -exec sed -i \
+                  -e 's|http://download.opensuse.org/|https://downloadcontent.opensuse.org/|g' \
+                  -e 's|https://download.opensuse.org/|https://downloadcontent.opensuse.org/|g' {} +
+              zypper clean --all
+            fi
             zypper refresh
             zypper install -y --force-resolution git
           elif [ "${{matrix.target.like}}" == "arch" ]; then
