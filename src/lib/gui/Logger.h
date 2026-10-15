@@ -7,6 +7,7 @@
 #pragma once
 
 #include <QObject>
+#include <atomic>
 
 namespace deskflow::gui {
 
@@ -30,7 +31,7 @@ private:
   explicit Logger();
   ~Logger() override;
   void settingChanged(const QString &key);
-  bool m_guiDebug = false;
+  std::atomic_bool m_guiDebug{false};
 };
 
 } // namespace deskflow::gui

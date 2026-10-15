@@ -1,0 +1,1159 @@
+{
+  "platform": "Linux X11",
+  "transport": "loopback",
+  "guiIncluded": false,
+  "results": [
+    {
+      "elapsedSeconds": 60.00818042500032,
+      "tls": "TLSv1.3",
+      "inputAfterIdle": {
+        "keyReceived": true,
+        "pointerMoved": true,
+        "before": [
+          600,
+          300
+        ],
+        "after": [
+          669,
+          412
+        ],
+        "keyProbeMilliseconds": 20.88789400022506
+      },
+      "connectionLosses": 0,
+      "samples": [
+        {
+          "elapsedSeconds": 5.001199756999995,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.17
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 0.15
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 10.007096074999936,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.19
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 0.17
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 15.007773538000038,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.24
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 0.24
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 20.011909284000467,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.4
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 0.48
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 25.0186622680003,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.47
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 0.64
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 30.029310728000382,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.5
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 0.65
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 35.03574978800043,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.53
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 0.69
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 40.0743830170004,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.6
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 1.06
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 45.08386969900039,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.62
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 1.08
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 50.100622062000184,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.65
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 1.1
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 55.10796202599977,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.67
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 1.11
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 60.000934712000344,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.7
+            },
+            {
+              "rssKiB": 30108,
+              "cpuSeconds": 1.21
+            }
+          ]
+        }
+      ],
+      "cores": [
+        {
+          "role": "host",
+          "rssBeforeKiB": 30860,
+          "rssAfterKiB": 30860,
+          "cpuMilliseconds": 549.9999999999999
+        },
+        {
+          "role": "client",
+          "rssBeforeKiB": 30108,
+          "rssAfterKiB": 30108,
+          "cpuMilliseconds": 1069.9999999999998
+        }
+      ],
+      "version": "before",
+      "repeat": 0
+    },
+    {
+      "elapsedSeconds": 60.00808569200035,
+      "tls": "TLSv1.3",
+      "inputAfterIdle": {
+        "keyReceived": true,
+        "pointerMoved": true,
+        "before": [
+          600,
+          300
+        ],
+        "after": [
+          669,
+          412
+        ],
+        "keyProbeMilliseconds": 20.91295100035495
+      },
+      "connectionLosses": 0,
+      "samples": [
+        {
+          "elapsedSeconds": 5.000895806000699,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.16
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.21
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 10.011797729000136,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.18
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.26
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 15.037121845000001,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.2
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.3
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 20.083564990000013,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.24
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.31
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 25.097490913,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.25
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.35
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 30.103909890000068,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.26
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.37
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 35.10441470100068,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.26
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.37
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 40.10509277700021,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.26
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.38
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 45.106219484000576,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.26
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.39
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 50.11392942100065,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.26
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.4
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 55.12142722200042,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.46
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.56
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 60.00114026900064,
+          "cores": [
+            {
+              "rssKiB": 30856,
+              "cpuSeconds": 0.47
+            },
+            {
+              "rssKiB": 30056,
+              "cpuSeconds": 0.58
+            }
+          ]
+        }
+      ],
+      "cores": [
+        {
+          "role": "host",
+          "rssBeforeKiB": 30856,
+          "rssAfterKiB": 30856,
+          "cpuMilliseconds": 319.99999999999994
+        },
+        {
+          "role": "client",
+          "rssBeforeKiB": 30056,
+          "rssAfterKiB": 30056,
+          "cpuMilliseconds": 379.99999999999994
+        }
+      ],
+      "version": "after",
+      "repeat": 0
+    },
+    {
+      "elapsedSeconds": 60.00057468600062,
+      "tls": "TLSv1.3",
+      "inputAfterIdle": {
+        "keyReceived": true,
+        "pointerMoved": true,
+        "before": [
+          600,
+          300
+        ],
+        "after": [
+          669,
+          412
+        ],
+        "keyProbeMilliseconds": 20.590163000633765
+      },
+      "connectionLosses": 0,
+      "samples": [
+        {
+          "elapsedSeconds": 5.000922948000152,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.22
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.18
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 10.010186469000473,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.22
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.18
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 15.011551735000467,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.23
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.36
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 20.020265836000362,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.24
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.37
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 25.020780720000403,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.25
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.38
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 30.021360485000514,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.25
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.38
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 35.02300643900071,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.25
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.38
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 40.02434452500074,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.26
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.39
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 45.0314312190003,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.26
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.4
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 50.03192257900082,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.26
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.4
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 55.03350303700063,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.33
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.41
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 60.00014143299995,
+          "cores": [
+            {
+              "rssKiB": 30868,
+              "cpuSeconds": 0.33
+            },
+            {
+              "rssKiB": 30052,
+              "cpuSeconds": 0.42
+            }
+          ]
+        }
+      ],
+      "cores": [
+        {
+          "role": "host",
+          "rssBeforeKiB": 30868,
+          "rssAfterKiB": 30868,
+          "cpuMilliseconds": 120.00000000000003
+        },
+        {
+          "role": "client",
+          "rssBeforeKiB": 30052,
+          "rssAfterKiB": 30052,
+          "cpuMilliseconds": 249.99999999999997
+        }
+      ],
+      "version": "after",
+      "repeat": 1
+    },
+    {
+      "elapsedSeconds": 60.00057776799986,
+      "tls": "TLSv1.3",
+      "inputAfterIdle": {
+        "keyReceived": true,
+        "pointerMoved": true,
+        "before": [
+          600,
+          300
+        ],
+        "after": [
+          669,
+          412
+        ],
+        "keyProbeMilliseconds": 20.605425000212563
+      },
+      "connectionLosses": 0,
+      "samples": [
+        {
+          "elapsedSeconds": 5.00015784199968,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 0.16
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 0.14
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 10.00191570700008,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 0.19
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 0.32
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 15.011431609999818,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 0.22
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 0.33
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 20.033927327999663,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 0.28
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 0.41
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 25.040962707999824,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 0.36
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 0.64
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 30.04839008199997,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 0.39
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 0.67
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 35.058348290999675,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 0.41
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 0.69
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 40.06591448099971,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 0.5
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 0.77
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 45.06848756499949,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 1.24
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 1.61
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 50.07427879399984,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 1.47
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 2.12
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 55.15398809499948,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 1.5
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 2.18
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 60.000164439999935,
+          "cores": [
+            {
+              "rssKiB": 30836,
+              "cpuSeconds": 1.51
+            },
+            {
+              "rssKiB": 30252,
+              "cpuSeconds": 2.2
+            }
+          ]
+        }
+      ],
+      "cores": [
+        {
+          "role": "host",
+          "rssBeforeKiB": 30836,
+          "rssAfterKiB": 30836,
+          "cpuMilliseconds": 1360.0
+        },
+        {
+          "role": "client",
+          "rssBeforeKiB": 30252,
+          "rssAfterKiB": 30252,
+          "cpuMilliseconds": 2080.0
+        }
+      ],
+      "version": "before",
+      "repeat": 1
+    },
+    {
+      "elapsedSeconds": 60.00046698699953,
+      "tls": "TLSv1.3",
+      "inputAfterIdle": {
+        "keyReceived": true,
+        "pointerMoved": true,
+        "before": [
+          600,
+          300
+        ],
+        "after": [
+          669,
+          412
+        ],
+        "keyProbeMilliseconds": 20.648381999308185
+      },
+      "connectionLosses": 0,
+      "samples": [
+        {
+          "elapsedSeconds": 5.000120499999866,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.13
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.1
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 10.000598763999733,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.14
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.11
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 15.00150014799965,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.15
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.11
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 20.00198436499977,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.16
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.13
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 25.00272415099971,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.2
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.13
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 30.003248605999943,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.22
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.14
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 35.00457828599974,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.23
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.16
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 40.01171687199985,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.24
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.17
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 45.0122438949993,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.25
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.17
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 50.01314043799994,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.26
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.19
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 55.013775405999695,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.27
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.2
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 60.00014530199951,
+          "cores": [
+            {
+              "rssKiB": 30832,
+              "cpuSeconds": 0.28
+            },
+            {
+              "rssKiB": 30136,
+              "cpuSeconds": 0.2
+            }
+          ]
+        }
+      ],
+      "cores": [
+        {
+          "role": "host",
+          "rssBeforeKiB": 30832,
+          "rssAfterKiB": 30832,
+          "cpuMilliseconds": 160.00000000000003
+        },
+        {
+          "role": "client",
+          "rssBeforeKiB": 30136,
+          "rssAfterKiB": 30136,
+          "cpuMilliseconds": 110.00000000000001
+        }
+      ],
+      "version": "before",
+      "repeat": 2
+    },
+    {
+      "elapsedSeconds": 60.00053520599977,
+      "tls": "TLSv1.3",
+      "inputAfterIdle": {
+        "keyReceived": true,
+        "pointerMoved": true,
+        "before": [
+          600,
+          300
+        ],
+        "after": [
+          669,
+          412
+        ],
+        "keyProbeMilliseconds": 20.53430700016179
+      },
+      "connectionLosses": 0,
+      "samples": [
+        {
+          "elapsedSeconds": 5.000113796999358,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.12
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.1
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 10.000659379999888,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.12
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.1
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 15.009442442999898,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.53
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.57
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 20.25912071899984,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.54
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.58
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 25.26564530699943,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.54
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.59
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 30.266284999999698,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.54
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.59
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 35.26718869300021,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.54
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.6
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 40.26796035799998,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.55
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.61
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 45.26891642099963,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.56
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.62
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 50.275651402999756,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.56
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.63
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 55.2819018629998,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.59
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.66
+            }
+          ]
+        },
+        {
+          "elapsedSeconds": 60.000181274999704,
+          "cores": [
+            {
+              "rssKiB": 30860,
+              "cpuSeconds": 0.59
+            },
+            {
+              "rssKiB": 30036,
+              "cpuSeconds": 0.67
+            }
+          ]
+        }
+      ],
+      "cores": [
+        {
+          "role": "host",
+          "rssBeforeKiB": 30860,
+          "rssAfterKiB": 30860,
+          "cpuMilliseconds": 470.0
+        },
+        {
+          "role": "client",
+          "rssBeforeKiB": 30036,
+          "rssAfterKiB": 30036,
+          "cpuMilliseconds": 570.0000000000001
+        }
+      ],
+      "version": "after",
+      "repeat": 2
+    }
+  ]
+}

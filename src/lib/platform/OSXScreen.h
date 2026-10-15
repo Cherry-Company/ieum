@@ -24,6 +24,7 @@
 #include <chrono>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <thread>
 #include <vector>
@@ -318,6 +319,7 @@ private:
   CFRunLoopSourceRef m_eventTapRLSR;
   std::thread m_eventTapThread;
   CFRunLoopRef m_eventTapRunLoop = nullptr;
+  std::mutex m_eventTapRunLoopMutex;
 
   // for double click coalescing.
   double m_lastClickTime;

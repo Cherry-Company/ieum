@@ -8,12 +8,20 @@
 #include "ui_ClientConfigDialog.h"
 
 #include "common/Settings.h"
+#include "gui/StyleUtils.h"
 
+#include <QLabel>
 #include <QPushButton>
 
 ClientConfigDialog::ClientConfigDialog(QWidget *parent) : QDialog(parent), ui(new Ui::ClientConfigDialog)
 {
   ui->setupUi(this);
+  deskflow::gui::applyIeumDialogStyle(*this);
+  auto *intro = new QLabel(this);
+  intro->setObjectName(QStringLiteral("clientSettingsIntro"));
+  intro->setWordWrap(true);
+  ui->verticalLayout->insertWidget(0, intro);
+  setMinimumWidth(560);
   updateText();
   initConnections();
   load();
@@ -34,8 +42,15 @@ void ClientConfigDialog::changeEvent(QEvent *e)
   }
 }
 
-void ClientConfigDialog::updateText() const
+void ClientConfigDialog::updateText()
 {
+  setWindowTitle(tr("Receiving input on this computer"));
+  ui->groupBox->setTitle(tr("Scrolling on this computer"));
+  findChild<QLabel *>(QStringLiteral("clientSettingsIntro"))
+      ->setText(
+          tr("These options apply to this client. Choose reconnection behavior, keyboard language, and how "
+             "scrolling feels on this computer.")
+      );
   ui->buttonBox->button(QDialogButtonBox::Save)->setToolTip(tr("Close and save changes"));
   ui->buttonBox->button(QDialogButtonBox::Cancel)->setToolTip(tr("Close and forget changes"));
   ui->buttonBox->button(QDialogButtonBox::Reset)->setToolTip(tr("Reset to stored values"));

@@ -5,6 +5,7 @@
  */
 
 #include "FingerprintDialog.h"
+#include "gui/StyleUtils.h"
 
 #include "widgets/FingerprintPreview.h"
 
@@ -22,6 +23,7 @@ FingerprintDialog::FingerprintDialog(
       m_lblFooter{new QLabel(this)},
       m_buttonBox{new QDialogButtonBox(QDialogButtonBox::Help, this)}
 {
+  deskflow::gui::applyIeumDialogStyle(*this);
   setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
   m_lblHeader->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
 

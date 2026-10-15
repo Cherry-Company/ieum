@@ -15,13 +15,15 @@ class QWidget;
 
 namespace deskflow::gui::diagnostic {
 struct PreviousSession;
-}
+struct Report;
+} // namespace deskflow::gui::diagnostic
 
 namespace deskflow::gui::messages {
 
 void messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
 void raiseCriticalDialog();
+bool openDiagnosticIssue(QWidget *parent, const diagnostic::Report &report);
 
 void showUnexpectedExit(QWidget *parent, const diagnostic::PreviousSession &previousSession);
 

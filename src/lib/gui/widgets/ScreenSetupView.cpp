@@ -11,16 +11,85 @@
 #include "ScreenSetupModel.h"
 #include "dialogs/ScreenSettingsDialog.h"
 
+#include <QCoreApplication>
 #include <QDrag>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
+#include <QGuiApplication>
 #include <QHeaderView>
 #include <QMimeData>
 #include <QMouseEvent>
+#include <QPainter>
 #include <QResizeEvent>
+#include <QStyle>
+#include <QStyledItemDelegate>
+
+namespace {
+class ComputerCardDelegate final : public QStyledItemDelegate
+{
+public:
+  explicit ComputerCardDelegate(QObject *parent) : QStyledItemDelegate(parent)
+  {
+  }
+
+  void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override
+  {
+    const auto palette = QGuiApplication::palette();
+    const auto card = option.rect.adjusted(6, 6, -6, -6);
+    const auto name = index.data().toString();
+    const auto border = palette.color(QPalette::Mid);
+    painter->save();
+    painter->fillRect(option.rect, palette.color(QPalette::Base));
+    painter->setRenderHint(QPainter::Antialiasing);
+    if (name.isEmpty()) {
+      auto faint = border;
+      faint.setAlpha(80);
+      painter->setPen(QPen(faint, 1, Qt::DashLine));
+      painter->setBrush(Qt::NoBrush);
+      painter->drawRoundedRect(card, 8, 8);
+      painter->restore();
+      return;
+    }
+    const bool selected = option.state & QStyle::State_Selected;
+    const bool host = index.data(Qt::UserRole).toBool();
+    const auto accent = palette.color(QPalette::Highlight);
+    painter->setPen(QPen(selected ? accent : border, selected ? 2 : 1));
+    painter->setBrush(palette.color(QPalette::Base));
+    painter->drawRoundedRect(card, 8, 8);
+    const auto screen = QRectF(card.center().x() - 21, card.center().y() - 38, 42, 29);
+    auto fill = accent;
+    fill.setAlpha(host ? 50 : 18);
+    painter->setBrush(fill);
+    painter->setPen(QPen(accent, 2));
+    painter->drawRoundedRect(screen, 3, 3);
+    painter->drawLine(QPointF(screen.center().x(), screen.bottom()), QPointF(screen.center().x(), screen.bottom() + 7));
+    painter->drawLine(
+        QPointF(screen.center().x() - 10, screen.bottom() + 7), QPointF(screen.center().x() + 10, screen.bottom() + 7)
+    );
+    auto font = option.font;
+    font.setBold(true);
+    painter->setFont(font);
+    painter->setPen(palette.color(QPalette::Text));
+    painter->drawText(
+        QRect(card.left() + 6, card.center().y() + 10, card.width() - 12, 22), Qt::AlignCenter,
+        QFontMetrics(font).elidedText(name, Qt::ElideMiddle, card.width() - 12)
+    );
+    font.setBold(false);
+    painter->setFont(font);
+    painter->setPen(palette.color(QPalette::PlaceholderText));
+    const auto subtitle = host ? QCoreApplication::translate("ScreenSetupView", "This host")
+                               : QCoreApplication::translate("ScreenSetupView", "Other computer");
+    painter->drawText(QRect(card.left() + 6, card.center().y() + 34, card.width() - 12, 20), Qt::AlignCenter, subtitle);
+    painter->restore();
+  }
+};
+} // namespace
 
 ScreenSetupView::ScreenSetupView(QWidget *parent) : QTableView(parent)
 {
+  setItemDelegate(new ComputerCardDelegate(this));
+  setShowGrid(false);
+  setEditTriggers(NoEditTriggers);
   setDropIndicatorShown(true);
   setDragDropMode(DragDrop);
   setSelectionMode(SingleSelection);
@@ -57,17 +126,20 @@ void ScreenSetupView::showScreenConfig(int col, int row)
 
 void ScreenSetupView::setTableSize()
 {
+  if (model() == nullptr || model()->columnCount() <= 0 || model()->rowCount() <= 0) {
+    return;
+  }
   for (int i = 0; i < model()->columnCount(); i++)
-    setColumnWidth(i, width() / model()->columnCount());
+    setColumnWidth(i, viewport()->width() / model()->columnCount());
 
   for (int i = 0; i < model()->rowCount(); i++)
-    setRowHeight(i, height() / model()->rowCount());
+    setRowHeight(i, viewport()->height() / model()->rowCount());
 }
 
 void ScreenSetupView::resizeEvent(QResizeEvent *event)
 {
+  QTableView::resizeEvent(event);
   setTableSize();
-  event->ignore();
 }
 
 void ScreenSetupView::mouseDoubleClickEvent(QMouseEvent *event)
@@ -163,11 +235,7 @@ void ScreenSetupView::startDrag(Qt::DropActions)
 
 void ScreenSetupView::initViewItemOption(QStyleOptionViewItem *option) const
 {
-  // HACK make a basic widget and init from it
-  auto w = new QWidget();
-  option->initFrom(w);
-  w->deleteLater();
-  delete w;
+  option->initFrom(this);
 
   option->decorationSize = QSize(96, 96);
   option->showDecorationSelected = true;

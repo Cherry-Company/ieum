@@ -18,4 +18,13 @@ void MacApplicationLifecyclePolicyTests::redWindowClose_hidesButQuitAndShutdownE
   QVERIFY(!macShouldHideOnClose(false, false, false));
 }
 
+void MacApplicationLifecyclePolicyTests::notificationsRequirePackagedSignedApplication()
+{
+  using deskflow::gui::macCanUseNotifications;
+  QVERIFY(!macCanUseNotifications(false, false));
+  QVERIFY(!macCanUseNotifications(true, false));
+  QVERIFY(!macCanUseNotifications(false, true));
+  QVERIFY(macCanUseNotifications(true, true));
+}
+
 QTEST_GUILESS_MAIN(MacApplicationLifecyclePolicyTests)

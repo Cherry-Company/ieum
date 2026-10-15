@@ -5,6 +5,7 @@
  */
 
 #import "OSXHelpers.h"
+#include "MacApplicationLifecyclePolicy.h"
 
 #import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
@@ -78,8 +79,16 @@ void requestOSXNotificationPermission()
 
 bool isOSXDevelopmentBuild()
 {
-  std::string bundleURL = [[[NSBundle mainBundle] bundleURL].absoluteString UTF8String];
-  return (bundleURL.find("Applications/Ieum.app") == std::string::npos);
+  // Moving an unsigned/ad-hoc alpha build into Applications does not give it
+  // a stable signing identity. Notification Center can terminate such a build
+  // before returning an error, so never use its APIs based on the path alone.
+#ifdef IEUM_MACOS_STABLE_CODE_IDENTITY
+  constexpr bool stableCodeIdentity = true;
+#else
+  constexpr bool stableCodeIdentity = false;
+#endif
+  const bool hasBundleIdentifier = [[[NSBundle mainBundle] bundleIdentifier] length] > 0;
+  return !deskflow::gui::macCanUseNotifications(hasBundleIdentifier, stableCodeIdentity);
 }
 
 bool showOSXNotification(const QString &title, const QString &body)
@@ -105,6 +114,7 @@ bool showOSXNotification(const QString &title, const QString &body)
   UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"SecureInput"
                                                                         content:content
                                                                         trigger:nil];
+  [content release];
 
   [center
       addNotificationRequest:request

@@ -8,6 +8,9 @@
 
 #include "platform/MSWindowsEventQueueBuffer.h"
 
+#include <algorithm>
+#include <cmath>
+
 #include "arch/win32/ArchDaemonWindows.h"
 #include "base/IEventQueue.h"
 
@@ -46,7 +49,9 @@ void MSWindowsEventQueueBuffer::waitForEvent(double timeout)
   if (timeout < 0.0) {
     t = INFINITE;
   } else {
-    t = (DWORD)(1000.0 * timeout);
+    // A positive sub-millisecond delay must not become a busy poll. Keep
+    // INFINITE reserved for the explicit negative-timeout case.
+    t = static_cast<DWORD>(std::ceil(std::clamp(1000.0 * timeout, 0.0, static_cast<double>(INFINITE - 1))));
   }
 
   // wait for a message.  we cannot be interrupted by thread

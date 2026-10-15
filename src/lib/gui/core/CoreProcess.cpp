@@ -26,6 +26,7 @@
 #include <QFile>
 #include <QMetaEnum>
 #include <QMutexLocker>
+#include <QPointer>
 #include <QRegularExpression>
 
 namespace deskflow::gui {
@@ -101,12 +102,14 @@ QString CoreProcess::wrapIpv6(const QString &address)
 // CoreProcess
 //
 
-CoreProcess::CoreProcess(const ServerConfig &serverConfig)
+CoreProcess::CoreProcess(const ServerConfig &serverConfig, const QString &executablePath)
     : m_serverConfig(serverConfig),
       m_serviceStartCoordinator{new ServiceStartCoordinator(this, kServiceStartTimeout)},
       m_daemonIpcClient{new ipc::DaemonIpcClient(this)}
 {
-  m_appPath = QStringLiteral("%1/%2").arg(QCoreApplication::applicationDirPath(), kCoreBinName);
+  m_appPath = executablePath.isEmpty()
+                  ? QStringLiteral("%1/%2").arg(QCoreApplication::applicationDirPath(), kCoreBinName)
+                  : executablePath;
   if (!QFile::exists(m_appPath)) {
     qFatal("core server binary does not exist");
     return;
@@ -178,6 +181,7 @@ void CoreProcess::daemonIpcClientConnected()
 void CoreProcess::checkExistingProcess()
 {
   qInfo("checking existing core");
+  const auto recoveryGeneration = m_coreStartGeneration;
 
 #if defined(Q_OS_WIN)
   if (Settings::value(Settings::Core::ProcessMode).value<ProcessMode>() == ProcessMode::Desktop) {
@@ -203,22 +207,36 @@ void CoreProcess::checkExistingProcess()
 #endif
 
   auto *client = new ipc::CoreIpcClient(this);
-  connect(client, &ipc::CoreIpcClient::connected, this, [client] {
+  connect(client, &ipc::CoreIpcClient::connected, this, [this, client, recoveryGeneration] {
+    if (recoveryGeneration != m_coreStartGeneration) {
+      client->deleteLater();
+      return;
+    }
     qInfo("existing core has matching version, asking it to stop");
     client->sendStop();
   });
-  connect(client, &ipc::CoreIpcClient::versionMismatch, this, [client] {
+  connect(client, &ipc::CoreIpcClient::versionMismatch, this, [this, client, recoveryGeneration] {
+    if (recoveryGeneration != m_coreStartGeneration) {
+      client->deleteLater();
+      return;
+    }
     qInfo("existing core has mismatched version, asking it to stop");
     client->sendStop();
   });
-  connect(client, &ipc::CoreIpcClient::serverShutdown, this, [this, client] {
+  connect(client, &ipc::CoreIpcClient::serverShutdown, this, [this, client, recoveryGeneration] {
+    client->deleteLater();
+    if (recoveryGeneration != m_coreStartGeneration) {
+      return;
+    }
     qInfo("existing core stopped successfully");
     m_duplicateRecoveryAttempts = 0;
-    client->deleteLater();
     scheduleRestart(kRetryDelay);
   });
-  connect(client, &ipc::CoreIpcClient::connectionFailed, this, [this, client] {
+  connect(client, &ipc::CoreIpcClient::connectionFailed, this, [this, client, recoveryGeneration] {
     client->deleteLater();
+    if (recoveryGeneration != m_coreStartGeneration) {
+      return;
+    }
     if (++m_duplicateRecoveryAttempts <= 5) {
       qWarning(
           "could not contact existing core, retrying recovery (%d/5)", //
@@ -235,6 +253,13 @@ void CoreProcess::checkExistingProcess()
 
 void CoreProcess::onProcessFinished(int exitCode, QProcess::ExitStatus)
 {
+  auto *finishedProcess = qobject_cast<QProcess *>(sender());
+  if (finishedProcess != m_process) {
+    if (finishedProcess != nullptr) {
+      finishedProcess->deleteLater();
+    }
+    return;
+  }
   using enum ProcessState;
   const auto wasStarted = m_processState == Started;
   setConnectionState(ConnectionState::Disconnected);
@@ -243,10 +268,8 @@ void CoreProcess::onProcessFinished(int exitCode, QProcess::ExitStatus)
     m_retryTimer.stop();
   }
 
-  if (auto *finishedProcess = qobject_cast<QProcess *>(sender())) {
-    if (finishedProcess == m_process) {
-      m_process = nullptr;
-    }
+  m_process = nullptr;
+  if (finishedProcess != nullptr) {
     finishedProcess->deleteLater();
   }
 
@@ -386,16 +409,36 @@ void CoreProcess::startForegroundProcess(const QStringList &args)
   });
 #endif
 
-  m_process->start(m_appPath, args);
-
-  if (m_process->waitForStarted()) {
-    setProcessState(Started);
-  } else {
-    m_process->deleteLater();
+  auto *process = m_process;
+  connect(process, &QProcess::started, this, [this, process] {
+    if (process != m_process) {
+      return;
+    }
+    if (m_processState == Stopping) {
+      stopForegroundProcess(false);
+    } else if (m_processState == Starting) {
+      setProcessState(Started);
+    }
+  });
+  connect(process, &QProcess::errorOccurred, this, [this, process](QProcess::ProcessError error) {
+    if (process != m_process || error != QProcess::FailedToStart) {
+      return;
+    }
     m_process = nullptr;
-    setProcessState(Stopped);
-    Q_EMIT error(Error::StartFailed);
-  }
+    process->deleteLater();
+    if (m_restartRequested) {
+      m_restartRequested = false;
+      scheduleRestart(kRetryDelay);
+    } else {
+      const bool cancelled = m_processState == Stopping;
+      setProcessState(Stopped);
+      setConnectionState(ConnectionState::Disconnected);
+      if (!cancelled) {
+        Q_EMIT this->error(Error::StartFailed);
+      }
+    }
+  });
+  process->start(m_appPath, args);
 }
 
 void CoreProcess::startProcessFromDaemon()
@@ -483,24 +526,33 @@ void CoreProcess::clearServiceStartRequests()
   m_serviceConfigFile.clear();
 }
 
-void CoreProcess::stopForegroundProcess() const
+void CoreProcess::stopForegroundProcess(bool gracefulStopSent) const
 {
   if (m_processState != ProcessState::Stopping) {
     qFatal("core process must be in stopping state");
   }
 
-  if (!m_process) {
-    qFatal("process not set, cannot stop");
+  if (m_process == nullptr) {
+    return;
   }
 
-  qInfo("stopping core desktop process");
-
-  if (m_process->state() == QProcess::ProcessState::Running) {
-    qDebug("process is running, closing");
-    m_process->close();
-  } else {
-    qDebug("process is not running, skipping terminate");
+  // close() kills and waits synchronously, which freezes the GUI and can
+  // re-enter finished handlers while stop() holds its mutex. Ask the core to
+  // clean up first and bound escalation without blocking the event loop.
+  const QPointer<QProcess> process = m_process;
+  if (!gracefulStopSent && process->state() == QProcess::Running) {
+    process->terminate();
   }
+  QTimer::singleShot(3000, process, [process] {
+    if (process && process->state() != QProcess::NotRunning) {
+      process->terminate();
+      QTimer::singleShot(2000, process, [process] {
+        if (process && process->state() != QProcess::NotRunning) {
+          process->kill();
+        }
+      });
+    }
+  });
 }
 
 void CoreProcess::stopProcessFromDaemon()
@@ -693,12 +745,17 @@ void CoreProcess::stop(std::optional<ProcessMode> processModeOption, bool restar
   }
 
   const auto currentMode = Settings::value(Settings::Core::ProcessMode).value<ProcessMode>();
-  const auto processMode = processModeOption.value_or(currentMode);
+  const auto processMode = processModeOption.value_or(m_lastProcessMode.value_or(currentMode));
 
   qInfo("stopping core process (%s mode)", qPrintable(processModeToString(processMode)));
 
   setFileTransferActiveSides(0);
 
+  const bool gracefulStopSent =
+      processMode == ProcessMode::Desktop && m_coreIpcClient && m_coreIpcClient->isConnected();
+  if (gracefulStopSent) {
+    m_coreIpcClient->sendStop();
+  }
   if (m_coreIpcClient) {
     m_coreIpcClient->disconnectFromServer();
     m_coreIpcClient->deleteLater();
@@ -722,6 +779,12 @@ void CoreProcess::stop(std::optional<ProcessMode> processModeOption, bool restar
     qDebug("core process is starting, cancelling");
     m_serviceStartCoordinator->cancel(cancelledStartGeneration);
     clearServiceStartRequests();
+    if (processMode == ProcessMode::Desktop && m_process && m_process->state() != QProcess::NotRunning) {
+      setProcessState(ProcessState::Stopping);
+      stopForegroundProcess(gracefulStopSent);
+      setConnectionState(ConnectionState::Disconnected);
+      return;
+    }
     if (processMode == ProcessMode::Service) {
       requestDaemonStop();
     } else {
@@ -738,7 +801,7 @@ void CoreProcess::stop(std::optional<ProcessMode> processModeOption, bool restar
     if (processMode == ProcessMode::Service) {
       stopProcessFromDaemon();
     } else if (processMode == ProcessMode::Desktop) {
-      stopForegroundProcess();
+      stopForegroundProcess(gracefulStopSent);
     }
 
   } else {
@@ -802,8 +865,10 @@ void CoreProcess::cleanup()
 
   setFileTransferActiveSides(0);
 
-  const auto isDesktop = Settings::value(Settings::Core::ProcessMode).value<ProcessMode>() == ProcessMode::Desktop;
-  const auto isRunning = m_processState == ProcessState::Started;
+  const auto isDesktop =
+      m_lastProcessMode.value_or(Settings::value(Settings::Core::ProcessMode).value<ProcessMode>()) ==
+      ProcessMode::Desktop;
+  const auto isRunning = m_processState != ProcessState::Stopped;
   if (isDesktop && isRunning) {
     stop();
   }

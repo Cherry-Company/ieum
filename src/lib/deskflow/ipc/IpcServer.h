@@ -61,6 +61,7 @@ private:
   QHash<QLocalSocket *, QByteArray> m_receiveBuffers;
   QString m_serverName;
   QStringList m_pendingMessages;
+  qsizetype m_pendingCharacters = 0;
   QByteArray m_typeName;
 #ifdef Q_OS_WIN
   void *m_ownershipMutex{nullptr};

@@ -39,11 +39,14 @@ LogWidget::LogWidget(QWidget *parent) : QWidget{parent}, m_textLog{new QPlainTex
 void LogWidget::appendLine(const QString &msg)
 {
   static constexpr qsizetype kMaxPendingLines = 2000;
+  static constexpr qsizetype kMaxLineLength = 4096;
 
   if (m_pendingLines.size() >= kMaxPendingLines) {
     ++m_droppedLineCount;
   } else {
-    m_pendingLines.append(msg);
+    m_pendingLines.append(
+        msg.size() > kMaxLineLength ? msg.left(kMaxLineLength) + QStringLiteral(" [truncated]") : msg
+    );
   }
 
   const bool hiddenInsidePanel = parentWidget() != nullptr && !isVisible();

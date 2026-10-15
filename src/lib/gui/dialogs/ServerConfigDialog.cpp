@@ -16,10 +16,17 @@
 #include "dialogs/ActionDialog.h"
 #include "dialogs/HotkeyDialog.h"
 #include "dialogs/ScreenSettingsDialog.h"
+#include "gui/StyleUtils.h"
+#include "gui/validators/ComputerNameValidator.h"
 
+#include <QComboBox>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QListWidget>
+#include <QScrollArea>
 #include <QStyle>
+#include <QTabBar>
+#include <QToolButton>
 
 #include <algorithm>
 
@@ -55,10 +62,221 @@ ServerConfigDialog::ServerConfigDialog(QWidget *parent, ServerConfig &config)
   if (!deskflow::platform::isWindows())
     ui->cbWin32KeepForeground->setVisible(false);
   initConnections();
+  createWorkspace();
   onChange();
 }
 
 ServerConfigDialog::~ServerConfigDialog() = default;
+
+void ServerConfigDialog::createWorkspace()
+{
+  deskflow::gui::applyIeumDialogStyle(*this);
+  setWindowTitle(tr("Your desk"));
+  setMinimumSize(780, 560);
+  resize(1000, 700);
+  auto *root = qobject_cast<QVBoxLayout *>(layout());
+  auto *heading = new QLabel(tr("Arrange computers like your desk"), this);
+  heading->setProperty("sectionHeading", true);
+  root->insertWidget(0, heading);
+  m_navigation = new QListWidget(this);
+  m_navigation->setObjectName(QStringLiteral("settingsNavigation"));
+  m_navigation->setAccessibleName(tr("Desk settings categories"));
+  m_navigation->setFixedWidth(180);
+  const QStringList titles{
+      tr("Computer positions"), tr("Shortcuts"), tr("Pointer & switching"), tr("Configuration file")
+  };
+  for (const auto &title : titles) {
+    auto *item = new QListWidgetItem(title, m_navigation);
+    item->setSizeHint(QSize(160, 48));
+  }
+  root->removeWidget(ui->tabWidget);
+  auto *body = new QHBoxLayout;
+  body->addWidget(m_navigation);
+  body->addWidget(ui->tabWidget, 1);
+  root->insertLayout(1, body, 1);
+  ui->tabWidget->tabBar()->hide();
+  connect(m_navigation, &QListWidget::currentRowChanged, ui->tabWidget, &QTabWidget::setCurrentIndex);
+  m_navigation->setCurrentRow(serverConfig().useExternalConfig() ? 3 : 0);
+
+  for (int index : {1, 2, 3}) {
+    auto *page = ui->tabWidget->widget(index);
+    auto *contents = new QWidget;
+    contents->setLayout(page->layout());
+    auto *scroll = new QScrollArea(page);
+    scroll->setWidgetResizable(true);
+    scroll->setFrameShape(QFrame::NoFrame);
+    scroll->setWidget(contents);
+    auto *pageLayout = new QVBoxLayout(page);
+    pageLayout->setContentsMargins(0, 0, 0, 0);
+    pageLayout->addWidget(scroll);
+  }
+
+  ui->lblNewScreen->hide();
+  ui->lblRemoveScreen->hide();
+  ui->label_2->hide();
+  auto *computers = qobject_cast<QVBoxLayout *>(ui->tabComputers->layout());
+  computers->removeItem(ui->layoutComputers);
+  delete ui->layoutComputers;
+  auto *instructions = new QLabel(
+      tr("Add the other computer using its exact “This device” name. Choose its side, then move the pointer across "
+         "that edge. "
+         "You can drag computers or select one and use the arrow buttons."),
+      this
+  );
+  instructions->setWordWrap(true);
+  computers->insertWidget(0, instructions);
+  auto *form = new QHBoxLayout;
+  m_newComputerName = new QLineEdit(this);
+  m_newComputerName->setObjectName(QStringLiteral("newComputerName"));
+  m_newComputerName->setPlaceholderText(tr("Other computer’s device name"));
+  m_newComputerName->setAccessibleName(tr("Other computer’s device name"));
+  m_newComputerSide = new QComboBox(this);
+  m_newComputerSide->setObjectName(QStringLiteral("newComputerSide"));
+  m_newComputerSide->setAccessibleName(tr("Position relative to this host"));
+  m_newComputerSide->addItem(tr("Right of this host"), QPoint(1, 0));
+  m_newComputerSide->addItem(tr("Left of this host"), QPoint(-1, 0));
+  m_newComputerSide->addItem(tr("Above this host"), QPoint(0, -1));
+  m_newComputerSide->addItem(tr("Below this host"), QPoint(0, 1));
+  m_addComputer = new QPushButton(tr("Add computer"), this);
+  m_addComputer->setObjectName(QStringLiteral("addComputer"));
+  form->addWidget(m_newComputerName, 1);
+  form->addWidget(m_newComputerSide);
+  form->addWidget(m_addComputer);
+  computers->insertLayout(1, form);
+  m_layoutFeedback = new QLabel(this);
+  m_layoutFeedback->setObjectName(QStringLiteral("layoutFeedback"));
+  m_layoutFeedback->setWordWrap(true);
+  computers->insertWidget(2, m_layoutFeedback);
+  auto *actions = new QHBoxLayout;
+  m_editComputer = new QPushButton(tr("Computer settings"), this);
+  m_editComputer->setObjectName(QStringLiteral("editComputer"));
+  m_removeComputer = new QPushButton(tr("Remove computer"), this);
+  m_removeComputer->setObjectName(QStringLiteral("removeComputer"));
+  actions->addWidget(m_editComputer);
+  actions->addWidget(m_removeComputer);
+  actions->addStretch();
+  const QList<QPoint> directions{QPoint(-1, 0), QPoint(0, -1), QPoint(0, 1), QPoint(1, 0)};
+  const QStringList names{tr("Move left"), tr("Move up"), tr("Move down"), tr("Move right")};
+  for (int i = 0; i < directions.size(); ++i) {
+    auto *button = new QToolButton(this);
+    button->setText(QStringList{QStringLiteral("←"), QStringLiteral("↑"), QStringLiteral("↓"), QStringLiteral("→")}[i]);
+    button->setToolTip(names[i]);
+    button->setAccessibleName(names[i]);
+    button->setAutoRaise(false);
+    button->setMinimumSize(36, 32);
+    connect(button, &QToolButton::clicked, this, [this, direction = directions[i]] {
+      moveSelectedComputer(direction);
+    });
+    actions->addWidget(button);
+  }
+  computers->addLayout(actions);
+  ui->screenSetupView->setAccessibleName(tr("Computer positions. Select a computer to edit, move, or remove it."));
+  connect(m_addComputer, &QPushButton::clicked, this, &ServerConfigDialog::addComputerFromForm);
+  connect(m_newComputerName, &QLineEdit::returnPressed, this, &ServerConfigDialog::addComputerFromForm);
+  connect(m_editComputer, &QPushButton::clicked, this, &ServerConfigDialog::editSelectedComputer);
+  connect(m_removeComputer, &QPushButton::clicked, this, &ServerConfigDialog::removeSelectedComputer);
+  connect(
+      ui->screenSetupView->selectionModel(), &QItemSelectionModel::selectionChanged, this,
+      &ServerConfigDialog::updateComputerActions
+  );
+  connect(&m_screenSetupModel, &ScreenSetupModel::screensChanged, this, &ServerConfigDialog::updateComputerActions);
+  updateComputerActions();
+}
+
+void ServerConfigDialog::updateComputerActions()
+{
+  const auto *screen = model().screenAt(ui->screenSetupView->currentIndex());
+  const bool selected = screen != nullptr && !screen->isNull();
+  m_editComputer->setEnabled(selected);
+  m_removeComputer->setEnabled(selected && !screen->isServer());
+  m_addComputer->setEnabled(!model().isFull() && !serverConfig().useExternalConfig());
+  for (int i = 0; i < m_navigation->count(); ++i) {
+    auto *item = m_navigation->item(i);
+    item->setFlags(ui->tabWidget->isTabEnabled(i) ? Qt::ItemIsSelectable | Qt::ItemIsEnabled : Qt::NoItemFlags);
+  }
+}
+
+void ServerConfigDialog::addComputerFromForm()
+{
+  const auto name = m_newComputerName->text().trimmed();
+  if (name.isEmpty() || !validators::ComputerNameValidator({}).validate(name)) {
+    m_layoutFeedback->setText(
+        tr("Use the exact device name shown on the other computer. Spaces and special symbols are not allowed.")
+    );
+    return;
+  }
+  for (const auto &screen : model().m_Screens) {
+    if (screen.name().compare(name, Qt::CaseInsensitive) == 0 || screen.aliases().contains(name, Qt::CaseInsensitive)) {
+      m_layoutFeedback->setText(tr("That computer name or alias is already in this layout."));
+      return;
+    }
+  }
+  for (int row = 0; row < m_rows; ++row) {
+    for (int column = 0; column < m_columns; ++column) {
+      if (!model().screenAt(column, row)->isServer()) {
+        continue;
+      }
+      const auto position = QPoint(column, row) + m_newComputerSide->currentData().toPoint();
+      auto *destination = model().screenAt(position.x(), position.y());
+      if (destination == nullptr || !destination->isNull()) {
+        m_layoutFeedback->setText(
+            tr("That position is occupied or outside the grid. Choose another side, or move a computer first.")
+        );
+        return;
+      }
+      *destination = Screen(name);
+      const auto index = model().index(position.y(), position.x());
+      Q_EMIT model().dataChanged(index, index);
+      Q_EMIT model().screensChanged();
+      ui->screenSetupView->setCurrentIndex(index);
+      m_newComputerName->clear();
+      m_layoutFeedback->setText(tr("%1 added. Save, then connect to this host from that computer.").arg(name));
+      return;
+    }
+  }
+  m_layoutFeedback->setText(
+      tr("This host is missing from the layout. Restore its computer entry before adding another computer.")
+  );
+}
+
+void ServerConfigDialog::editSelectedComputer()
+{
+  auto *screen = model().screenAt(ui->screenSetupView->currentIndex());
+  if (screen == nullptr || screen->isNull()) {
+    return;
+  }
+  ScreenSettingsDialog dialog(this, screen, &model().m_Screens);
+  if (dialog.exec() == QDialog::Accepted) {
+    Q_EMIT model().dataChanged(ui->screenSetupView->currentIndex(), ui->screenSetupView->currentIndex());
+    Q_EMIT model().screensChanged();
+  }
+}
+
+void ServerConfigDialog::removeSelectedComputer()
+{
+  auto *screen = model().screenAt(ui->screenSetupView->currentIndex());
+  if (screen == nullptr || screen->isNull() || screen->isServer()) {
+    return;
+  }
+  *screen = Screen();
+  Q_EMIT model().dataChanged(ui->screenSetupView->currentIndex(), ui->screenSetupView->currentIndex());
+  Q_EMIT model().screensChanged();
+}
+
+void ServerConfigDialog::moveSelectedComputer(const QPoint &direction)
+{
+  const auto source = ui->screenSetupView->currentIndex();
+  auto *screen = model().screenAt(source);
+  auto *destination = model().screenAt(source.column() + direction.x(), source.row() + direction.y());
+  if (screen == nullptr || screen->isNull() || destination == nullptr) {
+    return;
+  }
+  std::swap(*screen, *destination);
+  const auto target = model().index(source.row() + direction.y(), source.column() + direction.x());
+  Q_EMIT model().dataChanged(model().index(0, 0), model().index(m_rows - 1, m_columns - 1));
+  Q_EMIT model().screensChanged();
+  ui->screenSetupView->setCurrentIndex(target);
+}
 
 bool ServerConfigDialog::addClient(const QString &clientName)
 {
@@ -586,6 +804,9 @@ bool ServerConfigDialog::addComputer(const QString &clientName, bool doSilent)
 
 void ServerConfigDialog::onChange()
 {
+  if (m_navigation != nullptr) {
+    updateComputerActions();
+  }
   updateConfigFileValidation();
 
   bool isAppConfigDataEqual =

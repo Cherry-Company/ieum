@@ -246,6 +246,11 @@ add_subdirectory(translations)
 
 add_subdirectory(src)
 
+option(BUILD_RESOURCE_PROBE "Build the Linux resource measurement tool" OFF)
+if(BUILD_RESOURCE_PROBE)
+  add_subdirectory(tools/benchmarks)
+endif()
+
 option(BUILD_INSTALLER "Build installer" ON)
 if(BUILD_INSTALLER)
     add_subdirectory(deploy)

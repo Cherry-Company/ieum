@@ -8,13 +8,18 @@
 
 #pragma once
 
-#include "ScreenSetupModel.h"
 #include "common/NetworkProtocol.h"
-#include "config/ServerConfig.h"
+#include "gui/ScreenSetupModel.h"
+#include "gui/config/ServerConfig.h"
 
 #include <QDialog>
 
 class QItemSelection;
+class QListWidget;
+class QLineEdit;
+class QComboBox;
+class QLabel;
+class QPushButton;
 
 namespace Ui {
 class ServerConfigDialog;
@@ -93,6 +98,12 @@ protected:
   }
 
 private:
+  void createWorkspace();
+  void addComputerFromForm();
+  void editSelectedComputer();
+  void removeSelectedComputer();
+  void updateComputerActions();
+  void moveSelectedComputer(const QPoint &direction);
   bool isExternalConfigFileValid() const;
   void loadFromConfig();
   void initConnections() const;
@@ -122,6 +133,13 @@ private:
   QString m_originalServerConfigUsesExternalFile;
   ServerConfig m_serverConfig;
   ScreenSetupModel m_screenSetupModel;
+  QListWidget *m_navigation = nullptr;
+  QLineEdit *m_newComputerName = nullptr;
+  QComboBox *m_newComputerSide = nullptr;
+  QLabel *m_layoutFeedback = nullptr;
+  QPushButton *m_addComputer = nullptr;
+  QPushButton *m_editComputer = nullptr;
+  QPushButton *m_removeComputer = nullptr;
 
 private Q_SLOTS:
   void onChange();

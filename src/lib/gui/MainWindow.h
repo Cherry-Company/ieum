@@ -82,7 +82,7 @@ public:
   };
 
 public:
-  explicit MainWindow();
+  explicit MainWindow(const QString &coreExecutablePath = {});
   ~MainWindow() override;
 
   [[nodiscard]] CoreMode coreMode() const
@@ -105,6 +105,8 @@ protected:
   bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
+  friend class ConnectionFlowTests;
+  friend class HostSwitchIntegrationTests;
   void handleDuplicateInstanceConnection();
 
   /**
@@ -128,6 +130,12 @@ private:
   void openSponsorUrl();
   void openGetNewVersionUrl();
   void openSettings();
+  void openConnectionGuide();
+  void openSettingsAt(const QString &page);
+  void connectionMethodChanged(int index);
+  void applyRemoteHostChange();
+  void updateConnectionGuide();
+  void finishQuit();
   void startCore();
   void autoStartCore();
   void tryStartCore(bool interactive);
@@ -221,7 +229,12 @@ private:
   bool m_tailscaleReady = false;
   bool m_automaticStartPending = false;
   bool m_quitRequested = false;
+  bool m_shutdownInProgress = false;
   bool m_systemShutdownRequested = false;
+  bool m_switchingHost = false;
+  QString m_activeRemoteHost;
+  QString m_tailscaleStatusMessage;
+  QStringList m_connectedClients;
   ServerConfig m_serverConfig;
   deskflow::gui::CoreProcess m_coreProcess;
 #ifdef Q_OS_WIN
@@ -263,6 +276,7 @@ private:
   QAction *m_actionTrayQuit = nullptr;
   QAction *m_actionRestore = nullptr;
   QAction *m_actionSettings = nullptr;
+  QAction *m_actionConnectionGuide = nullptr;
   QAction *m_actionStartCore = nullptr;
   QAction *m_actionRestartCore = nullptr;
   QAction *m_actionStopCore = nullptr;

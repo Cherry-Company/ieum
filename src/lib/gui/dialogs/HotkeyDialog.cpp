@@ -6,7 +6,11 @@
  */
 
 #include "HotkeyDialog.h"
+#include "gui/StyleUtils.h"
 #include "ui_HotkeyDialog.h"
+
+#include <QLabel>
+#include <QVBoxLayout>
 
 HotkeyDialog::HotkeyDialog(QWidget *parent, Hotkey &hotkey)
     : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint),
@@ -14,6 +18,13 @@ HotkeyDialog::HotkeyDialog(QWidget *parent, Hotkey &hotkey)
       m_Hotkey(hotkey)
 {
   ui->setupUi(this);
+  deskflow::gui::applyIeumDialogStyle(*this);
+  auto *hint = new QLabel(
+      tr("Click the shortcut field, then press the keys you want to use. Configure its action after saving."), this
+  );
+  hint->setWordWrap(true);
+  qobject_cast<QVBoxLayout *>(layout())->insertWidget(0, hint);
+  setMinimumWidth(420);
 
   ui->m_pKeySequenceWidgetHotkey->setText(m_Hotkey.text());
 }

@@ -24,6 +24,7 @@
 #include "licensing/ProEarlyAccessClaim.h"
 #include "licensing/ProLicense.h"
 
+#include <QAction>
 #include <QApplication>
 #include <QClipboard>
 #include <QComboBox>
@@ -31,8 +32,15 @@
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
+#include <QLabel>
+#include <QLineEdit>
+#include <QListWidget>
 #include <QMessageBox>
+#include <QRegularExpression>
+#include <QScrollArea>
 #include <QStringDecoder>
+#include <QTabBar>
+#include <QVBoxLayout>
 
 using namespace deskflow::gui;
 
@@ -130,14 +138,228 @@ SettingsDialog::SettingsDialog(QWidget *parent, const ServerConfig &serverConfig
 
   loadFromConfig();
   logLevelChanged();
+  createNavigation();
 
-  adjustSize();
-  QApplication::processEvents();
-  setFixedHeight(height());
-  setWindowFlags((windowFlags() | Qt::CustomizeWindowHint) & ~Qt::WindowMinMaxButtonsHint);
+  setMinimumSize(760, 520);
+  resize(900, 660);
 
   setButtonBoxEnabledButtons();
   initConnections();
+}
+
+void SettingsDialog::createNavigation()
+{
+  m_settingsSearch = new QLineEdit(this);
+  m_settingsSearch->setObjectName(QStringLiteral("settingsSearch"));
+  m_settingsSearch->setClearButtonEnabled(true);
+  m_settingsSearch->setAccessibleName(tr("Search settings"));
+  m_settingsSearch->setPlaceholderText(tr("Search settings · Tailscale, input, clipboard…"));
+  ui->verticalLayout_3->insertWidget(0, m_settingsSearch);
+
+  m_navigation = new QListWidget(this);
+  m_navigation->setObjectName(QStringLiteral("settingsNavigation"));
+  m_navigation->setAccessibleName(tr("Settings categories"));
+  m_navigation->setFixedWidth(190);
+  m_navigation->setWordWrap(true);
+  m_navigation->setSpacing(3);
+  ui->verticalLayout_3->removeWidget(ui->tabWidget);
+  auto *body = new QHBoxLayout;
+  body->setSpacing(16);
+  body->addWidget(m_navigation);
+  auto *content = new QVBoxLayout;
+  m_searchEmpty = new QLabel(tr("No settings found. Try another word."), this);
+  m_searchEmpty->setWordWrap(true);
+  content->addWidget(m_searchEmpty);
+  m_searchResults = new QListWidget(this);
+  m_searchResults->setObjectName(QStringLiteral("settingsSearchResults"));
+  m_searchResults->setAccessibleName(tr("Matching settings. Select a result to jump to that control."));
+  m_searchResults->setMaximumHeight(172);
+  m_searchResults->setWordWrap(true);
+  content->addWidget(m_searchResults);
+  m_pageDescription = new QLabel(this);
+  m_pageDescription->setObjectName(QStringLiteral("settingsPageDescription"));
+  m_pageDescription->setWordWrap(true);
+  content->addWidget(m_pageDescription);
+  content->addWidget(ui->tabWidget, 1);
+  body->addLayout(content, 1);
+  ui->verticalLayout_3->insertLayout(1, body, 1);
+  ui->tabWidget->tabBar()->hide();
+
+  // Keep the existing pages and controls, but let long pages scroll instead
+  // of making every category as tall as the longest page.
+  for (int i = 0; i < ui->tabWidget->count(); ++i) {
+    auto *page = ui->tabWidget->widget(i);
+    auto *pageContent = new QWidget;
+    pageContent->setLayout(page->layout());
+    auto *originalLayout = pageContent->layout();
+    while (originalLayout->count() > 0 && originalLayout->itemAt(0)->spacerItem() != nullptr) {
+      delete originalLayout->takeAt(0);
+    }
+    auto *scroll = new QScrollArea(page);
+    scroll->setWidgetResizable(true);
+    scroll->setFrameShape(QFrame::NoFrame);
+    scroll->setWidget(pageContent);
+    auto *pageLayout = new QVBoxLayout(page);
+    pageLayout->setContentsMargins(0, 8, 0, 0);
+    pageLayout->addWidget(scroll);
+  }
+
+  const QStringList pages{QStringLiteral("tabGeneral"), QStringLiteral("tabNetwork"),
+                          QStringLiteral("tabInput"),   QStringLiteral("tabFileTransfer"),
+                          QStringLiteral("tabWindow"),  QStringLiteral("tabAdvanced"),
+                          QStringLiteral("tabLog")};
+  for (const auto &name : pages) {
+    auto *entry = new QListWidgetItem(m_navigation);
+    entry->setData(Qt::UserRole, name);
+    entry->setSizeHint(QSize(170, 48));
+  }
+  connect(m_navigation, &QListWidget::currentItemChanged, this, [this](QListWidgetItem *current) {
+    if (current != nullptr) {
+      auto *page = ui->tabWidget->findChild<QWidget *>(current->data(Qt::UserRole).toString());
+      ui->tabWidget->setCurrentWidget(page);
+      const QStringList descriptions{
+          tr("Language, automatic startup, and everyday app behavior."),
+          tr("Choose a network, encryption, certificates, and the connection port."),
+          tr("Control input language, keyboard behavior, and shared clipboard text."),
+          tr("Choose where received files go and manage Pro Local activation."),
+          tr("Choose what happens when you close or minimize the window."),
+          tr("Service mode, screen commands, and options for managed setups."),
+          tr("Choose log detail and file storage when investigating a problem.")
+      };
+      m_pageDescription->setText(descriptions.value(m_navigation->row(current)));
+    }
+  });
+  connect(m_settingsSearch, &QLineEdit::textChanged, this, &SettingsDialog::filterNavigation);
+  connect(m_searchResults, &QListWidget::itemActivated, this, &SettingsDialog::activateSearchResult);
+  connect(m_searchResults, &QListWidget::itemClicked, this, &SettingsDialog::activateSearchResult);
+  connect(m_settingsSearch, &QLineEdit::returnPressed, this, [this] {
+    activateSearchResult(m_searchResults->currentItem());
+  });
+  auto *find = new QAction(this);
+  find->setShortcut(QKeySequence::Find);
+  connect(find, &QAction::triggered, m_settingsSearch, qOverload<>(&QLineEdit::setFocus));
+  addAction(find);
+  filterNavigation();
+  m_navigation->setCurrentRow(0);
+}
+
+void SettingsDialog::selectPage(const QString &name)
+{
+  m_settingsSearch->clear();
+  for (int i = 0; i < m_navigation->count(); ++i) {
+    auto *entry = m_navigation->item(i);
+    if (entry->data(Qt::UserRole).toString() == name && !entry->isHidden()) {
+      m_navigation->setCurrentItem(entry);
+      return;
+    }
+  }
+}
+
+void SettingsDialog::activateSearchResult(QListWidgetItem *result)
+{
+  if (result == nullptr) {
+    return;
+  }
+  const auto pageName = result->data(Qt::UserRole + 1).toString();
+  auto *page = ui->tabWidget->findChild<QWidget *>(pageName);
+  auto *target = page == nullptr ? nullptr : page->findChild<QWidget *>(result->data(Qt::UserRole).toString());
+  if (target == nullptr) {
+    return;
+  }
+  for (int i = 0; i < m_navigation->count(); ++i) {
+    if (m_navigation->item(i)->data(Qt::UserRole).toString() == pageName) {
+      m_navigation->setCurrentItem(m_navigation->item(i));
+      break;
+    }
+  }
+  if (auto *label = qobject_cast<QLabel *>(target); label != nullptr && label->buddy() != nullptr) {
+    target = label->buddy();
+  }
+  if (auto *scroll = page->findChild<QScrollArea *>()) {
+    scroll->ensureWidgetVisible(target, 16, 48);
+  }
+  if (target->isEnabled() && target->focusPolicy() != Qt::NoFocus) {
+    target->setFocus(Qt::ShortcutFocusReason);
+  }
+  m_pageDescription->setText(tr("You are here: %1").arg(result->text()));
+  if (!target->isEnabled() && ui->groupTailscale->isChecked() &&
+      (target == ui->sbPort || target == ui->comboInterface)) {
+    m_pageDescription->setText(
+        m_pageDescription->text() + QLatin1Char('\n') +
+        tr("Tailscale manages this value. Turn off Tailscale in this section to change it.")
+    );
+  }
+}
+
+void SettingsDialog::filterNavigation()
+{
+  if (m_navigation == nullptr) {
+    return;
+  }
+  const QStringList titles{tr("General"), tr("Connection & security"), tr("Keyboard & clipboard"), tr("File transfer"),
+                           tr("Window"),  tr("System & automation"),   tr("Logs & diagnostics")};
+  const auto words = m_settingsSearch->text().simplified().split(QLatin1Char(' '), Qt::SkipEmptyParts);
+  m_searchResults->clear();
+  QListWidgetItem *firstMatch = nullptr;
+  for (int i = 0; i < m_navigation->count(); ++i) {
+    auto *entry = m_navigation->item(i);
+    entry->setText(titles[i]);
+    auto *page = ui->tabWidget->findChild<QWidget *>(entry->data(Qt::UserRole).toString());
+    QString searchable = titles[i];
+    for (auto *control : page->findChildren<QWidget *>()) {
+      searchable += QLatin1Char(' ') + control->property("text").toString() + QLatin1Char(' ') +
+                    control->property("title").toString() + QLatin1Char(' ') + control->toolTip();
+      if (auto *combo = qobject_cast<QComboBox *>(control)) {
+        for (int option = 0; option < combo->count(); ++option) {
+          searchable += QLatin1Char(' ') + combo->itemText(option);
+        }
+      }
+      if (!words.isEmpty() && ui->tabWidget->isTabVisible(ui->tabWidget->indexOf(page)) && !control->isHidden() &&
+          !control->objectName().isEmpty() && control != ui->lblTailscaleStatus) {
+        auto label = control->property("text").toString();
+        if (label.isEmpty()) {
+          label = control->property("title").toString();
+        }
+        if (label.isEmpty()) {
+          continue;
+        }
+        label.remove(QLatin1Char('&'));
+        label.remove(QRegularExpression(QStringLiteral("<[^>]*>")));
+        const auto terms = titles[i] + QLatin1Char(' ') + label + QLatin1Char(' ') + control->toolTip();
+        bool matchesControl = true;
+        for (const auto &word : words) {
+          matchesControl = matchesControl && terms.contains(word, Qt::CaseInsensitive);
+        }
+        if (matchesControl) {
+          auto *result =
+              new QListWidgetItem(titles[i] + QStringLiteral(" › ") + label.simplified().left(150), m_searchResults);
+          result->setData(Qt::UserRole, control->objectName());
+          result->setData(Qt::UserRole + 1, entry->data(Qt::UserRole));
+          result->setToolTip(control->toolTip());
+        }
+      }
+    }
+    bool matches = ui->tabWidget->isTabVisible(ui->tabWidget->indexOf(page));
+    for (const auto &word : words) {
+      matches = matches && searchable.contains(word, Qt::CaseInsensitive);
+    }
+    entry->setHidden(!matches);
+    if (matches && firstMatch == nullptr) {
+      firstMatch = entry;
+    }
+  }
+  m_searchEmpty->setVisible(firstMatch == nullptr);
+  m_searchResults->setVisible(!words.isEmpty() && m_searchResults->count() > 0);
+  int resultsHeight = 4;
+  for (int i = 0; i < qMin(5, m_searchResults->count()); ++i) {
+    resultsHeight += m_searchResults->sizeHintForRow(i);
+  }
+  m_searchResults->setFixedHeight(qBound(48, resultsHeight, 172));
+  m_searchResults->setCurrentRow(0);
+  ui->tabWidget->setVisible(firstMatch != nullptr);
+  if (firstMatch != nullptr && (m_navigation->currentItem() == nullptr || m_navigation->currentItem()->isHidden())) {
+    m_navigation->setCurrentItem(firstMatch);
+  }
 }
 
 void SettingsDialog::changeEvent(QEvent *e)
@@ -147,6 +369,10 @@ void SettingsDialog::changeEvent(QEvent *e)
     ui->retranslateUi(this);
     updateText();
     updateFileTransferControls();
+    filterNavigation();
+    if (m_settingsSearch != nullptr) {
+      m_settingsSearch->setPlaceholderText(tr("Search settings · Tailscale, input, clipboard…"));
+    }
   } else if (e->type() == QEvent::PaletteChange) {
     applyIeumDialogStyle(*this);
   }

@@ -83,6 +83,10 @@ add_library(${target} STATIC
   dialogs/ClientConfigDialog.h
   dialogs/ClientConfigDialog.cpp
   dialogs/ClientConfigDialog.ui
+  dialogs/ConnectionGuideDialog.cpp
+  dialogs/ConnectionGuideDialog.h
+  dialogs/DiagnosticDialog.cpp
+  dialogs/DiagnosticDialog.h
   dialogs/FingerprintDialog.cpp
   dialogs/FingerprintDialog.h
   dialogs/HotkeyDialog.cpp
@@ -157,6 +161,12 @@ target_link_libraries(
 
 if(APPLE)
   target_link_libraries(${target} "-framework ServiceManagement")
+  # OSXHelpers is compiled in this static library, not in the GUI executable.
+  # Ad-hoc signatures (-) do not make Notification Center safe to call.
+  if((APPLE_CODESIGN_DISTRIBUTION AND NOT APPLE_CODESIGN_DISTRIBUTION STREQUAL "-") OR
+     (APPLE_CODESIGN_DEV AND NOT APPLE_CODESIGN_DEV STREQUAL "-"))
+    target_compile_definitions(${target} PRIVATE IEUM_MACOS_STABLE_CODE_IDENTITY)
+  endif()
 endif()
 
 if(WIN32)

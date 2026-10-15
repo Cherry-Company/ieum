@@ -31,7 +31,16 @@ namespace deskflow::core::ipc {
 
 namespace {
 constexpr auto kMaxIpcMessageBytes = 64 * 1024;
+constexpr qsizetype kMaxPendingMessages = 64;
+constexpr qsizetype kMaxPendingCharacters = 128 * 1024;
+
+bool isCurrentState(const QString &command)
+{
+  return command == QStringLiteral("connectionState") || command == QStringLiteral("connectedClients") ||
+         command == QStringLiteral("retryIn") || command == QStringLiteral("secureSocket") ||
+         command == QStringLiteral("inputLanguageStatus");
 }
+} // namespace
 
 IpcServer::IpcServer(QObject *parent, const QString &serverName, const QString &typeName)
     : QObject(parent),
@@ -297,6 +306,7 @@ void IpcServer::processMessage(QLocalSocket *clientSocket, const QString &messag
       writeToClientSocket(clientSocket, pending);
     }
     m_pendingMessages.clear();
+    m_pendingCharacters = 0;
   } else if (command == QStringLiteral("noop")) {
     LOG_DEBUG("%s ipc server got noop message", m_typeName.constData());
     writeToClientSocket(clientSocket, QStringLiteral("ok"));
@@ -321,11 +331,53 @@ void IpcServer::broadcastCommand(const QString &command, const QString &args, co
     if (!queueIfNoClients) {
       return;
     }
+    if (message.size() > kMaxIpcMessageBytes ||
+        (message.size() > kMaxIpcMessageBytes / 3 && message.toUtf8().size() > kMaxIpcMessageBytes)) {
+      LOG_WARN("%s ipc server omitted an oversized pending message", m_typeName.constData());
+      return;
+    }
+    // A service can run for days without its GUI. Retry and status updates are
+    // snapshots, not a history to replay when the GUI eventually connects.
+    if (isCurrentState(command)) {
+      if (!m_pendingMessages.isEmpty()) {
+        const auto &last = m_pendingMessages.constLast();
+        const bool sameCommand =
+            last.startsWith(command) && (last.size() == command.size() || last[command.size()] == QLatin1Char('='));
+        const auto newSize = m_pendingCharacters - last.size() + message.size();
+        if (sameCommand && newSize <= kMaxPendingCharacters) {
+          m_pendingCharacters = newSize;
+          m_pendingMessages.last() = message;
+          return;
+        }
+      }
+      for (qsizetype i = 0; i < m_pendingMessages.size(); ++i) {
+        if (m_pendingMessages[i].section(QLatin1Char('='), 0, 0) == command) {
+          m_pendingCharacters -= m_pendingMessages[i].size();
+          m_pendingMessages.removeAt(i);
+          break;
+        }
+      }
+    }
+    while (!m_pendingMessages.isEmpty() && (m_pendingMessages.size() >= kMaxPendingMessages ||
+                                            m_pendingCharacters + message.size() > kMaxPendingCharacters)) {
+      // Keep the current connection state even when a burst of notifications
+      // fills the bounded event history.
+      qsizetype oldestEvent = 0;
+      for (qsizetype i = 0; i < m_pendingMessages.size(); ++i) {
+        if (!isCurrentState(m_pendingMessages[i].section(QLatin1Char('='), 0, 0))) {
+          oldestEvent = i;
+          break;
+        }
+      }
+      m_pendingCharacters -= m_pendingMessages[oldestEvent].size();
+      m_pendingMessages.removeAt(oldestEvent);
+    }
     LOG_VERBOSE(
         "%s ipc server has no clients, message queued: %s", m_typeName.constData(),
         sanitizedMessage.toUtf8().constData()
     );
     m_pendingMessages.append(message);
+    m_pendingCharacters += message.size();
     return;
   }
 

@@ -42,7 +42,7 @@ public:
     StartFailed
   };
 
-  explicit CoreProcess(const ServerConfig &serverConfig);
+  explicit CoreProcess(const ServerConfig &serverConfig, const QString &executablePath = {});
 
   void start(std::optional<ProcessMode> processMode = std::nullopt);
   void stop(std::optional<ProcessMode> processMode = std::nullopt);
@@ -66,6 +66,10 @@ public:
   bool isStarted() const
   {
     return m_processState == ProcessState::Started;
+  }
+  bool hasForegroundProcess() const
+  {
+    return m_process != nullptr && m_process->state() != QProcess::NotRunning;
   }
   ProcessState processState() const
   {
@@ -114,7 +118,7 @@ private:
   void startForegroundProcess(const QStringList &args);
   void startProcessFromDaemon();
   void stop(std::optional<ProcessMode> processMode, bool restartRequested);
-  void stopForegroundProcess() const;
+  void stopForegroundProcess(bool gracefulStopSent) const;
   void stopProcessFromDaemon();
   void scheduleRestart(int delayMs);
   void connectCoreIpc(quint64 startGeneration);

@@ -15,6 +15,10 @@ class IpcServerTests : public QObject
   Q_OBJECT
 private Q_SLOTS:
   void initTestCase();
+  void replaysLatestStateAfterRetryStorm();
+  void boundsPendingEventsAndPreservesCurrentState();
+  void rejectsOversizedPendingMessages();
+  void boundsTotalPendingPayload();
   void refusesDuplicateWithoutDisruptingFirstServer();
   void preservesCommandArgumentBoundaryFromClient();
   void redactsFileTransferEdgeDropInServerLogs();

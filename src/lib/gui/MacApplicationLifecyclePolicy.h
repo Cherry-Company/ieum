@@ -13,4 +13,9 @@ namespace deskflow::gui {
   return spontaneous && !explicitQuit && !systemShutdown;
 }
 
+[[nodiscard]] constexpr bool macCanUseNotifications(bool hasBundleIdentifier, bool hasStableCodeIdentity) noexcept
+{
+  return hasBundleIdentifier && hasStableCodeIdentity;
+}
+
 } // namespace deskflow::gui

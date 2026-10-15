@@ -11,6 +11,7 @@
 
 #include <QAbstractEventDispatcher>
 #include <QDir>
+#include <QFile>
 #include <QStandardPaths>
 
 void DiagnosticTests::redactSensitiveText_removesHomePathsAndAddresses()
@@ -42,10 +43,10 @@ void DiagnosticTests::sessionMarker_detectsUncleanExit()
   QStandardPaths::setTestModeEnabled(true);
   completeSession();
 
-  const auto firstSession = beginSession();
+  const auto firstSession = beginSession("test-boot");
   QVERIFY(!firstSession.unexpectedExit);
 
-  const auto interruptedSession = beginSession();
+  const auto interruptedSession = beginSession("test-boot");
   QVERIFY(interruptedSession.unexpectedExit);
   QCOMPARE(interruptedSession.version, QCoreApplication::applicationVersion());
 
@@ -73,6 +74,45 @@ void DiagnosticTests::sessionMarker_cleanExit()
   const auto previous = beginSession();
   completeSession();
   QVERIFY(!previous.unexpectedExit);
+}
+
+void DiagnosticTests::sessionMarker_missingBootIdIsNotCrashEvidence()
+{
+  using namespace deskflow::gui::diagnostic;
+  QStandardPaths::setTestModeEnabled(true);
+  completeSession();
+  beginSession({});
+  QVERIFY(!beginSession({}).unexpectedExit);
+  QVERIFY(!beginSession("known-boot").unexpectedExit);
+  QVERIFY(!beginSession({}).unexpectedExit);
+  completeSession();
+}
+
+void DiagnosticTests::sessionMarker_corruptMarkerIsIgnored()
+{
+  using namespace deskflow::gui::diagnostic;
+  QStandardPaths::setTestModeEnabled(true);
+  completeSession();
+  beginSession("known-boot");
+  QFile marker(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/session-active.json");
+  QVERIFY(marker.open(QIODevice::WriteOnly | QIODevice::Truncate));
+  marker.write("{broken");
+  marker.close();
+  QVERIFY(!beginSession("known-boot").unexpectedExit);
+  completeSession();
+}
+
+void DiagnosticTests::report_issueUrlIsBoundedAndContainsNoErrorText()
+{
+  using namespace deskflow::gui::diagnostic;
+  QStandardPaths::setTestModeEnabled(true);
+  const auto report = createReport(ReportKind::CriticalError, QString(2000, QChar(0xD55C)) + " private-message");
+  QVERIFY(report.saved);
+  QVERIFY(report.markdown.contains("private-message") || report.markdown.contains("truncated"));
+  QVERIFY(report.issueUrl.toEncoded().size() < 1800);
+  QVERIFY(!report.issueUrl.toString().contains("private-message"));
+  QVERIFY(report.issueUrl.toString().contains(report.id));
+  QFile::remove(report.filePath);
 }
 
 void DiagnosticTests::sessionShutdown_onlyConfirmedShutdownClearsMarker()

@@ -13,6 +13,7 @@
 #include "common/UrlConstants.h"
 #include "common/VersionInfo.h"
 #include "gui/Diagnostic.h"
+#include "gui/Logger.h"
 #include "gui/MainWindow.h"
 #include "gui/Messages.h"
 #include "gui/OSXHelpers.h"
@@ -257,6 +258,8 @@ int main(int argc, char *argv[])
   // Sets the fallback icon path and fallback theme
   updateIconTheme();
 
+  // Establish QObject affinity before native APIs can log from worker threads.
+  Logger::instance();
   qInstallMessageHandler(deskflow::gui::messages::messageHandler);
   qInfo("%s v%s", kAppName, kDisplayVersion);
 
@@ -278,7 +281,10 @@ int main(int argc, char *argv[])
 
   const auto previousSession = diagnostic::beginSession();
   SessionLifecycle sessionLifecycle(app);
-  QObject::connect(&app, &QCoreApplication::aboutToQuit, &app, [] { diagnostic::completeSession(); });
+  QObject::connect(&app, &QCoreApplication::aboutToQuit, &app, [&app] {
+    app.setProperty("ieumShuttingDown", true);
+    diagnostic::completeSession();
+  });
 
   // --no-reset
   if (parser.isSet(resetOption)) {

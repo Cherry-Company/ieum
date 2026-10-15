@@ -9,26 +9,30 @@
 #include "Diagnostic.h"
 #include "Logger.h"
 #include "ProductIdentity.h"
+#include "dialogs/DiagnosticDialog.h"
 
 #include "common/Settings.h"
 #include "common/UrlConstants.h"
 
+#include <QApplication>
 #include <QCheckBox>
 #include <QDir>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QPointer>
 #include <QPushButton>
-#include <memory>
+#include <QThread>
+#include <atomic>
 
 namespace deskflow::gui::messages {
 
 struct Errors
 {
-  static std::unique_ptr<QMessageBox> s_criticalMessage;
+  static QPointer<QMessageBox> s_criticalMessage;
   static QStringList s_ignoredErrors;
 };
 
-std::unique_ptr<QMessageBox> Errors::s_criticalMessage;
+QPointer<QMessageBox> Errors::s_criticalMessage;
 QStringList Errors::s_ignoredErrors;
 
 void raiseCriticalDialog()
@@ -36,6 +40,25 @@ void raiseCriticalDialog()
   if (Errors::s_criticalMessage) {
     Errors::s_criticalMessage->raise();
   }
+}
+
+bool openDiagnosticIssue(QWidget *parent, const diagnostic::Report &report)
+{
+  diagnostic::copyToClipboard(report);
+  if (diagnostic::openIssue(report)) {
+    return true;
+  }
+
+  QMessageBox message(parent);
+  message.setIcon(QMessageBox::Warning);
+  message.setWindowTitle(QObject::tr("Open error report"));
+  message.setText(QObject::tr("The browser could not be opened. Your diagnostic is still on the clipboard."));
+  message.setInformativeText(
+      QObject::tr("Open the address below in your browser, then paste the diagnostic and submit it.\n%1").arg(kUrlHelp)
+  );
+  message.setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+  message.exec();
+  return false;
 }
 
 void showUnexpectedExit(QWidget *parent, const diagnostic::PreviousSession &previousSession)
@@ -49,44 +72,23 @@ void showUnexpectedExit(QWidget *parent, const diagnostic::PreviousSession &prev
                           .arg(previousVersion, previousStart);
   const auto report = diagnostic::createReport(diagnostic::ReportKind::UnexpectedExit, detail);
 
-  QMessageBox dialog(parent);
-  dialog.setIcon(QMessageBox::Warning);
-  dialog.setWindowTitle(QObject::tr("Ieum Previous Session Ended Unexpectedly"));
-  dialog.setText(
+  DiagnosticDialog dialog(
+      report, parent,
       QObject::tr(
-          "<p>The previous Ieum session did not close normally. It may have crashed, lost power, or been ended from "
-          "Task Manager/Force Quit.</p><p>A privacy-filtered report was saved locally. Nothing was uploaded "
-          "automatically.</p><p>Report ID: <code>%1</code><br>Local copy: <code>%2</code></p>"
+          "The previous session did not finish normally. It may have been force-quit or crashed. You can "
+          "review and save this report without submitting it."
       )
-          .arg(
-              report.id, report.saved ? QDir::toNativeSeparators(report.filePath).toHtmlEscaped()
-                                      : QObject::tr("could not save the local file")
-          )
   );
-  auto *copyButton = dialog.addButton(QObject::tr("Copy Diagnostic"), QMessageBox::ActionRole);
-  auto *issueButton = dialog.addButton(QObject::tr("Open GitHub Issue"), QMessageBox::ActionRole);
-#if defined(Q_OS_MACOS)
-  auto *nativeReportsButton = dialog.addButton(QObject::tr("Open macOS Crash Reports"), QMessageBox::ActionRole);
-#endif
-  dialog.addButton(QMessageBox::Ok);
   dialog.exec();
-
-  if (dialog.clickedButton() == copyButton) {
-    diagnostic::copyToClipboard(report);
-  } else if (dialog.clickedButton() == issueButton) {
-    diagnostic::copyToClipboard(report);
-    diagnostic::openIssue(report);
-  }
-#if defined(Q_OS_MACOS)
-  else if (dialog.clickedButton() == nativeReportsButton) {
-    diagnostic::openNativeCrashReports();
-  }
-#endif
 }
 
 void showErrorDialog(const QString &message, const QString &fileLine, QtMsgType type)
 {
   if (type != QtFatalMsg && Errors::s_ignoredErrors.contains(message)) {
+    return;
+  }
+  if (type != QtFatalMsg && Errors::s_criticalMessage &&
+      Errors::s_criticalMessage->property("diagnosticMessage").toString() == message) {
     return;
   }
 
@@ -117,27 +119,31 @@ void showErrorDialog(const QString &message, const QString &fileLine, QtMsgType 
     if (dialog.clickedButton() == copyButton) {
       diagnostic::copyToClipboard(report);
     } else if (dialog.clickedButton() == issueButton) {
-      diagnostic::copyToClipboard(report);
-      diagnostic::openIssue(report);
+      openDiagnosticIssue(nullptr, report);
     }
     return;
   }
 
   text.prepend(QObject::tr("<p>Sorry, a critical error has occurred.</p>\n"));
-  Errors::s_criticalMessage.reset();
-  Errors::s_criticalMessage = std::make_unique<QMessageBox>(QMessageBox::Critical, title, text, QMessageBox::NoButton);
+  if (Errors::s_criticalMessage) {
+    Errors::s_criticalMessage->done(QMessageBox::Ok);
+  }
+  Errors::s_criticalMessage = new QMessageBox(QMessageBox::Critical, title, text, QMessageBox::NoButton);
+  Errors::s_criticalMessage->setAttribute(Qt::WA_DeleteOnClose);
+  Errors::s_criticalMessage->setProperty("diagnosticMessage", message);
   auto *copyButton = Errors::s_criticalMessage->addButton(QObject::tr("Copy Diagnostic"), QMessageBox::ActionRole);
   auto *issueButton = Errors::s_criticalMessage->addButton(QObject::tr("Open GitHub Issue"), QMessageBox::ActionRole);
   Errors::s_criticalMessage->addButton(QMessageBox::Ok);
   auto *ignoreButton = Errors::s_criticalMessage->addButton(QMessageBox::Ignore);
 
-  QObject::connect(copyButton, &QPushButton::clicked, [report] { diagnostic::copyToClipboard(report); });
-  QObject::connect(issueButton, &QPushButton::clicked, [report] {
-    diagnostic::copyToClipboard(report);
-    diagnostic::openIssue(report);
-  });
-  QObject::connect(Errors::s_criticalMessage.get(), &QMessageBox::finished, [message, ignoreButton](int) {
-    if (Errors::s_criticalMessage && Errors::s_criticalMessage->clickedButton() == ignoreButton) {
+  auto *dialog = Errors::s_criticalMessage.data();
+  QObject::connect(copyButton, &QPushButton::clicked, dialog, [report] { diagnostic::copyToClipboard(report); });
+  QObject::connect(issueButton, &QPushButton::clicked, dialog, [report] { openDiagnosticIssue(nullptr, report); });
+  QObject::connect(dialog, &QMessageBox::finished, dialog, [message, ignoreButton, dialog](int) {
+    if (dialog->clickedButton() == ignoreButton) {
+      if (Errors::s_ignoredErrors.size() >= 128) {
+        Errors::s_ignoredErrors.removeFirst();
+      }
       Errors::s_ignoredErrors.append(message);
     }
   });
@@ -159,8 +165,34 @@ void messageHandler(QtMsgType type, const QMessageLogContext &context, const QSt
   const auto fileLine = messages::fileLine(context);
   Logger::instance()->handleMessage(type, fileLine, message);
 
-  if (type == QtFatalMsg || type == QtCriticalMsg) {
-    showErrorDialog(message, fileLine, type);
+  if ((type == QtFatalMsg || type == QtCriticalMsg) && qApp != nullptr && !QCoreApplication::closingDown()) {
+    if (type == QtFatalMsg) {
+      // A worker must never create widgets or wait for a GUI thread that may
+      // itself be waiting for that worker. Preserve the fatal report locally.
+      if (QThread::currentThread() == qApp->thread()) {
+        showErrorDialog(message, fileLine, type);
+      } else {
+        diagnostic::createReport(diagnostic::ReportKind::FatalError, message, fileLine);
+      }
+    } else {
+      // Logging is callable from any thread and from native callbacks. Always
+      // leave that stack before opening a dialog or entering another event loop.
+      static std::atomic_uint pendingDialogs{0};
+      if (pendingDialogs.fetch_add(1) >= 16) {
+        --pendingDialogs;
+        return;
+      }
+      QMetaObject::invokeMethod(
+          qApp,
+          [message = message.left(4096), fileLine] {
+            --pendingDialogs;
+            if (!QCoreApplication::closingDown() && !qApp->property("ieumShuttingDown").toBool()) {
+              showErrorDialog(message, fileLine, QtCriticalMsg);
+            }
+          },
+          Qt::QueuedConnection
+      );
+    }
   }
 
   if (type == QtFatalMsg) {

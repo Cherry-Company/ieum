@@ -15,4 +15,5 @@ class CoreActionPolicyTests : public QObject
 private Q_SLOTS:
   void startInProgress_remainsStoppableWhenConfigurationBecomesInvalid();
   void stoppedCore_requiresValidConfigurationToStart();
+  void stoppingCore_doesNotOfferAnIneffectiveStart();
 };

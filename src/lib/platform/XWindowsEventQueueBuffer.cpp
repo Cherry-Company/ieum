@@ -12,6 +12,9 @@
 #include "base/IEventQueue.h"
 #include "mt/Thread.h"
 
+#include <algorithm>
+#include <chrono>
+#include <cmath>
 #include <fcntl.h>
 #include <poll.h>
 #include <unistd.h>
@@ -70,6 +73,10 @@ void XWindowsEventQueueBuffer::waitForEvent(double dtimeout)
   }
   // calling flush may have queued up a new event.
   if (!XWindowsEventQueueBuffer::isEmpty()) {
+    {
+      std::scoped_lock lock{m_mutex};
+      m_waiting = false;
+    }
     Thread::testCancel();
     return;
   }
@@ -81,8 +88,7 @@ void XWindowsEventQueueBuffer::waitForEvent(double dtimeout)
   pfds[0].events = POLLIN;
   pfds[1].fd = m_pipefd[0];
   pfds[1].events = POLLIN;
-  int timeout = (dtimeout < 0.0) ? -1 : static_cast<int>(1000.0 * dtimeout);
-  int remaining = timeout;
+  const auto started = std::chrono::steady_clock::now();
   int retval = 0;
 
   // It's possible that the X server has queued events locally
@@ -94,14 +100,24 @@ void XWindowsEventQueueBuffer::waitForEvent(double dtimeout)
   // Instead we poll for a brief period of time (so if events
   // queued locally in the xlib buffer can be processed)
   // and continue doing this until timeout is reached.
-  // The human eye can notice 60hz (ansi) which is 16ms, however
-  // we want to give the cpu a chance s owe up this to 25ms
-  static const int s_timeoutDelay = 25;
+  // X events wake the display FD and posted events wake the pipe immediately.
+  // This is only a safety poll for events already buffered by another Xlib
+  // caller, not the input-delivery cadence. Avoid 40 idle wakeups per second.
+  static constexpr int kFallbackPollMs = 250;
 
-  while (((dtimeout < 0.0) || (remaining > 0)) && getPendingCountLocked() == 0 && retval == 0) {
+  while (getPendingCountLocked() == 0 && retval == 0) {
+    int waitMs = kFallbackPollMs;
+    if (dtimeout >= 0.0) {
+      const auto elapsed = std::chrono::duration<double>(std::chrono::steady_clock::now() - started).count();
+      const auto remaining = dtimeout - elapsed;
+      if (remaining <= 0.0) {
+        break;
+      }
+      // Round up so a sub-millisecond timer does not turn into a busy loop.
+      waitMs = static_cast<int>(std::ceil(std::min(remaining * 1000.0, static_cast<double>(kFallbackPollMs))));
+    }
 
-    retval = poll(pfds, 2, s_timeoutDelay); // 16ms = 60hz, but we make it > to
-                                            // play nicely with the cpu
+    retval = poll(pfds, 2, waitMs);
     if (pfds[1].revents & POLLIN) {
       ssize_t read_response = read(m_pipefd[0], buf, 15);
 
@@ -110,7 +126,6 @@ void XWindowsEventQueueBuffer::waitForEvent(double dtimeout)
         // todo: handle read response
       }
     }
-    remaining -= s_timeoutDelay;
   }
 
   {

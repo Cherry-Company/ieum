@@ -4,6 +4,43 @@
 add_subdirectory(config)
 add_subdirectory(core)
 
+add_executable(CoreProcessTestHelper CoreProcessTestHelper.cpp)
+target_link_libraries(CoreProcessTestHelper PRIVATE Qt::Core)
+set_target_properties(CoreProcessTestHelper PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+
+create_test(
+  NAME CoreProcessTests
+  DEPENDS gui
+  SOURCE CoreProcessTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+add_dependencies(CoreProcessTests CoreProcessTestHelper)
+
+create_test(
+  NAME ConnectionFlowTests
+  DEPENDS gui
+  SOURCE ConnectionFlowTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+add_dependencies(ConnectionFlowTests CoreProcessTestHelper)
+target_sources(ConnectionFlowTests PRIVATE "${CMAKE_SOURCE_DIR}/src/apps/res/deskflow.qrc")
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND BUILD_X11_SUPPORT)
+  # Run through tools/tests/run_host_switch.py, which owns three isolated X
+  # displays and TLS-enabled cores. It is separate from the portable unit suite.
+  add_executable(HostSwitchIntegrationTests HostSwitchIntegrationTests.cpp)
+  target_link_libraries(HostSwitchIntegrationTests PRIVATE gui Qt::Test)
+  target_sources(HostSwitchIntegrationTests PRIVATE "${CMAKE_SOURCE_DIR}/src/apps/res/deskflow.qrc")
+  set_target_properties(HostSwitchIntegrationTests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+endif()
+
+create_test(
+  NAME MessagesTests
+  DEPENDS gui
+  SOURCE MessagesTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
 create_test(
   NAME LoggerTests
   DEPENDS gui
