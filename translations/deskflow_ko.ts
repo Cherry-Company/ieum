@@ -223,6 +223,170 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>ConnectionGuideDialog</name>
+    <message>
+        <source>First connection</source>
+        <translation>처음 연결하기</translation>
+    </message>
+    <message>
+        <source>One keyboard. A connected desk.</source>
+        <translation>키보드 하나로, 책상 위 컴퓨터를 함께.</translation>
+    </message>
+    <message>
+        <source>Install Ieum on every computer. Follow these steps on both sides; you can reopen this guide at any time.</source>
+        <translation>사용할 컴퓨터 모두에 이음을 설치하세요. 양쪽에서 아래 순서대로 진행하면 됩니다. 이 안내는 언제든 다시 열 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>1. Which computer has your keyboard?</source>
+        <translation>1. 키보드와 마우스는 어디에 연결되어 있나요?</translation>
+    </message>
+    <message>
+        <source>Host shares its keyboard and mouse. Client receives them. A client uses one host at a time.</source>
+        <translation>호스트는 키보드와 마우스를 공유하고, 클라이언트는 입력을 받습니다. 클라이언트 한 대는 한 번에 호스트 한 대를 사용합니다.</translation>
+    </message>
+    <message>
+        <source>Share this keyboard
+Host</source>
+        <translation>이 컴퓨터의 입력 장치 공유
+호스트</translation>
+    </message>
+    <message>
+        <source>Use another keyboard
+Client</source>
+        <translation>다른 컴퓨터의 입력 장치 사용
+클라이언트</translation>
+    </message>
+    <message>
+        <source>2. Choose how they connect</source>
+        <translation>2. 연결 방법을 고르세요</translation>
+    </message>
+    <message>
+        <source>On the same Wi-Fi or wired network, enter the host’s name or IP on the client. For Tailscale, sign in to the same Tailnet on both computers, then select the host on the client. An online Tailscale device still needs Ieum running as a host.</source>
+        <translation>같은 Wi-Fi·유선망이라면 클라이언트에 호스트의 이름이나 IP를 입력하세요. Tailscale이라면 양쪽에서 같은 Tailnet에 로그인하고 클라이언트에서 호스트를 고르세요. Tailscale에 온라인으로 보여도 상대방의 이음을 호스트로 실행해야 합니다.</translation>
+    </message>
+    <message>
+        <source>Open connection settings</source>
+        <translation>연결 설정 열기</translation>
+    </message>
+    <message>
+        <source>3. Start, approve, and arrange</source>
+        <translation>3. 시작하고, 승인하고, 배치하세요</translation>
+    </message>
+    <message>
+        <source>Press Start on the host and Connect on the client. Compare and approve the certificate fingerprints. On the host, add the client using its exact “This device” name and choose its position. Move the mouse across that screen edge to begin.</source>
+        <translation>호스트에서 시작, 클라이언트에서 연결을 누르세요. 양쪽 인증서 지문을 비교해 승인하세요. 호스트에서 클라이언트의 ‘이 기기’ 이름을 그대로 추가하고 위치를 고르세요. 그쪽 화면 끝으로 마우스를 옮기면 조작할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>Arrange computers on this host</source>
+        <translation>이 호스트의 컴퓨터 배치</translation>
+    </message>
+    <message>
+        <source>On Mac: allow input access</source>
+        <translation>Mac에서는 입력 접근 권한을 허용하세요</translation>
+    </message>
+    <message>
+        <source>In System Settings → Privacy &amp; Security → Accessibility, allow the current Ieum app. If you replaced an older app, remove the old entry and add the current one from Applications.</source>
+        <translation>시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용에서 현재 이음 앱을 허용하세요. 앱을 교체했다면 이전 항목을 지우고 Applications의 현재 앱을 다시 추가하세요.</translation>
+    </message>
+    <message>
+        <source>Open Accessibility settings</source>
+        <translation>손쉬운 사용 설정 열기</translation>
+    </message>
+    <message>
+        <source>Already connected elsewhere? Change the host on the client. Ieum closes the old connection and opens the new one automatically.</source>
+        <translation>이미 다른 호스트에 연결되어 있나요? 클라이언트에서 호스트를 바꾸세요. 기존 연결을 종료한 뒤 새 호스트에 자동으로 연결합니다.</translation>
+    </message>
+    <message>
+        <source>Continue in main window</source>
+        <translation>메인 화면에서 계속하기</translation>
+    </message>
+</context>
+<context>
+    <name>DiagnosticDialog</name>
+    <message>
+        <source>Review and report a problem</source>
+        <translation>문제 확인 및 오류 보고</translation>
+    </message>
+    <message>
+        <source>1. Review the diagnostic below.
+2. Copy it and open the GitHub issue page.
+3. Paste it, describe what happened, and submit. GitHub requires an account.
+Nothing is uploaded automatically.</source>
+        <translation>1. 아래 진단 내용을 확인하세요.
+2. 진단을 복사하고 GitHub 이슈 페이지를 여세요.
+3. 진단을 붙여 넣고 당시 상황을 적어 제출하세요. GitHub 계정이 필요합니다.
+자동으로 업로드되는 내용은 없습니다.</translation>
+    </message>
+    <message>
+        <source>Diagnostic preview</source>
+        <translation>진단 미리보기</translation>
+    </message>
+    <message>
+        <source>Local copy: %1</source>
+        <translation>로컬 사본: %1</translation>
+    </message>
+    <message>
+        <source>The local copy could not be saved. Use Save a copy below.</source>
+        <translation>로컬 사본을 저장하지 못했습니다. 아래의 사본 저장을 이용하세요.</translation>
+    </message>
+    <message>
+        <source>GitHub issue address. Copy this if your browser does not open.</source>
+        <translation>GitHub 이슈 주소입니다. 브라우저가 열리지 않으면 복사하세요.</translation>
+    </message>
+    <message>
+        <source>Copy diagnostic</source>
+        <translation>진단 복사</translation>
+    </message>
+    <message>
+        <source>Copy and open GitHub</source>
+        <translation>복사 후 GitHub 열기</translation>
+    </message>
+    <message>
+        <source>Save a copy…</source>
+        <translation>사본 저장…</translation>
+    </message>
+    <message>
+        <source>Open macOS crash reports</source>
+        <translation>macOS 충돌 보고서 열기</translation>
+    </message>
+    <message>
+        <source>Crash report folder opened. Look for Ieum reports from the time of the crash.</source>
+        <translation>충돌 보고서 폴더를 열었습니다. 문제가 발생한 시간의 이음 보고서를 찾아보세요.</translation>
+    </message>
+    <message>
+        <source>The crash report folder could not be opened.</source>
+        <translation>충돌 보고서 폴더를 열지 못했습니다.</translation>
+    </message>
+    <message>
+        <source>Diagnostic copied. Paste it into the issue before submitting.</source>
+        <translation>진단을 복사했습니다. 이슈에 붙여 넣은 뒤 제출하세요.</translation>
+    </message>
+    <message>
+        <source>Browser opened. Paste the diagnostic and submit the issue there.</source>
+        <translation>브라우저를 열었습니다. 진단을 붙여 넣고 그곳에서 이슈를 제출하세요.</translation>
+    </message>
+    <message>
+        <source>The browser could not be opened. The diagnostic is copied; copy the address above and open it manually.</source>
+        <translation>브라우저를 열지 못했습니다. 진단은 복사되어 있습니다. 위 주소를 복사해 직접 여세요.</translation>
+    </message>
+    <message>
+        <source>Save diagnostic</source>
+        <translation>진단 저장</translation>
+    </message>
+    <message>
+        <source>Markdown files (*.md)</source>
+        <translation>마크다운 파일 (*.md)</translation>
+    </message>
+    <message>
+        <source>Copy saved: %1</source>
+        <translation>사본 저장 완료: %1</translation>
+    </message>
+    <message>
+        <source>Could not save that file. Choose another location or copy the diagnostic.</source>
+        <translation>파일을 저장하지 못했습니다. 다른 위치를 고르거나 진단을 복사하세요.</translation>
+    </message>
+</context>
+<context>
     <name>FingerprintDialog</name>
     <message>
         <source>Local Fingerprints</source>
@@ -459,35 +623,35 @@ macOS는 이음의 손쉬운 사용 기록만 제거합니다. 다른 앱의 권
     </message>
     <message>
         <source>Mode</source>
-        <translation>연결 모드</translation>
+        <translation type="vanished">연결 모드</translation>
     </message>
     <message>
         <source>Share this keyboard and mouse
 Server</source>
-        <translation>이 키보드와 마우스 공유
+        <translation type="vanished">이 키보드와 마우스 공유
 서버</translation>
     </message>
     <message>
         <source>Use a shared keyboard and mouse
 Client</source>
-        <translation>공유된 키보드와 마우스 사용
+        <translation type="vanished">공유된 키보드와 마우스 사용
 클라이언트</translation>
     </message>
     <message>
         <source>&amp;Configure server</source>
-        <translation>서버 설정(&amp;C)</translation>
+        <translation type="vanished">서버 설정(&amp;C)</translation>
     </message>
     <message>
         <source>&amp;Configure client</source>
-        <translation>클라이언트 설정(&amp;C)</translation>
+        <translation type="vanished">클라이언트 설정(&amp;C)</translation>
     </message>
     <message>
         <source>Select a mode to continue</source>
-        <translation>계속하려면 모드를 선택하세요</translation>
+        <translation type="vanished">계속하려면 모드를 선택하세요</translation>
     </message>
     <message>
         <source>Connect to</source>
-        <translation>연결 대상</translation>
+        <translation type="vanished">연결 대상</translation>
     </message>
     <message>
         <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma-separated list.&lt;/html&gt;</source>
@@ -585,15 +749,15 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>The local report file could not be saved.</source>
-        <translation>로컬 보고서 파일을 저장하지 못했습니다.</translation>
+        <translation type="vanished">로컬 보고서 파일을 저장하지 못했습니다.</translation>
     </message>
     <message>
         <source>Diagnostic Ready</source>
-        <translation>진단 보고서 준비 완료</translation>
+        <translation type="vanished">진단 보고서 준비 완료</translation>
     </message>
     <message>
         <source>&lt;p&gt;A privacy-filtered diagnostic passport was copied to the clipboard and a prefilled GitHub issue was opened.&lt;/p&gt;&lt;p&gt;Nothing was uploaded automatically. GitHub requires an account to submit the issue; without one, you can share the copied report through another channel.&lt;/p&gt;&lt;p&gt;Local copy: &lt;code&gt;%1&lt;/code&gt;&lt;/p&gt;</source>
-        <translation>&lt;p&gt;개인정보를 가린 진단 패스포트를 클립보드에 복사하고 내용을 미리 채운 GitHub 이슈를 열었습니다.&lt;/p&gt;&lt;p&gt;자동으로 업로드한 내용은 없습니다. GitHub에 이슈를 등록하려면 계정이 필요하며, 계정이 없으면 복사한 보고서를 다른 채널로 전달할 수 있습니다.&lt;/p&gt;&lt;p&gt;로컬 복사본: &lt;code&gt;%1&lt;/code&gt;&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;개인정보를 가린 진단 패스포트를 클립보드에 복사하고 내용을 미리 채운 GitHub 이슈를 열었습니다.&lt;/p&gt;&lt;p&gt;자동으로 업로드한 내용은 없습니다. GitHub에 이슈를 등록하려면 계정이 필요하며, 계정이 없으면 복사한 보고서를 다른 채널로 전달할 수 있습니다.&lt;/p&gt;&lt;p&gt;로컬 복사본: &lt;code&gt;%1&lt;/code&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Open Sponsor Page</source>
@@ -849,284 +1013,229 @@ Additionally, check you are able to %1 the server config file: %2</source>
         <translation>%1
 %2</translation>
     </message>
-
     <message>
         <source>1. What will this computer do?</source>
         <translation>1. 이 컴퓨터의 역할을 고르세요</translation>
     </message>
-
     <message>
         <source>Share my keyboard and mouse
 Host computer</source>
         <translation>내 키보드와 마우스 공유
 호스트</translation>
     </message>
-
     <message>
         <source>Use a shared keyboard and mouse
 Client computer</source>
         <translation>다른 컴퓨터의 키보드와 마우스 사용
 클라이언트</translation>
     </message>
-
     <message>
         <source>Arrange computers</source>
         <translation>컴퓨터 배치</translation>
     </message>
-
     <message>
         <source>Input settings</source>
-        <translation>입력 설정</translation>
+        <translation type="vanished">입력 설정</translation>
     </message>
-
     <message>
         <source>Host</source>
         <translation>호스트</translation>
     </message>
-
     <message>
         <source>Choose a role above. The host is the computer with the keyboard and mouse you want to use.</source>
         <translation>위에서 역할을 고르세요. 사용할 키보드와 마우스가 연결된 컴퓨터가 호스트입니다.</translation>
     </message>
-
     <message>
         <source>Host name or IP address</source>
         <translation>호스트 이름 또는 IP 주소</translation>
     </message>
-
     <message>
         <source>Host computer</source>
         <translation>호스트 컴퓨터</translation>
     </message>
-
     <message>
         <source>Refresh Tailscale computers</source>
         <translation>Tailscale 컴퓨터 목록 새로고침</translation>
     </message>
-
     <message>
         <source>2. How are your computers connected?</source>
         <translation>2. 연결 방법을 고르세요</translation>
     </message>
-
     <message>
         <source>Connection method</source>
         <translation>연결 방법</translation>
     </message>
-
     <message>
         <source>Local network · Wi-Fi or Ethernet</source>
         <translation>로컬 네트워크 · Wi-Fi 또는 유선</translation>
     </message>
-
     <message>
         <source>Tailscale · across networks</source>
         <translation>Tailscale · 다른 네트워크 연결</translation>
     </message>
-
     <message>
         <source>Network settings</source>
         <translation>네트워크 설정</translation>
     </message>
-
     <message>
         <source>Install Ieum on both computers and connect them to the same network.</source>
         <translation>두 컴퓨터에 이음을 설치하고 같은 네트워크에 연결하세요.</translation>
     </message>
-
     <message>
         <source>CONNECTION</source>
         <translation>연결 상태</translation>
     </message>
-
     <message>
         <source>Let’s connect your computers</source>
         <translation>컴퓨터를 연결해 볼까요</translation>
     </message>
-
     <message>
         <source>Choose a role to see your next step.</source>
         <translation>역할을 고르면 다음 단계를 안내합니다.</translation>
     </message>
-
     <message>
         <source>Input and clipboard</source>
         <translation>입력 및 클립보드</translation>
     </message>
-
     <message>
         <source>Files</source>
         <translation>파일</translation>
     </message>
-
     <message>
         <source>All settings</source>
         <translation>모든 설정</translation>
     </message>
-
     <message>
         <source>Sign in to the same Tailscale network on both computers. Online devices still need Ieum running as a host.</source>
         <translation>두 컴퓨터에서 같은 Tailscale 네트워크에 로그인하세요. 온라인 기기에서도 이음의 호스트 공유를 시작해야 합니다.</translation>
     </message>
-
     <message>
         <source>Install Ieum on both computers and connect them to the same Wi-Fi or Ethernet network.</source>
         <translation>두 컴퓨터에 이음을 설치하고 같은 Wi-Fi 또는 유선 네트워크에 연결하세요.</translation>
     </message>
-
     <message>
         <source>One keyboard. All your computers.</source>
         <translation>키보드 하나로, 모든 컴퓨터를.</translation>
     </message>
-
     <message>
         <source>Choose Host on the computer with your keyboard and mouse. Choose Client on the computer you want to control.</source>
         <translation>키보드와 마우스가 연결된 컴퓨터는 호스트, 조작할 컴퓨터는 클라이언트로 고르세요.</translation>
     </message>
-
     <message>
         <source>Switching to %1…</source>
         <translation>%1(으)로 전환 중…</translation>
     </message>
-
     <message>
         <source>Disconnecting…</source>
         <translation>연결 종료 중…</translation>
     </message>
-
     <message>
         <source>Closing the previous connection. The new connection starts automatically when the previous one ends.</source>
         <translation>이전 연결을 종료하고 있습니다. 종료가 확인되면 새 연결을 자동으로 시작합니다.</translation>
     </message>
-
     <message>
         <source>Getting ready…</source>
         <translation>연결 준비 중…</translation>
     </message>
-
     <message>
         <source>You can stop at any time. No need to press Connect again.</source>
         <translation>언제든지 중지할 수 있습니다. 연결을 다시 누르지 않아도 됩니다.</translation>
     </message>
-
     <message>
         <source>Ready. Waiting for your other computer.</source>
         <translation>준비됐습니다. 다른 컴퓨터를 기다리는 중입니다.</translation>
     </message>
-
     <message>
         <source>On the other computer, choose Client and connect to this host: %1. If it is connected to another host, select this host there to switch. Tailscale alone does not move an Ieum connection.</source>
         <translation>다른 컴퓨터에서 클라이언트를 고르고 이 호스트(%1)에 연결하세요. 이미 다른 호스트에 연결돼 있다면 그 컴퓨터에서 연결 대상을 바꾸세요. Tailscale에 연결하는 것만으로 이음의 연결 대상이 바뀌지는 않습니다.</translation>
     </message>
-
     <message>
         <source>Your computers are connected</source>
         <translation>컴퓨터가 연결됐습니다</translation>
     </message>
-
     <message>
         <source>Connected: %1. Arrange computers to match your desk, then move the pointer across a screen edge.</source>
         <translation>연결된 컴퓨터: %1. 컴퓨터 배치를 책상과 같은 방향으로 맞춘 뒤 마우스를 화면 끝으로 옮겨 보세요.</translation>
     </message>
-
     <message>
         <source>Connected to %1</source>
         <translation>%1에 연결됐습니다</translation>
     </message>
-
     <message>
         <source>Use the host’s keyboard and mouse here. Select a different host above to switch automatically.</source>
         <translation>호스트의 키보드와 마우스로 이 컴퓨터를 조작하세요. 위에서 다른 호스트를 고르면 자동으로 전환됩니다.</translation>
     </message>
-
     <message>
         <source>Connecting to %1…</source>
         <translation>%1에 연결 중…</translation>
     </message>
-
     <message>
         <source>On the host, choose Host and start sharing. Accept the connection request on both computers. If the host is waiting, check that this client has selected that host. Ieum retries automatically.</source>
         <translation>호스트 컴퓨터에서 공유를 시작하고 양쪽의 연결 요청을 승인하세요. 호스트가 기다리고 있다면 이 클라이언트의 연결 대상이 맞는지 확인하세요. 이음이 자동으로 재시도합니다.</translation>
     </message>
-
     <message>
         <source>Set up Tailscale to continue</source>
         <translation>Tailscale 연결을 확인해 주세요</translation>
     </message>
-
     <message>
         <source>Start Tailscale and sign in on both computers, then refresh.</source>
         <translation>두 컴퓨터에서 Tailscale을 실행하고 로그인한 뒤 새로고침하세요.</translation>
     </message>
-
     <message>
         <source>Share from this computer</source>
         <translation>이 컴퓨터의 키보드와 마우스를 공유합니다</translation>
     </message>
-
     <message>
         <source>Press Start, then connect from your other computer. Arrange computers to choose which screen edge moves the pointer.</source>
         <translation>시작을 누른 뒤 다른 컴퓨터에서 연결하세요. 컴퓨터 배치에서 마우스가 넘어갈 방향을 정할 수 있습니다.</translation>
     </message>
-
     <message>
         <source>Choose the host with your keyboard and mouse</source>
         <translation>키보드와 마우스가 연결된 호스트를 고르세요</translation>
     </message>
-
     <message>
         <source>Select a host above, then press Connect. A Tailscale device being online does not mean it is sharing a keyboard. Start Ieum in Host mode on that computer.</source>
         <translation>위에서 호스트를 고르고 연결을 누르세요. Tailscale에서 온라인으로 보여도 키보드 공유가 시작된 것은 아닙니다. 해당 컴퓨터에서도 이음을 호스트로 실행하세요.</translation>
     </message>
-
     <message>
         <source>Ready to connect to %1</source>
         <translation>%1에 연결할 준비가 됐습니다</translation>
     </message>
-
     <message>
         <source>Press Connect. When you later choose a different host, Ieum disconnects and reconnects automatically.</source>
         <translation>연결을 누르세요. 사용 중 다른 호스트를 고르면 기존 연결을 종료하고 자동으로 다시 연결합니다.</translation>
     </message>
-
     <message>
         <source>Checking Tailscale…</source>
         <translation>Tailscale 확인 중…</translation>
     </message>
-
     <message>
         <source>Install Tailscale on both computers, then refresh.</source>
         <translation>두 컴퓨터에 Tailscale을 설치한 뒤 새로고침하세요.</translation>
     </message>
-
     <message>
         <source>Start Tailscale on this computer, then refresh.</source>
         <translation>이 컴퓨터에서 Tailscale을 실행한 뒤 새로고침하세요.</translation>
     </message>
-
     <message>
         <source>Sign in to Tailscale on this computer, then refresh.</source>
         <translation>이 컴퓨터에서 Tailscale에 로그인한 뒤 새로고침하세요.</translation>
     </message>
-
     <message>
         <source>Tailscale is not ready. Check its connection, then refresh.</source>
         <translation>Tailscale이 준비되지 않았습니다. 연결을 확인한 뒤 새로고침하세요.</translation>
     </message>
-
     <message>
         <source>The GitHub issue page was opened.</source>
-        <translation>GitHub 이슈 페이지를 열었습니다.</translation>
+        <translation type="vanished">GitHub 이슈 페이지를 열었습니다.</translation>
     </message>
-
     <message>
         <source>The browser could not be opened.</source>
-        <translation>브라우저를 열지 못했습니다.</translation>
+        <translation type="vanished">브라우저를 열지 못했습니다.</translation>
     </message>
-
     <message>
         <source>&lt;p&gt;Your diagnostic was copied to the clipboard.&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;&lt;p&gt;Paste it into the issue and submit it. GitHub requires an account. You can also share the saved file. Nothing has been uploaded.&lt;/p&gt;&lt;p&gt;Local copy: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</source>
-        <translation>&lt;p&gt;진단 내용을 클립보드에 복사했습니다.&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;&lt;p&gt;이슈에 붙여 넣고 제출하세요. GitHub 계정이 필요합니다. 저장된 파일을 다른 경로로 전달해도 됩니다. 아직 업로드한 내용은 없습니다.&lt;/p&gt;&lt;p&gt;저장 위치: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;진단 내용을 클립보드에 복사했습니다.&lt;/p&gt;&lt;p&gt;%1&lt;/p&gt;&lt;p&gt;이슈에 붙여 넣고 제출하세요. GitHub 계정이 필요합니다. 저장된 파일을 다른 경로로 전달해도 됩니다. 아직 업로드한 내용은 없습니다.&lt;/p&gt;&lt;p&gt;저장 위치: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <source>First connection</source>
@@ -1173,7 +1282,7 @@ Client computer</source>
     </message>
     <message>
         <source>Software KVM across Windows, macOS, and Linux</source>
-        <translation>한글과 CJK 입력을 안정적으로 잇는 소프트웨어 KVM</translation>
+        <translation type="vanished">한글과 CJK 입력을 안정적으로 잇는 소프트웨어 KVM</translation>
     </message>
 </context>
 <context>
@@ -1208,11 +1317,11 @@ Client computer</source>
     </message>
     <message>
         <source>Ieum Previous Session Ended Unexpectedly</source>
-        <translation>이음의 이전 세션이 예상치 못하게 종료됨</translation>
+        <translation type="vanished">이음의 이전 세션이 예상치 못하게 종료됨</translation>
     </message>
     <message>
         <source>&lt;p&gt;The previous Ieum session did not close normally. It may have crashed, lost power, or been ended from Task Manager/Force Quit.&lt;/p&gt;&lt;p&gt;A privacy-filtered report was saved locally. Nothing was uploaded automatically.&lt;/p&gt;&lt;p&gt;Report ID: &lt;code&gt;%1&lt;/code&gt;&lt;br&gt;Local copy: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</source>
-        <translation>&lt;p&gt;이음의 이전 세션이 정상적으로 종료되지 않았습니다. 크래시, 전원 손실, 작업 관리자 또는 강제 종료가 원인일 수 있습니다.&lt;/p&gt;&lt;p&gt;개인정보를 가린 보고서를 로컬에 저장했습니다. 자동으로 업로드한 내용은 없습니다.&lt;/p&gt;&lt;p&gt;보고서 ID: &lt;code&gt;%1&lt;/code&gt;&lt;br&gt;로컬 복사본: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;이음의 이전 세션이 정상적으로 종료되지 않았습니다. 크래시, 전원 손실, 작업 관리자 또는 강제 종료가 원인일 수 있습니다.&lt;/p&gt;&lt;p&gt;개인정보를 가린 보고서를 로컬에 저장했습니다. 자동으로 업로드한 내용은 없습니다.&lt;/p&gt;&lt;p&gt;보고서 ID: &lt;code&gt;%1&lt;/code&gt;&lt;br&gt;로컬 복사본: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <source>could not save the local file</source>
@@ -1228,7 +1337,7 @@ Client computer</source>
     </message>
     <message>
         <source>Open macOS Crash Reports</source>
-        <translation>macOS 크래시 보고서 열기</translation>
+        <translation type="vanished">macOS 크래시 보고서 열기</translation>
     </message>
     <message>
         <source>&lt;p&gt;Ieum created a privacy-filtered diagnostic passport for this error.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nothing was uploaded automatically.&lt;/b&gt; You can copy it or open a prefilled GitHub issue. Submitting on GitHub requires an account.&lt;/p&gt;&lt;p&gt;Report ID: &lt;code&gt;%1&lt;/code&gt;&lt;br&gt;Saved locally: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</source>
@@ -1369,17 +1478,14 @@ Client computer</source>
         <source>The browser could not be opened. The full URL was copied to the clipboard.</source>
         <translation type="unfinished"></translation>
     </message>
-
     <message>
         <source>Open error report</source>
         <translation>오류 보고 열기</translation>
     </message>
-
     <message>
         <source>The browser could not be opened. Your diagnostic is still on the clipboard.</source>
         <translation>브라우저를 열지 못했습니다. 진단 내용은 클립보드에 남아 있습니다.</translation>
     </message>
-
     <message>
         <source>Open the address below in your browser, then paste the diagnostic and submit it.
 %1</source>
@@ -1575,6 +1681,17 @@ Client computer</source>
     <message>
         <source>%1, this host</source>
         <translation>%1, 이 호스트</translation>
+    </message>
+</context>
+<context>
+    <name>ScreenSetupView</name>
+    <message>
+        <source>This host</source>
+        <translation>이 호스트</translation>
+    </message>
+    <message>
+        <source>Other computer</source>
+        <translation>다른 컴퓨터</translation>
     </message>
 </context>
 <context>
@@ -2396,57 +2513,46 @@ Licenses are issued manually after payment verification.</source>
         <source>Install and activate a Pro Local license on each Windows or macOS computer.</source>
         <translation>각 Windows 또는 macOS 컴퓨터에 Pro Local 라이선스를 설치하고 활성화하세요.</translation>
     </message>
-
     <message>
         <source>Search settings</source>
         <translation>설정 검색</translation>
     </message>
-
     <message>
         <source>Search settings · Tailscale, input, clipboard…</source>
         <translation>설정 검색 · Tailscale, 입력, 클립보드…</translation>
     </message>
-
     <message>
         <source>Settings categories</source>
         <translation>설정 항목</translation>
     </message>
-
     <message>
         <source>No settings found. Try another word.</source>
         <translation>찾는 설정이 없습니다. 다른 단어로 검색해 보세요.</translation>
     </message>
-
     <message>
         <source>General</source>
         <translation>일반</translation>
     </message>
-
     <message>
         <source>Connection &amp; security</source>
         <translation>연결 및 보안</translation>
     </message>
-
     <message>
         <source>Keyboard &amp; clipboard</source>
         <translation>키보드 및 클립보드</translation>
     </message>
-
     <message>
         <source>File transfer</source>
         <translation>파일 전송</translation>
     </message>
-
     <message>
         <source>Window</source>
         <translation>창</translation>
     </message>
-
     <message>
         <source>System &amp; automation</source>
         <translation>시스템 및 자동화</translation>
     </message>
-
     <message>
         <source>Logs &amp; diagnostics</source>
         <translation>로그 및 진단</translation>
@@ -2615,181 +2721,6 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>A computer with this name already exists</source>
         <translation>동명의 컴퓨터가 이미 존재합니다</translation>
-    </message>
-</context>
-<context>
-    <name>ConnectionGuideDialog</name>
-    <message>
-        <source>First connection</source>
-        <translation>처음 연결하기</translation>
-    </message>
-    <message>
-        <source>One keyboard. A connected desk.</source>
-        <translation>키보드 하나로, 책상 위 컴퓨터를 함께.</translation>
-    </message>
-    <message>
-        <source>Install Ieum on every computer. Follow these steps on both sides; you can reopen this guide at any time.</source>
-        <translation>사용할 컴퓨터 모두에 이음을 설치하세요. 양쪽에서 아래 순서대로 진행하면 됩니다. 이 안내는 언제든 다시 열 수 있습니다.</translation>
-    </message>
-    <message>
-        <source>1. Which computer has your keyboard?</source>
-        <translation>1. 키보드와 마우스는 어디에 연결되어 있나요?</translation>
-    </message>
-    <message>
-        <source>Host shares its keyboard and mouse. Client receives them. A client uses one host at a time.</source>
-        <translation>호스트는 키보드와 마우스를 공유하고, 클라이언트는 입력을 받습니다. 클라이언트 한 대는 한 번에 호스트 한 대를 사용합니다.</translation>
-    </message>
-    <message>
-        <source>Share this keyboard
-Host</source>
-        <translation>이 컴퓨터의 입력 장치 공유
-호스트</translation>
-    </message>
-    <message>
-        <source>Use another keyboard
-Client</source>
-        <translation>다른 컴퓨터의 입력 장치 사용
-클라이언트</translation>
-    </message>
-    <message>
-        <source>2. Choose how they connect</source>
-        <translation>2. 연결 방법을 고르세요</translation>
-    </message>
-    <message>
-        <source>On the same Wi-Fi or wired network, enter the host’s name or IP on the client. For Tailscale, sign in to the same Tailnet on both computers, then select the host on the client. An online Tailscale device still needs Ieum running as a host.</source>
-        <translation>같은 Wi-Fi·유선망이라면 클라이언트에 호스트의 이름이나 IP를 입력하세요. Tailscale이라면 양쪽에서 같은 Tailnet에 로그인하고 클라이언트에서 호스트를 고르세요. Tailscale에 온라인으로 보여도 상대방의 이음을 호스트로 실행해야 합니다.</translation>
-    </message>
-    <message>
-        <source>Open connection settings</source>
-        <translation>연결 설정 열기</translation>
-    </message>
-    <message>
-        <source>3. Start, approve, and arrange</source>
-        <translation>3. 시작하고, 승인하고, 배치하세요</translation>
-    </message>
-    <message>
-        <source>Press Start on the host and Connect on the client. Compare and approve the certificate fingerprints. On the host, add the client using its exact “This device” name and choose its position. Move the mouse across that screen edge to begin.</source>
-        <translation>호스트에서 시작, 클라이언트에서 연결을 누르세요. 양쪽 인증서 지문을 비교해 승인하세요. 호스트에서 클라이언트의 ‘이 기기’ 이름을 그대로 추가하고 위치를 고르세요. 그쪽 화면 끝으로 마우스를 옮기면 조작할 수 있습니다.</translation>
-    </message>
-    <message>
-        <source>Arrange computers on this host</source>
-        <translation>이 호스트의 컴퓨터 배치</translation>
-    </message>
-    <message>
-        <source>On Mac: allow input access</source>
-        <translation>Mac에서는 입력 접근 권한을 허용하세요</translation>
-    </message>
-    <message>
-        <source>In System Settings → Privacy &amp; Security → Accessibility, allow the current Ieum app. If you replaced an older app, remove the old entry and add the current one from Applications.</source>
-        <translation>시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용에서 현재 이음 앱을 허용하세요. 앱을 교체했다면 이전 항목을 지우고 Applications의 현재 앱을 다시 추가하세요.</translation>
-    </message>
-    <message>
-        <source>Open Accessibility settings</source>
-        <translation>손쉬운 사용 설정 열기</translation>
-    </message>
-    <message>
-        <source>Already connected elsewhere? Change the host on the client. Ieum closes the old connection and opens the new one automatically.</source>
-        <translation>이미 다른 호스트에 연결되어 있나요? 클라이언트에서 호스트를 바꾸세요. 기존 연결을 종료한 뒤 새 호스트에 자동으로 연결합니다.</translation>
-    </message>
-    <message>
-        <source>Continue in main window</source>
-        <translation>메인 화면에서 계속하기</translation>
-    </message>
-</context>
-<context>
-    <name>DiagnosticDialog</name>
-    <message>
-        <source>Review and report a problem</source>
-        <translation>문제 확인 및 오류 보고</translation>
-    </message>
-    <message>
-        <source>1. Review the diagnostic below.
-2. Copy it and open the GitHub issue page.
-3. Paste it, describe what happened, and submit. GitHub requires an account.
-Nothing is uploaded automatically.</source>
-        <translation>1. 아래 진단 내용을 확인하세요.
-2. 진단을 복사하고 GitHub 이슈 페이지를 여세요.
-3. 진단을 붙여 넣고 당시 상황을 적어 제출하세요. GitHub 계정이 필요합니다.
-자동으로 업로드되는 내용은 없습니다.</translation>
-    </message>
-    <message>
-        <source>Diagnostic preview</source>
-        <translation>진단 미리보기</translation>
-    </message>
-    <message>
-        <source>Local copy: %1</source>
-        <translation>로컬 사본: %1</translation>
-    </message>
-    <message>
-        <source>The local copy could not be saved. Use Save a copy below.</source>
-        <translation>로컬 사본을 저장하지 못했습니다. 아래의 사본 저장을 이용하세요.</translation>
-    </message>
-    <message>
-        <source>GitHub issue address. Copy this if your browser does not open.</source>
-        <translation>GitHub 이슈 주소입니다. 브라우저가 열리지 않으면 복사하세요.</translation>
-    </message>
-    <message>
-        <source>Copy diagnostic</source>
-        <translation>진단 복사</translation>
-    </message>
-    <message>
-        <source>Copy and open GitHub</source>
-        <translation>복사 후 GitHub 열기</translation>
-    </message>
-    <message>
-        <source>Save a copy…</source>
-        <translation>사본 저장…</translation>
-    </message>
-    <message>
-        <source>Open macOS crash reports</source>
-        <translation>macOS 충돌 보고서 열기</translation>
-    </message>
-    <message>
-        <source>Crash report folder opened. Look for Ieum reports from the time of the crash.</source>
-        <translation>충돌 보고서 폴더를 열었습니다. 문제가 발생한 시간의 이음 보고서를 찾아보세요.</translation>
-    </message>
-    <message>
-        <source>The crash report folder could not be opened.</source>
-        <translation>충돌 보고서 폴더를 열지 못했습니다.</translation>
-    </message>
-    <message>
-        <source>Diagnostic copied. Paste it into the issue before submitting.</source>
-        <translation>진단을 복사했습니다. 이슈에 붙여 넣은 뒤 제출하세요.</translation>
-    </message>
-    <message>
-        <source>Browser opened. Paste the diagnostic and submit the issue there.</source>
-        <translation>브라우저를 열었습니다. 진단을 붙여 넣고 그곳에서 이슈를 제출하세요.</translation>
-    </message>
-    <message>
-        <source>The browser could not be opened. The diagnostic is copied; copy the address above and open it manually.</source>
-        <translation>브라우저를 열지 못했습니다. 진단은 복사되어 있습니다. 위 주소를 복사해 직접 여세요.</translation>
-    </message>
-    <message>
-        <source>Save diagnostic</source>
-        <translation>진단 저장</translation>
-    </message>
-    <message>
-        <source>Markdown files (*.md)</source>
-        <translation>마크다운 파일 (*.md)</translation>
-    </message>
-    <message>
-        <source>Copy saved: %1</source>
-        <translation>사본 저장 완료: %1</translation>
-    </message>
-    <message>
-        <source>Could not save that file. Choose another location or copy the diagnostic.</source>
-        <translation>파일을 저장하지 못했습니다. 다른 위치를 고르거나 진단을 복사하세요.</translation>
-    </message>
-</context>
-<context>
-    <name>ScreenSetupView</name>
-    <message>
-        <source>This host</source>
-        <translation>이 호스트</translation>
-    </message>
-    <message>
-        <source>Other computer</source>
-        <translation>다른 컴퓨터</translation>
     </message>
 </context>
 </TS>

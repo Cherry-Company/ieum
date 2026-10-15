@@ -150,6 +150,10 @@ p, li { white-space: pre-wrap; }
         <source>Switch to %1</source>
         <translation>切换到 %1</translation>
     </message>
+    <message>
+        <source>Choose what this shortcut does, when it runs, and which computers receive it.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ClientConfigDialog</name>
@@ -204,6 +208,177 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Use dynamic reconnection time based on connection attempts</source>
         <translation type="unfinished">根据连接尝试次数，采用动态重连时间</translation>
+    </message>
+    <message>
+        <source>Receiving input on this computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Scrolling on this computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>These options apply to this client. Choose reconnection behavior, keyboard language, and how scrolling feels on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ConnectionGuideDialog</name>
+    <message>
+        <source>First connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>One keyboard. A connected desk.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Install Ieum on every computer. Follow these steps on both sides; you can reopen this guide at any time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1. Which computer has your keyboard?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Host shares its keyboard and mouse. Client receives them. A client uses one host at a time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Share this keyboard
+Host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use another keyboard
+Client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>2. Choose how they connect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>On the same Wi-Fi or wired network, enter the host’s name or IP on the client. For Tailscale, sign in to the same Tailnet on both computers, then select the host on the client. An online Tailscale device still needs Ieum running as a host.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open connection settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>3. Start, approve, and arrange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Press Start on the host and Connect on the client. Compare and approve the certificate fingerprints. On the host, add the client using its exact “This device” name and choose its position. Move the mouse across that screen edge to begin.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Arrange computers on this host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>On Mac: allow input access</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>In System Settings → Privacy &amp; Security → Accessibility, allow the current Ieum app. If you replaced an older app, remove the old entry and add the current one from Applications.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open Accessibility settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Already connected elsewhere? Change the host on the client. Ieum closes the old connection and opens the new one automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Continue in main window</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DiagnosticDialog</name>
+    <message>
+        <source>Review and report a problem</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>1. Review the diagnostic below.
+2. Copy it and open the GitHub issue page.
+3. Paste it, describe what happened, and submit. GitHub requires an account.
+Nothing is uploaded automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Diagnostic preview</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local copy: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The local copy could not be saved. Use Save a copy below.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>GitHub issue address. Copy this if your browser does not open.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy diagnostic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy and open GitHub</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save a copy…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open macOS crash reports</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Crash report folder opened. Look for Ieum reports from the time of the crash.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The crash report folder could not be opened.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Diagnostic copied. Paste it into the issue before submitting.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Browser opened. Paste the diagnostic and submit the issue there.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The browser could not be opened. The diagnostic is copied; copy the address above and open it manually.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save diagnostic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Markdown files (*.md)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy saved: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not save that file. Choose another location or copy the diagnostic.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -295,6 +470,10 @@ Do you want to connect to the server?
     <message>
         <source>Enter the specification for the hotkey:</source>
         <translation>输入热键定义：</translation>
+    </message>
+    <message>
+        <source>Click the shortcut field, then press the keys you want to use. Configure its action after saving.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -515,15 +694,15 @@ A bound IP is now invalid, you may need to restart the server.</source>
     </message>
     <message>
         <source>The local report file could not be saved.</source>
-        <translation>无法保存本地报告文件。</translation>
+        <translation type="vanished">无法保存本地报告文件。</translation>
     </message>
     <message>
         <source>Diagnostic Ready</source>
-        <translation>诊断报告已就绪</translation>
+        <translation type="vanished">诊断报告已就绪</translation>
     </message>
     <message>
         <source>&lt;p&gt;A privacy-filtered diagnostic passport was copied to the clipboard and a prefilled GitHub issue was opened.&lt;/p&gt;&lt;p&gt;Nothing was uploaded automatically. GitHub requires an account to submit the issue; without one, you can share the copied report through another channel.&lt;/p&gt;&lt;p&gt;Local copy: &lt;code&gt;%1&lt;/code&gt;&lt;/p&gt;</source>
-        <translation>&lt;p&gt;已将经过隐私过滤的诊断护照复制到剪贴板，并打开已预填内容的 GitHub 问题。&lt;/p&gt;&lt;p&gt;没有自动上传任何内容。提交 GitHub 问题需要帐号；如果没有帐号，可以通过其他渠道分享已复制的报告。&lt;/p&gt;&lt;p&gt;本地副本：&lt;code&gt;%1&lt;/code&gt;&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;已将经过隐私过滤的诊断护照复制到剪贴板，并打开已预填内容的 GitHub 问题。&lt;/p&gt;&lt;p&gt;没有自动上传任何内容。提交 GitHub 问题需要帐号；如果没有帐号，可以通过其他渠道分享已复制的报告。&lt;/p&gt;&lt;p&gt;本地副本：&lt;code&gt;%1&lt;/code&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Open Sponsor Page</source>
@@ -710,36 +889,6 @@ Additionally, check you are able to %1 the server config file: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Share this keyboard and mouse
-Server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Use a shared keyboard and mouse
-Client</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Configure server</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Select a mode to continue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Configure client</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Connect to</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma-separated list.&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -825,6 +974,236 @@ Client</source>
         <translation>%1
 %2</translation>
     </message>
+    <message>
+        <source>1. What will this computer do?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Share my keyboard and mouse
+Host computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use a shared keyboard and mouse
+Client computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>2. How are your computers connected?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Local network · Wi-Fi or Ethernet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale · across networks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Network settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Install Ieum on both computers and connect them to the same network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Arrange computers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a role above. The host is the computer with the keyboard and mouse you want to use.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receiving options</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Host name or IP address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Host computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Refresh Tailscale computers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>CONNECTION</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Let’s connect your computers</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a role to see your next step.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input and clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>All settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>First connection</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel switch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stopping…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disconnecting…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Closing Ieum…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>One keyboard. All your computers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose Host on the computer with your keyboard and mouse. Choose Client on the computer you want to control.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Switching to %1…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Closing the previous connection. The new connection starts automatically when the previous one ends.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Getting ready…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You can stop at any time. No need to press Connect again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ready. Waiting for your other computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>On the other computer, choose Client and connect to this host: %1. If it is connected to another host, select this host there to switch. Tailscale alone does not move an Ieum connection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your computers are connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected: %1. Arrange computers to match your desk, then move the pointer across a screen edge.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected to %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use the host’s keyboard and mouse here. Select a different host above to switch automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connecting to %1…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>On the host, choose Host and start sharing. Accept the connection request on both computers. If the host is waiting, check that this client has selected that host. Ieum retries automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Set up Tailscale to continue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Tailscale and sign in on both computers, then refresh.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Share from this computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Press Start, then connect from your other computer. Arrange computers to choose which screen edge moves the pointer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose the host with your keyboard and mouse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Select a host above, then press Connect. A Tailscale device being online does not mean it is sharing a keyboard. Start Ieum in Host mode on that computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Ready to connect to %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Press Connect. When you later choose a different host, Ieum disconnects and reconnects automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sign in to the same Tailscale network on both computers. Online devices still need Ieum running as a host.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Install Ieum on both computers and connect them to the same Wi-Fi or Ethernet network.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Checking Tailscale…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Install Tailscale on both computers, then refresh.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start Tailscale on this computer, then refresh.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sign in to Tailscale on this computer, then refresh.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale is not ready. Check its connection, then refresh.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -841,7 +1220,7 @@ Client</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Software KVM across Windows, macOS, and Linux</source>
+        <source>One keyboard and mouse. All your computers.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -879,11 +1258,11 @@ Client</source>
     </message>
     <message>
         <source>Ieum Previous Session Ended Unexpectedly</source>
-        <translation>Ieum 上一个会话异常结束</translation>
+        <translation type="vanished">Ieum 上一个会话异常结束</translation>
     </message>
     <message>
         <source>&lt;p&gt;The previous Ieum session did not close normally. It may have crashed, lost power, or been ended from Task Manager/Force Quit.&lt;/p&gt;&lt;p&gt;A privacy-filtered report was saved locally. Nothing was uploaded automatically.&lt;/p&gt;&lt;p&gt;Report ID: &lt;code&gt;%1&lt;/code&gt;&lt;br&gt;Local copy: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Ieum 上一个会话未正常关闭。原因可能是崩溃、断电，或在任务管理器/强制退出中被结束。&lt;/p&gt;&lt;p&gt;经过隐私过滤的报告已保存在本地。没有自动上传任何内容。&lt;/p&gt;&lt;p&gt;报告 ID：&lt;code&gt;%1&lt;/code&gt;&lt;br&gt;本地副本：&lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</translation>
+        <translation type="vanished">&lt;p&gt;Ieum 上一个会话未正常关闭。原因可能是崩溃、断电，或在任务管理器/强制退出中被结束。&lt;/p&gt;&lt;p&gt;经过隐私过滤的报告已保存在本地。没有自动上传任何内容。&lt;/p&gt;&lt;p&gt;报告 ID：&lt;code&gt;%1&lt;/code&gt;&lt;br&gt;本地副本：&lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <source>could not save the local file</source>
@@ -899,7 +1278,7 @@ Client</source>
     </message>
     <message>
         <source>Open macOS Crash Reports</source>
-        <translation>打开 macOS 崩溃报告</translation>
+        <translation type="vanished">打开 macOS 崩溃报告</translation>
     </message>
     <message>
         <source>&lt;p&gt;Ieum created a privacy-filtered diagnostic passport for this error.&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nothing was uploaded automatically.&lt;/b&gt; You can copy it or open a prefilled GitHub issue. Submitting on GitHub requires an account.&lt;/p&gt;&lt;p&gt;Report ID: &lt;code&gt;%1&lt;/code&gt;&lt;br&gt;Saved locally: &lt;code&gt;%2&lt;/code&gt;&lt;/p&gt;</source>
@@ -1038,6 +1417,23 @@ Client</source>
     </message>
     <message>
         <source>The browser could not be opened. The full URL was copied to the clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open error report</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The browser could not be opened. Your diagnostic is still on the clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open the address below in your browser, then paste the diagnostic and submit it.
+%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The previous session did not finish normally. It may have been force-quit or crashed. You can review and save this report without submitting it.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1183,12 +1579,59 @@ Client</source>
         <source>Alt &amp;Gr</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Settings for %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer settings categories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Name &amp; aliases</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keyboard mapping</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pointer &amp; compatibility</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use the exact “This device” name shown on that computer. Aliases let this layout recognize another name for the same computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remap modifier keys for this computer. Keep the defaults unless your keyboards or shortcuts need a different mapping.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dead corners keep the pointer on this screen near its corners. Compatibility fixes apply only to this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ScreenSetupModel</name>
     <message>
         <source>&lt;center&gt;Screen: &lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;Double click to edit settings&lt;br&gt;Drag screen to the trashcan to remove it</source>
         <translation>&lt;center&gt;屏幕：&lt;b&gt;%1&lt;/b&gt;&lt;/center&gt;&lt;br&gt;双击编辑设置&lt;br&gt;将屏幕拖到垃圾桶以移除</translation>
+    </message>
+    <message>
+        <source>%1, this host</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ScreenSetupView</name>
+    <message>
+        <source>This host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Other computer</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1384,6 +1827,114 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Pointer &amp; sharing</source>
         <translation>指针与共享</translation>
+    </message>
+    <message>
+        <source>Your desk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Arrange computers like your desk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Desk settings categories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer positions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shortcuts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pointer &amp; switching</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Configuration file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add the other computer using its exact “This device” name. Choose its side, then move the pointer across that edge. You can drag computers or select one and use the arrow buttons.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Other computer’s device name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position relative to this host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Right of this host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Left of this host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Above this host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Below this host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer settings</source>
+        <translation type="unfinished">计算机设置</translation>
+    </message>
+    <message>
+        <source>Remove computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer positions. Select a computer to edit, move, or remove it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use the exact device name shown on the other computer. Spaces and special symbols are not allowed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>That computer name or alias is already in this layout.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>That position is occupied or outside the grid. Choose another side, or move a computer first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 added. Save, then connect to this host from that computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This host is missing from the layout. Restore its computer entry before adding another computer.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1901,6 +2452,90 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>Install and activate a Pro Local license on each Windows or macOS computer.</source>
         <translation>在每台 Windows 或 macOS 电脑上安装并激活 Pro Local 许可证。</translation>
+    </message>
+    <message>
+        <source>Search settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search settings · Tailscale, input, clipboard…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings categories</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No settings found. Try another word.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Matching settings. Select a result to jump to that control.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Language, automatic startup, and everyday app behavior.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a network, encryption, certificates, and the connection port.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Control input language, keyboard behavior, and shared clipboard text.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose where received files go and manage Pro Local activation.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose what happens when you close or minimize the window.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Service mode, screen commands, and options for managed setups.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose log detail and file storage when investigating a problem.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You are here: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tailscale manages this value. Turn off Tailscale in this section to change it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>General</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection &amp; security</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keyboard &amp; clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File transfer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System &amp; automation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Logs &amp; diagnostics</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
