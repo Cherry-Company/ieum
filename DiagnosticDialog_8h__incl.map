@@ -1,0 +1,19 @@
+<map id="src/lib/gui/dialogs/DiagnosticDialog.h" name="src/lib/gui/dialogs/DiagnosticDialog.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="196,5,332,44"/>
+<area shape="rect" id="Node000002" href="$Diagnostic_8h.html" title=" " alt="" coords="206,92,322,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="266,42,266,77,262,75,262,47"/>
+<area shape="rect" id="Node000006" href="$ExternalUrlLauncher_8h.html" title=" " alt="" coords="10,92,182,117"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="221,46,136,88,134,83,225,43"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="346,92,414,117"/>
+<area shape="poly" id="edge9_Node000001_Node000008" title=" " alt="" coords="293,42,353,83,347,83,292,47"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="107,165,173,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="246,117,175,159,172,154,241,118"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="269,165,344,189"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="272,115,294,152,289,151,270,120"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="197,165,246,189"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="259,116,238,153,234,149,255,119"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="105,115,127,152,122,151,102,120"/>
+<area shape="poly" id="edge7_Node000006_Node000005" title=" " alt="" coords="117,115,190,156,185,158,116,120"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="5,165,83,189"/>
+<area shape="poly" id="edge8_Node000006_Node000007" title=" " alt="" coords="90,116,63,154,59,150,85,119"/>
+</map>

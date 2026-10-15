@@ -1,0 +1,11 @@
+<map id="src/lib/gui/validators/ComputerNameValidator.h" name="src/lib/gui/validators/ComputerNameValidator.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="267,5,446,44"/>
+<area shape="rect" id="Node000002" href="$ServerConfigDialog_8cpp.html" title=" " alt="" coords="5,92,169,131"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="285,49,147,94,146,89,279,49"/>
+<area shape="rect" id="Node000003" href="$AliasValidator_8cpp.html" title=" " alt="" coords="193,92,330,131"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="326,54,284,94,281,89,321,56"/>
+<area shape="rect" id="Node000004" href="$ComputerNameValidator_8cpp.html" title=" " alt="" coords="355,92,547,131"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="390,52,433,92,427,91,388,57"/>
+<area shape="rect" id="Node000005" href="$ScreenNameValidator_8cpp.html" title=" " alt="" coords="571,92,747,131"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="438,46,595,91,589,92,438,51"/>
+</map>

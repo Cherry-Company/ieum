@@ -1,0 +1,20 @@
+<map id="src/lib/gui/Diagnostic.h" name="src/lib/gui/Diagnostic.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="302,5,456,30"/>
+<area shape="rect" id="Node000002" href="$deskflow-gui_8cpp.html" title=" " alt="" coords="5,165,155,203"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="284,22,208,28,127,38,58,55,32,66,15,80,10,90,8,100,17,122,35,144,56,163,51,165,31,147,12,125,3,100,5,88,11,76,30,62,56,50,126,33,207,23,288,19"/>
+<area shape="rect" id="Node000003" href="$Diagnostic_8cpp.html" title=" " alt="" coords="25,85,194,110"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="323,37,151,87,149,82,325,32"/>
+<area shape="rect" id="Node000004" href="$MainWindow_8cpp.html" title=" " alt="" coords="271,172,452,196"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="401,39,414,58,423,77,427,97,422,118,403,150,378,173,376,169,398,146,418,116,422,97,417,79,409,60,399,44"/>
+<area shape="rect" id="Node000005" href="$Messages_8cpp.html" title=" " alt="" coords="649,172,815,196"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="471,25,552,43,593,57,632,76,663,98,690,124,727,172,722,171,686,127,660,102,629,80,591,62,551,48,471,31"/>
+<area shape="rect" id="Node000006" href="$SessionLifecycle_8h.html" title=" " alt="" coords="218,85,408,110"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="361,41,325,87,321,83,357,43"/>
+<area shape="rect" id="Node000007" href="$DiagnosticDialog_8h.html" title=" " alt="" coords="483,78,618,117"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="419,34,512,77,507,78,418,39"/>
+<area shape="poly" id="edge6_Node000006_Node000002" title=" " alt="" coords="269,117,133,167,131,162,266,113"/>
+<area shape="poly" id="edge8_Node000007_Node000004" title=" " alt="" coords="498,123,388,174,387,169,492,124"/>
+<area shape="poly" id="edge9_Node000007_Node000005" title=" " alt="" coords="605,121,710,171,704,171,604,126"/>
+<area shape="rect" id="Node000008" href="$DiagnosticDialog_8cpp.html" title=" " alt="" coords="476,165,625,203"/>
+<area shape="poly" id="edge10_Node000007_Node000008" title=" " alt="" coords="553,131,553,166,549,162,549,135"/>
+</map>

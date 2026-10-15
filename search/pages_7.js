@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['canonical_20scancode_20flag_20v1_2010_0',['Canonical scancode flag (v1.10)',['../protocol_reference.html#autotoc_md55',1,'']]],
+  ['categories_1',['Message Categories',['../protocol_reference.html#autotoc_md26',1,'']]],
+  ['checklist_2',['Implementation Checklist',['../protocol_reference.html#autotoc_md47',1,'']]],
+  ['ci_20and_20release_20boundaries_3',['CI and release boundaries',['../md_docs_2dev_2public-privacy-guard.html#autotoc_md59',1,'']]],
+  ['client_20implementation_4',['Basic Client Implementation',['../protocol_reference.html#autotoc_md48',1,'']]],
+  ['clock_20and_20event_20wait_20correction_5',['Common clock and event-wait correction',['../md_docs_2dev_2resource-comparison-2026-10-15.html#autotoc_md62',1,'']]],
+  ['code_20and_20modifier_20mapping_6',['Key Code and Modifier Mapping',['../protocol_reference.html#autotoc_md32',1,'']]],
+  ['code_20signing_7',['macOS code signing',['../md_docs_2dev_2build.html#autotoc_md6',1,'']]],
+  ['common_20clock_20and_20event_20wait_20correction_8',['Common clock and event-wait correction',['../md_docs_2dev_2resource-comparison-2026-10-15.html#autotoc_md62',1,'']]],
+  ['common_20issues_9',['Common Issues',['../protocol_reference.html#autotoc_md44',1,'']]],
+  ['comparison_20—_202026_2010_2015_10',['Linux resource comparison — 2026-10-15',['../md_docs_2dev_2resource-comparison-2026-10-15.html#autotoc_md60',1,'']]],
+  ['comparison_202026_2010_2015_11',['resource-comparison-2026-10-15',['../md_docs_2dev_2resource-comparison-2026-10-15.html',1,'']]],
+  ['compatibility_12',['Version Compatibility',['../protocol_reference.html#autotoc_md37',1,'']]],
+  ['complete_20message_20exchange_20sequence_13',['Complete Message Exchange Sequence',['../protocol_reference.html#autotoc_md42',1,'']]],
+  ['configuration_14',['Configuration',['../md_docs_2dev_2build.html#autotoc_md1',1,'Configuration'],['../md_docs_2dev_2build.html#autotoc_md2',1,'Windows Configuration']]],
+  ['connected_20cores_15',['Follow-up: repeated GUI idle and connected cores',['../md_docs_2dev_2resource-comparison-2026-10-15.html#autotoc_md61',1,'']]],
+  ['connection_20lifecycle_16',['Connection Lifecycle',['../protocol_reference.html#autotoc_md40',1,'']]],
+  ['constraints_17',['Protocol Constraints',['../protocol_reference.html#autotoc_md29',1,'']]],
+  ['contributing_18',['Contributing',['../protocol_reference.html#autotoc_md51',1,'']]],
+  ['contributing_20to_20ieum_19',['Contributing to Ieum',['../contributing_guide.html',1,'']]],
+  ['control_20flow_20',['Typical Control Flow',['../protocol_reference.html#autotoc_md28',1,'']]],
+  ['cores_21',['Follow-up: repeated GUI idle and connected cores',['../md_docs_2dev_2resource-comparison-2026-10-15.html#autotoc_md61',1,'']]],
+  ['correction_22',['Common clock and event-wait correction',['../md_docs_2dev_2resource-comparison-2026-10-15.html#autotoc_md62',1,'']]],
+  ['criteria_23',['Acceptance criteria',['../md_docs_2dev_2update-delivery.html#autotoc_md66',1,'']]],
+  ['current_20alpha_20behavior_24',['Current alpha behavior',['../md_docs_2dev_2update-delivery.html#autotoc_md67',1,'']]]
+];
