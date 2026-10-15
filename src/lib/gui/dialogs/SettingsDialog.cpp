@@ -32,6 +32,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
+#include <QKeyEvent>
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
@@ -229,6 +230,8 @@ void SettingsDialog::createNavigation()
       m_pageDescription->setText(descriptions.value(m_navigation->row(current)));
     }
   });
+  m_settingsSearch->installEventFilter(this);
+  m_searchResults->installEventFilter(this);
   connect(m_settingsSearch, &QLineEdit::textChanged, this, &SettingsDialog::filterNavigation);
   connect(m_searchResults, &QListWidget::itemActivated, this, &SettingsDialog::activateSearchResult);
   connect(m_searchResults, &QListWidget::itemClicked, this, &SettingsDialog::activateSearchResult);
@@ -360,6 +363,21 @@ void SettingsDialog::filterNavigation()
   if (firstMatch != nullptr && (m_navigation->currentItem() == nullptr || m_navigation->currentItem()->isHidden())) {
     m_navigation->setCurrentItem(firstMatch);
   }
+}
+
+bool SettingsDialog::eventFilter(QObject *object, QEvent *event)
+{
+  if ((object == m_settingsSearch || object == m_searchResults) && event->type() == QEvent::KeyPress) {
+    const auto *key = static_cast<QKeyEvent *>(event);
+    if (key->key() == Qt::Key_Return || key->key() == Qt::Key_Enter) {
+      // On macOS, item activation can also reach the dialog's default Save
+      // button. Searching must only navigate, without applying settings.
+      activateSearchResult(m_searchResults->currentItem());
+      event->accept();
+      return true;
+    }
+  }
+  return QDialog::eventFilter(object, event);
 }
 
 void SettingsDialog::changeEvent(QEvent *e)

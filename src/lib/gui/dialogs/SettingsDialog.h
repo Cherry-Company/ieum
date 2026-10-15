@@ -36,6 +36,7 @@ Q_SIGNALS:
 
 protected:
   void changeEvent(QEvent *e) override;
+  bool eventFilter(QObject *object, QEvent *event) override;
 
 private:
   void createNavigation();

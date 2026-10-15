@@ -165,6 +165,7 @@ private Q_SLOTS:
     Settings::setValue(Settings::Core::UseTailscale, false);
     ServerConfig config;
     SettingsDialog dialog(nullptr, config);
+    QSignalSpy accepted(&dialog, &QDialog::accepted);
     dialog.show();
     auto *search = dialog.findChild<QLineEdit *>("settingsSearch");
     auto *results = dialog.findChild<QListWidget *>("settingsSearchResults");
@@ -179,9 +180,15 @@ private Q_SLOTS:
     results->setCurrentItem(port);
     results->setFocus();
     QTest::keyClick(results, Qt::Key_Return);
+    QCOMPARE(accepted.count(), 0);
+    QVERIFY(dialog.isVisible());
     QCOMPARE(dialog.findChild<QTabWidget *>()->currentWidget()->objectName(), QStringLiteral("tabNetwork"));
     QCOMPARE(dialog.focusWidget(), dialog.findChild<QSpinBox *>("sbPort"));
     QVERIFY(dialog.findChild<QLabel *>("settingsPageDescription")->text().contains("Port"));
+    search->setFocus();
+    QTest::keyClick(search, Qt::Key_Enter);
+    QCOMPARE(accepted.count(), 0);
+    QVERIFY(dialog.isVisible());
     dialog.selectPage("tabInput");
     QVERIFY(search->text().isEmpty());
     QCOMPARE(dialog.findChild<QTabWidget *>()->currentWidget()->objectName(), QStringLiteral("tabInput"));
