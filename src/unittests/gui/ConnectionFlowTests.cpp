@@ -43,6 +43,7 @@ class ConnectionFlowTests : public QObject
 private Q_SLOTS:
   void initTestCase()
   {
+    qInfo("Initializing connection-flow tests");
     QApplication::setQuitOnLastWindowClosed(false);
     if (qEnvironmentVariableIsSet("IEUM_PREVIEW_DARK")) {
       QPalette dark;
@@ -75,6 +76,7 @@ private Q_SLOTS:
 
   void init()
   {
+    qInfo("Running connection-flow case: %s", QTest::currentTestFunction());
     Settings::setValue(Settings::Core::CoreMode, Settings::CoreMode::Client);
     Settings::setValue(Settings::Core::UseTailscale, true);
     Settings::setValue(Settings::Gui::AutoStartCore, false);

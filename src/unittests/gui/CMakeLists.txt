@@ -23,6 +23,7 @@ create_test(
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
 )
 add_dependencies(ConnectionFlowTests CoreProcessTestHelper)
+set_tests_properties(ConnectionFlowTests PROPERTIES TIMEOUT 60)
 target_sources(ConnectionFlowTests PRIVATE "${CMAKE_SOURCE_DIR}/src/apps/res/deskflow.qrc")
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND BUILD_X11_SUPPORT)

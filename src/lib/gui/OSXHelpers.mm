@@ -20,6 +20,7 @@
 
 #import <QtGlobal>
 
+#include <QGuiApplication>
 #include <QMetaObject>
 #include <QObject>
 #include <QPointer>
@@ -265,6 +266,11 @@ void macOSRevealCurrentApplication()
 
 void macOSInstallApplicationReopenHandler(QObject *receiver)
 {
+  // Offscreen/minimal Qt platforms do not own an AppKit event dispatcher.
+  // Registering native application handlers there can block headless tools.
+  if (QGuiApplication::platformName() != QStringLiteral("cocoa")) {
+    return;
+  }
   macOSRemoveApplicationReopenHandler();
   g_applicationReopenHandler = [[IeumApplicationReopenHandler alloc] initWithReceiver:receiver];
   [[NSAppleEventManager sharedAppleEventManager] setEventHandler:g_applicationReopenHandler
@@ -286,6 +292,9 @@ void macOSRemoveApplicationReopenHandler()
 
 void macOSInstallApplicationTerminationHandler(std::function<void(bool systemShutdown)> handler)
 {
+  if (QGuiApplication::platformName() != QStringLiteral("cocoa")) {
+    return;
+  }
   macOSRemoveApplicationTerminationHandler();
   g_applicationTerminationHandler = std::move(handler);
   g_systemShutdown = false;
