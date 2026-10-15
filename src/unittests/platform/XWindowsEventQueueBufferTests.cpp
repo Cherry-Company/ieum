@@ -60,7 +60,7 @@ private Q_SLOTS:
   {
     EventQueue events;
     XWindowsEventQueueBuffer buffer(m_display, m_window, &events);
-    std::jthread sender([&buffer] {
+    std::thread sender([&buffer] {
       std::this_thread::sleep_for(std::chrono::milliseconds(40));
       buffer.addEvent(42);
     });
