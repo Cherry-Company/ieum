@@ -1525,6 +1525,9 @@ void MainWindow::coreProcessStateChanged(ProcessState state)
   if (m_shutdownInProgress) {
     return;
   }
+  if ((state == Starting || state == Started) && m_coreProcess.mode() == CoreMode::Client) {
+    m_activeRemoteHost = m_coreProcess.activeRemoteHost();
+  }
   updateStatus();
   if (state == Started) {
     m_autoStartRetryTimer->stop();
@@ -1537,10 +1540,6 @@ void MainWindow::coreProcessStateChanged(ProcessState state)
       qDebug() << "starting core server for first time";
       Settings::setValue(Settings::Gui::ShownServerFirstStartMessage, true);
     }
-  }
-
-  if (state == Starting && m_coreProcess.mode() == CoreMode::Client) {
-    m_activeRemoteHost = ui->lineHostname->text().trimmed();
   }
 
   if (state == Stopped) {

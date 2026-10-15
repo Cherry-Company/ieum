@@ -118,6 +118,11 @@ private Q_SLOTS:
     QCOMPARE(Settings::value(Settings::Client::RemoteHost).toString(), QStringLiteral("100.64.0.2"));
     QVERIFY(window.findChild<QLabel *>("lblConnectionTitle")->text().contains("100.64.0.2"));
     QTRY_COMPARE_WITH_TIMEOUT(window.m_coreProcess.processState(), ProcessState::Started, 8000);
+    QTRY_COMPARE(window.m_activeRemoteHost, QStringLiteral("100.64.0.2"));
+    // A queued Started update must keep the running destination even if the
+    // user has begun typing the next address without committing it yet.
+    window.findChild<QLineEdit *>("lineHostname")->setText(QStringLiteral("100.64.0.3"));
+    window.coreProcessStateChanged(ProcessState::Started);
     QCOMPARE(window.m_activeRemoteHost, QStringLiteral("100.64.0.2"));
     window.stopCore();
     QTRY_COMPARE_WITH_TIMEOUT(window.m_coreProcess.processState(), ProcessState::Stopped, 8000);

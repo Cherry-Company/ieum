@@ -79,6 +79,10 @@ public:
   {
     return m_connectionState;
   }
+  QString activeRemoteHost() const
+  {
+    return m_activeRemoteHost;
+  }
 
   // setters
   void setAddress(const QString &address)
@@ -143,6 +147,7 @@ private:
   const ServerConfig &m_serverConfig;
   ServiceStartCoordinator *m_serviceStartCoordinator = nullptr;
   QString m_address;
+  QString m_activeRemoteHost;
   ProcessState m_processState = ProcessState::Stopped;
   ConnectionState m_connectionState = ConnectionState::Disconnected;
   Settings::CoreMode m_mode = Settings::CoreMode::None;

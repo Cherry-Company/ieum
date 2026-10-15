@@ -655,6 +655,11 @@ void CoreProcess::start(std::optional<ProcessMode> processModeOption)
 
   qInfo().noquote() << QString("starting %1 process (%2 mode)").arg(coreMode, processModeToString(processMode));
 
+  // Keep the destination of this run separate from edits intended for the
+  // next connection. Windows may emit started before start() returns.
+  m_activeRemoteHost = m_mode == Settings::CoreMode::Client
+                           ? Settings::value(Settings::Client::RemoteHost).toString().trimmed()
+                           : QString();
   setProcessState(ProcessState::Starting);
 
 #ifdef Q_OS_MACOS
