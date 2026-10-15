@@ -24,6 +24,7 @@ create_test(
 )
 add_dependencies(ConnectionFlowTests CoreProcessTestHelper)
 set_tests_properties(ConnectionFlowTests PROPERTIES TIMEOUT 60)
+set_tests_properties(CoreProcessTests ConnectionFlowTests PROPERTIES ENVIRONMENT "QT_FORCE_STDERR_LOGGING=1")
 target_sources(ConnectionFlowTests PRIVATE "${CMAKE_SOURCE_DIR}/src/apps/res/deskflow.qrc")
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND BUILD_X11_SUPPORT)

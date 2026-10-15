@@ -21,6 +21,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QProcessEnvironment>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSignalSpy>
@@ -72,6 +73,24 @@ private Q_SLOTS:
     Settings::setValue(Settings::Gui::CloseReminder, false);
     Settings::setValue(Settings::Gui::LogExpanded, false);
     Settings::setValue(Settings::Core::ComputerName, "Studio-PC");
+    QFile hostConfig(m_directory.filePath("host.conf"));
+    QVERIFY(hostConfig.open(QIODevice::WriteOnly | QIODevice::Text));
+    ServerConfig config;
+    config.save(hostConfig);
+    hostConfig.close();
+    // Windows desktop tests must not depend on a pre-existing ProgramData
+    // directory created by an installed application or service.
+    Settings::setValue(Settings::Server::ExternalConfigFile, hostConfig.fileName());
+    Settings::setValue(Settings::Server::ExternalConfig, true);
+    QProcess probe;
+    auto environment = QProcessEnvironment::systemEnvironment();
+    environment.insert(QStringLiteral("IEUM_TEST_CORE_EXIT_CODE"), QStringLiteral("0"));
+    probe.setProcessEnvironment(environment);
+    probe.start(helperPath());
+    QVERIFY2(probe.waitForStarted(5000), qPrintable(probe.errorString()));
+    QVERIFY2(probe.waitForFinished(5000), qPrintable(probe.errorString()));
+    QCOMPARE(probe.exitStatus(), QProcess::NormalExit);
+    QCOMPARE(probe.exitCode(), 0);
   }
 
   void init()
@@ -115,12 +134,15 @@ private Q_SLOTS:
     QCOMPARE(window.findChild<QComboBox *>("comboTailscalePeer")->currentIndex(), 0);
   }
 
-  void roleChangeDuringStartupCancelsThePreviousCore()
+  void roleChangeAfterStartCancelsThePreviousCore()
   {
     Settings::setValue(Settings::Core::UseTailscale, false);
     MainWindow window(helperPath());
     window.startCoreProcess();
-    QCOMPARE(window.m_coreProcess.processState(), ProcessState::Starting);
+    QVERIFY(
+        window.m_coreProcess.processState() == ProcessState::Starting ||
+        window.m_coreProcess.processState() == ProcessState::Started
+    );
     window.findChild<QRadioButton *>("rbModeServer")->click();
     QCOMPARE(window.coreMode(), Settings::CoreMode::Server);
     QTRY_COMPARE_WITH_TIMEOUT(window.m_coreProcess.processState(), ProcessState::Stopped, 7000);
@@ -245,6 +267,7 @@ private Q_SLOTS:
     QTranslator translator;
     QVERIFY(translator.load(translation));
     QCoreApplication::installTranslator(&translator);
+    Settings::setValue(Settings::Server::ExternalConfig, false);
     Settings::setValue(Settings::Core::CoreMode, Settings::CoreMode::Server);
     Settings::setValue(Settings::Core::UseTailscale, false);
     Settings::setValue(Settings::Core::Interface, "192.0.2.10");

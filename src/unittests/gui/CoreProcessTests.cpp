@@ -9,6 +9,7 @@
 #include "gui/ipc/CoreIpcClient.h"
 
 #include <QElapsedTimer>
+#include <QProcessEnvironment>
 #include <QSignalSpy>
 #include <QTemporaryDir>
 #include <QTest>
@@ -27,16 +28,26 @@ private Q_SLOTS:
     Settings::setStateFile(m_directory.filePath("state.ini"));
     Settings::setValue(Settings::Core::ProcessMode, Settings::ProcessMode::Desktop);
     Settings::setValue(Settings::Client::RemoteHost, "127.0.0.1");
+    QProcess probe;
+    auto environment = QProcessEnvironment::systemEnvironment();
+    environment.insert(QStringLiteral("IEUM_TEST_CORE_EXIT_CODE"), QStringLiteral("0"));
+    probe.setProcessEnvironment(environment);
+    probe.start(helperPath());
+    QVERIFY2(probe.waitForStarted(5000), qPrintable(probe.errorString()));
+    QVERIFY2(probe.waitForFinished(5000), qPrintable(probe.errorString()));
+    QCOMPARE(probe.exitStatus(), QProcess::NormalExit);
+    QCOMPARE(probe.exitCode(), 0);
   }
 
-  void stopDuringStartupCancelsWithoutBlocking()
+  void stopImmediatelyAfterStartCancelsWithoutBlocking()
   {
     ServerConfig config;
     CoreProcess core(config, helperPath());
     core.setMode(Settings::CoreMode::Client);
     core.setAddress("127.0.0.1");
     core.start();
-    QCOMPARE(core.processState(), ProcessState::Starting);
+    // Windows can emit QProcess::started synchronously inside start().
+    QVERIFY(core.processState() == ProcessState::Starting || core.processState() == ProcessState::Started);
     QElapsedTimer timer;
     timer.start();
     core.stop();
