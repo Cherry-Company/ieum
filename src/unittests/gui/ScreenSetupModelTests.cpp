@@ -209,7 +209,7 @@ private Q_SLOTS:
     mimeData.setData(
         ScreenSetupModel::mimeType(), ScreenSetupModel::encodeScreenDrag(-1, -1, Screen(QStringLiteral("new-screen")))
     );
-#if QT_VERSION >= QT_VERSION_CHECK(6, 11, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 12, 0)
     const auto dragPosition = outside;
 #else
     const auto dragPosition = outside.toPoint();
