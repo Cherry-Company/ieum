@@ -733,6 +733,9 @@
            <property name="text">
             <string>Port</string>
            </property>
+           <property name="buddy">
+            <cstring>sbPort</cstring>
+           </property>
           </widget>
          </item>
          <item>

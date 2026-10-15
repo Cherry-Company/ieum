@@ -19,7 +19,7 @@ namespace deskflow::gui {
 
 namespace {
 
-constexpr auto kFallbackPollIntervalMs = 250;
+constexpr auto kFallbackPollIntervalMs = 2000;
 constexpr auto kFileIdentityPrefixLength = 64;
 
 qint64 birthTimeMsecs(const QFile &file)
@@ -36,6 +36,7 @@ FileTail::FileTail(const QString &filePath, QObject *parent)
       m_pollTimer(new QTimer(this))
 {
   m_pollTimer->setInterval(kFallbackPollIntervalMs);
+  m_pollTimer->setTimerType(Qt::VeryCoarseTimer);
   connect(m_watcher, &QFileSystemWatcher::fileChanged, this, &FileTail::handleFileChanged);
   connect(m_watcher, &QFileSystemWatcher::directoryChanged, this, &FileTail::handleDirectoryChanged);
   connect(m_pollTimer, &QTimer::timeout, this, &FileTail::pollWatchedFile);

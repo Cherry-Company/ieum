@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
-    <height>410</height>
+    <width>860</width>
+    <height>690</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -47,7 +47,7 @@
         <height>76</height>
        </size>
       </property>
-      <layout class="QHBoxLayout" name="identityLayout">
+      <layout class="QHBoxLayout" name="identityLayout" stretch="0,1,0,0">
        <property name="spacing">
         <number>12</number>
        </property>
@@ -129,6 +129,9 @@
          </property>
          <property name="alignment">
           <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+         </property>
+         <property name="textInteractionFlags">
+          <set>Qt::TextInteractionFlag::TextSelectableByMouse|Qt::TextInteractionFlag::TextSelectableByKeyboard</set>
          </property>
         </widget>
        </item>
@@ -213,7 +216,7 @@
           <string>Edit computer name</string>
          </property>
          <property name="icon">
-          <iconset theme="document-edit"/>
+          <iconset theme="document-edit" />
          </property>
          <property name="iconSize">
           <size>
@@ -263,7 +266,7 @@
           <bool>true</bool>
          </property>
          <property name="text">
-          <string>Mode</string>
+          <string>1. What will this computer do?</string>
          </property>
         </widget>
        </item>
@@ -294,8 +297,14 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>Share this keyboard and mouse
-Server</string>
+             <string>Share my keyboard and mouse
+Host computer</string>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>68</height>
+             </size>
             </property>
            </widget>
           </item>
@@ -307,9 +316,117 @@ Server</string>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>68</height>
+             </size>
+            </property>
             <property name="text">
              <string>Use a shared keyboard and mouse
-Client</string>
+Client computer</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="networkSurface">
+         <layout class="QVBoxLayout" name="networkLayout">
+          <property name="spacing">
+           <number>8</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="lblNetworkHeading">
+            <property name="text">
+             <string>2. How are your computers connected?</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="sectionHeading" stdset="0">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="networkMethodLayout">
+            <property name="spacing">
+             <number>8</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QComboBox" name="comboConnectionMethod">
+              <property name="accessibleName">
+               <string>Connection method</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>Local network · Wi-Fi or Ethernet</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Tailscale · across networks</string>
+               </property>
+              </item>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>36</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnNetworkSettings">
+              <property name="text">
+               <string>Network settings</string>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>36</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="lblNetworkHint">
+            <property name="text">
+             <string>Install Ieum on both computers and connect them to the same network.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="secondary" stdset="0">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -361,7 +478,7 @@ Client</string>
                 </size>
                </property>
                <property name="text">
-                <string>&amp;Configure server</string>
+                <string>Arrange computers</string>
                </property>
               </widget>
              </item>
@@ -383,7 +500,7 @@ Client</string>
                 <string>Export server configuration</string>
                </property>
                <property name="icon">
-                <iconset theme="QIcon::ThemeIcon::DocumentSaveAs"/>
+                <iconset theme="QIcon::ThemeIcon::DocumentSaveAs" />
                </property>
               </widget>
              </item>
@@ -396,7 +513,10 @@ Client</string>
              <bool>true</bool>
             </property>
             <property name="text">
-             <string>Select a mode to continue</string>
+             <string>Choose a role above. The host is the computer with the keyboard and mouse you want to use.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -433,14 +553,17 @@ Client</string>
                 </size>
                </property>
                <property name="text">
-                <string>&amp;Configure client</string>
+              <string>Receiving options</string>
                </property>
               </widget>
              </item>
              <item>
               <widget class="QLabel" name="m_pLabelServerName">
                <property name="text">
-                <string>Connect to</string>
+                <string>Host</string>
+               </property>
+               <property name="buddy">
+                <cstring>lineHostname</cstring>
                </property>
               </widget>
              </item>
@@ -454,6 +577,9 @@ Client</string>
                </property>
                <property name="toolTip">
                 <string>&lt;html&gt;Hostname or IP address of the server computer.&lt;br/&gt;May contain a comma-separated list.&lt;/html&gt;</string>
+               </property>
+               <property name="placeholderText">
+                <string>Host name or IP address</string>
                </property>
               </widget>
              </item>
@@ -476,6 +602,9 @@ Client</string>
                  <string>Select a Tailscale device</string>
                 </property>
                </item>
+               <property name="accessibleName">
+                <string>Host computer</string>
+               </property>
               </widget>
              </item>
              <item>
@@ -499,10 +628,13 @@ Client</string>
                 <string>Refresh Tailscale devices</string>
                </property>
                <property name="text">
-                <string/>
+                <string />
                </property>
                <property name="icon">
-                <iconset theme="QIcon::ThemeIcon::ViewRefresh"/>
+                <iconset theme="QIcon::ThemeIcon::ViewRefresh" />
+               </property>
+               <property name="accessibleName">
+                <string>Refresh Tailscale computers</string>
                </property>
               </widget>
              </item>
@@ -522,66 +654,193 @@ Client</string>
             </property>
            </spacer>
           </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="connectionSurface">
+      <layout class="QVBoxLayout" name="connectionLayout">
+       <property name="spacing">
+        <number>8</number>
+       </property>
+       <property name="leftMargin">
+        <number>18</number>
+       </property>
+       <property name="topMargin">
+        <number>18</number>
+       </property>
+       <property name="rightMargin">
+        <number>18</number>
+       </property>
+       <property name="bottomMargin">
+        <number>18</number>
+       </property>
+       <item>
+        <widget class="QLabel" name="lblConnectionEyebrow">
+         <property name="text">
+          <string>CONNECTION</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="secondary" stdset="0">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblConnectionTitle">
+         <property name="textFormat">
+          <enum>Qt::TextFormat::PlainText</enum>
+         </property>
+         <property name="text">
+          <string>Let’s connect your computers</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblConnectionDetail">
+         <property name="textFormat">
+          <enum>Qt::TextFormat::PlainText</enum>
+         </property>
+         <property name="text">
+          <string>Choose a role to see your next step.</string>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="quickActions">
+      <layout class="QHBoxLayout" name="quickActionsLayout">
+       <property name="spacing">
+        <number>8</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QPushButton" name="btnInputSettings">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>36</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Input and clipboard</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnFileSettings">
+         <property name="text">
+          <string>Files</string>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>36</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="btnAllSettings">
+         <property name="text">
+          <string>All settings</string>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>36</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="footerSpacer">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QWidget" name="horizontalWidget" native="true">
+         <layout class="QHBoxLayout" name="coreActionsLayout">
+          <property name="spacing">
+           <number>6</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
           <item>
-           <widget class="QWidget" name="horizontalWidget" native="true">
-            <layout class="QHBoxLayout" name="coreActionsLayout">
-             <property name="spacing">
-              <number>6</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QPushButton" name="btnToggleCore">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>36</height>
-                </size>
-               </property>
-               <property name="text">
-                <string>&amp;Start</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="btnRestartCore">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>36</width>
-                 <height>36</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>36</width>
-                 <height>36</height>
-                </size>
-               </property>
-               <property name="toolTip">
-                <string>Restart</string>
-               </property>
-               <property name="icon">
-                <iconset theme="view-refresh"/>
-               </property>
-              </widget>
-             </item>
-            </layout>
+           <widget class="QPushButton" name="btnToggleCore">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>36</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>&amp;Start</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnRestartCore">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>36</width>
+              <height>36</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>36</width>
+              <height>36</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Restart</string>
+            </property>
+            <property name="icon">
+             <iconset theme="view-refresh" />
+            </property>
            </widget>
           </item>
          </layout>
@@ -593,6 +852,6 @@ Client</string>
    </layout>
   </widget>
  </widget>
- <resources/>
- <connections/>
+ <resources />
+ <connections />
 </ui>

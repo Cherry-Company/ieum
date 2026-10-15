@@ -19,6 +19,8 @@
 
 #include "dialogs/AboutDialog.h"
 #include "dialogs/ClientConfigDialog.h"
+#include "dialogs/ConnectionGuideDialog.h"
+#include "dialogs/DiagnosticDialog.h"
 #include "dialogs/FingerprintDialog.h"
 #include "dialogs/ServerConfigDialog.h"
 #include "dialogs/SettingsDialog.h"
@@ -71,9 +73,9 @@
 
 using namespace deskflow::gui;
 
-MainWindow::MainWindow()
+MainWindow::MainWindow(const QString &coreExecutablePath)
     : ui{std::make_unique<Ui::MainWindow>()},
-      m_coreProcess(m_serverConfig),
+      m_coreProcess(m_serverConfig, coreExecutablePath),
       m_tailscaleIntegration{new deskflow::network::TailscaleIntegration(this)},
       m_trayIcon{new QSystemTrayIcon(this)},
       m_trayRepairTimer{new QTimer(this)},
@@ -270,9 +272,6 @@ void MainWindow::restoreWindow()
     QRect screenGeometry = QGuiApplication::primaryScreen()->geometry();
     move(screenGeometry.center() - rect().center());
   }
-
-  if (!Settings::value(Settings::Gui::LogExpanded).toBool())
-    setFixedSize(size());
 }
 
 void MainWindow::setupControls()
@@ -309,6 +308,11 @@ void MainWindow::setupControls()
     ui->btnSaveServerConfig->setIconSize(QSize(22, 22));
   }
   setStatusBar(m_statusBar);
+  auto *guide = new QPushButton(tr("First connection"), this);
+  guide->setObjectName(QStringLiteral("btnConnectionGuide"));
+  guide->setIcon(QIcon::fromTheme(QStringLiteral("help-contents")));
+  ui->deviceLayout->addWidget(guide);
+  connect(guide, &QPushButton::clicked, this, &MainWindow::openConnectionGuide);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -366,10 +370,24 @@ void MainWindow::connectSlots()
 
   connect(ui->btnRestartCore, &QPushButton::clicked, this, &MainWindow::resetCore);
 
-  connect(ui->lineHostname, &QLineEdit::returnPressed, ui->btnRestartCore, &QPushButton::click);
+  connect(ui->lineHostname, &QLineEdit::editingFinished, this, &MainWindow::applyRemoteHostChange);
+  connect(ui->lineHostname, &QLineEdit::returnPressed, this, [this] {
+    if (m_coreProcess.processState() == ProcessState::Stopped && canRunCore()) {
+      startCore();
+    }
+  });
   connect(ui->lineHostname, &QLineEdit::textChanged, this, &MainWindow::remoteHostChanged);
   connect(ui->comboTailscalePeer, &QComboBox::activated, this, &MainWindow::tailscalePeerSelected);
   connect(ui->btnRefreshTailscalePeers, &QPushButton::clicked, this, &MainWindow::refreshTailscalePeers);
+  connect(ui->comboConnectionMethod, &QComboBox::activated, this, &MainWindow::connectionMethodChanged);
+  connect(ui->btnNetworkSettings, &QPushButton::clicked, this, [this] {
+    openSettingsAt(QStringLiteral("tabNetwork"));
+  });
+  connect(ui->btnInputSettings, &QPushButton::clicked, this, [this] { openSettingsAt(QStringLiteral("tabInput")); });
+  connect(ui->btnFileSettings, &QPushButton::clicked, this, [this] {
+    openSettingsAt(QStringLiteral("tabFileTransfer"));
+  });
+  connect(ui->btnAllSettings, &QPushButton::clicked, this, &MainWindow::openSettings);
 
   connect(ui->btnSaveServerConfig, &QPushButton::clicked, this, &MainWindow::saveServerConfig);
   connect(ui->btnConfigureServer, &QPushButton::clicked, this, [this] { showConfigureServer(""); });
@@ -433,7 +451,6 @@ void MainWindow::toggleLogVisible(bool visible)
   if (visible) {
     if (m_logDock->isFloating()) {
       adjustSize();
-      setFixedSize(size());
     } else {
       QTimer::singleShot(15, this, [&] { resize(m_expandedSize); });
     }
@@ -445,7 +462,6 @@ void MainWindow::toggleLogVisible(bool visible)
     if (!m_logDock->isFloating()) {
       adjustSize();
     }
-    setFixedSize(size());
   }
   Settings::setValue(Settings::Gui::WindowGeometry, geometry());
 }
@@ -604,11 +620,13 @@ void MainWindow::startCoreProcess()
 
   m_actionStartCore->setVisible(false);
   m_actionRestartCore->setVisible(true);
+  saveSettings();
   m_coreProcess.start();
 }
 
 void MainWindow::restartCoreProcess()
 {
+  saveSettings();
   if (m_coreProcess.mode() == CoreMode::Server) {
     recordServerStartNetwork();
   }
@@ -648,6 +666,7 @@ void MainWindow::scheduleAutoStartRetry()
 void MainWindow::stopCore()
 {
   qDebug() << "stopping core process";
+  m_switchingHost = false;
   m_autoStartRetryTimer->stop();
   m_autoStartRetryCount = 0;
   m_automaticStartPending = false;
@@ -664,6 +683,8 @@ void MainWindow::stopCore()
   m_coreProcess.stop();
   m_actionStartCore->setVisible(true);
   m_actionRestartCore->setVisible(false);
+  updateModeControlLabels();
+  toggleCanRunCore(canRunCore());
 }
 
 void MainWindow::quitApplication()
@@ -761,18 +782,8 @@ void MainWindow::openAboutDialog()
 void MainWindow::reportBug()
 {
   const auto report = diagnostic::createReport(diagnostic::ReportKind::UserInitiated);
-  diagnostic::copyToClipboard(report);
-  diagnostic::openIssue(report);
-
-  const auto savedPath = report.saved ? QDir::toNativeSeparators(report.filePath).toHtmlEscaped()
-                                      : tr("The local report file could not be saved.");
-  QMessageBox::information(
-      this, tr("Diagnostic Ready"),
-      tr("<p>A privacy-filtered diagnostic passport was copied to the clipboard and a prefilled GitHub issue was "
-         "opened.</p><p>Nothing was uploaded automatically. GitHub requires an account to submit the issue; without "
-         "one, you can share the copied report through another channel.</p><p>Local copy: <code>%1</code></p>")
-          .arg(savedPath)
-  );
+  DiagnosticDialog dialog(report, this);
+  dialog.exec();
 }
 
 void MainWindow::openSponsorUrl()
@@ -836,19 +847,74 @@ void MainWindow::openGetNewVersionUrl()
 
 void MainWindow::openSettings()
 {
+  openSettingsAt({});
+}
+
+void MainWindow::openConnectionGuide()
+{
+  if (auto *existing = findChild<ConnectionGuideDialog *>()) {
+    existing->show();
+    existing->raise();
+    existing->activateWindow();
+    return;
+  }
+  auto *guide = new ConnectionGuideDialog(this);
+  guide->setAttribute(Qt::WA_DeleteOnClose);
+  connect(guide, &ConnectionGuideDialog::roleSelected, this, [this](CoreMode mode) {
+    if (mode == CoreMode::Server) {
+      ui->rbModeServer->setChecked(true);
+    } else {
+      ui->rbModeClient->setChecked(true);
+    }
+  });
+  connect(guide, &ConnectionGuideDialog::networkSettingsRequested, this, [this] {
+    openSettingsAt(QStringLiteral("tabNetwork"));
+  });
+  connect(guide, &ConnectionGuideDialog::arrangementRequested, this, [this] { showConfigureServer({}); });
+  guide->open();
+}
+
+void MainWindow::openSettingsAt(const QString &page)
+{
   auto dialog = SettingsDialog(this, m_serverConfig);
+  dialog.selectPage(page);
 
   if (dialog.exec() == QDialog::Accepted) {
     Settings::save();
 
     applyConfig();
 
-    if (m_coreProcess.isStarted()) {
+    if (m_coreProcess.processState() != ProcessState::Stopped) {
       resetCore();
     } else if (Settings::value(Settings::Core::UseTailscale).toBool() && m_coreProcess.mode() == CoreMode::Client) {
       QTimer::singleShot(0, this, &MainWindow::refreshTailscalePeers);
     }
   }
+}
+
+void MainWindow::connectionMethodChanged(int index)
+{
+  const bool useTailscale = index == 1;
+  if (Settings::value(Settings::Core::UseTailscale).toBool() == useTailscale) {
+    return;
+  }
+  m_pendingTailscaleAction = TailscaleAction::None;
+  m_tailscaleIntegration->cancel();
+  Settings::setValue(Settings::Core::UseTailscale, useTailscale);
+  Settings::setValue(Settings::Core::Interface);
+  Settings::setValue(Settings::Core::PreferPhysicalNetwork, !useTailscale);
+  Settings::save(false);
+  const bool resumeConnection = m_coreProcess.processState() != ProcessState::Stopped;
+  if (resumeConnection) {
+    m_coreProcess.stop();
+  }
+  updateTailscaleControls();
+  if (resumeConnection) {
+    resetCore();
+  } else if (useTailscale) {
+    refreshTailscalePeers();
+  }
+  updateConnectionGuide();
 }
 
 void MainWindow::resetCore()
@@ -883,7 +949,7 @@ void MainWindow::coreModeToggled(bool checked)
 
   qDebug() << QStringLiteral("change mode to: %1").arg(QVariant::fromValue(mode).toString());
 
-  if (m_coreProcess.isStarted() && m_coreProcess.mode() != mode)
+  if (m_coreProcess.processState() != ProcessState::Stopped && m_coreProcess.mode() != mode)
     m_coreProcess.stop();
   m_coreProcess.setMode(mode);
 
@@ -921,6 +987,7 @@ void MainWindow::updateModeControls()
   }
 
   updateTailscaleControls();
+  updateConnectionGuide();
 
   if (isServer || isClient)
     updateModeControlLabels();
@@ -929,7 +996,7 @@ void MainWindow::updateModeControls()
 void MainWindow::updateModeControlLabels()
 {
   const bool isServer = m_coreProcess.mode() == CoreMode::Server;
-  const bool isStarted = m_coreProcess.isStarted();
+  const auto state = m_coreProcess.processState();
 
   QString startText;
   QString stopText;
@@ -953,7 +1020,15 @@ void MainWindow::updateModeControlLabels()
   m_actionStopCore->setText(stopText);
   m_actionStopCore->setIcon(stopIcon);
 
-  if (isStarted) {
+  if (state == ProcessState::Stopping) {
+    ui->btnToggleCore->setText(
+        m_switchingHost ? tr("Cancel switch") : (isServer ? tr("Stopping…") : tr("Disconnecting…"))
+    );
+    ui->btnToggleCore->setIcon(stopIcon);
+  } else if (state == ProcessState::Starting || state == ProcessState::RetryPending) {
+    ui->btnToggleCore->setText(tr("Cancel"));
+    ui->btnToggleCore->setIcon(stopIcon);
+  } else if (state == ProcessState::Started) {
     ui->btnToggleCore->setText(stopText);
     ui->btnToggleCore->setIcon(stopIcon);
   } else {
@@ -1020,7 +1095,9 @@ void MainWindow::open(bool forceShow, bool forceBackground)
   QTimer::singleShot(kCriticalDialogDelay, this, &messages::raiseCriticalDialog);
 
   if (!forceBackground && !Settings::value(Settings::Gui::AutoUpdateCheck).isValid()) {
-    Settings::setValue(Settings::Gui::AutoUpdateCheck, messages::showUpdateCheckOption(this));
+    // Keep the first launch focused on connecting. Update checking can be
+    // enabled explicitly in General settings without a startup dialog.
+    Settings::setValue(Settings::Gui::AutoUpdateCheck, false);
   }
 
   if (Settings::value(Settings::Gui::AutoUpdateCheck).toBool()) {
@@ -1039,10 +1116,16 @@ void MainWindow::open(bool forceShow, bool forceBackground)
   } else if (ui->rbModeClient->isChecked() && Settings::value(Settings::Core::UseTailscale).toBool()) {
     QTimer::singleShot(0, this, &MainWindow::refreshTailscalePeers);
   }
+  if (!forceBackground && m_coreProcess.mode() == CoreMode::None) {
+    QTimer::singleShot(0, this, &MainWindow::openConnectionGuide);
+  }
 }
 
 void MainWindow::createMenuBar()
 {
+  m_actionConnectionGuide = new QAction(this);
+  m_actionConnectionGuide->setShortcut(QKeySequence::HelpContents);
+  connect(m_actionConnectionGuide, &QAction::triggered, this, &MainWindow::openConnectionGuide);
   m_menuFile->addAction(m_actionStartCore);
   m_menuFile->addAction(m_actionRestartCore);
   m_menuFile->addAction(m_actionStopCore);
@@ -1053,6 +1136,7 @@ void MainWindow::createMenuBar()
 
   m_menuView->addAction(m_logDock->toggleViewAction());
 
+  m_menuHelp->addAction(m_actionConnectionGuide);
   m_menuHelp->addAction(m_actionAbout);
   m_menuHelp->addAction(m_actionReportBug);
   m_menuHelp->addAction(m_actionSponsor);
@@ -1345,6 +1429,10 @@ void MainWindow::handlePeerFingerprint(const QString &fingerprint)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+  if (m_shutdownInProgress) {
+    event->ignore();
+    return;
+  }
 #ifdef Q_OS_MACOS
   const auto hideToTray = macShouldHideOnClose(event->spontaneous(), m_quitRequested, m_systemShutdownRequested);
 #else
@@ -1374,7 +1462,35 @@ void MainWindow::closeEvent(QCloseEvent *event)
   // disconnect them before accepting the event
   disconnect(m_logDock->toggleViewAction(), &QAction::toggled, nullptr, nullptr);
 
+  m_shutdownInProgress = true;
+  qApp->setProperty("ieumShuttingDown", true);
+  m_autoStartRetryTimer->stop();
+  m_networkRecoveryTimer->stop();
+  m_networkMonitor->stopMonitoring();
+  m_pendingTailscaleAction = TailscaleAction::None;
+  m_tailscaleIntegration->cancel();
+  connect(&m_coreProcess, &CoreProcess::processStateChanged, this, [this](ProcessState state) {
+    if (state == ProcessState::Stopped) {
+      QTimer::singleShot(0, this, &MainWindow::finishQuit);
+    }
+  });
+  m_coreProcess.cleanup();
+  if (m_coreProcess.hasForegroundProcess() && !qApp->isSavingSession() && !m_systemShutdownRequested) {
+    // Keep the event loop alive for IPC stop and bounded terminate/kill. A
+    // QProcess destroyed while running kills the core before native cleanup.
+    event->ignore();
+    ui->topLevelWidget->setEnabled(false);
+    ui->lblConnectionTitle->setText(tr("Closing Ieum…"));
+    QTimer::singleShot(6500, this, &MainWindow::finishQuit);
+    return;
+  }
   event->accept();
+  finishQuit();
+}
+
+void MainWindow::finishQuit()
+{
+  Settings::save(false);
   QApplication::quit();
 }
 
@@ -1383,7 +1499,7 @@ void MainWindow::showFirstConnectedMessage()
   if (Settings::value(Settings::Gui::ShownFirstConnectedMessage).toBool())
     return;
   Settings::setValue(Settings::Gui::ShownFirstConnectedMessage, true);
-  messages::showFirstConnectedMessage(this);
+  // Connection state and next actions remain visible in the main window.
 }
 
 void MainWindow::updateStatus()
@@ -1397,11 +1513,21 @@ void MainWindow::updateStatus()
     ui->btnEditName->setVisible(process == Stopped);
   }
   m_statusBar->setStatus(connection, process, isServer);
+  updateConnectionGuide();
 }
 
 void MainWindow::coreProcessStateChanged(ProcessState state)
 {
+  if (state != m_coreProcess.processState()) {
+    return;
+  }
   using enum ProcessState;
+  if (m_shutdownInProgress) {
+    return;
+  }
+  if ((state == Starting || state == Started) && m_coreProcess.mode() == CoreMode::Client) {
+    m_activeRemoteHost = m_coreProcess.activeRemoteHost();
+  }
   updateStatus();
   if (state == Started) {
     m_autoStartRetryTimer->stop();
@@ -1412,18 +1538,19 @@ void MainWindow::coreProcessStateChanged(ProcessState state)
     if (m_coreProcess.mode() == CoreMode::Server &&
         !Settings::value(Settings::Gui::ShownServerFirstStartMessage).toBool()) {
       qDebug() << "starting core server for first time";
-      messages::showFirstServerStartMessage(this);
       Settings::setValue(Settings::Gui::ShownServerFirstStartMessage, true);
     }
   }
 
   if (state == Stopped) {
+    m_switchingHost = false;
+    m_connectedClients.clear();
     m_networkRecoveryTimer->stop();
     m_serverNetworkUnavailable = false;
     clearInputLanguagePresentation();
   }
 
-  if (coreCanStop(state)) {
+  if (coreCanStop(state) || (state == Stopping && m_switchingHost)) {
     disconnect(ui->btnToggleCore, &QPushButton::clicked, m_actionStartCore, &QAction::trigger);
     connect(ui->btnToggleCore, &QPushButton::clicked, m_actionStopCore, &QAction::trigger, Qt::UniqueConnection);
 
@@ -1446,12 +1573,85 @@ void MainWindow::coreProcessStateChanged(ProcessState state)
     m_actionStopCore->setEnabled(false);
   }
   updateModeControlLabels();
+  toggleCanRunCore(canRunCore());
+  updateConnectionGuide();
+}
+
+void MainWindow::updateConnectionGuide()
+{
+  const auto mode = m_coreProcess.mode();
+  const auto process = m_coreProcess.processState();
+  const auto connection = m_coreProcess.connectionState();
+  const bool tailscale = Settings::value(Settings::Core::UseTailscale).toBool();
+  const auto selectedHost = ui->lineHostname->text().trimmed();
+  const auto activeHost = m_activeRemoteHost.isEmpty() ? selectedHost : m_activeRemoteHost;
+  QString title;
+  QString detail;
+
+  if (mode == CoreMode::None) {
+    title = tr("One keyboard. All your computers.");
+    detail = tr(
+        "Choose Host on the computer with your keyboard and mouse. Choose Client on the computer you want to control."
+    );
+  } else if (process == ProcessState::Stopping) {
+    title = m_switchingHost ? tr("Switching to %1…").arg(selectedHost) : tr("Disconnecting…");
+    detail = tr("Closing the previous connection. The new connection starts automatically when the previous one ends.");
+  } else if (process == ProcessState::RetryPending || process == ProcessState::Starting) {
+    title = m_switchingHost ? tr("Switching to %1…").arg(selectedHost) : tr("Getting ready…");
+    detail = tr("You can stop at any time. No need to press Connect again.");
+  } else if (process == ProcessState::Started) {
+    if (mode == CoreMode::Server) {
+      if (m_connectedClients.isEmpty()) {
+        title = tr("Ready. Waiting for your other computer.");
+        detail = tr("On the other computer, choose Client and connect to this host: %1. If it is connected to another "
+                    "host, select this host there to switch. Tailscale alone does not move an Ieum connection.")
+                     .arg(Settings::value(Settings::Core::ComputerName).toString());
+      } else {
+        title = tr("Your computers are connected");
+        detail = tr("Connected: %1. Arrange computers to match your desk, then move the pointer across a screen edge.")
+                     .arg(m_connectedClients.join(QStringLiteral(", ")));
+      }
+    } else if (connection == ConnectionState::Connected) {
+      title = tr("Connected to %1").arg(activeHost);
+      detail = tr("Use the host’s keyboard and mouse here. Select a different host above to switch automatically.");
+    } else {
+      title = tr("Connecting to %1…").arg(activeHost);
+      detail =
+          tr("On the host, choose Host and start sharing. Accept the connection request on both computers. If the "
+             "host is waiting, check that this client has selected that host. Ieum retries automatically.");
+    }
+  } else if (tailscale && !m_tailscaleReady) {
+    title = tr("Set up Tailscale to continue");
+    detail = m_tailscaleStatusMessage.isEmpty() ? tr("Start Tailscale and sign in on both computers, then refresh.")
+                                                : m_tailscaleStatusMessage;
+  } else if (mode == CoreMode::Server) {
+    title = tr("Share from this computer");
+    detail =
+        tr("Press Start, then connect from your other computer. Arrange computers to choose which screen edge "
+           "moves the pointer.");
+  } else if (selectedHost.isEmpty() ||
+             (tailscale && ui->comboTailscalePeer->isVisible() && ui->comboTailscalePeer->currentIndex() <= 0)) {
+    title = tr("Choose the host with your keyboard and mouse");
+    detail =
+        tr("Select a host above, then press Connect. A Tailscale device being online does not mean it is sharing "
+           "a keyboard. Start Ieum in Host mode on that computer.");
+  } else {
+    title = tr("Ready to connect to %1").arg(selectedHost);
+    detail =
+        tr("Press Connect. When you later choose a different host, Ieum disconnects and reconnects automatically.");
+  }
+  ui->lblConnectionTitle->setText(title);
+  ui->lblConnectionDetail->setText(detail);
+  ui->lblConnectionTitle->setAccessibleName(title);
 }
 
 void MainWindow::coreConnectionStateChanged(ConnectionState state)
 {
   qDebug() << "core connection state changed:" << static_cast<int>(state);
 
+  if (state == ConnectionState::Connected) {
+    m_switchingHost = false;
+  }
   updateStatus();
 
   // always assume connection is not secure when connection changes
@@ -1497,7 +1697,7 @@ void MainWindow::changeEvent(QEvent *e)
     updateModeControlLabels();
     updateNetworkInfo();
     updateStatus();
-    serverClientsChanged({});
+    serverClientsChanged(m_connectedClients);
     updateText();
     updateTailscaleControls(true);
   }
@@ -1526,6 +1726,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::updateText()
 {
+  m_actionConnectionGuide->setText(tr("First connection"));
+  if (auto *guide = findChild<QPushButton *>(QStringLiteral("btnConnectionGuide"))) {
+    guide->setText(tr("First connection"));
+  }
   ui->lblProductName->setText(productDisplayName());
   ui->lblTagline->setText(productTagline());
 
@@ -1693,6 +1897,8 @@ void MainWindow::serverClientsChanged(const QStringList &clients)
   if (m_coreProcess.mode() != CoreMode::Server || !m_coreProcess.isStarted())
     return;
   m_statusBar->setServerClients(clients);
+  m_connectedClients = clients;
+  updateConnectionGuide();
 }
 
 void MainWindow::daemonIpcClientConnectionFailed()
@@ -1713,12 +1919,13 @@ void MainWindow::daemonIpcClientConnectionFailed()
 void MainWindow::toggleCanRunCore(bool enableButtons)
 {
   const auto state = m_coreProcess.processState();
-  const bool canStop = coreCanStop(state);
+  const bool canStop = coreCanStop(state) || (state == ProcessState::Stopping && m_switchingHost);
   const bool isStarted = state == ProcessState::Started;
-  ui->btnToggleCore->setEnabled(coreToggleEnabled(state, enableButtons));
+  ui->btnToggleCore->setEnabled(canStop || coreToggleEnabled(state, enableButtons));
   ui->btnRestartCore->setEnabled(enableButtons && isStarted);
   m_actionStartCore->setEnabled(enableButtons);
   m_actionStopCore->setEnabled(canStop);
+  updateConnectionGuide();
 }
 
 void MainWindow::remoteHostChanged(const QString &newRemoteHost)
@@ -1730,6 +1937,22 @@ void MainWindow::remoteHostChanged(const QString &newRemoteHost)
   } else {
     Settings::setValue(Settings::Client::RemoteHost, newRemoteHost);
   }
+}
+
+void MainWindow::applyRemoteHostChange()
+{
+  const auto address = ui->lineHostname->text().trimmed();
+  if (address.isEmpty() || m_coreProcess.mode() != CoreMode::Client ||
+      m_coreProcess.processState() == ProcessState::Stopped ||
+      address.compare(m_activeRemoteHost, Qt::CaseInsensitive) == 0) {
+    return;
+  }
+  // The service reads the settings file; publish the destination before asking
+  // it to replace the existing connection. restart() serializes rapid changes.
+  Settings::save(false);
+  m_switchingHost = true;
+  m_coreProcess.restart();
+  updateConnectionGuide();
 }
 
 void MainWindow::refreshTailscalePeers()
@@ -1816,13 +2039,13 @@ void MainWindow::populateTailscalePeers(const deskflow::network::TailscaleStatus
       ui->lineHostname->setVisible(false);
       ui->lineHostname->setPlaceholderText(QString());
       ui->comboTailscalePeer->setCurrentIndex(
-          matchingIndex >= 0 ? matchingIndex : (onlineCount == 1 ? soleOnlineIndex : 0)
+          matchingIndex >= 0 ? matchingIndex : (currentHost.isEmpty() && onlineCount == 1 ? soleOnlineIndex : 0)
       );
     }
   }
 
-  if (ui->comboTailscalePeer->currentIndex() > 0 && ui->comboTailscalePeer->currentData().toString() != currentHost) {
-    tailscalePeerSelected(ui->comboTailscalePeer->currentIndex());
+  if (currentHost.isEmpty() && ui->comboTailscalePeer->currentIndex() > 0) {
+    ui->lineHostname->setText(ui->comboTailscalePeer->currentData().toString());
   }
   toggleCanRunCore(canRunCore());
 }
@@ -1830,7 +2053,12 @@ void MainWindow::populateTailscalePeers(const deskflow::network::TailscaleStatus
 void MainWindow::tailscalePeerSelected(int index)
 {
   const auto address = ui->comboTailscalePeer->itemData(index).toString();
+  if (address.isEmpty()) {
+    toggleCanRunCore(canRunCore());
+    return;
+  }
   ui->lineHostname->setText(address);
+  applyRemoteHostChange();
   toggleCanRunCore(canRunCore());
 }
 
@@ -1838,6 +2066,13 @@ void MainWindow::updateTailscaleControls(bool refreshPeers)
 {
   const bool tailscaleEnabled = Settings::value(Settings::Core::UseTailscale).toBool();
   const bool showPeerPicker = tailscaleEnabled && m_coreProcess.mode() == CoreMode::Client;
+  const QSignalBlocker connectionMethodBlocker(ui->comboConnectionMethod);
+  ui->comboConnectionMethod->setCurrentIndex(tailscaleEnabled ? 1 : 0);
+  ui->lblNetworkHint->setText(
+      tailscaleEnabled ? tr("Sign in to the same Tailscale network on both computers. Online devices still need Ieum "
+                            "running as a host.")
+                       : tr("Install Ieum on both computers and connect them to the same Wi-Fi or Ethernet network.")
+  );
 
   if (!showPeerPicker) {
     m_tailscaleReady = false;
@@ -1863,6 +2098,7 @@ void MainWindow::requestTailscale(TailscaleAction action, int timeoutMs)
 
 void MainWindow::tailscaleQueryStarted()
 {
+  m_tailscaleStatusMessage = tr("Checking Tailscale…");
   ui->btnRefreshTailscalePeers->setEnabled(false);
   if (ui->comboTailscalePeer->isVisible()) {
     ui->comboTailscalePeer->setEnabled(false);
@@ -1872,11 +2108,28 @@ void MainWindow::tailscaleQueryStarted()
 
 void MainWindow::tailscaleQueryFinished(const deskflow::network::TailscaleStatus &status)
 {
+  using deskflow::network::TailscaleState;
+  switch (status.state) {
+  case TailscaleState::NotInstalled:
+    m_tailscaleStatusMessage = tr("Install Tailscale on both computers, then refresh.");
+    break;
+  case TailscaleState::Stopped:
+    m_tailscaleStatusMessage = tr("Start Tailscale on this computer, then refresh.");
+    break;
+  case TailscaleState::NeedsLogin:
+    m_tailscaleStatusMessage = tr("Sign in to Tailscale on this computer, then refresh.");
+    break;
+  default:
+    m_tailscaleStatusMessage =
+        status.isReady() ? QString() : tr("Tailscale is not ready. Check its connection, then refresh.");
+    break;
+  }
   const auto action = m_pendingTailscaleAction;
   m_pendingTailscaleAction = TailscaleAction::None;
   ui->btnRefreshTailscalePeers->setEnabled(
       Settings::value(Settings::Core::UseTailscale).toBool() && m_coreProcess.mode() == CoreMode::Client
   );
+  updateConnectionGuide();
 
   if (action == TailscaleAction::RefreshPeers || action == TailscaleAction::None) {
     if (m_coreProcess.mode() == CoreMode::Client) {

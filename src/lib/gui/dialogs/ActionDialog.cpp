@@ -7,6 +7,7 @@
  */
 
 #include "ActionDialog.h"
+#include "gui/StyleUtils.h"
 #include "ui_ActionDialog.h"
 
 #include "Action.h"
@@ -14,6 +15,7 @@
 #include "KeySequence.h"
 #include "config/ServerConfig.h"
 
+#include <QLabel>
 #include <QTimer>
 
 ActionDialog::ActionDialog(QWidget *parent, const ServerConfig &config, Hotkey &hotkey, Action &action)
@@ -23,6 +25,11 @@ ActionDialog::ActionDialog(QWidget *parent, const ServerConfig &config, Hotkey &
       m_action(action)
 {
   ui->setupUi(this);
+  deskflow::gui::applyIeumDialogStyle(*this);
+  auto *hint = new QLabel(tr("Choose what this shortcut does, when it runs, and which computers receive it."), this);
+  hint->setWordWrap(true);
+  ui->_2->insertWidget(0, hint);
+  setMinimumWidth(520);
   connect(ui->keySequenceWidget, &KeySequenceWidget::keySequenceChanged, this, &ActionDialog::keySequenceChanged);
   connect(
       ui->comboActionType, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &ActionDialog::actionTypeChanged

@@ -56,6 +56,12 @@ QVariant ScreenSetupModel::data(const QModelIndex &index, int role) const
   case Qt::DisplayRole:
     return selectedScreen->name();
 
+  case Qt::UserRole:
+    return selectedScreen->isServer();
+
+  case Qt::AccessibleTextRole:
+    return selectedScreen->isServer() ? tr("%1, this host").arg(selectedScreen->name()) : selectedScreen->name();
+
   default:
     break;
   }

@@ -18,7 +18,7 @@ inline QString productDisplayName()
 
 inline QString productTagline()
 {
-  return QCoreApplication::translate("ProductIdentity", "Software KVM across Windows, macOS, and Linux");
+  return QCoreApplication::translate("ProductIdentity", "One keyboard and mouse. All your computers.");
 }
 
 } // namespace deskflow::gui

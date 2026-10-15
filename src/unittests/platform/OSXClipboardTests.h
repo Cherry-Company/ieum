@@ -14,6 +14,7 @@ private Q_SLOTS:
   // Test are run in order top to bottom
   void open();
   void singleFormat();
+  void emptyPasteboardDoesNotReadAnInvalidItem();
   void formatConvert_UTF8();
   void formatConvert_UTF8_normalizesNfc();
 

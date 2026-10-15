@@ -30,20 +30,22 @@ OSXClipboard::OSXClipboard() : m_time(0), m_pboard(nullptr)
   OSStatus createErr = PasteboardCreate(kPasteboardClipboard, &m_pboard);
   if (createErr != noErr) {
     LOG_WARN("failed to create clipboard reference: error %i", createErr);
-    LOG_ERR("unable to connect to pasteboard, clipboard sharing disabled", createErr);
+    LOG_ERR("unable to connect to pasteboard, clipboard sharing disabled");
     m_pboard = nullptr;
     return;
   }
 
-  OSStatus syncErr = PasteboardSynchronize(m_pboard);
-  if (syncErr != noErr) {
-    LOG_WARN("failed to syncronize clipboard: error %i", syncErr);
-  }
+  // This API returns change/ownership flags, not an OSStatus error code.
+  PasteboardSynchronize(m_pboard);
 }
 
 OSXClipboard::~OSXClipboard()
 {
   clearConverters();
+  if (m_pboard != nullptr) {
+    CFRelease(m_pboard);
+    m_pboard = nullptr;
+  }
 }
 
 bool OSXClipboard::empty()
@@ -136,8 +138,10 @@ bool OSXClipboard::has(Format format) const
   if (m_pboard == nullptr)
     return false;
 
-  PasteboardItemID item;
-  PasteboardGetItemIdentifier(m_pboard, (CFIndex)1, &item);
+  PasteboardItemID item = 0;
+  if (PasteboardGetItemIdentifier(m_pboard, (CFIndex)1, &item) != noErr) {
+    return false;
+  }
 
   for (ConverterList::const_iterator index = m_converters.begin(); index != m_converters.end(); ++index) {
     IOSXClipboardConverter *converter = *index;
@@ -159,13 +163,15 @@ bool OSXClipboard::has(Format format) const
 std::string OSXClipboard::get(Format format) const
 {
   CFStringRef type;
-  PasteboardItemID item;
+  PasteboardItemID item = 0;
   std::string result;
 
   if (m_pboard == nullptr)
     return result;
 
-  PasteboardGetItemIdentifier(m_pboard, (CFIndex)1, &item);
+  if (PasteboardGetItemIdentifier(m_pboard, (CFIndex)1, &item) != noErr) {
+    return result;
+  }
 
   // find the converter for the first clipboard format we can handle
   IOSXClipboardConverter *converter = nullptr;
@@ -196,7 +202,9 @@ std::string OSXClipboard::get(Format format) const
       throw err;
     }
 
-    result = std::string((char *)CFDataGetBytePtr(buffer), CFDataGetLength(buffer));
+    if (buffer != nullptr && CFDataGetLength(buffer) > 0) {
+      result.assign(reinterpret_cast<const char *>(CFDataGetBytePtr(buffer)), CFDataGetLength(buffer));
+    }
   } catch (OSStatus err) {
     LOG_DEBUG("exception thrown in OSXClipboard::get MacError (%d)", err);
   } catch (...) {
@@ -212,9 +220,6 @@ std::string OSXClipboard::get(Format format) const
 
 void OSXClipboard::clearConverters()
 {
-  if (m_pboard == nullptr)
-    return;
-
   for (ConverterList::iterator index = m_converters.begin(); index != m_converters.end(); ++index) {
     delete *index;
   }

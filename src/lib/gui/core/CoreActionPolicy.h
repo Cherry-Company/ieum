@@ -18,7 +18,7 @@ namespace deskflow::gui {
 
 [[nodiscard]] constexpr bool coreToggleEnabled(deskflow::core::ProcessState state, bool canStart) noexcept
 {
-  return canStart || coreCanStop(state);
+  return state != deskflow::core::ProcessState::Stopping && (canStart || coreCanStop(state));
 }
 
 } // namespace deskflow::gui

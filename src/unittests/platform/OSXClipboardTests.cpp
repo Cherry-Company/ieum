@@ -30,6 +30,16 @@ void OSXClipboardTests::singleFormat()
   QCOMPARE(clipboard.get(Text), m_testString);
 }
 
+void OSXClipboardTests::emptyPasteboardDoesNotReadAnInvalidItem()
+{
+  OSXClipboard clipboard;
+  QVERIFY(clipboard.empty());
+  for (const auto format : {IClipboard::Format::Text, IClipboard::Format::HTML, IClipboard::Format::Bitmap}) {
+    QVERIFY(!clipboard.has(format));
+    QVERIFY(clipboard.get(format).empty());
+  }
+}
+
 void OSXClipboardTests::formatConvert_UTF8()
 {
   OSXClipboardUTF8Converter converter;

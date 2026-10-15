@@ -17,6 +17,7 @@ private Q_SLOTS:
   void batchesRapidLines();
   void boundsPendingBurst();
   void defersRenderingWhileHidden();
+  void boundsOversizedLines();
 };
 
 void LogWidgetTests::batchesRapidLines()
@@ -61,6 +62,15 @@ void LogWidgetTests::defersRenderingWhileHidden()
   widget.setParent(nullptr);
   widget.appendLine(QStringLiteral("resume rendering"));
   QTRY_VERIFY_WITH_TIMEOUT(textLog->toPlainText().contains(QStringLiteral("render after opening")), 1000);
+}
+
+void LogWidgetTests::boundsOversizedLines()
+{
+  LogWidget widget;
+  auto *textLog = widget.findChild<QPlainTextEdit *>();
+  widget.appendLine(QString(1024 * 1024, QLatin1Char('x')));
+  QTRY_VERIFY_WITH_TIMEOUT(textLog->toPlainText().endsWith(QStringLiteral("[truncated]")), 1000);
+  QVERIFY(textLog->toPlainText().size() < 4200);
 }
 
 QTEST_MAIN(LogWidgetTests)

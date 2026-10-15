@@ -16,6 +16,10 @@
 namespace Ui {
 class SettingsDialog;
 }
+class QLineEdit;
+class QListWidget;
+class QLabel;
+class QListWidgetItem;
 
 class SettingsDialog : public QDialog
 {
@@ -25,14 +29,19 @@ public:
   void extracted();
   SettingsDialog(QWidget *parent, const ServerConfig &serverConfig);
   ~SettingsDialog() override;
+  void selectPage(const QString &name);
 
 Q_SIGNALS:
   void shown();
 
 protected:
   void changeEvent(QEvent *e) override;
+  bool eventFilter(QObject *object, QEvent *event) override;
 
 private:
+  void createNavigation();
+  void filterNavigation();
+  void activateSearchResult(QListWidgetItem *result);
   void initConnections() const;
   void regenCertificates();
   void browseCertificatePath();
@@ -101,6 +110,11 @@ private:
   void setButtonBoxEnabledButtons() const;
 
   std::unique_ptr<Ui::SettingsDialog> ui;
+  QLineEdit *m_settingsSearch = nullptr;
+  QListWidget *m_navigation = nullptr;
+  QListWidget *m_searchResults = nullptr;
+  QLabel *m_pageDescription = nullptr;
+  QLabel *m_searchEmpty = nullptr;
   const ServerConfig &m_serverConfig;
   deskflow::network::TailscaleIntegration *m_tailscaleIntegration = nullptr;
   deskflow::network::TailscaleStatus m_tailscaleStatus;

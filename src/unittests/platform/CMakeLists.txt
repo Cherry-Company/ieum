@@ -97,6 +97,10 @@ elseif(APPLE)
   )
 elseif(UNIX)
   if (BUILD_X11_SUPPORT)
+    # Requires a real X display; run separately with xvfb-run.
+    add_executable(XWindowsEventQueueBufferTests XWindowsEventQueueBufferTests.cpp)
+    target_link_libraries(XWindowsEventQueueBufferTests PRIVATE platform base arch mt Qt::Test)
+    set_target_properties(XWindowsEventQueueBufferTests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
     create_test(
       NAME XWindowsClipboardTests
       DEPENDS platform

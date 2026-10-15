@@ -37,7 +37,8 @@ struct Report
 };
 
 void clearSettings(bool enableRestart);
-PreviousSession beginSession(const QByteArray &bootId = QSysInfo::bootUniqueId());
+QByteArray sessionBootId();
+PreviousSession beginSession(const QByteArray &bootId = sessionBootId());
 void completeSession();
 QString redactSensitiveText(QString text);
 Report createReport(ReportKind kind, const QString &message = {}, const QString &source = {});

@@ -211,10 +211,16 @@ OSXScreen::~OSXScreen()
 
     // now exit the thread's runloop and wait for it to exit
     LOG_DEBUG("stopping watchSystemPowerThread");
-    CFRunLoopStop(m_pmRunloop);
+    const auto runloop = m_pmRunloop;
+    CFRunLoopPerformBlock(runloop, kCFRunLoopCommonModes, ^{
+      CFRunLoopStop(runloop);
+    });
+    CFRunLoopWakeUp(runloop);
     m_pmWatchThread->wait();
     delete m_pmWatchThread;
     m_pmWatchThread = nullptr;
+    CFRelease(m_pmRunloop);
+    m_pmRunloop = nullptr;
   }
   delete m_pmThreadReady;
   delete m_pmMutex;
@@ -434,12 +440,15 @@ uint32_t OSXScreen::activeSides()
 
 void OSXScreen::warpCursor(int32_t x, int32_t y)
 {
-  if (m_eventTapRunLoop && CFRunLoopGetCurrent() != m_eventTapRunLoop) {
-    CFRunLoopPerformBlock(m_eventTapRunLoop, kCFRunLoopDefaultMode, ^{
-      warpCursor(x, y);
-    });
-    CFRunLoopWakeUp(m_eventTapRunLoop);
-    return;
+  {
+    std::lock_guard lock(m_eventTapRunLoopMutex);
+    if (m_eventTapRunLoop && CFRunLoopGetCurrent() != m_eventTapRunLoop) {
+      CFRunLoopPerformBlock(m_eventTapRunLoop, kCFRunLoopDefaultMode, ^{
+        warpCursor(x, y);
+      });
+      CFRunLoopWakeUp(m_eventTapRunLoop);
+      return;
+    }
   }
 
   // move cursor without generating events
@@ -903,12 +912,17 @@ void OSXScreen::enable()
       // Use a semaphore to ensure m_eventTapRunLoop is set before enable() returns.
       auto sem = dispatch_semaphore_create(0);
       m_eventTapThread = std::thread([this, sem]() {
-        m_eventTapRunLoop = CFRunLoopGetCurrent();
-        CFRunLoopAddSource(m_eventTapRunLoop, m_eventTapRLSR, kCFRunLoopDefaultMode);
+        const auto runloop = CFRunLoopGetCurrent();
+        CFRetain(runloop);
+        {
+          std::lock_guard lock(m_eventTapRunLoopMutex);
+          m_eventTapRunLoop = runloop;
+        }
+        CFRunLoopAddSource(runloop, m_eventTapRLSR, kCFRunLoopDefaultMode);
         dispatch_semaphore_signal(sem);
         CFRunLoopRun();
         CFRunLoopRemoveSource(CFRunLoopGetCurrent(), m_eventTapRLSR, kCFRunLoopDefaultMode);
-        m_eventTapRunLoop = nullptr;
+        // The owner retains this loop until join, even if it returns early.
       });
       dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
       dispatch_release(sem);
@@ -930,11 +944,25 @@ void OSXScreen::disable()
   }
   // FIXME -- stop watching jump zones, stop capturing input
 
-  if (m_eventTapRunLoop) {
-    CFRunLoopStop(m_eventTapRunLoop);
+  CFRunLoopRef eventTapRunloop = nullptr;
+  {
+    std::lock_guard lock(m_eventTapRunLoopMutex);
+    eventTapRunloop = m_eventTapRunLoop;
+    m_eventTapRunLoop = nullptr;
+    if (eventTapRunloop) {
+      // Schedule stop on the loop itself: a stop issued before Run begins
+      // can otherwise be lost, leaving shutdown waiting forever in join.
+      CFRunLoopPerformBlock(eventTapRunloop, kCFRunLoopDefaultMode, ^{
+        CFRunLoopStop(eventTapRunloop);
+      });
+      CFRunLoopWakeUp(eventTapRunloop);
+    }
   }
   if (m_eventTapThread.joinable()) {
     m_eventTapThread.join();
+  }
+  if (eventTapRunloop) {
+    CFRelease(eventTapRunloop);
   }
 
   if (m_eventTapRLSR) {
@@ -944,6 +972,7 @@ void OSXScreen::disable()
 
   if (m_eventTapPort) {
     CGEventTapEnable(m_eventTapPort, false);
+    CFMachPortInvalidate(m_eventTapPort);
     CFRelease(m_eventTapPort);
     m_eventTapPort = nullptr;
   }
@@ -1604,11 +1633,14 @@ pascal OSStatus OSXScreen::userSwitchCallback(EventHandlerCallRef nextHandler, E
 
 void OSXScreen::watchSystemPowerThread(const void *)
 {
-  io_object_t notifier;
-  IONotificationPortRef notificationPortRef;
+  io_object_t notifier = IO_OBJECT_NULL;
+  IONotificationPortRef notificationPortRef = nullptr;
   CFRunLoopSourceRef runloopSourceRef = 0;
 
   m_pmRunloop = CFRunLoopGetCurrent();
+  // The parent may still need to stop this loop after a registration failure
+  // has already let the worker return. Keep it alive until the parent joins.
+  CFRetain(m_pmRunloop);
   // install system power change callback
   m_pmRootPort = IORegisterForSystemPower(this, &notificationPortRef, powerChangeCallback, &notifier);
   if (m_pmRootPort == 0) {
@@ -1630,6 +1662,9 @@ void OSXScreen::watchSystemPowerThread(const void *)
   // block waiting for it.
   if (m_pmRootPort == 0) {
     LOG_WARN("failed to init watchSystemPowerThread");
+    if (notificationPortRef != nullptr) {
+      IONotificationPortDestroy(notificationPortRef);
+    }
     return;
   }
 
@@ -1658,13 +1693,17 @@ void OSXScreen::watchSystemPowerThread(const void *)
 
   // cleanup
   if (notificationPortRef) {
-    CFRunLoopRemoveSource(m_pmRunloop, runloopSourceRef, kCFRunLoopDefaultMode);
-    CFRunLoopSourceInvalidate(runloopSourceRef);
-    CFRelease(runloopSourceRef);
+    // GetRunLoopSource returns a borrowed object owned by the notification
+    // port. Remove it from the same modes, then destroy the owning port.
+    CFRunLoopRemoveSource(m_pmRunloop, runloopSourceRef, kCFRunLoopCommonModes);
   }
 
   Lock lock(m_pmMutex);
   IODeregisterForSystemPower(&notifier);
+  if (notificationPortRef != nullptr) {
+    IONotificationPortDestroy(notificationPortRef);
+  }
+  IOServiceClose(m_pmRootPort);
   m_pmRootPort = 0;
   LOG_DEBUG("stopped watchSystemPowerThread");
 }

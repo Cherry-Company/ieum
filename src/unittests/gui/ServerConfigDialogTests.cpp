@@ -8,13 +8,17 @@
 #include "gui/config/ServerConfig.h"
 #include "gui/dialogs/ServerConfigDialog.h"
 
+#include <QComboBox>
 #include <QDialogButtonBox>
 #include <QFile>
 #include <QGroupBox>
+#include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QTableView>
 #include <QTemporaryDir>
 #include <QTest>
+#include <QToolButton>
 
 #include <utility>
 
@@ -83,6 +87,90 @@ private Q_SLOTS:
     QCOMPARE(dialog.result(), static_cast<int>(QDialog::Accepted));
     QCOMPARE(config.configFile(), typedPath);
     QVERIFY(config.useExternalConfig());
+  }
+
+  void namedComputerIsPlacedOnChosenSideAndSaved()
+  {
+    setExternalConfig(false, createConfigFile(QStringLiteral("form.conf")));
+    Settings::setValue(Settings::Core::ComputerName, "layout-host");
+    ServerConfig config;
+    config.addClient("existing-left");
+    ServerConfigDialog dialog(nullptr, config);
+    auto *name = dialog.findChild<QLineEdit *>("newComputerName");
+    auto *side = dialog.findChild<QComboBox *>("newComputerSide");
+    auto *grid = dialog.findChild<QTableView *>("screenSetupView");
+    side->setCurrentIndex(side->findData(QPoint(1, 0)));
+    name->setText("new-right");
+    dialog.findChild<QPushButton *>("addComputer")->click();
+    const auto target = grid->currentIndex();
+    QCOMPARE(target.data().toString(), QStringLiteral("new-right"));
+    QCOMPARE(target.siblingAtColumn(target.column() - 1).data().toString(), QStringLiteral("layout-host"));
+    QVERIFY(name->text().isEmpty());
+    QVERIFY(dialog.findChild<QPushButton *>("removeComputer")->isEnabled());
+    dialog.accept();
+    QVERIFY(config.screenExists("new-right"));
+  }
+
+  void invalidDuplicateAndOccupiedPositionsDoNotReplaceComputers()
+  {
+    setExternalConfig(false, createConfigFile(QStringLiteral("form-errors.conf")));
+    Settings::setValue(Settings::Core::ComputerName, "layout-host");
+    ServerConfig config;
+    config.addClient("existing-left");
+    ServerConfigDialog dialog(nullptr, config);
+    auto *name = dialog.findChild<QLineEdit *>("newComputerName");
+    auto *side = dialog.findChild<QComboBox *>("newComputerSide");
+    auto *feedback = dialog.findChild<QLabel *>("layoutFeedback");
+    auto *add = dialog.findChild<QPushButton *>("addComputer");
+    name->setText("bad name");
+    add->click();
+    QVERIFY(feedback->text().contains("not allowed"));
+    name->setText("existing-left");
+    add->click();
+    QVERIFY(feedback->text().contains("already"));
+    side->setCurrentIndex(side->findData(QPoint(-1, 0)));
+    name->setText("replacement");
+    add->click();
+    QVERIFY(feedback->text().contains("occupied"));
+    dialog.accept();
+    QVERIFY(config.screenExists("existing-left"));
+    QVERIFY(!config.screenExists("replacement"));
+    QVERIFY(!config.screenExists("bad name"));
+  }
+
+  void hostCannotBeRemovedAndArrowMovementWorks()
+  {
+    setExternalConfig(false, createConfigFile(QStringLiteral("form-move.conf")));
+    Settings::setValue(Settings::Core::ComputerName, "layout-host");
+    ServerConfig config;
+    config.addClient("existing-left");
+    ServerConfigDialog dialog(nullptr, config);
+    auto *grid = dialog.findChild<QTableView *>("screenSetupView");
+    QModelIndex host, client;
+    for (int row = 0; row < grid->model()->rowCount(); ++row) {
+      for (int column = 0; column < grid->model()->columnCount(); ++column) {
+        const auto index = grid->model()->index(row, column);
+        if (index.data().toString() == QStringLiteral("layout-host"))
+          host = index;
+        if (index.data().toString() == QStringLiteral("existing-left"))
+          client = index;
+      }
+    }
+    QVERIFY(host.isValid());
+    QVERIFY(client.isValid());
+    grid->setCurrentIndex(host);
+    QVERIFY(!dialog.findChild<QPushButton *>("removeComputer")->isEnabled());
+    grid->setCurrentIndex(client);
+    for (auto *button : dialog.findChildren<QToolButton *>()) {
+      if (button->accessibleName() == QStringLiteral("Move up"))
+        button->click();
+    }
+    QCOMPARE(grid->currentIndex().row(), client.row() - 1);
+    QCOMPARE(grid->currentIndex().data().toString(), QStringLiteral("existing-left"));
+    dialog.findChild<QPushButton *>("removeComputer")->click();
+    dialog.accept();
+    QVERIFY(config.screenExists("layout-host"));
+    QVERIFY(!config.screenExists("existing-left"));
   }
 
   void cancelRestoresTypedPath()

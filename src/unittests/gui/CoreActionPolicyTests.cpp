@@ -27,4 +27,10 @@ void CoreActionPolicyTests::stoppedCore_requiresValidConfigurationToStart()
   QVERIFY(coreToggleEnabled(ProcessState::Stopped, true));
 }
 
+void CoreActionPolicyTests::stoppingCore_doesNotOfferAnIneffectiveStart()
+{
+  QVERIFY(!coreToggleEnabled(ProcessState::Stopping, true));
+  QVERIFY(!coreToggleEnabled(ProcessState::Stopping, false));
+}
+
 QTEST_GUILESS_MAIN(CoreActionPolicyTests)

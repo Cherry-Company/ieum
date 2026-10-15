@@ -6,7 +6,14 @@
  */
 
 #include "ScreenSettingsDialog.h"
+#include "gui/StyleUtils.h"
 #include "ui_ScreenSettingsDialog.h"
+
+#include <QLabel>
+#include <QListWidget>
+#include <QScrollArea>
+#include <QStackedWidget>
+#include <QVBoxLayout>
 
 #include "gui/config/Screen.h"
 #include "validators/AliasValidator.h"
@@ -67,6 +74,63 @@ ScreenSettingsDialog::ScreenSettingsDialog(QWidget *parent, Screen *screen, cons
   connect(ui->btnRemoveAlias, &QPushButton::clicked, this, &ScreenSettingsDialog::removeAlias);
   connect(ui->lineAddAlias, &QLineEdit::textChanged, this, &ScreenSettingsDialog::checkNewAliasName);
   connect(ui->listAliases, &QListWidget::itemSelectionChanged, this, &ScreenSettingsDialog::aliasSelected);
+  createNavigation();
+}
+
+void ScreenSettingsDialog::createNavigation()
+{
+  deskflow::gui::applyIeumDialogStyle(*this);
+  setMinimumSize(740, 500);
+  resize(820, 600);
+  auto *root = qobject_cast<QVBoxLayout *>(layout());
+  root->removeWidget(ui->groupComputerName);
+  root->removeItem(ui->layoutOptions);
+  delete ui->layoutOptions;
+  auto *heading = new QLabel(tr("Settings for %1").arg(m_screen->name()), this);
+  heading->setTextFormat(Qt::PlainText);
+  heading->setProperty("sectionHeading", true);
+  root->insertWidget(0, heading);
+  auto *navigation = new QListWidget(this);
+  navigation->setObjectName(QStringLiteral("settingsNavigation"));
+  navigation->setAccessibleName(tr("Computer settings categories"));
+  navigation->setFixedWidth(180);
+  auto *pages = new QStackedWidget(this);
+  pages->setObjectName(QStringLiteral("computerSettingsPages"));
+  const QStringList titles{tr("Name & aliases"), tr("Keyboard mapping"), tr("Pointer & compatibility")};
+  const QStringList descriptions{
+      tr("Use the exact “This device” name shown on that computer. Aliases let this layout recognize another name for "
+         "the same computer."),
+      tr("Remap modifier keys for this computer. Keep the defaults unless your keyboards or shortcuts need a different "
+         "mapping."),
+      tr("Dead corners keep the pointer on this screen near its corners. Compatibility fixes apply only to this "
+         "computer.")
+  };
+  const QList<QList<QWidget *>> groups{
+      {ui->groupComputerName, ui->groupAliases}, {ui->groupModifers}, {ui->groupDeadCorners, ui->groupFixes}
+  };
+  for (int i = 0; i < titles.size(); ++i) {
+    auto *item = new QListWidgetItem(titles[i], navigation);
+    item->setSizeHint(QSize(160, 48));
+    auto *content = new QWidget;
+    auto *pageLayout = new QVBoxLayout(content);
+    auto *description = new QLabel(descriptions[i], content);
+    description->setWordWrap(true);
+    pageLayout->addWidget(description);
+    for (auto *group : groups[i]) {
+      pageLayout->addWidget(group);
+    }
+    pageLayout->addStretch();
+    auto *scroll = new QScrollArea(this);
+    scroll->setWidgetResizable(true);
+    scroll->setWidget(content);
+    pages->addWidget(scroll);
+  }
+  auto *body = new QHBoxLayout;
+  body->addWidget(navigation);
+  body->addWidget(pages, 1);
+  root->insertLayout(1, body, 1);
+  connect(navigation, &QListWidget::currentRowChanged, pages, &QStackedWidget::setCurrentIndex);
+  navigation->setCurrentRow(0);
 }
 
 void ScreenSettingsDialog::accept()

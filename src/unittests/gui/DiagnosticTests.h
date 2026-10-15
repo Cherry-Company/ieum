@@ -16,6 +16,9 @@ private Q_SLOTS:
   void redactSensitiveText_limitsUntrustedMessages();
   void sessionMarker_detectsUncleanExit();
   void sessionMarker_previousBootIsNotAnAppCrash();
+  void sessionMarker_missingBootIdIsNotCrashEvidence();
+  void sessionMarker_corruptMarkerIsIgnored();
+  void report_issueUrlIsBoundedAndContainsNoErrorText();
   void sessionMarker_cleanExit();
   void sessionShutdown_onlyConfirmedShutdownClearsMarker();
 };

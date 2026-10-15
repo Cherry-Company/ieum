@@ -5,6 +5,7 @@
  */
 
 #include "Diagnostic.h"
+#include "ExternalUrlLauncher.h"
 
 #include "common/Settings.h"
 #include "common/UrlConstants.h"
@@ -26,6 +27,12 @@
 #include <QSysInfo>
 #include <QUrlQuery>
 #include <QUuid>
+
+#ifdef Q_OS_WIN
+#include <qt_windows.h>
+#elif defined(Q_OS_MACOS)
+#include <sys/sysctl.h>
+#endif
 
 namespace deskflow::gui::diagnostic {
 
@@ -69,6 +76,41 @@ QString sessionMarkerPath()
          QStringLiteral("/session-active.json");
 }
 
+QByteArray sessionBootId()
+{
+  const auto qtBootId = QSysInfo::bootUniqueId();
+  if (!qtBootId.isEmpty()) {
+    return qtBootId;
+  }
+#ifdef Q_OS_WIN
+  // Qt does not provide a boot ID on Windows. The boot environment GUID is
+  // stable across logins and changes on restart, including when no GUI window
+  // was available to receive WM_ENDSESSION.
+  struct BootEnvironment
+  {
+    GUID identifier;
+    ULONG firmwareType;
+    ULONGLONG bootFlags;
+  } environment{};
+  using QuerySystemInformation = LONG(WINAPI *)(ULONG, void *, ULONG, ULONG *);
+  const auto module = GetModuleHandleW(L"ntdll.dll");
+  const auto query = module == nullptr
+                         ? nullptr
+                         : reinterpret_cast<QuerySystemInformation>(GetProcAddress(module, "NtQuerySystemInformation"));
+  constexpr ULONG systemBootEnvironmentInformation = 90;
+  if (query != nullptr && query(systemBootEnvironmentInformation, &environment, sizeof(environment), nullptr) >= 0) {
+    return QUuid(environment.identifier).toByteArray(QUuid::WithoutBraces);
+  }
+#elif defined(Q_OS_MACOS)
+  char identifier[128]{};
+  size_t size = sizeof(identifier);
+  if (sysctlbyname("kern.bootsessionuuid", identifier, &size, nullptr, 0) == 0 && size > 1) {
+    return QByteArray(identifier, static_cast<qsizetype>(size)).replace('\0', "");
+  }
+#endif
+  return {};
+}
+
 PreviousSession beginSession(const QByteArray &currentBootId)
 {
   PreviousSession previous;
@@ -78,9 +120,11 @@ PreviousSession beginSession(const QByteArray &currentBootId)
     const auto document = QJsonDocument::fromJson(marker.readAll());
     const auto object = document.object();
     const auto previousBootId = object.value(QStringLiteral("bootId")).toString();
-    // A marker from another boot does not establish an application crash.
-    // Keep detecting interrupted sessions when the OS supplies no boot ID.
-    previous.unexpectedExit = bootId.isEmpty() || previousBootId.isEmpty() || bootId == previousBootId;
+    // A leftover marker alone is not crash evidence. Old builds, corrupt
+    // markers and systems without a boot ID must not turn an OS restart into
+    // an application-crash warning.
+    previous.unexpectedExit = !bootId.isEmpty() && !previousBootId.isEmpty() && bootId == previousBootId &&
+                              !object.value(QStringLiteral("startedAt")).toString().isEmpty();
     previous.startedAt = object.value(QStringLiteral("startedAt")).toString();
     previous.version = object.value(QStringLiteral("version")).toString();
     marker.close();
@@ -190,13 +234,16 @@ Report createReport(ReportKind kind, const QString &message, const QString &sour
   QUrl issueUrl(QStringLiteral("%1/new").arg(kUrlHelp));
   QUrlQuery query;
   query.addQueryItem(QStringLiteral("title"), issueTitle(kind, report.id));
+  // Shell/browser URL limits are much smaller than a percent-encoded report,
+  // especially on Windows. Keep the URL short; callers copy the full report.
   query.addQueryItem(
       QStringLiteral("body"),
       QStringLiteral(
           "## What happened?\n\nDescribe what you were doing immediately before the problem.\n\n"
-          "## Diagnostic passport\n\n%1"
+          "## Diagnostic\n\nReport ID: %1\n\nPaste the diagnostic copied by Ieum here, or attach the saved "
+          "diagnostic file.\n"
       )
-          .arg(report.markdown)
+          .arg(report.id)
   );
   issueUrl.setQuery(query);
   report.issueUrl = issueUrl;
@@ -212,7 +259,7 @@ void copyToClipboard(const Report &report)
 
 bool openIssue(const Report &report)
 {
-  return QDesktopServices::openUrl(report.issueUrl);
+  return launchExternalUrl(report.issueUrl).opened;
 }
 
 bool openNativeCrashReports()

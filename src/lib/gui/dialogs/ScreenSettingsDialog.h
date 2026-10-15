@@ -37,6 +37,7 @@ private Q_SLOTS:
   void aliasSelected();
 
 private:
+  void createNavigation();
   std::unique_ptr<Ui::ScreenSettingsDialog> ui;
   Screen *m_screen;
 };

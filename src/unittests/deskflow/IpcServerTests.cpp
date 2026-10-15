@@ -173,6 +173,90 @@ void IpcServerTests::initTestCase()
   m_log.setFilter(LogLevel::Level::Verbose);
 }
 
+void IpcServerTests::replaysLatestStateAfterRetryStorm()
+{
+  TestIpcServer server(uniqueSocketName());
+  QVERIFY(server.listen());
+  m_log.setFilter(LogLevel::Level::Warning);
+  server.broadcastCommand("connectionState", "Connecting");
+  for (int i = 0; i < 10000; ++i) {
+    server.broadcastCommand("retryIn", QString::number(i));
+  }
+  server.broadcastCommand("connectionState", "Connected");
+  m_log.setFilter(LogLevel::Level::Verbose);
+
+  QLocalSocket client;
+  client.connectToServer(uniqueSocketName());
+  QVERIFY(client.waitForConnected(1000));
+  client.write(currentHello());
+  client.flush();
+  QByteArray replay;
+  QTRY_VERIFY_WITH_TIMEOUT((replay += client.readAll()).contains("connectionState=Connected\n"), 1000);
+  QCOMPARE(replay.count('\n'), 3);
+  QVERIFY(replay.contains("retryIn=9999\n"));
+  QVERIFY(!replay.contains("connectionState=Connecting\n"));
+}
+
+void IpcServerTests::boundsPendingEventsAndPreservesCurrentState()
+{
+  TestIpcServer server(uniqueSocketName());
+  QVERIFY(server.listen());
+  m_log.setFilter(LogLevel::Level::Warning);
+  server.broadcastCommand("connectionState", "Connected");
+  for (int i = 0; i < 1000; ++i) {
+    server.broadcastCommand("unrecognisedClient", QStringLiteral("client-%1").arg(i));
+  }
+  m_log.setFilter(LogLevel::Level::Verbose);
+
+  QLocalSocket client;
+  client.connectToServer(uniqueSocketName());
+  QVERIFY(client.waitForConnected(1000));
+  client.write(currentHello());
+  client.flush();
+  QByteArray replay;
+  QTRY_VERIFY_WITH_TIMEOUT((replay += client.readAll()).contains("unrecognisedClient=client-999\n"), 1000);
+  QVERIFY(replay.count('\n') <= 65);
+  QVERIFY(replay.contains("connectionState=Connected\n"));
+  QVERIFY(!replay.contains("unrecognisedClient=client-0\n"));
+}
+
+void IpcServerTests::rejectsOversizedPendingMessages()
+{
+  TestIpcServer server(uniqueSocketName());
+  QVERIFY(server.listen());
+  server.broadcastCommand("oversized", QString(64 * 1024, QChar(0xD55C)));
+  server.broadcastCommand("connectionState", "Connected");
+  QLocalSocket client;
+  client.connectToServer(uniqueSocketName());
+  QVERIFY(client.waitForConnected(1000));
+  client.write(currentHello());
+  client.flush();
+  QByteArray replay;
+  QTRY_VERIFY_WITH_TIMEOUT((replay += client.readAll()).contains("connectionState=Connected\n"), 1000);
+  QCOMPARE(replay.count('\n'), 2);
+}
+
+void IpcServerTests::boundsTotalPendingPayload()
+{
+  TestIpcServer server(uniqueSocketName());
+  QVERIFY(server.listen());
+  m_log.setFilter(LogLevel::Level::Warning);
+  for (int i = 0; i < 100; ++i) {
+    server.broadcastCommand("notification", QString(32000, QLatin1Char('x')) + QString::number(i));
+  }
+  server.broadcastCommand("connectionState", "Connected");
+  m_log.setFilter(LogLevel::Level::Verbose);
+  QLocalSocket client;
+  client.connectToServer(uniqueSocketName());
+  QVERIFY(client.waitForConnected(1000));
+  client.write(currentHello());
+  client.flush();
+  QByteArray replay;
+  QTRY_VERIFY_WITH_TIMEOUT((replay += client.readAll()).contains("connectionState=Connected\n"), 1000);
+  QVERIFY(replay.size() < 256 * 1024);
+  QVERIFY(replay.count('\n') < 10);
+}
+
 void IpcServerTests::refusesDuplicateWithoutDisruptingFirstServer()
 {
   const auto socketName = uniqueSocketName();

@@ -86,6 +86,14 @@ project(
   LANGUAGES C CXX
 )
 
+# vcpkg deploys app-local DLLs after linking each executable. Targets sharing
+# an output directory must not copy the same DLL concurrently on Windows.
+if(WIN32 AND DEFINED VCPKG_TARGET_TRIPLET AND CMAKE_GENERATOR MATCHES "^Ninja" AND
+   NOT DEFINED CMAKE_JOB_POOL_LINK)
+  set_property(GLOBAL APPEND PROPERTY JOB_POOLS ieum_windows_link=1)
+  set(CMAKE_JOB_POOL_LINK ieum_windows_link)
+endif()
+
 # CMake's /showIncludes probe can double-decode UTF-8 diagnostics from a
 # Korean-only MSVC installation, leaving Ninja with a mojibake dependency
 # prefix and silently stale objects. Use the actual cl.exe prefix only for
@@ -245,6 +253,11 @@ add_subdirectory(docs)
 add_subdirectory(translations)
 
 add_subdirectory(src)
+
+option(BUILD_RESOURCE_PROBE "Build the Linux resource measurement tool" OFF)
+if(BUILD_RESOURCE_PROBE)
+  add_subdirectory(tools/benchmarks)
+endif()
 
 option(BUILD_INSTALLER "Build installer" ON)
 if(BUILD_INSTALLER)

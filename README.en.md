@@ -1,554 +1,99 @@
 <!-- SPDX-FileCopyrightText: (C) 2026 Ieum contributors -->
 <!-- SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception -->
 
-<p align="center">
-  <img src="artwork/ieum-icon-1024.png" alt="Ieum icon" width="156">
-</p>
+<p align="center"><img src="artwork/ieum-icon-1024.png" alt="Ieum" width="112"></p>
+<h1 align="center">Your computers. One keyboard and mouse.</h1>
+<p align="center">Move between Windows, Mac, and Linux with Ieum.</p>
+<p align="center"><a href="https://github.com/Cherry-Company/ieum/releases"><strong>Download</strong></a> · <a href="#connect-your-computers">Get started</a> · <a href="docs/dev/build.md">Build guide</a></p>
+<p align="center"><a href="README.md">한국어</a> · English · <a href="README.zh-CN.md">简体中文</a></p>
 
-<h1 align="center">Ieum</h1>
+## Move the pointer. Keep working.
 
-<p align="center"><strong>Software KVM across Windows, macOS, and Linux</strong></p>
+Push your pointer across a screen edge to control the next computer. Your keyboard follows.
+Copy text on one computer and paste it on another. Each computer keeps its own display and apps;
+Ieum shares input rather than streaming a remote desktop.
 
-<p align="center">Maintained by <strong>Cherry Company</strong></p>
-
-<p align="center">
-  <a href="README.md">한국어</a> · English · <a href="README.zh-CN.md">简体中文</a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.28"><strong>Download Ieum</strong></a>
-  · <a href="#first-run-security-and-permissions"><strong>Security &amp; permissions</strong></a>
-  · <a href="https://github.com/sponsors/victoriousian"><strong>Sponsor Ieum</strong></a>
-</p>
-
-<p align="center">
-  <a href="https://github.com/Cherry-Company/ieum/actions/workflows/continuous-integration.yml"><img src="https://github.com/Cherry-Company/ieum/actions/workflows/continuous-integration.yml/badge.svg?branch=ieum%2Fmain" alt="CI"></a>
-  <a href="https://github.com/Cherry-Company/ieum/releases"><img src="https://img.shields.io/github/v/release/Cherry-Company/ieum?include_prereleases&label=release" alt="Release"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--2.0--only-blue" alt="GPL-2.0-only"></a>
-  <a href="https://github.com/sponsors/victoriousian"><img src="https://img.shields.io/badge/GitHub_Sponsors-Support-EA4AAA?logo=githubsponsors&logoColor=white" alt="Sponsor Ieum on GitHub Sponsors"></a>
-</p>
-
-Ieum lets one keyboard and mouse move across Windows, macOS, and Linux computers. It goes beyond crossing a
-screen edge: it connects **Korean/English mode, IME composition sessions, physical key positions, and Unicode
-clipboard data** into one consistent input path across operating systems.
-
-> The current release is `v0.1.0-alpha.28`. Automated builds and unit tests pass, but the long-running physical
-> Windows/macOS input matrix and production code signing are not complete.
-
-## Help Ieum reach production distribution
-
-Sponsorship pays for concrete release work: **production Windows code signing, Apple Developer ID signing and
-notarization, physical Windows ARM64 and Apple Silicon regression testing, and dependable release maintenance**.
-
-**[Sponsor Ieum through GitHub Sponsors](https://github.com/sponsors/victoriousian)**
-
-| Monthly tier | Public commitment |
+| What you need | What Ieum provides |
 | --- | --- |
-| **$3 Ieum Backer** | Sustained development and concise sponsor updates |
-| **$10 Ieum Sustainer** | Backer benefits, a monthly development report, and optional name recognition |
-| **$30 Ieum Quality Sponsor** | Sustainer benefits and priority triage for reproducible reports; no guaranteed fix or SLA |
-| **$100 Ieum Organization Sponsor** | Quality Sponsor benefits, optional organization name/logo recognition, and a quarterly technical update; commercial support is separate |
+| One set of input devices for your desk | Keyboard and mouse sharing across screen edges |
+| Korean and CJK input across operating systems | Input-language synchronization and IME handling |
+| Text between computers | Shared clipboard and Unicode normalization |
+| Computers on different networks | Host selection through Tailscale |
+| Files between Windows and Mac | Pro Local file drag and transfer |
 
-Custom one-time amounts remain available. Local KVM, Korean/CJK input synchronization, and clipboard core remain
-open regardless of sponsorship. Every release publishes the
-[amount allocated and work completed with sponsorship funds](docs/release/sponsorship-impact.md). The amount
-allocated to `alpha.28` is **USD 0**. The new Early Access price is not counted as sponsorship revenue until a
-payment is actually received and verified.
+## Connect your computers
 
-## Alpha.28 cursor-coordinate and fullscreen-game fixes
+Install Ieum on every computer. The **host** has the keyboard and mouse you want to share.
+A **client** receives that input.
+Open **First connection** in the app to revisit these steps and Mac permission guidance.
 
-`alpha.28` corrects Windows absolute-input pixel conversion and clamps coordinates to physical displays so
-movement into monitor gaps does not accumulate an offset. Fullscreen and borderless-window state updates
-continue while the mouse is idle, and an active lock cancels pending switches between computers.
-On Windows, Ieum confines the cursor to the game's monitor and restores its restriction after Alt+Tab,
-game exit, or stopping Ieum while preserving the game's own capture. Windows executables use version
-`0.1.128.0`. Long-running Windows↔Mac movement and individual games remain physical acceptance-test items.
+1. On the host, choose **Share my keyboard and mouse**, then **Start**.
+2. On the other computer, choose **Use a shared keyboard and mouse**. Enter the host’s name or IP
+   for a local network, or select it from the Tailscale list. Press **Connect** and verify the fingerprints on both computers.
+3. On the host, open **Arrange computers**, enter the client’s exact **This device** name, choose its side,
+   and press **Add computer**. Save, then move the pointer toward that screen edge.
 
-## Alpha.27 macOS cursor visibility fix
+For Tailscale, sign both computers into the same tailnet and choose **Tailscale** as the connection method in both apps.
+An online Tailscale device also needs Ieum running as a host.
 
-`alpha.27` prevents repeated hide requests from leaving the macOS pointer invisible.
-Local mouse movement and clicks restore the cursor hidden by Ieum on a Mac client,
-while remote input and cursor parking do not trigger this recovery.
-Focused regressions cover repeated transitions, failed-show retries, and concurrent calls.
+To change hosts, select another computer in the client’s host list. Ieum closes the previous connection and connects
+to the new host automatically. A client connects to one host at a time. If a host keeps waiting, check the host
+selected on the client, including whether it is already connected elsewhere.
 
-## Alpha.26 restart and modifier-input fixes
+## Install
 
-`alpha.26` fixes shutdown handling that could report an abnormal exit or disable automatic startup after an OS
-restart. Windows receives confirmed shutdown notifications even during tray-only startup, while macOS distinguishes
-markers from a previous boot. Right Command, Option, Control, and Shift are now tracked for mouse events, and
-Windows preserves separate left/right modifier presses and releases. Windows executable version is `0.1.126.0`.
-Physical reboot and USB keyboard reconnect checks remain separate acceptance tests.
+Choose a package from [Releases](https://github.com/Cherry-Company/ieum/releases).
 
-## Alpha.25 Windows-to-macOS transfer and stability hotfix
-
-`alpha.25` moves Windows edge-drop ownership to the normal-integrity GUI and forwards validated drops to the core
-over authenticated IPC. This removes the elevated-core OLE/UIPI block that prevented Windows-to-macOS transfers
-from starting. Sponsor launch failures now expose and copy the complete URL, and repeated core start failures back
-off exponentially up to 30 seconds. Windows executables use version `0.1.125.0`.
-
-## Alpha.22 Windows ↔ macOS Pro Local file drag
-
-In `alpha.22`, either a Windows or macOS computer can start a transfer from a configured screen edge, regardless
-of whether it is running as the server or client. File transfer is a **Pro Local** feature. Local KVM, Korean/CJK
-input synchronization, and clipboard remain available without a license.
-
-- Import and activate the same `*.ieum-license.txt` in **Preferences → Files** on each participating Windows or
-  macOS computer. Enable TLS on every computer, then explicitly enable its send or receive role.
-- The application rechecks entitlement at service start, offer/accept boundaries, and while streaming data.
-  Removing or expiring a key fails the current session; restoring a key does not resurrect it.
-- Protocol 1.12 carries offers, decisions, cancellations, and results. Protocol 1.13 carries bounded data frames,
-  processing at most one 60 KiB chunk per event-loop turn.
-- The sender revalidates file identity, size, and modification time before reading. The receiver uses a
-  hidden staging directory, verifies size and SHA-256, and publishes under a collision-safe name without overwrite.
-- Windows→macOS and macOS→Windows both work across configured topology edges. Every transfer is a copy; Ieum does
-  not move or delete the source file.
-- **Pro Local Early Access is a one-time USD 30 purchase.** Open its claim-tagged GitHub Sponsors page from the
-  app, then email your GitHub username and claim code to `easecompany@protonmail.ch`. The owner verifies payment
-  and emails the perpetual file-transfer license. This purchase does not include every future Pro feature.
-- Offline licenses are not device-counted or remotely revocable. The private issuer and signing key stay with the
-  project owner and are not published in the repository, release, or supporter package. See the
-  [Pro Local file-transfer guide](docs/dev/pro_local_file_transfer.md).
-
-## Alpha.19 coordinate, update, permission, and diagnostic reliability
-
-`alpha.19` focuses on mixed-DPI coordinate drift found during sustained use, replacing a running Windows build,
-and recovering macOS permissions without making users guess which application identity is current.
-
-- Edge crossing no longer applies the source-monitor fraction a second time after selecting a destination
-  monitor. It maps one normalized position across cumulative physical edge spans, collapses physical gaps, handles
-  negative origins, and enables Per-Monitor V2 DPI awareness for the Windows core.
-- The Windows MSI sends a **prepare update** command to a running current GUI so it can save and exit cleanly before
-  replacement. Alpha.18-and-older processes that do not understand the command retain the existing bounded MSI
-  shutdown fallback. Local x64 live-upgrade validation checks old-process exit, service/IPC recovery, and the new
-  core after replacement.
-- Once update checks are approved, login startup also checks quietly in the background. The update action opens
-  the exact MSI or DMG for the current OS, architecture, and installer language. Ieum does not silently execute a
-  downloaded installer until signed update metadata, post-install health checks, and rollback are available.
-- **Reset Previous Approval** on macOS now opens Accessibility Settings first, waits for TCC/UI propagation, resets
-  only the Ieum bundle-ID record, requests registration of the current `/Applications/Ieum.app`, and reopens the
-  settings page. **Show Ieum in Applications** reveals the exact current app when manual `+` selection is still
-  required. Stable permission inheritance still requires Developer ID signing and Apple notarization.
-- A crash or critical error creates a local, privacy-redacted **diagnostic passport** instead of pretending to
-  upload to a nonexistent service. It excludes settings, clipboard data, TLS material, and full logs, redacts home
-  paths and IP addresses, and can be copied or shared without GitHub login. The next launch also detects an
-  uncleanly ended prior GUI session.
-- Native Windows builds, coordinate/update/diagnostic regression tests, and x64 global/Korean MSI structure checks
-  pass locally. Sustained Windows-to-macOS cursor traversal on each physical layout and per-game borderless behavior
-  remain acceptance items and are not represented as fully resolved yet.
-
-## Alpha.18 borderless-game locking and physical-display coordinates
-
-`alpha.17` did not pass physical acceptance for borderless-game locking or mixed-monitor entry coordinates.
-`alpha.18` reimplements both paths from those results and is published for another physical test cycle.
-
-- Windows now evaluates exclusive full screen, **borderless full-screen windows**, real window/client bounds,
-  and game pointer capture through `ClipCursor`. Disabling the manual Scroll Lock path no longer bypasses the
-  separate automatic game guard, and the server receives the state of whichever server or client screen is active.
-- Protocol `1.11` exchanges the physical monitor rectangles on each computer instead of treating the entire
-  virtual desktop as one screen. Entry coordinates are mapped between the actual exit and entry monitor edges,
-  preserving the bidirectional height across portrait/landscape and mixed-resolution layouts.
-- Physical-edge mapping is active only when **both computers run alpha.18**. Older peers retain the aggregate
-  virtual-desktop fallback, and explicit fractional links configured by the user continue to take precedence.
-- The Windows native build, the relevant regression suites, 36 CTest targets other than the current-session
-  clipboard environment test, and 15 legacy key tests pass. Per-game borderless behavior and sustained
-  Windows-to-macOS mixed-monitor movement remain physical acceptance items; this release does not call them
-  resolved before that testing is complete.
-- Apple Silicon CI and DMG packaging for this public repository run on an ephemeral GitHub-hosted
-  `macos-15-arm64` environment. Hardware acceptance testing is separate from release packaging, and its results
-  are reported separately from hosted build verification.
-
-## Alpha.17 input switching, reconnect, and edge reliability
-
-`alpha.17` includes the following changes:
-
-- `Alt`/Korean-English and `Control+Space` from a Windows server are handled as input-state controls for a Mac
-  client. After selecting a CJK input source, macOS now activates the focused application's input context so the
-  menu-bar indicator and actual typing state do not diverge.
-- After reboot or a network interruption, the client retries 20 times at 250 ms, then every second, with a
-  long-term maximum interval of two seconds. Successful connections, explicit Stop, and application shutdown
-  cancel any pending retry timer.
-- Display unions and edge coordinates are recomputed for mixed resolutions, scale factors, and negative monitor
-  origins. Windows DWM frame bounds, hidden-window exclusion, display coverage, and short hysteresis reduce
-  accidental switching while a full-screen game is active.
-- Log lines are rendered in batches, hidden log panels defer rendering, and pending output is bounded. Network
-  and macOS status-item monitoring use coarse timers to reduce idle UI work.
-- IME, CJK, raw-key, screen-entry, and Mac key-delay controls now live under **Preferences → Input**. Service and
-  command automation are under **System**, while pointer and clipboard controls are under **Pointer & sharing**.
-- The `alpha.17` Apple Silicon packages were built natively for ARM64 and passed tests, DMG mounting, and
-  signature-structure checks. Developer ID
-  signing and Apple notarization are not configured yet, so this prerelease may require manual Gatekeeper
-  approval on macOS.
-
-## Alpha.16 input, window, and upgrade reliability
-
-`alpha.16` includes the following changes:
-
-- Coordinates left over after reboot, resolution changes, or display reconnection are clamped to the new display
-  bounds. Entry points between different resolutions use the same proportional height or width.
-- A foreground full-screen app on the server automatically locks edge switching, protecting games without a
-  hotkey. It can be disabled under **Server settings → Advanced**.
-- **Remote pointer speed** is adjustable from `25%` to `400%`. Fractional movement is retained at low speed, and
-  saving reloads the running server configuration without disconnecting clients.
-- macOS periodically verifies the menu-bar item and performs bounded recovery if it disappears. Clicking the
-  Dock icon after closing the window now restores and activates the existing window.
-- A Windows physical Korean/English key requests an explicit target state from a Mac client instead of blindly
-  toggling. The Mac confirms the actual TIS input-source notification before the next key is processed.
-- Windows clipboard acquisition uses bounded retries, never sends an empty remote update after a failed read,
-  and releases a remaining Win32 clipboard lock when the clipboard object is destroyed.
-- The Windows MSI keeps the service stopped while removing the previous package, then starts the new service.
-  A live `alpha.16` replacement completed with exit code `0`, no reboot requirement, automatic service recovery,
-  and byte-identical server, TLS trust, and user settings.
-
-Proportional mapping uses pixel geometry reported by the operating systems. It cannot infer physical stand height,
-bezel size, or a real-world vertical offset between differently sized monitors.
-
-## Alpha.15 startup and recovery
-
-- Closing the macOS window no longer changes the application activation policy. The Ieum status item and menu
-  remain alive until the app actually quits.
-- **Preferences → General → Start Ieum automatically when I sign in** is enabled by default on Windows and
-  macOS 13 or later.
-- The Windows service loads the last saved core configuration at boot. A GUI that starts after sign-in can send
-  the same command without replacing the core already serving the Windows sign-in screen.
-- Automatic Tailscale startup waits quietly while its service and address become ready. A client selects the
-  only online desktop automatically; multiple devices still require an explicit saved or user selection.
-- During the first five seconds after a disconnect, the client retries every 250 ms while the server finishes
-  booting, then settles at the default one-second interval.
-- Both server and client watch network-address changes. Explicit Stop and rejected certificate decisions are
-  never undone by the automatic startup retry.
-
-Automatic package installation remains disabled until production signing, signed update metadata, staged
-replacement, health checks, and rollback are available. See the
-[safe update delivery design](docs/dev/update-delivery.md).
-
-## Alpha.14 input reliability
-
-- Delayed network input is processed in bounded slices, preventing a long mouse movement from collapsing into
-  one jump and preventing an input burst from monopolizing the core event loop.
-- Windows absolute pointer coordinates now use the entire virtual desktop, including secondary monitors and
-  negative coordinates, instead of assuming the primary display.
-- The macOS client keeps raw mouse capture while the pointer is on the remote screen and includes upstream fixes
-  for macOS 27 background clicks and drag event numbering.
-- Input-language changes no longer raise repeated Windows notification toasts. A stable `한`/`A` indicator in
-  the main status bar, tray menu, and tray tooltip presents the same state quietly.
-- Disconnect and refusal cleanup is deferred until the active network callback returns, and event handlers stay
-  alive for the duration of dispatch.
-
-Coordinate mapping, bounded dispatch, status presentation, and disconnect behavior have regression tests.
-Physical long-running results still depend on each machine's network path and mouse polling rate and therefore
-remain to be verified on the user's Windows/macOS pairs.
-
-## Product identity and interface
-
-The Korean UI presents **이음 (Ieum)** with a Korean/CJK input-focused description. Every other UI language
-presents **Ieum** with “Software KVM across Windows, macOS, and Linux.” Executable names and settings paths
-remain `Ieum` for compatibility.
-
-The main window now uses system-palette materials, a server/client segmented control, clear functional layers,
-and stable responsive dimensions. It adapts Apple's WWDC26 Liquid Glass guidance on hierarchy, standard
-controls, restrained effects, resizable windows, and accessibility to Qt rather than imitating Apple pixels.
-See the [interface principles](docs/design/visual-system.md) for implementation rules and official sources.
-
-## Korean input is not just key mapping
-
-Most software KVMs translate a physical key into a character identifier and synthesize a key on the remote
-computer. That works for static keyboard layouts. Korean, Chinese, and Japanese text is instead produced by an
-**IME state machine and an active composition session (preedit)**. If that state is missing, keys may arrive while
-the intended text does not.
-
-| Symptom | Structural cause |
+| Computer | Package |
 | --- | --- |
-| The Windows Korean/English key does not switch the Mac input source | The key is a mode command, not a character, but is transported as an ordinary key event |
-| The server indicator and the focused remote field disagree | No channel reports the client's actual input source back to the server |
-| A syllable such as `한` intermittently becomes decomposed Jamo | Source changes, mixed injection paths, or event reordering terminate the composition session |
-| Korean clipboard text from macOS is decomposed on Windows | Decomposed macOS text reaches the wire without NFC normalization |
+| Windows 10/11, Intel or AMD | x64 MSI |
+| Windows 10/11, ARM | ARM64 MSI |
+| Apple Silicon Mac | macOS arm64 DMG; current packages target macOS 14+ |
+| Intel Mac | macOS x86_64 DMG; current packages target macOS 12+ |
+| Linux | Distribution package; experimental support |
 
-Ieum treats this as a protocol-level **input state synchronization problem**, not a missing special-key mapping.
+On Mac, move Ieum to Applications and grant Accessibility permission. Windows may need the matching Visual C++ runtime.
+Alpha packages are awaiting Windows code signing and Apple signing/notarization.
+[Detailed installation and permissions, in Korean](docs/user/installation.md).
 
-## What Ieum changes
+## Find a setting
 
-### 1. Input-source control channel
+Use the shortcuts on the main screen or search in **All settings**. Select a search result to jump to that control.
 
-Protocol 1.9 adds `DILC` and `CILS`: the server requests an input-source change, and the client reports the source
-that the operating system actually selected. The client state, not a server-side guess, is the source of truth.
-
-### 2. IME-native key path
-
-While an IME is active, Ieum can bypass character `KeyID` translation and transport the physical key as a PC
-Set-1 scancode. The remote computer's native IME owns composition, without layout translation interfering with
-CJK typing.
-
-### 3. Consistent macOS event synthesis
-
-IME input uses one persistent `CGEventSource` and FIFO path, with explicit timestamps, keyboard type, modifier
-flags, and repeat state. This avoids switching between unrelated event injection layers from key to key.
-
-### 4. Unicode clipboard normalization
-
-UTF-8 text leaving macOS is normalized to NFC to reduce decomposed Korean text in Windows applications and
-file names.
-
-```mermaid
-flowchart LR
-    A["Physical keyboard"] --> B["Ieum Server"]
-    B -->|"Keys and scancodes"| C["Encrypted KVM channel"]
-    B -->|"DILC source request"| C
-    C --> D["Ieum Client"]
-    D --> E["Windows IMM32 / macOS TIS"]
-    E -->|"CILS actual state"| D
-    D -->|"State report"| B
-```
-
-## Project status
-
-| Area | Status |
+| Change | Where |
 | --- | --- |
-| Ieum brand, icon, application and installer names | Complete |
-| Windows x64/ARM64 and macOS Intel/Apple Silicon packages | CI build and package checks pass |
-| `DILC`/`CILS`, raw scancode, macOS event source, NFC path | Implemented with automated tests |
-| Windows pre-login service core and Windows/macOS login startup | Implemented with package regression checks |
-| Linux and Flatpak packages | Experimental |
-| Ten-minute physical Windows ↔ macOS input matrix | **Pending** |
-| Windows signing and Apple signing/notarization | **Pending** |
-| iPadOS | Unsupported because public APIs do not provide system-wide input injection |
+| Host and connection method | Main screen |
+| Screen positions, switching edges, pointer speed | **Arrange computers** on the host |
+| A computer’s name, aliases, and key mapping | **Arrange computers → Computer settings** |
+| Input language and clipboard text | **Input and clipboard** |
+| Client scrolling and reconnection | **Receiving options** on the client |
+| Encryption, certificates, ports | **Network settings → Connection & security** |
+| File destination and Pro Local license | **Files** |
+| Start at login | **All settings → General** |
 
-The physical acceptance targets are zero mismatches across 20 input-source switches, zero decomposed syllables
-during ten minutes of typing per application, and less than 2 ms p95 added input latency. This alpha does not
-claim those hardware results before the matrix is run.
+Keyboard, mouse, input synchronization, and clipboard sharing are free. Windows ↔ macOS file transfers require
+Pro Local activation on both computers and TLS. Pro Local Early Access is USD 30 once, with a license issued
+manually by email after payment verification. [Activation and scope](docs/dev/pro_local_file_transfer.md).
 
-## Download
+## When a connection gets stuck
 
-[이음 (Ieum) v0.1.0-alpha.28 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.28)
+- **Host keeps waiting:** start sharing on the host and select that host on the client. If the client is connected elsewhere, switch hosts there.
+- **Tailscale device is online but Ieum cannot connect:** run Ieum in Host mode on that device and allow TCP `24800` through its firewall and tailnet ACL.
+- **Mac receives no input:** check Accessibility approval for the current app in Applications.
+- **Report a problem:** use **Help → Report bug**, review the diagnostic, and select **Copy and open GitHub**.
+  Paste it into the issue, describe what happened, and submit. If the browser fails, the same window keeps the address
+  and lets you save a copy. Nothing is uploaded automatically.
 
-| Operating system | Installer |
-| --- | --- |
-| Apple Silicon Mac | `Ieum-0.1.0-alpha.28-macos-arm64.dmg` |
-| Intel Mac | `Ieum-0.1.0-alpha.28-macos-x86_64.dmg` |
-| Intel/AMD 64-bit Windows | `Ieum-0.1.0-alpha.28-win-x64.msi` |
-| Intel/AMD 64-bit Windows, Korean installer UI | `Ieum-0.1.0-alpha.28-win-x64-ko-KR.msi` |
-| ARM64 Windows | `Ieum-0.1.0-alpha.28-win-arm64.msi` |
-| ARM64 Windows, Korean installer UI | `Ieum-0.1.0-alpha.28-win-arm64-ko-KR.msi` |
+Ieum is alpha software. Physical-device stability, sleep/wake behavior, and OS restarts still need platform testing.
+[Report an issue](https://github.com/Cherry-Company/ieum/issues).
 
-Windows portable archives and experimental Linux packages are included. Verify downloads with the accompanying
-`SHA256SUMS.txt`.
+## Development and support
 
-### First-run security and permissions
+[Build and test](docs/dev/build.md) · [IME guide](docs/user/ime.md) · [Protocol](docs/dev/protocol_reference.md) ·
+[Security](docs/SECURITY.md) · [GitHub Sponsors](https://github.com/sponsors/victoriousian)
 
-Download only from `github.com/Cherry-Company/ieum/releases` and compare the file with `SHA256SUMS.txt`. Do not
-disable SmartScreen, Microsoft Defender, Gatekeeper, or macOS privacy protection. A checksum mismatch or an
-explicit malware detection is a stop condition.
+Maintained by Cherry Company. Sponsorship supports signing, notarization, device testing, and releases.
+[Sponsorship impact](docs/release/sponsorship-impact.md).
 
-Windows packages are not yet code-signed, so SmartScreen and UAC may show an unknown publisher. UAC is used to
-install under `C:\Program Files\Ieum`, register the `Ieum` service, and add a Windows Firewall program exception
-for `ieum-core.exe`; the installer does not turn off the firewall.
-
-macOS permission switches cannot be auto-approved by an app. This is an Apple security boundary:
-
-| macOS permission | Required for |
-| --- | --- |
-| Local Network | Connecting to the user-selected Ieum server or client |
-| Accessibility | Synthesizing remote input and handling KVM input events on a Mac server or client |
-| Input Monitoring | Reading physical keyboard and mouse input; required on a Mac server |
-
-A client-only Mac should not enable Input Monitoring unless macOS actually requests it. Ieum does not request
-Screen Recording, Full Disk Access, Camera, or Microphone access. Password or Touch ID confirmation is handled
-by macOS and is never provided to Ieum. See the [full security and privacy policy](docs/SECURITY.md) and the
-[Korean visual installation guide](README.md#설치와-첫-연결).
-
-### Startup and the sign-in screen
-
-**Preferences → General → Start Ieum automatically when I sign in** starts the GUI and status item in the
-signed-in user's session. It is separate from pre-login core operation:
-
-| Platform | Behavior |
-| --- | --- |
-| Windows MSI | The automatic `Ieum` service loads the last saved server/client configuration at boot and runs the core in the sign-in-screen session |
-| Windows portable | No service; the GUI can start only after user sign-in |
-| macOS 13+ | A ServiceManagement login item starts `Ieum --background` only after the user signs in |
-
-A new Windows installation must be opened once, configured, and started before the service has a valid topology
-to restore on later boots. The pre-login path carries keyboard and mouse input; a user clipboard does not exist
-until a user session opens.
-
-FileVault unlock is a separate preboot environment before macOS, the user data volume, application login items,
-and Accessibility approval are available. Ieum cannot run there. A hardware KVM is required when remote input
-must include FileVault preboot; Ieum does not lower that security boundary.
-
-Starting with `alpha.11`, `Network IP: Automatic` prefers an active physical Ethernet or Wi-Fi address. This
-keeps the Ieum server from listening on Tailscale, ZeroTier, VMware, Hyper-V/WSL, and similar virtual adapters
-by default. It falls back to all interfaces when no physical network is available, and the previous behavior
-can be restored by disabling **Prefer physical networks** in Advanced settings. This limits Ieum's listening
-scope; it does not hide or bypass Genian NAC policy warnings about virtual adapters or default routes that
-remain configured in the operating system.
-
-In `alpha.12`, enabling **Preferences → Network → Tailscale quick connect** automatically checks the Tailscale
-session and applies this device's Tailscale address and the default TCP port `24800`. In client mode, a Tailnet
-desktop-device list replaces manual IP entry; a sole online computer is preselected, while multiple computers
-require one name selection. Ieum fails closed instead of listening on every interface when Tailscale is
-unavailable. It does not modify Tailscale configuration or access rules, so the Tailnet policy and host firewall
-must permit TCP `24800` to the server.
-
-In `alpha.13`, a server bound to a Tailscale or preferred physical address monitors that interface and rebinds
-after the address returns or changes. Clients continue resolving and retrying after a disconnect. Stop, start,
-and restart requests are serialized so a replacement core cannot race the previous core or its local IPC
-endpoint. GUI logs retain 10,000 lines and repaint in batches to limit CPU use during bursts.
-
-In `alpha.15`, automatic startup waits for Tailscale to become ready instead of requiring an app restart.
-The macOS close button now leaves the same status item alive; use **Quit** from that menu to fully exit. The
-client retries every 250 ms for the first five seconds after a disconnect, then uses the default one-second
-interval.
-
-The `alpha.5` Mac DMG had a broken code seal, and `alpha.6` exited before its asynchronous Accessibility request
-could finish. In `alpha.7`, a Qt macOS Accessibility warning could feed back into the app log and repeatedly print
-`QTextCursor::setPosition`. Those permission and logging fixes remain in `alpha.14`. If an enabled entry from an
-older Ieum release remains but macOS does not trust the current app, `alpha.10` offers **Reset Previous Approval**.
-After confirmation, it removes only Ieum's Accessibility record and registers the current
-`/Applications/Ieum.app` again, avoiding the manual minus/add workflow.
-
-The final `alpha.19` app passes strict code-signature verification, but it is not yet signed with a Developer ID
-certificate or Apple-notarized. Move it to `/Applications`, try to open it once, then use **System Settings →
-Privacy & Security → Open Anyway** if macOS blocks it. Accessibility and Input Monitoring permissions are also
-required. Because ad-hoc signing gives each build a different code identity, a later update may require
-**Reset Previous Approval** and approval again. Automatic permission inheritance requires a stable Developer ID
-Application signature and Apple notarization.
-
-Windows `alpha.2` through `alpha.7` accidentally reused Deskflow's MSI `UpgradeCode`, so a machine with Deskflow
-could reject Ieum as an older version. `alpha.8` separated the installer identity, but its runtime still used
-`deskflow-core` and `deskflow-daemon` executable and IPC names. A running Deskflow instance, or overlapping
-Ieum service and desktop cores, could therefore route the GUI to the wrong core and leave TLS approval waiting
-until timeout.
-
-Since `alpha.9`, Ieum uses a monotonic MSI prerelease mapping (`alpha.19` maps to `0.1.119`),
-`ieum-core.exe`, `ieum-daemon.exe`, and versioned
-`ieum-core-v1`/`ieum-daemon-v1` IPC endpoints. A global ownership lock rejects duplicate cores, and the default
-certificate migrates to `ieum.pem` so a fresh `/CN=Ieum` certificate is generated. CI performs a real
-`alpha.18 → alpha.19` upgrade, validates that the old GUI/core exit, service IPC and the new core recover,
-login startup remains configured, and duplicate cores are rejected, while keeping Deskflow 1.26.0 and Ieum cores
-isolated on x64 and ARM64. Existing `alpha.8` through `alpha.18` users can run the `alpha.19` MSI directly without
-manually stopping or uninstalling Ieum. The
-first connection may request fingerprint approval once because the certificate is replaced.
-
-The global installer appears as **Ieum** in Installed apps and the Start menu; the Korean installer appears as
-**이음 (Ieum)**. The installation directory is `C:\Program Files\Ieum`, the Windows service name is `Ieum`,
-and the Start menu includes an uninstall shortcut. Windows packages are not yet code-signed, so SmartScreen may
-show a warning.
-
-A normal Ieum MSI upgrade is expected to finish without a Windows reboot. The `alpha.19` MSI asks a current GUI
-to prepare and exit cleanly; for an older process that cannot answer, it waits ten seconds and only then terminates
-the remaining process before replacement. A
-`3010` result is an exceptional “completed, reboot required” state, usually caused by a locked system file or a
-separately installed Visual C++ runtime. `/norestart` prevents an automatic reboot; it does not clear that pending
-requirement.
-
-## Quick start
-
-1. Install Ieum on every computer you want to control.
-2. Select `Server` on the computer with the physical keyboard and mouse.
-3. On the same LAN, select `Client` on the other computers and enter the server address.
-4. For Tailscale, enable **Preferences → Network → Tailscale quick connect** on both computers and select the
-   server computer by name on the client.
-5. Arrange the screens on the server, then start Ieum.
-
-See the [IME guide](docs/user/ime.md) for input behavior and platform permissions.
-
-## Community and Pro plan
-
-Ieum's local KVM, IME synchronization, clipboard, protocol, and desktop app remain published under
-`GPL-2.0-only WITH LicenseRef-OpenSSL-Exception`. Ieum will not turn core functionality into closed code inside
-the same executable.
-
-Pro adds file transfer, official distribution, and future connectivity and administration features without
-removing Community features. `alpha.22` uses a manually issued **Pro Local offline license** for bidirectional
-Windows ↔ macOS file transfer. It has no Ieum account or activation server; the owner emails the license after
-verifying payment.
-
-| Product | Scope |
-| --- | --- |
-| Community | Local-network KVM, IME synchronization, clipboard, and the public protocol |
-| Pro Local | The `alpha.22` offline perpetual file-transfer entitlement and direct Windows ↔ macOS edge drag |
-| Pro Cloud | Accounts, multi-device registration, remote connectivity, and an encrypted relay with explicit usage limits |
-| Teams | Organization and device policies, roles, audit history, SSO, and a management console |
-| Support | Priority support, deployment assistance, enterprise integration, and maintenance contracts |
-
-The first Pro implementation, **drag-and-drop file transfer between computers**, requires a valid Pro Local file
-on both endpoints. Either endpoint may be Windows or macOS and may run as server or client. A configured edge sends
-over the existing TLS connection, verifies SHA-256, and publishes without overwriting into `Downloads/Ieum`.
-Direct-transfer bytes never pass through an Ieum-operated server. Per-transfer prompts, progress UI, pause/resume,
-and native drop into an arbitrary remote application remain future slices.
-
-Early Access costs **USD 30 once** and grants a perpetual file-transfer entitlement for the buyer's Windows and
-macOS computers. The offer is available for a limited prerelease window; it does not promise every future Pro
-feature. **Preferences → Files → Get Pro Local Early Access** opens GitHub Sponsors with an app-generated claim
-code. After payment, email the GitHub username and claim to `easecompany@protonmail.ch`. The owner verifies the
-transaction and sends the `*.ieum-license.txt` file by email. GitHub does not expose a sponsor's private email to
-the app, so this request email is required.
-
-Offline keys are not bound to devices, do not count seats, and cannot be remotely revoked. The same supporter may
-use one file on their own PCs. The signing key, issuer, and private ledger remain with the project owner and are not
-distributed; a supporter receives only the `.ieum-license.txt` file.
-
-```mermaid
-flowchart LR
-  C["Community Core<br/>KVM · Clipboard · IME"] --> L["Pro Local alpha.22<br/>Offline perpetual file-transfer key"]
-  S["USD 30 one-time<br/>GitHub Sponsors early access"] -->|"verified email fulfillment"| L
-  L --> W["Windows"]
-  L --> M["macOS"]
-  W <-->|"TLS · direct edge drag"| M
-  L -.-> H["Future Hosted Pro<br/>accounts · seats · relay · revocation"]
-```
-
-Ieum will not promise unlimited lifetime relay traffic. Direct local transfer can fit a one-time official package;
-an Ieum-operated internet relay uses a monthly or annual subscription with explicit usage limits.
-
-GPL binaries may be sold, but recipients retain the right to receive corresponding source and redistribute their
-copies. They can also modify and rebuild the public verifier, so the offline key is an entitlement for official
-binaries rather than unbreakable DRM or closed desktop source. If a paid server becomes necessary, it will be
-developed from scratch in a separate repository rather than moving existing GPL source, and it will communicate
-with the desktop through a public network API. See the
-[product and commercialization roadmap](docs/product/commercialization-roadmap.md) and the
-[GNU GPL FAQ](https://www.gnu.org/licenses/gpl-faq.en.html). This direction is not legal advice; commercial
-distribution still requires a copyright, trademark, and service-boundary review.
-
-## Implementation roadmap
-
-Ieum is currently in phase 1. Sixteen of the 33 audit issues are closed, with 17 remaining.
-
-```mermaid
-flowchart LR
-  P1["1. v1 reliability<br/>Audit issues 16/33"] --> P2["2. Official distribution<br/>Signing, notarization, stable updates"]
-  P2 --> P3["3. Pro Local<br/>Offline key and file transfer"]
-  P3 --> P4["4. Pro accounts<br/>Payment, activation, seats"]
-  P4 --> P5["5. Hosted connectivity<br/>Discovery and encrypted relay"]
-  P5 --> P6["6. Teams and Enterprise<br/>Organizations, SSO, audit, SLOs"]
-```
-
-| Phase | Exit condition | Status |
-| --- | --- | --- |
-| 1. v1 reliability | Audit issues #6–#38, required CI, and platform acceptance evidence | **In progress — 16/33** |
-| 2. Official distribution | Windows signing, Apple notarization, stable updates, and rollback | Waiting |
-| 3. Pro Local | Offline licensing, authorization on both computers, direct transfer, and recovery UX | **alpha.22 Windows ↔ macOS foundation implemented; physical acceptance, progress, and resume remain** |
-| 4. Pro accounts | Payment, login, device activation, seats, refunds, and offline grace | Waiting |
-| 5. Hosted connectivity | Device discovery, end-to-end encrypted relay, and local fallback | Waiting |
-| 6. Teams and Enterprise | Organizations, policy, audit, SSO/SCIM, disaster recovery, and contractual SLOs | Waiting |
-
-## Build and test
-
-```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
-ctest --test-dir build --output-on-failure
-```
-
-See the [build guide](docs/dev/build.md), [protocol reference](docs/dev/protocol_reference.md), and
-[Phase 0 report](phase0_report.md). GitHub Actions validates Windows x64/ARM64, macOS Intel/Apple Silicon,
-multiple Linux distributions, Flatpak, and FreeBSD.
-
-## Lineage and license
-
-Ieum is developed from `deskflow/deskflow` at commit `39bf4fb`. Some upstream source-directory names remain to
-keep merges reviewable. Linux and Flatpak retain the `org.deskflow.deskflow` app ID, while runtime executables
-and local IPC use Ieum-specific names. macOS uses the Ieum-specific `io.github.victoriousian.ieum` bundle ID to
-avoid permission collisions. The user-facing product name, icon, installers, and releases are Ieum.
-
-The project is distributed under `GPL-2.0-only WITH LicenseRef-OpenSSL-Exception`, preserving upstream copyright
-and license notices.
+Ieum is forked from Deskflow `39bf4fb` and distributed under
+[GPL-2.0-only WITH LicenseRef-OpenSSL-Exception](LICENSE), with upstream notices preserved.

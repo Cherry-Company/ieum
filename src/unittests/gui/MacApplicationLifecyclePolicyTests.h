@@ -14,4 +14,5 @@ class MacApplicationLifecyclePolicyTests : public QObject
 
 private Q_SLOTS:
   void redWindowClose_hidesButQuitAndShutdownExit();
+  void notificationsRequirePackagedSignedApplication();
 };

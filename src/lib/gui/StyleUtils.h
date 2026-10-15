@@ -90,6 +90,18 @@ QWidget#identityBar {
   border: 1px solid %5;
   border-radius: 8px;
 }
+QLabel#lblConnectionTitle {
+  font-size: 22px;
+  font-weight: 600;
+}
+QLabel#lblConnectionDetail {
+  font-size: 13px;
+  line-height: 1.5;
+}
+QLabel#lblConnectionEyebrow {
+  font-size: 11px;
+  font-weight: 600;
+}
 QLabel#lblProductName {
   font-size: 22px;
   font-weight: 600;
@@ -104,7 +116,7 @@ QLabel[sectionHeading="true"] {
 QWidget#deviceBand {
   border-bottom: 1px solid %5;
 }
-QWidget#modeSurface {
+QWidget#modeSurface, QWidget#connectionSurface {
   background-color: %2;
   border: 1px solid %5;
   border-radius: 8px;
@@ -133,7 +145,7 @@ QRadioButton#rbModeServer:checked, QRadioButton#rbModeClient:checked {
   border-color: %8;
   color: %9;
 }
-QLineEdit#lineHostname, QLineEdit#lineEditName {
+QComboBox#comboConnectionMethod, QComboBox#comboTailscalePeer, QLineEdit#lineHostname, QLineEdit#lineEditName {
   background-color: %10;
   border: 1px solid %5;
   border-radius: 7px;
@@ -161,7 +173,7 @@ QPushButton#btnToggleCore:disabled {
   background-color: %12;
   border-color: %12;
 }
-QPushButton#btnConfigureServer, QPushButton#btnConfigureClient {
+QPushButton#btnInputSettings, QPushButton#btnFileSettings, QPushButton#btnAllSettings, QPushButton#btnNetworkSettings, QPushButton#btnConfigureServer, QPushButton#btnConfigureClient {
   border-radius: 7px;
   padding: 6px 12px;
 }
@@ -217,6 +229,14 @@ inline void applyIeumDialogStyle(QWidget &dialog)
 QDialog {
   background-color: %1;
 }
+QLabel#guideTitle {
+  font-size: 24px;
+  font-weight: 600;
+}
+QLabel[sectionHeading="true"] {
+  font-size: 17px;
+  font-weight: 600;
+}
 QWidget#frameLogo, QTabWidget::pane, QGroupBox {
   background-color: %2;
   border: 1px solid %3;
@@ -232,12 +252,63 @@ QGroupBox::title {
   left: 10px;
   padding: 0 4px;
 }
+QListWidget#settingsNavigation {
+  background: transparent;
+  border: 0px;
+}
+QListWidget#settingsNavigation::item {
+  padding: 6px 8px;
+  border-radius: 7px;
+}
+QListWidget#settingsNavigation::item:selected {
+  background-color: %4;
+  color: %5;
+}
+QListWidget#settingsSearchResults {
+  background-color: %2;
+  border: 1px solid %3;
+  border-radius: 8px;
+}
+QListWidget#settingsSearchResults::item {
+  padding: 7px 9px;
+}
+QListWidget#settingsSearchResults::item:selected {
+  background-color: %4;
+  color: %5;
+}
+QLabel#settingsPageDescription {
+  padding: 6px 2px;
+}
+QPushButton#guideChooseHost, QPushButton#guideChooseClient {
+  border: 1px solid %3;
+  border-radius: 7px;
+  padding: 8px 12px;
+}
+QPushButton#guideChooseHost:checked, QPushButton#guideChooseClient:checked {
+  background-color: %4;
+  color: %5;
+  border-color: %4;
+}
+QTableView#screenSetupView {
+  background-color: %2;
+  border: 1px solid %3;
+  border-radius: 8px;
+  gridline-color: %3;
+}
+QLineEdit#settingsSearch {
+  padding: 9px 12px;
+  border-radius: 7px;
+  border: 1px solid %3;
+}
 QScrollArea {
   background-color: transparent;
   border: 0px;
 }
 )")
-          .arg(cssColor(windowColor), cssColor(baseColor, isDarkMode() ? 174 : 205), cssColor(border));
+          .arg(
+              cssColor(windowColor), cssColor(baseColor, isDarkMode() ? 174 : 205), cssColor(border),
+              cssColor(palette.color(QPalette::Highlight)), cssColor(palette.color(QPalette::HighlightedText))
+          );
 
   if (dialog.styleSheet() != styleSheet)
     dialog.setStyleSheet(styleSheet);

@@ -209,7 +209,12 @@ private Q_SLOTS:
     mimeData.setData(
         ScreenSetupModel::mimeType(), ScreenSetupModel::encodeScreenDrag(-1, -1, Screen(QStringLiteral("new-screen")))
     );
-    QDragMoveEvent dragMove(QPoint(-1, -1), Qt::CopyAction, &mimeData, Qt::LeftButton, Qt::NoModifier);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 12, 0)
+    const auto dragPosition = outside;
+#else
+    const auto dragPosition = outside.toPoint();
+#endif
+    QDragMoveEvent dragMove(dragPosition, Qt::CopyAction, &mimeData, Qt::LeftButton, Qt::NoModifier);
     dragMove.accept();
     view.dispatchDragMove(&dragMove);
     QVERIFY(!dragMove.isAccepted());

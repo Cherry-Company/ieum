@@ -31,7 +31,7 @@ private:
   /**
    * @brief updateText update widget text
    */
-  void updateText() const;
+  void updateText();
 
   /**
    * @brief initConnections

@@ -1,0 +1,65 @@
+{
+  "platform": "Linux",
+  "results": [
+    {
+      "scenario": "gui-idle-core-stopped",
+      "elapsedMilliseconds": 60000.961755999924,
+      "cpuMilliseconds": 69.99999999999996,
+      "cpuPercentOfOneCore": 0.11666479661553115,
+      "rssBeforeKiB": 36436,
+      "rssAfterKiB": 36460,
+      "version": "before",
+      "repeat": 0
+    },
+    {
+      "scenario": "gui-idle-core-stopped",
+      "elapsedMilliseconds": 60006.92191100006,
+      "cpuMilliseconds": 69.99999999999996,
+      "cpuPercentOfOneCore": 0.11665320894782977,
+      "rssBeforeKiB": 37628,
+      "rssAfterKiB": 37652,
+      "version": "after",
+      "repeat": 0
+    },
+    {
+      "scenario": "gui-idle-core-stopped",
+      "elapsedMilliseconds": 60000.40226100009,
+      "cpuMilliseconds": 9.999999999999897,
+      "cpuPercentOfOneCore": 0.016666554928248936,
+      "rssBeforeKiB": 37684,
+      "rssAfterKiB": 37708,
+      "version": "after",
+      "repeat": 1
+    },
+    {
+      "scenario": "gui-idle-core-stopped",
+      "elapsedMilliseconds": 60000.31492299968,
+      "cpuMilliseconds": 69.99999999999996,
+      "cpuPercentOfOneCore": 0.11666605431960347,
+      "rssBeforeKiB": 36388,
+      "rssAfterKiB": 36412,
+      "version": "before",
+      "repeat": 1
+    },
+    {
+      "scenario": "gui-idle-core-stopped",
+      "elapsedMilliseconds": 60000.67123400004,
+      "cpuMilliseconds": 20.000000000000018,
+      "cpuPercentOfOneCore": 0.033332960429727325,
+      "rssBeforeKiB": 36452,
+      "rssAfterKiB": 36476,
+      "version": "before",
+      "repeat": 2
+    },
+    {
+      "scenario": "gui-idle-core-stopped",
+      "elapsedMilliseconds": 60000.54190099945,
+      "cpuMilliseconds": 20.000000000000018,
+      "cpuPercentOfOneCore": 0.033333032279941575,
+      "rssBeforeKiB": 37632,
+      "rssAfterKiB": 37656,
+      "version": "after",
+      "repeat": 2
+    }
+  ]
+}
