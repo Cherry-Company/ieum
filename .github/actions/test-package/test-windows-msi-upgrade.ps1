@@ -584,6 +584,11 @@ function Assert-UserStartupRegistration {
       throw "Ieum did not register the expected startup command: $expectedCommand"
     }
 
+    # The Run entry survives the upgrade and may already match before this
+    # process has acquired the GUI singleton. Wait for its actual IPC endpoint
+    # before testing duplicates, otherwise the second launch can win the race.
+    Wait-NamedPipe -Name 'ieum-gui-v1'
+
     $duplicate = Start-Process -FilePath $gui -ArgumentList '--background' -PassThru
     try {
       if (-not $duplicate.WaitForExit(5000)) {
