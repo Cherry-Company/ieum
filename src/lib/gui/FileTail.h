@@ -39,6 +39,7 @@ private:
   bool hasFileIdentityChanged(QFile &file) const;
   void updateFileIdentity(QFile &file);
   void clearFileIdentity();
+  void updatePollInterval();
 
   QString m_filePath;
   QString m_directoryPath;

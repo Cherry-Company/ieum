@@ -31,6 +31,7 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QPushButton>
+#include <QScopeGuard>
 #include <QSharedMemory>
 #include <QThread>
 #include <QTimer>
@@ -123,6 +124,10 @@ int main(int argc, char *argv[])
   QCoreApplication::setOrganizationDomain(kOrgDomain); // used in prefix, can't be a url
   QGuiApplication::setDesktopFileName(kRevFqdnName);
 
+#if defined(Q_OS_MACOS)
+  macOSObserveApplicationLaunch();
+  const auto launchObserverCleanup = qScopeGuard([] { macOSStopObservingApplicationLaunch(); });
+#endif
   QApplication app(argc, argv);
   QApplication::setQuitOnLastWindowClosed(false);
 
@@ -279,13 +284,6 @@ int main(int argc, char *argv[])
   }
 #endif
 
-  const auto previousSession = diagnostic::beginSession();
-  SessionLifecycle sessionLifecycle(app);
-  QObject::connect(&app, &QCoreApplication::aboutToQuit, &app, [&app] {
-    app.setProperty("ieumShuttingDown", true);
-    diagnostic::completeSession();
-  });
-
   // --no-reset
   if (parser.isSet(resetOption)) {
     diagnostic::clearSettings(false);
@@ -298,8 +296,27 @@ int main(int argc, char *argv[])
     qWarning("automatic startup is registered but still requires approval in macOS Login Items");
   }
 
+  // Retiring a legacy macOS agent may terminate the instance it launched.
+  // Do not leave an active-session marker for that intentional migration.
+  const auto previousSession = diagnostic::beginSession();
+  SessionLifecycle sessionLifecycle(app);
+  QObject::connect(&app, &QCoreApplication::aboutToQuit, &app, [&app] {
+    app.setProperty("ieumShuttingDown", true);
+    diagnostic::completeSession();
+  });
+
   MainWindow mainWindow;
-  mainWindow.open(parser.isSet(showOption), parser.isSet(backgroundOption));
+  const bool forceShow = parser.isSet(showOption);
+  const bool forceBackground = parser.isSet(backgroundOption);
+#if defined(Q_OS_MACOS)
+  // mainAppService supplies a login Apple Event rather than --background.
+  // Wait for that event before deciding whether to show a window or a guide.
+  macOSWhenApplicationLaunched(&mainWindow, [&mainWindow, forceShow, forceBackground](bool loginLaunch) {
+    mainWindow.open(forceShow, forceBackground || loginLaunch);
+  });
+#else
+  mainWindow.open(forceShow, forceBackground);
+#endif
 
   if (previousSession.unexpectedExit) {
     QTimer::singleShot(0, &mainWindow, [&mainWindow, previousSession] {

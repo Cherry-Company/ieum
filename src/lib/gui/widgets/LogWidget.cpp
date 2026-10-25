@@ -12,6 +12,7 @@
 #include <QPlainTextEdit>
 #include <QScrollBar>
 #include <QShowEvent>
+#include <QTextBlock>
 #include <QVBoxLayout>
 
 LogWidget::LogWidget(QWidget *parent) : QWidget{parent}, m_textLog{new QPlainTextEdit(this)}
@@ -39,15 +40,20 @@ LogWidget::LogWidget(QWidget *parent) : QWidget{parent}, m_textLog{new QPlainTex
 void LogWidget::appendLine(const QString &msg)
 {
   static constexpr qsizetype kMaxPendingLines = 2000;
+  static constexpr qsizetype kMaxPendingCharacters = 256 * 1024;
   static constexpr qsizetype kMaxLineLength = 4096;
 
-  if (m_pendingLines.size() >= kMaxPendingLines) {
+  const auto line = msg.size() > kMaxLineLength ? msg.left(kMaxLineLength) + QStringLiteral(" [truncated]") : msg;
+  // Keep the newest context, including the error at the end of a burst. A
+  // line-count limit alone still retains many MiB of long diagnostic lines.
+  while (!m_pendingLines.isEmpty() &&
+         (m_pendingLines.size() >= kMaxPendingLines || m_pendingCharacters + line.size() + 1 > kMaxPendingCharacters)) {
+    m_pendingCharacters -= m_pendingLines.first().size() + 1;
+    m_pendingLines.removeFirst();
     ++m_droppedLineCount;
-  } else {
-    m_pendingLines.append(
-        msg.size() > kMaxLineLength ? msg.left(kMaxLineLength) + QStringLiteral(" [truncated]") : msg
-    );
   }
+  m_pendingLines.append(line);
+  m_pendingCharacters += line.size() + 1;
 
   const bool hiddenInsidePanel = parentWidget() != nullptr && !isVisible();
   if (!hiddenInsidePanel && !m_flushTimer.isActive()) {
@@ -66,7 +72,7 @@ void LogWidget::showEvent(QShowEvent *event)
 void LogWidget::flushPendingLines()
 {
   if (m_droppedLineCount > 0) {
-    m_pendingLines.append(
+    m_pendingLines.prepend(
         tr("%1 additional log lines were omitted to keep the interface responsive.").arg(m_droppedLineCount)
     );
     m_droppedLineCount = 0;
@@ -78,6 +84,19 @@ void LogWidget::flushPendingLines()
 
   m_textLog->appendPlainText(m_pendingLines.join(QLatin1Char('\n')));
   m_pendingLines.clear();
+  m_pendingCharacters = 0;
+
+  // Bound rendered text as well as the hidden queue. Remove whole oldest
+  // blocks in one edit, preserving the latest lines and avoiding per-line UI work.
+  constexpr int kMaxDocumentCharacters = 1024 * 1024;
+  auto *document = m_textLog->document();
+  const int excess = document->characterCount() - kMaxDocumentCharacters;
+  if (excess > 0) {
+    const auto lastRemovedBlock = document->findBlock(excess - 1);
+    QTextCursor cursor(document);
+    cursor.setPosition(lastRemovedBlock.position() + lastRemovedBlock.length(), QTextCursor::KeepAnchor);
+    cursor.removeSelectedText();
+  }
 }
 
 void LogWidget::findNext(const QString &text)

@@ -60,6 +60,17 @@ Until these prerequisites are met, Ieum deliberately stops before silent install
   starts the service again. The user no longer has to find and close those processes first.
 - macOS opens the disk image for a user-approved replacement. The app does not claim that an ad-hoc alpha identity
   can preserve TCC permissions across every replacement.
+- macOS login startup uses `SMAppService.mainAppService`. On the first manual launch after replacement,
+  reconcile the user's preference and unregister `io.github.victoriousian.ieum.login`, the former agent that
+  launched the GUI executable directly. Keep its bundled plist for migration only; never register it again.
+  Launch constraint failures can occur before `main()` and cannot be fixed by the app's session-marker logic.
+  Registration success and signature verification do not replace a native login/reboot acceptance test.
+
+The API choice follows Apple's [mainAppService documentation](https://developer.apple.com/documentation/servicemanagement/smappservice/mainapp?language=objc).
+Background launch detection uses the documented [`keyAELaunchedAsLogInItem` Apple Event](https://developer.apple.com/documentation/coreservices/apple_events/1556410-launch_apple_event_constants).
+Capture it during `NSApplicationDidFinishLaunchingNotification`; reading the current event later, after entering
+Qt's event loop, loses the launch context. Install the observer before `QApplication` and defer opening the main
+window until the notification has been handled. Offscreen/minimal Qt tools do not wait for an AppKit notification.
 
 This is a deliberate security boundary rather than a missing silent-update switch. Downloading in the background
 would be safe once signed metadata exists; executing an unsigned package automatically would not be.

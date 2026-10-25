@@ -41,6 +41,7 @@ add_library(${target} STATIC
   Logger.cpp
   Logger.h
   MacApplicationLifecyclePolicy.h
+  MacLoginItems.h
   MainWindow.cpp
   MainWindow.h
   MainWindow.ui

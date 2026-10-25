@@ -24,6 +24,8 @@ runs:
           bundle_id=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$app/Contents/Info.plist")
           test "$bundle_id" = "io.github.victoriousian.ieum"
           login_agent="$app/Contents/Library/LaunchAgents/io.github.victoriousian.ieum.login.plist"
+          # Retained only so upgraded apps can unregister the old launchd job.
+          # New login registrations use SMAppService.mainAppService.
           test -f "$login_agent"
           plutil -lint "$login_agent"
           test "$(/usr/libexec/PlistBuddy -c 'Print :BundleProgram' "$login_agent")" = "Contents/MacOS/Ieum"
@@ -46,6 +48,10 @@ runs:
             xcrun stapler validate "$dmg"
             spctl --assess --type execute --verbose=4 "$app"
           fi
+          # Exercise the GUI's loader/signature too; core-only checks missed
+          # failures before the GUI reaches main(). Login itself still needs a
+          # real sign-out/sign-in test on the installed application.
+          "$app/Contents/MacOS/Ieum" --version
           "$core" --version
           hdiutil detach /tmp/deskflow-dmg
 

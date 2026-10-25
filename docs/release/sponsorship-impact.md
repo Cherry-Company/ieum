@@ -3,7 +3,7 @@
 
 ## 후원 투명성 / Sponsorship transparency
 
-Release: v0.1.0-alpha.29
+Release: v0.1.0-alpha.30
 
 - 이번 릴리스에 배분된 GitHub Sponsors 후원금 / Sponsor funds allocated to this release: **USD 0**
 - 후원금으로 완료한 작업 / Work claimed as sponsor-funded: **없음 / None**
@@ -28,33 +28,26 @@ Release: v0.1.0-alpha.29
   after ARM64 compilation and CTest, DMG creation and mounting, `codesign --verify --deep --strict`, ARM64 Mach-O
   inspection, and artifact upload all pass. Windows x64 and ARM64 packages must also pass build, MSI structure,
   replacement-install, and service-coexistence checks.
-- alpha.29는 첫 연결 안내, 연결 상태 설명, 실행 중 호스트 자동 전환, 검색 가능한 설정과 컴퓨터
-  배치를 제공합니다. README는 설치와 사용 순서 중심으로 정리했습니다. / Alpha.29 adds first-connection
-  guidance, clearer connection states, automatic host switching while running, searchable settings, and a
-  simpler computer-layout editor. The README now focuses on installation and getting connected.
-- 재부팅을 비정상 종료로 오인하는 진단을 줄이고, 오류 보고서 미리보기·복사·저장과 짧은 GitHub
-  보고 링크를 제공합니다. 종료와 재시작은 코어 프로세스가 정리된 후 진행합니다. / Boot-session-aware
-  diagnostics reduce false crash reports after restarting the OS. Reports can be reviewed, copied, saved,
-  and opened through a short GitHub link. Core shutdown completes before a replacement process starts.
-- macOS 입력 소스 조회의 null 접근, 클립보드 자원 정리, 이벤트 탭과 전원 감시 실행 루프의 수명을
-  수정했습니다. 안정된 코드 서명이 없는 개발·ad-hoc 빌드는 Notification Center 호출을 생략합니다.
-  / macOS fixes cover null input-source lists, clipboard cleanup, event-tap and power-monitor run-loop
-  lifetimes. Development and ad-hoc builds without a stable signing identity skip Notification Center calls.
-- 공통 타이머의 초 미만 정밀도를 복원하고, 이벤트 대기·IPC 대기열·화면 로그의 자원 사용을 줄였습니다.
-  Linux의 제한된 비교 측정과 원본 결과는 `docs/dev/resource-comparison-2026-10-15.md`에 있습니다.
-  모든 플랫폼의 CPU·RAM 개선율을 보장하는 수치는 아닙니다. / Shared timers regain subsecond precision;
-  event waiting, queued IPC messages, and displayed logs use bounded resources. Scoped Linux measurements
-  and raw results are documented in `docs/dev/resource-comparison-2026-10-15.md`; they do not establish a
-  whole-application CPU or RAM improvement across platforms.
-- 로컬 Linux 검증은 CTest 73개 대상, 기존 테스트 27개, CI 도구 테스트 26개와 실제 TLS 연결·키보드·
-  포인터 입력·호스트 전환을 통과했습니다. Windows 실행 파일 버전은 `0.1.129.0`입니다. / Local Linux
-  validation passed 73 CTest targets, 27 legacy tests, 26 CI-tool tests, and real TLS connection, keyboard,
-  pointer, and host-switch checks. Windows executable versions increase to `0.1.129.0`.
-- 사용자가 보고한 macOS 강제 종료 자체의 재현, Windows·macOS 재부팅/로그아웃, 실제 Tailscale 경로,
-  절전 복귀·다중 모니터·장시간 연결은 실기 검증이 남아 있습니다. 상세 범위는
-  `docs/user/reliability-validation.md`에 기록했습니다. / Reproducing the reported macOS crash, Windows
-  and macOS reboot/logout behavior, a real Tailscale path, sleep/wake, multiple monitors, and long sessions
-  still require physical acceptance testing. See `docs/user/reliability-validation.md` for the exact scope.
+- alpha.30은 macOS 로그인 자동 실행을 앱 로그인 항목으로 전환하고 이전 LaunchAgent를 정리합니다.
+  이전 항목이 새 앱의 실행 제약과 맞지 않아 발생하는 `CODESIGNING / Launch Constraint Violation`
+  보고 경로를 수정합니다. 실제 재부팅 확인은 별도 수용 테스트입니다. / Alpha.30 switches macOS
+  startup to an application login item and retires the previous LaunchAgent. Native reboot acceptance
+  remains separate from CI compilation and package checks.
+- 숨겨진 로그 대기열과 표시 문서의 전체 문자 수를 제한하고 최신 오류 내용을 남깁니다.
+  파일 감시가 동작하면 보조 확인 주기를 2초에서 30초로 늘립니다. / Hidden and rendered logs have
+  character budgets and retain recent context; native file watches use a 30-second safety poll.
+- 같은 Linux Debug 조건의 로그 폭주 시험 3회 중앙값은 RSS 48.39 → 25.65 MiB였습니다.
+  일반 유휴 CPU나 Mac 전체 앱의 개선율을 뜻하지 않습니다. 조건과 원본 수치는
+  `docs/dev/reboot-resource-followup-2026-10-25.md`에 있습니다. / Median probe RSS in three matching
+  Linux Debug log-burst runs fell from 48.39 to 25.65 MiB. General idle CPU and native Mac savings
+  are not established; see the follow-up record for raw data and limitations.
+- Debug 테스트가 누락한 코어 IPC 싱글턴을 초기화하도록 두 픽스처를 수정했습니다.
+  전체 Linux Debug CTest 74/74를 통과했습니다. Windows 실행 파일 버전은 `0.1.130.0`입니다. /
+  Two Debug fixtures now construct the core IPC singleton; all 74 Linux Debug CTest programs passed.
+  Windows executable versions increase to `0.1.130.0`.
+- Windows·macOS 재부팅/로그아웃, 실제 Tailscale 경로, 절전 복귀·다중 모니터·장시간 연결은
+  실기 검증이 남아 있습니다. / Reboot/logout, actual Tailscale paths, sleep/wake, multiple monitors and
+  long sessions remain physical acceptance tests.
 - 저장소에 Apple Developer ID 및 공증 자격 증명이 아직 구성되지 않아 macOS 패키지는 ad-hoc 서명
   상태이며 Apple 공증을 받지 않았습니다. 따라서 이 버전은 프리릴리스이고 Gatekeeper 수동 승인이
   필요할 수 있습니다. 실제 Windows 서버와 Mac 클라이언트 사이의 한/영 입력, 장시간 커서 이동과
