@@ -20,6 +20,13 @@ namespace deskflow::gui {
 namespace {
 
 constexpr auto kFallbackPollIntervalMs = 2000;
+#ifdef Q_OS_WIN
+// A registered Windows watch can miss append/rotation notifications. Retain
+// the established recovery bound rather than trusting registration alone.
+constexpr auto kWatchedFileSafetyPollIntervalMs = kFallbackPollIntervalMs;
+#else
+constexpr auto kWatchedFileSafetyPollIntervalMs = 30000;
+#endif
 constexpr auto kFileIdentityPrefixLength = 64;
 
 qint64 birthTimeMsecs(const QFile &file)
@@ -53,7 +60,7 @@ void FileTail::setWatchedFile(const QString &filePath)
     if (!m_watcher->files().contains(m_filePath))
       watchCurrentFile(false);
     else
-      m_pollTimer->start();
+      updatePollInterval();
     return;
   }
 
@@ -80,7 +87,7 @@ bool FileTail::watchCurrentFile(bool startAtEnd)
   if (!file.open(QIODevice::ReadOnly)) {
     if (!m_pollTimer->isActive())
       qDebug() << "waiting for file to tail:" << m_filePath;
-    m_pollTimer->start();
+    updatePollInterval();
     return false;
   }
 
@@ -89,7 +96,7 @@ bool FileTail::watchCurrentFile(bool startAtEnd)
       qWarning() << "failed to watch file for tail:" << m_filePath;
   }
 
-  m_pollTimer->start();
+  updatePollInterval();
   qDebug() << "starting file tail:" << m_filePath;
   if (startAtEnd) {
     m_lastPos = file.size();
@@ -160,6 +167,17 @@ void FileTail::clearFileIdentity()
   m_filePrefix.clear();
 }
 
+void FileTail::updatePollInterval()
+{
+  // Native notifications deliver appends immediately. Retain a slow safety
+  // poll for missed notifications and a fast fallback when either watch fails.
+  const bool watched = m_watcher->files().contains(m_filePath) && m_watcher->directories().contains(m_directoryPath);
+  const int interval = watched ? kWatchedFileSafetyPollIntervalMs : kFallbackPollIntervalMs;
+  if (!m_pollTimer->isActive() || m_pollTimer->interval() != interval) {
+    m_pollTimer->start(interval);
+  }
+}
+
 void FileTail::handleFileChanged(const QString &filePath)
 {
   if (filePath != m_filePath)
@@ -201,6 +219,10 @@ void FileTail::pollWatchedFile()
   } else {
     readNewLines();
   }
+  if (!m_watcher->directories().contains(m_directoryPath) && QFileInfo::exists(m_directoryPath)) {
+    m_watcher->addPath(m_directoryPath);
+  }
+  updatePollInterval();
 }
 
 } // namespace deskflow::gui

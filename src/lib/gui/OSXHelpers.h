@@ -12,6 +12,12 @@
 
 class QObject;
 
+// Install before QApplication so launch Apple Events are captured even if
+// startup enters a native event loop (for example, an Accessibility dialog).
+void macOSObserveApplicationLaunch();
+void macOSStopObservingApplicationLaunch();
+void macOSWhenApplicationLaunched(QObject *receiver, std::function<void(bool loginLaunch)> handler);
+
 void requestOSXNotificationPermission();
 bool isOSXDevelopmentBuild();
 bool showOSXNotification(const QString &title, const QString &body);

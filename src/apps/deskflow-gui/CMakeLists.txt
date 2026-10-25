@@ -29,6 +29,8 @@ elseif(BUILD_OSX_BUNDLE)
 
   set(bundle_icon ../res/Ieum.icns)
   set(bundle_localizations ../res/macos/ko.lproj/InfoPlist.strings)
+  # Migration only: OSXHelpers unregisters the old agent; new registrations use
+  # SMAppService.mainAppService. Removing this plist would strand old jobs.
   set(bundle_login_agent ../res/macos/io.github.victoriousian.ieum.login.plist)
   set_source_files_properties(${bundle_icon} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
   set_source_files_properties(${bundle_localizations} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/ko.lproj")

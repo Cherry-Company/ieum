@@ -40,6 +40,10 @@ function(create_test)
   endif()
   add_test(NAME ${m_NAME} COMMAND $<TARGET_FILE:${m_NAME}> WORKING_DIRECTORY ${m_WORKING_DIRECTORY})
   set_tests_properties(${m_NAME} PROPERTIES DEPENDS ${m_DEPENDS})
+  if(WIN32)
+    # Qt can route failed-case diagnostics to OutputDebugString on CI runners.
+    set_tests_properties(${m_NAME} PROPERTIES ENVIRONMENT "QT_FORCE_STDERR_LOGGING=1")
+  endif()
   set_property(GLOBAL APPEND PROPERTY ${CMAKE_PROJECT_NAME}_tests ${m_NAME})
 
   if(ENABLE_COVERAGE)

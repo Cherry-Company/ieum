@@ -32,5 +32,6 @@ private:
   QPlainTextEdit *m_textLog = nullptr;
   QTimer m_flushTimer;
   QStringList m_pendingLines;
+  qsizetype m_pendingCharacters = 0;
   qsizetype m_droppedLineCount = 0;
 };

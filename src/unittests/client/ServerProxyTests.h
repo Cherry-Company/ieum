@@ -8,6 +8,7 @@
 
 #include "arch/Arch.h"
 #include "base/Log.h"
+#include "deskflow/ipc/CoreIpcServer.h"
 
 #include <QObject>
 
@@ -38,4 +39,5 @@ private Q_SLOTS:
 private:
   Arch m_arch;
   Log m_log;
+  deskflow::core::ipc::CoreIpcServer m_coreIpcServer{nullptr};
 };

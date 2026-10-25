@@ -6,6 +6,7 @@
 
 #import "OSXHelpers.h"
 #include "MacApplicationLifecyclePolicy.h"
+#include "MacLoginItems.h"
 
 #import <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
@@ -158,6 +159,22 @@ Method g_applicationShouldTerminateMethod = nullptr;
 id g_workspacePowerOffObserver = nil;
 bool g_systemShutdown = false;
 bool g_terminationCallbackSent = false;
+id g_applicationLaunchObserver = nil;
+bool g_applicationLaunched = false;
+bool g_loginLaunch = false;
+QPointer<QObject> g_launchReceiver;
+std::function<void(bool)> g_launchHandler;
+
+void deliverApplicationLaunch()
+{
+  if (g_applicationLaunched && g_launchHandler && g_launchReceiver) {
+    auto handler = std::move(g_launchHandler);
+    const bool loginLaunch = g_loginLaunch;
+    QMetaObject::invokeMethod(
+        g_launchReceiver.data(), [handler, loginLaunch] { handler(loginLaunch); }, Qt::QueuedConnection
+    );
+  }
+}
 
 void notifyApplicationTermination(bool systemShutdown)
 {
@@ -181,12 +198,80 @@ NSApplicationTerminateReply ieumApplicationShouldTerminate(id self, SEL selector
   return NSTerminateNow;
 }
 
-SMAppService *ieumLoginAgent() API_AVAILABLE(macos(13.0))
+deskflow::gui::MacLoginItemOperations loginItemOperations(SMAppService *service) API_AVAILABLE(macos(13.0))
 {
-  return [SMAppService agentServiceWithPlistName:@"io.github.victoriousian.ieum.login.plist"];
+  using deskflow::gui::MacLoginItemStatus;
+  return {
+      [service] {
+        switch (service.status) {
+        case SMAppServiceStatusEnabled:
+          return MacLoginItemStatus::Enabled;
+        case SMAppServiceStatusRequiresApproval:
+          return MacLoginItemStatus::RequiresApproval;
+        case SMAppServiceStatusNotRegistered:
+          return MacLoginItemStatus::NotRegistered;
+        default:
+          return MacLoginItemStatus::NotFound;
+        }
+      },
+      [service](bool enabled, QString *error) {
+        NSError *nativeError = nil;
+        const bool success =
+            enabled ? [service registerAndReturnError:&nativeError] : [service unregisterAndReturnError:&nativeError];
+        if (!success && error != nullptr) {
+          *error = nativeError == nil ? QStringLiteral("Unknown ServiceManagement error")
+                                      : QString::fromUtf8(nativeError.localizedDescription.UTF8String);
+        }
+        return success;
+      }
+  };
 }
 
 } // namespace
+
+void macOSObserveApplicationLaunch()
+{
+  macOSStopObservingApplicationLaunch();
+  g_applicationLaunched = false;
+  g_loginLaunch = false;
+  // This runs before Qt installs its Cocoa autorelease pools.
+  @autoreleasepool {
+    g_applicationLaunchObserver = [[[NSNotificationCenter defaultCenter]
+        addObserverForName:NSApplicationDidFinishLaunchingNotification
+                    object:nil
+                     queue:nil
+                usingBlock:^(NSNotification *) {
+                  auto *event = NSAppleEventManager.sharedAppleEventManager.currentAppleEvent;
+                  g_loginLaunch =
+                      event.eventID == kAEOpenApplication &&
+                      [event paramDescriptorForKeyword:keyAEPropData].enumCodeValue == keyAELaunchedAsLogInItem;
+                  g_applicationLaunched = true;
+                  deliverApplicationLaunch();
+                }] retain];
+  }
+}
+
+void macOSStopObservingApplicationLaunch()
+{
+  if (g_applicationLaunchObserver != nil) {
+    [[NSNotificationCenter defaultCenter] removeObserver:g_applicationLaunchObserver];
+    [g_applicationLaunchObserver release];
+    g_applicationLaunchObserver = nil;
+  }
+  g_launchHandler = {};
+  g_launchReceiver.clear();
+}
+
+void macOSWhenApplicationLaunched(QObject *receiver, std::function<void(bool)> handler)
+{
+  if (QGuiApplication::platformName() != QStringLiteral("cocoa")) {
+    handler(false);
+    return;
+  }
+  g_launchReceiver = receiver;
+  g_launchHandler = std::move(handler);
+  deliverApplicationLaunch();
+}
 
 bool macOSStartAtLoginSupported()
 {
@@ -199,7 +284,7 @@ bool macOSStartAtLoginSupported()
 bool macOSStartAtLoginEnabled()
 {
   if (@available(macOS 13.0, *)) {
-    auto *service = ieumLoginAgent();
+    auto *service = SMAppService.mainAppService;
     return service.status == SMAppServiceStatusEnabled;
   }
   return false;
@@ -208,7 +293,7 @@ bool macOSStartAtLoginEnabled()
 bool macOSStartAtLoginRequiresApproval()
 {
   if (@available(macOS 13.0, *)) {
-    auto *service = ieumLoginAgent();
+    auto *service = SMAppService.mainAppService;
     return service.status == SMAppServiceStatusRequiresApproval;
   }
   return false;
@@ -217,24 +302,14 @@ bool macOSStartAtLoginRequiresApproval()
 bool macOSSetStartAtLogin(bool enabled, QString *error)
 {
   if (@available(macOS 13.0, *)) {
-    auto *service = ieumLoginAgent();
-    const auto status = service.status;
-    if ((enabled && (status == SMAppServiceStatusEnabled || status == SMAppServiceStatusRequiresApproval)) ||
-        (!enabled && status == SMAppServiceStatusNotRegistered)) {
-      return true;
-    }
-
-    NSError *nativeError = nil;
-    const auto success =
-        enabled ? [service registerAndReturnError:&nativeError] : [service unregisterAndReturnError:&nativeError];
-    if (success) {
-      return true;
-    }
-    if (error != nullptr) {
-      *error = nativeError == nil ? QStringLiteral("Unknown ServiceManagement error")
-                                  : QString::fromUtf8(nativeError.localizedDescription.UTF8String);
-    }
-    return false;
+    // The GUI is an application login item, not a launchd helper. Registering
+    // its executable as an agent leaves a launch constraint tied to the old
+    // code identity after ad-hoc alpha updates (CODESIGNING, code 4).
+    // Keep the old plist in the bundle solely to unregister existing jobs.
+    auto *legacyAgent = [SMAppService agentServiceWithPlistName:@"io.github.victoriousian.ieum.login.plist"];
+    return deskflow::gui::reconcileMacLoginItems(
+        enabled, loginItemOperations(SMAppService.mainAppService), loginItemOperations(legacyAgent), error
+    );
   }
 
   if (error != nullptr) {
