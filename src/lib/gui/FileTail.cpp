@@ -20,7 +20,13 @@ namespace deskflow::gui {
 namespace {
 
 constexpr auto kFallbackPollIntervalMs = 2000;
+#ifdef Q_OS_WIN
+// A registered Windows watch can miss append/rotation notifications. Retain
+// the established recovery bound rather than trusting registration alone.
+constexpr auto kWatchedFileSafetyPollIntervalMs = kFallbackPollIntervalMs;
+#else
 constexpr auto kWatchedFileSafetyPollIntervalMs = 30000;
+#endif
 constexpr auto kFileIdentityPrefixLength = 64;
 
 qint64 birthTimeMsecs(const QFile &file)

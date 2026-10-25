@@ -48,7 +48,7 @@ private Q_SLOTS:
   void resetsAfterTruncation();
   void resumesAfterDeleteAndRecreate();
   void resumesAfterLogRotation();
-  void nativeWatchAvoidsFrequentPolling();
+  void usesPlatformSafetyInterval();
   void pollsWhenNativeWatchesAreLost();
   void recoversWhenParentDirectoryAppears();
 };
@@ -153,7 +153,7 @@ void FileTailTests::resumesAfterLogRotation()
   QTRY_VERIFY_WITH_TIMEOUT(containsLine(spy, QStringLiteral("after rotation")), 3000);
 }
 
-void FileTailTests::nativeWatchAvoidsFrequentPolling()
+void FileTailTests::usesPlatformSafetyInterval()
 {
   QTemporaryDir directory;
   const auto path = directory.filePath(QStringLiteral("core.log"));
@@ -161,12 +161,20 @@ void FileTailTests::nativeWatchAvoidsFrequentPolling()
   FileTail tail(path);
   auto *timer = tail.findChild<QTimer *>();
   QVERIFY(timer);
+#ifdef Q_OS_WIN
+  QCOMPARE(timer->interval(), 2000);
+#else
   QVERIFY(timer->interval() >= 30000);
+#endif
   QSignalSpy polls(timer, &QTimer::timeout);
   QSignalSpy lines(&tail, &FileTail::newLine);
   QVERIFY(writeFile(path, "native append\n", QIODevice::WriteOnly | QIODevice::Append));
+#ifdef Q_OS_WIN
+  QTRY_VERIFY_WITH_TIMEOUT(containsLine(lines, QStringLiteral("native append")), 3500);
+#else
   QTRY_VERIFY_WITH_TIMEOUT(containsLine(lines, QStringLiteral("native append")), 1500);
   QCOMPARE(polls.count(), 0);
+#endif
 }
 
 void FileTailTests::pollsWhenNativeWatchesAreLost()
@@ -200,7 +208,11 @@ void FileTailTests::recoversWhenParentDirectoryAppears()
   auto *watcher = tail.findChild<QFileSystemWatcher *>();
   QTRY_VERIFY(watcher->directories().contains(QFileInfo(path).absolutePath()));
   QVERIFY(writeFile(path, "next append\n", QIODevice::WriteOnly | QIODevice::Append));
+#ifdef Q_OS_WIN
+  QTRY_VERIFY_WITH_TIMEOUT(containsLine(lines, QStringLiteral("next append")), 3500);
+#else
   QTRY_VERIFY_WITH_TIMEOUT(containsLine(lines, QStringLiteral("next append")), 1500);
+#endif
 }
 
 QTEST_GUILESS_MAIN(FileTailTests)

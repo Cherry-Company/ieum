@@ -47,6 +47,10 @@ Native file-change notifications still deliver appended lines immediately. When
 both file and directory watches exist, the fallback timer checks every 30 seconds
 instead of every 2 seconds. Missing watches use the 2-second recovery interval;
 the directory watch is retried if the parent directory appears later.
+Windows retains its existing 2-second interval even with registered watches:
+the first native Windows CI exposed a file-tail regression when trusting watch
+registration for a 30-second interval. Windows test diagnostics are forced to
+stderr so future failures include the individual failing case.
 
 Both builds use Debian 13 x86-64, GCC 14, Qt 6.8.2, and **Debug** configuration.
 The baseline is `d9578dec4e6928579a1822615b4a297ec71aa25f`, with only the existing

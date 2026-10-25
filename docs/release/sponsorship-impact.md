@@ -34,8 +34,9 @@ Release: v0.1.0-alpha.30
   startup to an application login item and retires the previous LaunchAgent. Native reboot acceptance
   remains separate from CI compilation and package checks.
 - 숨겨진 로그 대기열과 표시 문서의 전체 문자 수를 제한하고 최신 오류 내용을 남깁니다.
-  파일 감시가 동작하면 보조 확인 주기를 2초에서 30초로 늘립니다. / Hidden and rendered logs have
-  character budgets and retain recent context; native file watches use a 30-second safety poll.
+  Mac·Linux에서 파일 감시가 동작하면 보조 확인 주기를 2초에서 30초로 늘립니다. Windows는
+  기존 2초 복구 주기를 유지합니다. / Hidden and rendered logs retain recent context within character
+  budgets. Healthy Mac/Linux file watches use a 30-second safety poll; Windows retains 2-second recovery.
 - 같은 Linux Debug 조건의 로그 폭주 시험 3회 중앙값은 RSS 48.39 → 25.65 MiB였습니다.
   일반 유휴 CPU나 Mac 전체 앱의 개선율을 뜻하지 않습니다. 조건과 원본 수치는
   `docs/dev/reboot-resource-followup-2026-10-25.md`에 있습니다. / Median probe RSS in three matching
