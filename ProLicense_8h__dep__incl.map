@@ -1,0 +1,14 @@
+<map id="src/lib/licensing/ProLicense.h" name="src/lib/licensing/ProLicense.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="251,5,443,30"/>
+<area shape="rect" id="Node000002" href="$Settings_8cpp.html" title=" " alt="" coords="5,85,193,110"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="294,37,137,87,135,82,296,33"/>
+<area shape="rect" id="Node000003" href="$ProLicenseUiPolicy_8h.html" title=" " alt="" coords="216,78,366,117"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="332,41,306,79,303,75,328,44"/>
+<area shape="rect" id="Node000005" href="$SettingsDialog_8cpp.html" title=" " alt="" coords="335,165,471,203"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="363,41,380,77,394,123,402,165,398,163,389,125,375,79,360,46"/>
+<area shape="rect" id="Node000006" href="$ProLicense_8cpp.html" title=" " alt="" coords="440,85,646,110"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="391,33,516,84,511,85,390,39"/>
+<area shape="rect" id="Node000004" href="$ProLicenseUiPolicy_8cpp.html" title=" " alt="" coords="148,165,311,203"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="271,128,245,166,242,162,266,131"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="329,124,381,164,376,164,327,129"/>
+</map>

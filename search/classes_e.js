@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['offervalidation_0',['OfferValidation',['../structdeskflow_1_1filetransfer_1_1OfferValidation.html',1,'deskflow::filetransfer']]],
+  ['osxclipboard_1',['OSXClipboard',['../classOSXClipboard.html',1,'']]],
+  ['osxclipboardanybitmapconverter_2',['OSXClipboardAnyBitmapConverter',['../classOSXClipboardAnyBitmapConverter.html',1,'']]],
+  ['osxclipboardanytextconverter_3',['OSXClipboardAnyTextConverter',['../classOSXClipboardAnyTextConverter.html',1,'']]],
+  ['osxclipboardbmpconverter_4',['OSXClipboardBMPConverter',['../classOSXClipboardBMPConverter.html',1,'']]],
+  ['osxclipboardhtmlconverter_5',['OSXClipboardHTMLConverter',['../classOSXClipboardHTMLConverter.html',1,'']]],
+  ['osxclipboardtextconverter_6',['OSXClipboardTextConverter',['../classOSXClipboardTextConverter.html',1,'']]],
+  ['osxclipboardutf16converter_7',['OSXClipboardUTF16Converter',['../classOSXClipboardUTF16Converter.html',1,'']]],
+  ['osxclipboardutf8converter_8',['OSXClipboardUTF8Converter',['../classOSXClipboardUTF8Converter.html',1,'']]],
+  ['osxcursorvisibility_9',['OSXCursorVisibility',['../classOSXCursorVisibility.html',1,'']]],
+  ['osxeventqueuebuffer_10',['OSXEventQueueBuffer',['../classOSXEventQueueBuffer.html',1,'']]],
+  ['osxfiledropextraction_11',['OSXFileDropExtraction',['../structdeskflow_1_1filetransfer_1_1OSXFileDropExtraction.html',1,'deskflow::filetransfer']]],
+  ['osxfiletransferdroppoint_12',['OSXFileTransferDropPoint',['../structdeskflow_1_1filetransfer_1_1OSXFileTransferDropPoint.html',1,'deskflow::filetransfer']]],
+  ['osxfiletransferedgedrophost_13',['OSXFileTransferEdgeDropHost',['../classdeskflow_1_1filetransfer_1_1OSXFileTransferEdgeDropHost.html',1,'deskflow::filetransfer']]],
+  ['osxfiletransferedgedropwindow_14',['OSXFileTransferEdgeDropWindow',['../structdeskflow_1_1filetransfer_1_1OSXFileTransferEdgeDropWindow.html',1,'deskflow::filetransfer']]],
+  ['osxfiletransferplatform_15',['OSXFileTransferPlatform',['../classdeskflow_1_1filetransfer_1_1OSXFileTransferPlatform.html',1,'deskflow::filetransfer']]],
+  ['osxinputsourcecontroller_16',['OSXInputSourceController',['../classOSXInputSourceController.html',1,'']]],
+  ['osxkeystate_17',['OSXKeyState',['../classOSXKeyState.html',1,'']]],
+  ['osxpowermanager_18',['OSXPowerManager',['../classOSXPowerManager.html',1,'']]],
+  ['osxscreen_19',['OSXScreen',['../classOSXScreen.html',1,'']]],
+  ['osxscreensaver_20',['OSXScreenSaver',['../classOSXScreenSaver.html',1,'']]],
+  ['osxuchrkeyresource_21',['OSXUchrKeyResource',['../classOSXUchrKeyResource.html',1,'']]],
+  ['outgoing_22',['Outgoing',['../structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl_1_1Outgoing.html',1,'deskflow::filetransfer::FileTransferService::Impl']]]
+];

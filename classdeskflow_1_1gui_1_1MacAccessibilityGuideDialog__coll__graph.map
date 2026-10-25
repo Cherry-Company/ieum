@@ -1,0 +1,5 @@
+<map id="deskflow::gui::MacAccessibilityGuideDialog" name="deskflow::gui::MacAccessibilityGuideDialog">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,78,210,117"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="73,5,142,30"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="109,44,110,78,105,76,106,48"/>
+</map>

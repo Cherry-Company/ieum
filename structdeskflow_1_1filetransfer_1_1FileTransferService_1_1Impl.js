@@ -1,0 +1,27 @@
+var structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl =
+[
+    [ "Outgoing", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl_1_1Outgoing.html", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl_1_1Outgoing" ],
+    [ "PendingEdgeRequest", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl_1_1PendingEdgeRequest.html", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl_1_1PendingEdgeRequest" ],
+    [ "Impl", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#adf13301e0b4c502d70081ad000586028", null ],
+    [ "isAuthorized", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#ae1af8b31f388b6ea3c28c07e56f14229", null ],
+    [ "activeSides", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a650e9b83b80edf9422de8a171d8cb620", null ],
+    [ "activeSidesChanged", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#ad6e9f8d9b84d48aca79a0d5c703e6842", null ],
+    [ "authorizeFileTransfer", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a38f59c48f48efa539472a2167908a465", null ],
+    [ "destinationDirectory", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a00008f4160080cca3ae248841e0e4ea3", null ],
+    [ "edgeTimer", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#ad7c978f2a69ece96f5bd207d77b29eaa", null ],
+    [ "events", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a395e39500cbbcc8b1e0aae44d2d0f3ce", null ],
+    [ "eventTarget", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#aabc74f199540ae0f30f533d5f2acb1ee", null ],
+    [ "handlersInstalled", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a56726d86f28cd67fc86907afe10733f6", null ],
+    [ "incoming", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a0da9140bd4487ec3c1bc17e4de8f60a8", null ],
+    [ "localScreen", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#ad740a049526e39a4c0e1e346a5e7d73d", null ],
+    [ "outgoing", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a4aaa663c99d00df2616c369c859f67e1", null ],
+    [ "pendingEdge", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#adb5aa8ea0da96e5a7de0cf37494263f9", null ],
+    [ "platform", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a0bbb203a50ec246bcfb916ccba2f563f", null ],
+    [ "receiveEnabled", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a28f910799311809ec0adb69c22f129a8", null ],
+    [ "resolveLocalTarget", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#aaef644755f65ef1b5b425799e7a29797", null ],
+    [ "sendControl", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a4a420cb503b46bb1fb732bcb384e5224", null ],
+    [ "sendData", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#aee10659697b031a268ca44dde7f14f95", null ],
+    [ "sendEdge", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#afa1645867e60d70d3418f9f363d8e9e0", null ],
+    [ "sendScheduled", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#a45eb8f74bb8a4dccdba7575a1d360c79", null ],
+    [ "sessions", "structdeskflow_1_1filetransfer_1_1FileTransferService_1_1Impl.html#aef94233924963f261ca599a8a080df7a", null ]
+];

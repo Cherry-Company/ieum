@@ -1,0 +1,9 @@
+<map id="deskflow::filetransfer::FileTransferSourceManifestResult" name="deskflow::filetransfer::FileTransferSourceManifestResult">
+<area shape="rect" id="Node000001" title=" " alt="" coords="526,29,714,82"/>
+<area shape="rect" id="Node000002" href="$structdeskflow_1_1filetransfer_1_1OfferValidation.html" title=" " alt="" coords="251,5,392,44"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="408,31,528,45,523,46,408,36"/>
+<area shape="rect" id="Node000003" href="$structdeskflow_1_1filetransfer_1_1FileTransferSourceManifest.html" title=" " alt="" coords="228,68,416,107"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="431,75,502,68,523,68,528,68,502,73,432,81"/>
+<area shape="rect" id="Node000004" href="$structdeskflow_1_1filetransfer_1_1FileTransferOffer.html" title=" " alt="" coords="5,68,147,107"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="162,85,230,87,225,88,162,90"/>
+</map>

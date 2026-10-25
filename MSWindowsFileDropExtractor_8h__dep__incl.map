@@ -1,0 +1,27 @@
+<map id="src/lib/platform/MSWindowsFileDropExtractor.h" name="src/lib/platform/MSWindowsFileDropExtractor.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="457,5,643,44"/>
+<area shape="rect" id="Node000002" href="$MSWindowsEdgeDropTarget_8h.html" title=" " alt="" coords="339,92,542,131"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="516,52,466,94,463,89,512,55"/>
+<area shape="rect" id="Node000013" href="$MSWindowsFileDropExtractor_8cpp.html" title=" " alt="" coords="567,92,752,131"/>
+<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="586,51,638,91,632,91,586,56"/>
+<area shape="rect" id="Node000003" href="$MSWindowsEdgeDropHost_8h.html" title=" " alt="" coords="228,179,424,217"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="405,139,353,180,350,176,401,142"/>
+<area shape="rect" id="Node000012" href="$MSWindowsEdgeDropTarget_8cpp.html" title=" " alt="" coords="448,179,665,217"/>
+<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="479,137,534,178,528,178,478,143"/>
+<area shape="rect" id="Node000004" href="$MSWindowsEdgeDropHost_8cpp.html" title=" " alt="" coords="5,265,215,304"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="262,225,159,267,157,262,266,222"/>
+<area shape="rect" id="Node000005" href="$WindowsFileTransferDropBroker_8h.html" title=" " alt="" coords="239,265,413,304"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="328,231,328,266,324,263,324,235"/>
+<area shape="rect" id="Node000007" href="$MSWindowsScreen_8h.html" title=" " alt="" coords="525,265,711,304"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="406,220,556,264,551,265,405,225"/>
+<area shape="rect" id="Node000006" href="$WindowsFileTransferDropBroker_8cpp.html" title=" " alt="" coords="147,352,326,391"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="297,314,258,354,255,349,293,316"/>
+<area shape="rect" id="Node000008" href="$AppUtilWindows_8cpp.html" title=" " alt="" coords="351,352,501,391"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="564,310,469,354,468,349,559,311"/>
+<area shape="rect" id="Node000009" href="$MSWindowsDesks_8cpp.html" title=" " alt="" coords="525,352,711,391"/>
+<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="620,318,620,353,616,350,616,322"/>
+<area shape="rect" id="Node000010" href="$MSWindowsScreen_8cpp.html" title=" " alt="" coords="735,352,920,391"/>
+<area shape="poly" id="edge9_Node000007_Node000010" title=" " alt="" coords="679,308,784,352,778,351,678,313"/>
+<area shape="rect" id="Node000011" href="$MSWindowsScreenSaver_8cpp.html" title=" " alt="" coords="944,352,1129,391"/>
+<area shape="poly" id="edge10_Node000007_Node000011" title=" " alt="" coords="726,305,946,351,941,351,726,310"/>
+</map>

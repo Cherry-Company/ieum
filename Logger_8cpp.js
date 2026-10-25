@@ -1,0 +1,6 @@
+var Logger_8cpp =
+[
+    [ "deskflow::gui::printLine", "namespacedeskflow_1_1gui.html#a302e57e11bdb1ecd18afd06b9180ee7e", null ],
+    [ "deskflow::gui::kForceDebugMessages", "namespacedeskflow_1_1gui.html#a78e6dcd2ccaf9f1da1f4aa50905067ee", null ],
+    [ "deskflow::gui::kIgnoredMessagePrefixes", "namespacedeskflow_1_1gui.html#a895f47af209e193ef5bfc3f69236066b", null ]
+];
