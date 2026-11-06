@@ -70,7 +70,7 @@ inline QColor blendedColor(const QColor &first, const QColor &second, qreal seco
 inline void applyIeumMainWindowStyle(QWidget &window)
 {
   const auto palette = QGuiApplication::palette();
-  const auto windowColor = palette.color(QPalette::Window);
+  const auto windowColor = blendedColor(palette.color(QPalette::Window), palette.color(QPalette::Base), 0.55);
   const auto baseColor = palette.color(QPalette::Base);
   const auto textColor = palette.color(QPalette::WindowText);
   const auto secondaryText = palette.color(QPalette::PlaceholderText);
@@ -84,12 +84,55 @@ inline void applyIeumMainWindowStyle(QWidget &window)
 QMainWindow#MainWindow, QWidget#topLevelWidget {
   background-color: %1;
   color: %3;
+  font-size: 14px;
 }
 QWidget#identityBar {
   background-color: %2;
   border: 1px solid %5;
-  border-radius: 8px;
+  border-radius: 18px;
 }
+QWidget#identityBar[nativeMaterial="true"] { background-color: transparent; }
+QWidget#identityBar[nativeMaterial="false"] { background-color: %10; }
+QWidget#deskWorkspace { background-color: transparent; }
+QLabel#deskTitle { font-size: 30px; font-weight: 600; }
+QLabel#deskStatus { font-size: 16px; font-weight: 500; }
+QLabel#deskDetail { font-size: 14px; }
+QLabel#deskDeviceName { font-size: 20px; font-weight: 600; }
+QWidget#deviceInspector { border-left: 1px solid %5; }
+QToolButton[deskComputer="true"] {
+  background-color: transparent;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  padding: 12px 4px;
+  font-size: 15px;
+  min-height: 220px;
+  max-height: 270px;
+}
+QToolButton[deskComputer="true"]:hover { background-color: %7; }
+QToolButton[deskComputer="true"]:checked, QToolButton[deskComputer="true"]:focus {
+  border: 2px solid %8;
+}
+QPushButton, QToolButton { min-height: 30px; font-size: 14px; }
+QLineEdit, QComboBox { font-size: 14px; }
+QPushButton#editDeskLayout {
+  background-color: %8;
+  color: %9;
+  border: 1px solid %8;
+  border-radius: 9px;
+  padding: 7px 16px;
+}
+QPushButton#editDeskLayout:hover { background-color: %11; }
+QPushButton#deskAddComputer, QPushButton#cancelDeskLayout, QPushButton#deskDeviceSettings,
+QPushButton#deskConfirmAddComputer, QPushButton#connectionSettingsToggle {
+  border: 1px solid %5;
+  border-radius: 9px;
+  padding: 6px 12px;
+  background-color: %2;
+}
+QPushButton#connectionSettingsToggle:checked { border-color: %8; }
+QScrollArea#connectionSettingsPanel { border: 0; background-color: transparent; }
+QScrollArea#deskOverviewScroll, QScrollArea#deskInspectorScroll { border: 0; background-color: transparent; }
+QLabel#deskFeedback { color: %3; padding: 8px; border-left: 2px solid %8; }
 QLabel#lblConnectionTitle {
   font-size: 22px;
   font-weight: 600;
@@ -103,7 +146,7 @@ QLabel#lblConnectionEyebrow {
   font-weight: 600;
 }
 QLabel#lblProductName {
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 600;
 }
 QLabel#lblTagline, QLabel#lblIpAddresses, QLabel[secondary="true"] {
@@ -173,9 +216,22 @@ QPushButton#btnToggleCore:disabled {
   background-color: %12;
   border-color: %12;
 }
+QPushButton#btnToggleCore[coreActive="true"] {
+  background-color: %2;
+  color: %3;
+  border-color: %5;
+}
+QPushButton#btnToggleCore[coreActive="true"]:hover { background-color: %7; }
 QPushButton#btnInputSettings, QPushButton#btnFileSettings, QPushButton#btnAllSettings, QPushButton#btnNetworkSettings, QPushButton#btnConfigureServer, QPushButton#btnConfigureClient {
   border-radius: 7px;
   padding: 6px 12px;
+}
+QPushButton#btnInputSettings, QPushButton#btnFileSettings, QPushButton#btnAllSettings {
+  background-color: transparent;
+  border: 1px solid transparent;
+}
+QPushButton#btnInputSettings:hover, QPushButton#btnFileSettings:hover, QPushButton#btnAllSettings:hover {
+  background-color: %7;
 }
 QPushButton#btnEditName, QPushButton#btnSaveServerConfig, QPushButton#btnRestartCore {
   background-color: transparent;
@@ -219,7 +275,7 @@ inline void applyIeumDialogStyle(QWidget &dialog)
   // the widget's own (setStyleSheet rewrites that), and only assign when the
   // sheet actually changed so a PaletteChange re-apply settles immediately.
   const auto palette = QGuiApplication::palette();
-  const auto windowColor = palette.color(QPalette::Window);
+  const auto windowColor = blendedColor(palette.color(QPalette::Window), palette.color(QPalette::Base), 0.55);
   const auto baseColor = palette.color(QPalette::Base);
   const auto textColor = palette.color(QPalette::WindowText);
   const auto border = blendedColor(windowColor, textColor, isDarkMode() ? 0.24 : 0.16);
@@ -228,7 +284,10 @@ inline void applyIeumDialogStyle(QWidget &dialog)
       QStringLiteral(R"(
 QDialog {
   background-color: %1;
+  color: %7;
 }
+QLabel, QCheckBox, QRadioButton, QLineEdit, QComboBox, QSpinBox, QListWidget { font-size: 14px; }
+QPushButton, QToolButton { min-height: 30px; font-size: 14px; }
 QLabel#guideTitle {
   font-size: 24px;
   font-weight: 600;
@@ -237,14 +296,19 @@ QLabel[sectionHeading="true"] {
   font-size: 17px;
   font-weight: 600;
 }
-QWidget#frameLogo, QTabWidget::pane, QGroupBox {
+QWidget#frameLogo {
   background-color: %2;
   border: 1px solid %3;
   border-radius: 8px;
 }
+QTabWidget::pane { border: 0; background-color: transparent; }
 QGroupBox {
-  margin-top: 12px;
-  padding: 10px 8px 8px 8px;
+  background-color: transparent;
+  border: 0;
+  border-top: 1px solid %3;
+  border-radius: 0;
+  margin-top: 16px;
+  padding: 18px 8px 12px 8px;
   font-weight: 600;
 }
 QGroupBox::title {
@@ -261,9 +325,11 @@ QListWidget#settingsNavigation::item {
   border-radius: 7px;
 }
 QListWidget#settingsNavigation::item:selected {
-  background-color: %4;
-  color: %5;
+  background-color: %6;
+  color: %7;
+  border-left: 2px solid %4;
 }
+QListWidget#settingsNavigation::item:hover { background-color: %6; }
 QListWidget#settingsSearchResults {
   background-color: %2;
   border: 1px solid %3;
@@ -307,7 +373,8 @@ QScrollArea {
 )")
           .arg(
               cssColor(windowColor), cssColor(baseColor, isDarkMode() ? 174 : 205), cssColor(border),
-              cssColor(palette.color(QPalette::Highlight)), cssColor(palette.color(QPalette::HighlightedText))
+              cssColor(palette.color(QPalette::Highlight)), cssColor(palette.color(QPalette::HighlightedText)),
+              cssColor(palette.color(QPalette::Highlight), isDarkMode() ? 40 : 22), cssColor(textColor)
           );
 
   if (dialog.styleSheet() != styleSheet)

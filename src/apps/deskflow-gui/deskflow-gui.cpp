@@ -278,10 +278,6 @@ int main(int argc, char *argv[])
     QMessageBox::information(nullptr, productDisplayName(), msgBody.arg(productDisplayName()));
     return 1;
   }
-
-  if (!checkMacAssistiveDevices()) {
-    return 1;
-  }
 #endif
 
   // --no-reset
@@ -295,6 +291,15 @@ int main(int argc, char *argv[])
   } else if (StartupManager::requiresApproval()) {
     qWarning("automatic startup is registered but still requires approval in macOS Login Items");
   }
+
+#if defined(Q_OS_MACOS)
+  // Retire the old login agent even if Accessibility approval is missing or
+  // the user closes its guide. Ad-hoc updates can invalidate that approval;
+  // checking it first would skip cleanup on every unapproved launch.
+  if (!checkMacAssistiveDevices()) {
+    return 1;
+  }
+#endif
 
   // Retiring a legacy macOS agent may terminate the instance it launched.
   // Do not leave an active-session marker for that intentional migration.

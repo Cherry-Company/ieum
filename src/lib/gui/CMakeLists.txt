@@ -133,6 +133,8 @@ add_library(${target} STATIC
   validators/IpAddressValidator.cpp
   validators/IpAddressValidator.h
   widgets/FingerprintPreview.cpp
+  widgets/DeskWorkspace.cpp
+  widgets/DeskWorkspace.h
   widgets/FingerprintPreview.h
   widgets/KeySequenceWidget.cpp
   widgets/KeySequenceWidget.h
@@ -161,7 +163,7 @@ target_link_libraries(
   Qt6::Network)
 
 if(APPLE)
-  target_link_libraries(${target} "-framework ServiceManagement")
+  target_link_libraries(${target} "-framework ServiceManagement" "-framework QuartzCore")
   # OSXHelpers is compiled in this static library, not in the GUI executable.
   # Ad-hoc signatures (-) do not make Notification Center safe to call.
   if((APPLE_CODESIGN_DISTRIBUTION AND NOT APPLE_CODESIGN_DISTRIBUTION STREQUAL "-") OR
