@@ -19,6 +19,7 @@
 #include <functional>
 #include <mutex>
 
+API_AVAILABLE(macos(13.0))
 @interface IeumSystemAudioSink : NSObject <SCStreamOutput, SCStreamDelegate> {
 @public
   std::function<void(QByteArray)> samples;
@@ -88,7 +89,7 @@
 namespace deskflow::gui::session {
 namespace {
 constexpr int64_t kInjectedTag = 0x4945554d;
-struct AudioCaptureState
+struct API_AVAILABLE(macos(13.0)) AudioCaptureState
 {
   std::atomic<bool> canceled{false};
   std::atomic<int> queued{0};
@@ -208,20 +209,22 @@ public:
   }
   void stopAudioCapture() override
   {
-    if (!m_capture)
-      return;
-    auto state = std::move(m_capture);
-    state->canceled = true;
-    // Callbacks hold a weak reference, so stopping never races a std::function mutation.
-    if (state->stream)
-      [state->stream stopCaptureWithCompletionHandler:^(NSError *) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-          state->stream = nil;
-          state->sink = nil;
-        });
-      }];
-    else
-      state->sink = nil;
+    if (@available(macOS 13.0, *)) {
+      if (!m_capture)
+        return;
+      auto state = std::move(m_capture);
+      state->canceled = true;
+      // Callbacks hold a weak reference, so stopping never races a std::function mutation.
+      if (state->stream)
+        [state->stream stopCaptureWithCompletionHandler:^(NSError *) {
+          dispatch_async(dispatch_get_main_queue(), ^{
+            state->stream = nil;
+            state->sink = nil;
+          });
+        }];
+      else
+        state->sink = nil;
+    }
   }
   bool playAudio(const QByteArray &pcm) override
   {
@@ -558,7 +561,7 @@ private:
     buffer->mAudioDataByteSize = buffer->mAudioDataBytesCapacity;
     AudioQueueEnqueueBuffer(queue, buffer, 0, nullptr);
   }
-  std::shared_ptr<AudioCaptureState> m_capture;
+  std::shared_ptr<AudioCaptureState> m_capture API_AVAILABLE(macos(13.0));
   CFMachPortRef m_tap = nullptr;
   CFRunLoopSourceRef m_source = nullptr;
   InputMode m_mode = InputMode::Observe;
