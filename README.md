@@ -10,9 +10,9 @@
 <p align="center"><img src="artwork/screenshots/connection-home-ko.png" alt="저장된 컴퓨터 배치와 연결 상태를 보여 주는 이음의 내 책상 화면" width="760"></p>
 <p align="center"><sub>스크린샷은 Linux에서 테스트용 기기와 연결 상태로 촬영한 한국어 UI입니다.</sub></p>
 
-## alpha.32의 내 책상
+## alpha.33의 내 책상
 
-[현재 배포본: v0.1.0-alpha.32](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.32)
+[현재 배포본: v0.1.0-alpha.33](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.33)
 
 - **책상 배치를 먼저 봅니다.** 메인 화면에서 저장된 컴퓨터 배치와 실제 이음 연결 상태를 확인합니다.
   기기를 선택하면 이름·연결 상태·위치와 필요한 다음 행동이 나타납니다.
@@ -77,16 +77,14 @@ Tailscale을 쓴다면 두 컴퓨터에서 같은 Tailnet에 로그인하고, �
 
 ## 내 컴퓨터에 맞게 설치하기
 
-[alpha.32 릴리스](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.32)에서 운영체제와 CPU에 맞는 파일을 받으세요.
-
-Apple Silicon용 alpha.32 설치 파일은 빌드 러너 실행 실패로 임시 제외했습니다. 아래 arm64 링크는 **이전 alpha.31**이며 새 공유 기능을 포함하지 않습니다. [복구 추적 #85](https://github.com/Cherry-Company/ieum/issues/85).
+[alpha.33 릴리스](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.33)에서 운영체제와 CPU에 맞는 파일을 받으세요.
 
 | 컴퓨터 | 설치 파일 | 첫 실행에서 할 일 |
 | --- | --- | --- |
-| Windows 10/11 · Intel/AMD | [x64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.32/Ieum-0.1.0-alpha.32-win-x64-ko-KR.msi) | 설치 후 이음 실행. 런타임 오류가 나면 Visual C++ 런타임 확인 |
-| Windows 10/11 · Snapdragon 등 | [ARM64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.32/Ieum-0.1.0-alpha.32-win-arm64-ko-KR.msi) | ARM64 파일 선택 |
-| Mac · M1 이후, macOS 14+ | [alpha.31 arm64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.31/Ieum-0.1.0-alpha.31-macos-arm64.dmg) | Applications로 옮기고 손쉬운 사용 권한 승인 |
-| Mac · Intel, macOS 12+ | [x86_64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.32/Ieum-0.1.0-alpha.32-macos-x86_64.dmg) | Applications로 옮기고 손쉬운 사용 권한 승인 |
+| Windows 10/11 · Intel/AMD | [x64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.33/Ieum-0.1.0-alpha.33-win-x64-ko-KR.msi) | 설치 후 이음 실행. 런타임 오류가 나면 Visual C++ 런타임 확인 |
+| Windows 10/11 · Snapdragon 등 | [ARM64 한국어 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.33/Ieum-0.1.0-alpha.33-win-arm64-ko-KR.msi) | ARM64 파일 선택 |
+| Mac · M1 이후, macOS 14+ | [arm64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.33/Ieum-0.1.0-alpha.33-macos-arm64.dmg) | Applications로 옮기고 손쉬운 사용 권한 승인 |
+| Mac · Intel, macOS 12+ | [x86_64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.33/Ieum-0.1.0-alpha.33-macos-x86_64.dmg) | Applications로 옮기고 손쉬운 사용 권한 승인 |
 | Linux | 배포판에 맞는 패키지 | [빌드·설치 안내](docs/dev/build.md) 확인. 실험적 지원 |
 
 Windows 설치 파일은 정식 코드 서명 전입니다. Mac 패키지는 ad-hoc 서명 상태이며 Apple Developer ID 서명·공증 전입니다.
@@ -132,7 +130,7 @@ macOS 지원 버전, 설치 경고, 필요한 권한과 파일 검증은 [설치
 
 ## 준비 중인 구독 플랜
 
-새 구독 플랜은 개발 중이며 **아직 구매할 수 없습니다**. 현재 배포본은 alpha.32입니다.
+새 구독 플랜은 개발 중이며 **아직 구매할 수 없습니다**. 현재 배포본은 alpha.33입니다.
 기존 Pro Local 영구 키의 파일 전송 권한은 유지됩니다. 다음 구독판은 아래처럼 구분합니다.
 
 | 플랜 | 월 결제 | 연 결제 | 포함할 기능 |

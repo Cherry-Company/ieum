@@ -168,6 +168,13 @@ jobs:
       - name: Run workflow policy regressions
         run: python3 -m unittest discover -s tools/ci/tests -p 'test_*.py' -v
 
+      - name: Report Apple runner routing configuration
+        env:
+          CUSTOM_APPLE_RUNNER: ${{ vars.CI_MACOS_ARM64_RUNNER != '' }}
+        run: |
+          echo "Apple runner override configured: $CUSTOM_APPLE_RUNNER"
+          echo "Without an override, trusted builds require self-hosted, macOS, ARM64 labels."
+
   # Summary of test results, combined from test result artifacts.
   # Runs even if the tests fail to provide a summary of the failures.
   test-results:
@@ -249,8 +256,14 @@ jobs:
             arch: "arm64"
             qt-version: 6.11.1
 
-          # Apple Silicon packaging temporarily omitted for alpha.32: #85.
-          # Restore native arm64 build/test/package once a free runner executes.
+          - name: "macos-arm64"
+            # Use the owner's registered Apple Silicon machines for trusted code.
+            # A repository can itself be a fork: compare the PR source identity,
+            # not head.repo.fork, before assigning an owner-managed runner.
+            runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'macos-26' || vars.CI_MACOS_ARM64_RUNNER || fromJSON('["self-hosted","macOS","ARM64"]') }}
+            timeout: 60
+            qt-version: 6.11.1
+            config-args: '-DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_OSX_DEPLOYMENT_TARGET=14'
 
           - name: "macos-x64"
             runs-on: macos-15-intel
@@ -380,8 +393,8 @@ jobs:
           elif [ "${{matrix.target.like}}" == "fedora" ]; then
             dnf install -y git
           elif [ "${{matrix.target.like}}" == "suse" ]; then
-            if [ "$(uname -m)" == "aarch64" ]; then
-              # Keep ARM repository metadata and RPMs on the same official
+            if [ "${{matrix.target.like}}" == "suse" ]; then
+              # Keep repository metadata and RPMs on the same official
               # origin while rolling mirrors carry inconsistent noarch files.
               repo_http='http://download.opensuse.org/'
               repo_https='https://download.opensuse.org/'
@@ -403,6 +416,14 @@ jobs:
           else
             echo "Unknown: ${{matrix.target.like}}"
           fi
+      - name: Prepare owner-managed Apple runner
+        if: runner.os == 'macOS' && runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          printf '::add-mask::%s\n' "$HOME"
+          printf '::add-mask::%s\n' "$RUNNER_NAME"
+          test "$(uname -m)" = arm64
+
       # Fancy checkout gets all the tags
       # it also makes sure we can use git --describe correctly
       - name: Fancy Checkout
@@ -506,6 +527,9 @@ jobs:
         run: |
           $CMAKE_CONFIGURE \
             ${{ matrix.target.config-args }} \
+            "-DCMAKE_C_FLAGS=-ffile-prefix-map=\"$HOME\"=/Users/runner" \
+            "-DCMAKE_CXX_FLAGS=-ffile-prefix-map=\"$HOME\"=/Users/runner" \
+            "-DCMAKE_OBJCXX_FLAGS=-ffile-prefix-map=\"$HOME\"=/Users/runner" \
             ${{ steps.get-deps.outputs.vcpkg-cmake-config }} \
             -DPACKAGE_VERSION_LABEL="${IEUM_PACKAGE_VERSION}" \
             -DAPPLE_CODESIGN_DISTRIBUTION="${APPLE_CODESIGN_DISTRIBUTION}" \
