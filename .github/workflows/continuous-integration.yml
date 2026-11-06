@@ -409,6 +409,14 @@ jobs:
           else
             echo "Unknown: ${{matrix.target.like}}"
           fi
+      - name: Prepare owner-managed Apple runner
+        if: runner.os == 'macOS' && runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          printf '::add-mask::%s\n' "$HOME"
+          printf '::add-mask::%s\n' "$RUNNER_NAME"
+          test "$(uname -m)" = arm64
+
       # Fancy checkout gets all the tags
       # it also makes sure we can use git --describe correctly
       - name: Fancy Checkout
@@ -512,6 +520,9 @@ jobs:
         run: |
           $CMAKE_CONFIGURE \
             ${{ matrix.target.config-args }} \
+            "-DCMAKE_C_FLAGS=-ffile-prefix-map=\"$HOME\"=/Users/runner" \
+            "-DCMAKE_CXX_FLAGS=-ffile-prefix-map=\"$HOME\"=/Users/runner" \
+            "-DCMAKE_OBJCXX_FLAGS=-ffile-prefix-map=\"$HOME\"=/Users/runner" \
             ${{ steps.get-deps.outputs.vcpkg-cmake-config }} \
             -DPACKAGE_VERSION_LABEL="${IEUM_PACKAGE_VERSION}" \
             -DAPPLE_CODESIGN_DISTRIBUTION="${APPLE_CODESIGN_DISTRIBUTION}" \
