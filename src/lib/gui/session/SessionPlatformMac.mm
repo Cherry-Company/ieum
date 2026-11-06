@@ -212,7 +212,7 @@ public:
     if (@available(macOS 13.0, *)) {
       if (!m_capture)
         return;
-      auto state = std::move(m_capture);
+      auto state = std::static_pointer_cast<AudioCaptureState>(std::move(m_capture));
       state->canceled = true;
       // Callbacks hold a weak reference, so stopping never races a std::function mutation.
       if (state->stream)
@@ -561,7 +561,9 @@ private:
     buffer->mAudioDataByteSize = buffer->mAudioDataBytesCapacity;
     AudioQueueEnqueueBuffer(queue, buffer, 0, nullptr);
   }
-  std::shared_ptr<AudioCaptureState> m_capture API_AVAILABLE(macos(13.0));
+  // Keep the availability-restricted type inside the macOS 13 guards.
+  // shared_ptr retains its original deleter when stored as void.
+  std::shared_ptr<void> m_capture;
   CFMachPortRef m_tap = nullptr;
   CFRunLoopSourceRef m_source = nullptr;
   InputMode m_mode = InputMode::Observe;
