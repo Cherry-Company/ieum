@@ -126,7 +126,7 @@ Ieum license authorities merely because the business entity changes.
 
 Paddle Billing [does not generate license keys](https://developer.paddle.com/migrate/plan).
 The service therefore issues its own random recovery credential, stores only
-its hash and purchase mapping in SQLite, and binds it to a server-created Paddle
+its hash and purchase mapping in D1 (or SQLite in the optional Node adapter), and binds it to a server-created Paddle
 transaction. Browser completion alone never activates a tier. API version 1
 verification checks the original transaction/nonce, customer, active subscription,
 exact product/price, current paid period and transaction adjustments. Trials,
@@ -142,10 +142,27 @@ receipt's customer portal manages billing, while the Ieum page provides recovery
 code download and an activation link. Operator recovery verifies the original
 transaction before rotating a lost code; automatic email recovery is not present.
 
-The service is prepared for a single Node 24 instance and persistent SQLite
-behind an HTTPS reverse proxy on an owned subdomain. Database backups are
-required; ephemeral/serverless hosting is unsupported. DNS names the server;
-it does not replace hosting. Public checkout stays disabled until native features,
+The owner requires zero hosting cost. The selected service uses Cloudflare
+Workers + D1 **Free**, initially on workers.dev with an owned subdomain connected
+later. No blockchain is needed. The private service includes a Worker entrypoint,
+D1 migration, primary-session purchase checks, conditional credential rotation
+and a private operator recovery tool. Local runtime tests cover persistence and
+payment verification; no Cloudflare account or remote deployment is connected yet.
+
+As checked on 2026-11-06, [Workers Free](https://developers.cloudflare.com/workers/platform/pricing/)
+allows 100,000 requests/day and 10ms CPU per invocation;
+[D1 Free](https://developers.cloudflare.com/d1/platform/pricing/) allows 5 million
+rows read/day, 100,000 rows written/day and 5GB total storage, with a
+[500MB per-database limit](https://developers.cloudflare.com/d1/platform/limits/).
+Free-plan excesses fail requests; do not upgrade to Paid. Limits are shared with
+other account workloads. Production CPU usage still needs measurement. Per-IP
+and per-location request controls reduce abuse but are not a global quota.
+Quota/DB failures preserve an existing signed lease until expiry, at most seven
+days. Paddle fees and domain renewal are separate from hosting costs.
+
+Database and signing-authority backups remain required. A single-instance Node 24
+SQLite/Caddy adapter is retained for an existing server; its filesystem must be
+persistent. Public checkout stays disabled until native features,
 merchant onboarding and live purchase/renewal/cancel/refund checks pass. The
 fixture tests do not establish a successful real-world payment.
 

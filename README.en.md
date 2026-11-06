@@ -134,7 +134,8 @@ their file-transfer entitlement. The intended subscription packaging is:
 Annual prices are charged once per year; applicable taxes appear at checkout.
 Normal purchases will use Paddle subscriptions. After payment, activate Ieum and
 save the separate subscription recovery code. Event and owner keys have their own
-field. The service is prepared for an owned subdomain. Cancellation retains access through the paid period; free
+field. Hosting is prepared for Cloudflare Workers + D1 Free, with an owned subdomain
+connected later; the service is not deployed yet. Cancellation retains access through the paid period; free
 features and valid existing keys remain afterward. Audio, remote viewing and
 bidirectional control still need implementation and physical acceptance, and
 the live seller account must be connected. Moving existing image clipboard and
