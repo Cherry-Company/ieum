@@ -41,10 +41,13 @@ void DiagnosticTests::redactSensitiveText_removesPurchaseCredentials()
 {
   const auto redacted = deskflow::gui::diagnostic::redactSensitiveText(QStringLiteral(
       "receipt ieum://activate?plan=professional-max&key=private-receipt-token "
-      "IEUM1.privatePayload.privateSignature 12345678-ABCD1234-EFGH5678-87654321"
+      "IEUM1.privatePayload.privateSignature 12345678-ABCD1234-EFGH5678-87654321 "
+      "IEUM_7c7855e0-1234-4234-8234-123456789012 0c7844e0-1234-4234-8234-123456789012"
   ));
   QVERIFY(!redacted.contains(QStringLiteral("private")));
   QVERIFY(!redacted.contains(QStringLiteral("ABCD1234")));
+  QVERIFY(!redacted.contains(QStringLiteral("7c7855e0")));
+  QVERIFY(!redacted.contains(QStringLiteral("0c7844e0")));
   QVERIFY(redacted.contains(QStringLiteral("<subscription-link>")));
   QVERIFY(redacted.contains(QStringLiteral("<license>")));
   QVERIFY(redacted.contains(QStringLiteral("<purchase-key>")));

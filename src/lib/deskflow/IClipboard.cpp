@@ -20,6 +20,11 @@ void IClipboard::unmarshall(IClipboard *clipboard, const std::string_view &data,
 {
   assert(clipboard != nullptr);
 
+  if (data.size() < 4) {
+    LOG_ERR("clipboard unmarshall: truncated header");
+    return;
+  }
+
   const char *index = data.data();
   const char *const end = index + data.size();
 
@@ -29,11 +34,6 @@ void IClipboard::unmarshall(IClipboard *clipboard, const std::string_view &data,
 
     // read the number of formats
     const uint32_t numFormats = readUInt32(index);
-    if (end - index < 4) {
-      LOG_ERR("clipboard unmarshall: truncated header");
-      clipboard->close();
-      return;
-    }
     index += 4;
 
     // read each format
@@ -60,7 +60,7 @@ void IClipboard::unmarshall(IClipboard *clipboard, const std::string_view &data,
       // save the data if it's a known format.  if either the client
       // or server supports more clipboard formats than the other
       // then one of them will get a format >= TotalFormats here.
-      if (format < IClipboard::Format::TotalFormats) {
+      if (format >= IClipboard::Format::Text && format < IClipboard::Format::TotalFormats) {
         clipboard->add(format, std::string(index, size));
       }
       index += size;
@@ -148,6 +148,26 @@ bool IClipboard::copy(IClipboard *dst, const IClipboard *src, Time time)
     src->close();
   }
 
+  return success;
+}
+
+bool IClipboard::copyForSharing(IClipboard *dst, const IClipboard *src, bool allowImages)
+{
+  assert(dst != nullptr && src != nullptr && dst != src);
+  if (allowImages)
+    return copy(dst, src);
+  const auto time = src->getTime();
+  if (!src->open(time))
+    return false;
+  const bool hasText = src->has(Format::Text);
+  const auto text = hasText ? src->get(Format::Text) : std::string{};
+  src->close();
+  if (!hasText || !dst->open(time))
+    return false;
+  const bool success = dst->empty();
+  if (success)
+    dst->add(Format::Text, text);
+  dst->close();
   return success;
 }
 

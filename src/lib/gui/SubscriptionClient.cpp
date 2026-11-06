@@ -5,6 +5,7 @@
  */
 #include "gui/SubscriptionClient.h"
 #include "common/Settings.h"
+#include "gui/SubscriptionUrls.h"
 #include "licensing/ProLicense.h"
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -26,8 +27,14 @@ SubscriptionClient *SubscriptionClient::instance()
 
 QUrl SubscriptionClient::serviceUrl()
 {
-  // Set only after the separate service deployment has been verified.
+  // A release-time constant, never a setting or a receipt parameter that could
+  // redirect a customer's key to another server.
+#ifdef IEUM_SUBSCRIPTION_SERVICE_URL
+  const QUrl url(QStringLiteral(IEUM_SUBSCRIPTION_SERVICE_URL), QUrl::StrictMode);
+  return isSubscriptionServiceUrl(url) ? url : QUrl{};
+#else
   return {};
+#endif
 }
 
 SubscriptionClient::SubscriptionClient(QObject *parent) : QObject(parent), m_network(this), m_timer(this)

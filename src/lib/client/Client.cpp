@@ -262,7 +262,10 @@ bool Client::leave()
 
 void Client::setClipboard(ClipboardID id, const IClipboard *clipboard)
 {
-  m_screen->setClipboard(id, clipboard);
+  Clipboard permitted;
+  if (!IClipboard::copyForSharing(&permitted, clipboard, Settings::hasPlanFeature(QStringLiteral("image-clipboard"))))
+    return;
+  m_screen->setClipboard(id, &permitted);
   m_ownClipboard[id] = false;
   m_sentClipboard[id] = false;
 }
@@ -445,8 +448,12 @@ void Client::sendClipboard(ClipboardID id)
 
   // check time
   if (m_timeClipboard[id] == 0 || clipboard.getTime() != m_timeClipboard[id]) {
-    // marshall the data
-    std::string data = clipboard.marshall();
+    Clipboard permitted;
+    if (!IClipboard::copyForSharing(
+            &permitted, &clipboard, Settings::hasPlanFeature(QStringLiteral("image-clipboard"))
+        ))
+      return;
+    std::string data = permitted.marshall();
     if (data.size() >= m_maximumClipboardSize * 1024) {
       LOG_WARN("not sending clipboard data, exceeds limit: %zu KB", m_maximumClipboardSize);
       return;
@@ -458,7 +465,7 @@ void Client::sendClipboard(ClipboardID id)
     if (!m_sentClipboard[id] || data != m_dataClipboard[id]) {
       m_sentClipboard[id] = true;
       m_dataClipboard[id] = data;
-      m_server->onClipboardChanged(id, &clipboard);
+      m_server->onClipboardChanged(id, &permitted);
     }
   }
 }

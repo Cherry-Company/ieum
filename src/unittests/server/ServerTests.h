@@ -8,6 +8,7 @@
 #include "base/Log.h"
 #include "deskflow/ipc/CoreIpcServer.h"
 
+#include <QTemporaryDir>
 #include <QTest>
 
 class ServerTests : public QObject
@@ -15,6 +16,9 @@ class ServerTests : public QObject
   Q_OBJECT
 private Q_SLOTS:
   void initTestCase();
+  void broadcastKeys_releaseOriginalRecipients();
+  void broadcastKeys_disconnectDoesNotTransferHeldKeys();
+  void freeInputContinuesButBroadcastRequiresMax();
   void SwitchToScreenInfo_alloc_screen();
   void KeyboardBroadcastInfo_alloc_stateAndSceens();
   void cursorTransform_clampsOutOfBounds();
@@ -34,5 +38,6 @@ private Q_SLOTS:
 private:
   Arch m_arch;
   Log m_log;
+  QTemporaryDir m_settingsDirectory;
   deskflow::core::ipc::CoreIpcServer m_coreIpcServer{nullptr};
 };

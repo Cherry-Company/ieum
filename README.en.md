@@ -132,8 +132,9 @@ their file-transfer entitlement. The intended subscription packaging is:
 | Professional Max | US$4.99 | US$39.99 | Professional plus control from either keyboard/mouse, remote viewing, image clipboard, coordinated lock/wake and simultaneous input |
 
 Annual prices are charged once per year; applicable taxes appear at checkout.
-Normal purchases will use Gumroad subscriptions, with a separate field for event
-and owner keys. Cancellation retains access through the paid period; free
+Normal purchases will use subscriptions. Polar is the first integration candidate
+for Korean seller payouts and global sales; event and owner keys have a separate
+field. The entitlement API can run on an owned subdomain independently of Vercel. Cancellation retains access through the paid period; free
 features and valid existing keys remain afterward. Audio, remote viewing and
 bidirectional control still need implementation and physical acceptance, and
 the live seller account must be connected. Moving existing image clipboard and

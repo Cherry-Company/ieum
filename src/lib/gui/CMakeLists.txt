@@ -6,6 +6,12 @@ set(target gui)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(IEUM_SUBSCRIPTION_SERVICE_URL "" CACHE STRING "Verified HTTPS origin for the Ieum entitlement service")
+if(IEUM_SUBSCRIPTION_SERVICE_URL AND
+   NOT IEUM_SUBSCRIPTION_SERVICE_URL MATCHES "^https://[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?/?$")
+  message(FATAL_ERROR "IEUM_SUBSCRIPTION_SERVICE_URL must be an HTTPS origin without a port, path or credentials")
+endif()
+
 if(WIN32)
   set(platform_sources
     win32/WindowsFileTransferDropBroker.cpp
@@ -58,6 +64,7 @@ add_library(${target} STATIC
   SubscriptionClient.h
   SubscriptionLink.cpp
   SubscriptionLink.h
+  SubscriptionUrls.h
   TlsUtility.cpp
   TlsUtility.h
   UpdateShutdown.cpp
@@ -167,6 +174,10 @@ target_link_libraries(
   Qt6::Core
   Qt6::Widgets
   Qt6::Network)
+
+if(IEUM_SUBSCRIPTION_SERVICE_URL)
+  target_compile_definitions(${target} PRIVATE IEUM_SUBSCRIPTION_SERVICE_URL="${IEUM_SUBSCRIPTION_SERVICE_URL}")
+endif()
 
 if(APPLE)
   target_link_libraries(${target} "-framework ServiceManagement" "-framework QuartzCore")

@@ -8,6 +8,8 @@
 #include "server/PrimaryClient.h"
 
 #include "base/Log.h"
+#include "common/Settings.h"
+#include "deskflow/Clipboard.h"
 #include "deskflow/Screen.h"
 //
 // PrimaryClient
@@ -131,7 +133,9 @@ void PrimaryClient::setClipboard(ClipboardID id, const IClipboard *clipboard)
     m_clipboardDirty[id] = false;
 
     // set clipboard
-    m_screen->setClipboard(id, clipboard);
+    Clipboard permitted;
+    if (IClipboard::copyForSharing(&permitted, clipboard, Settings::hasPlanFeature(QStringLiteral("image-clipboard"))))
+      m_screen->setClipboard(id, &permitted);
   }
 }
 

@@ -8,6 +8,7 @@
 #include "gui/ExternalUrlLauncher.h"
 #include "gui/StyleUtils.h"
 #include "gui/SubscriptionClient.h"
+#include "gui/SubscriptionUrls.h"
 #include "licensing/PlanCatalog.h"
 #include <QComboBox>
 #include <QDialogButtonBox>
@@ -168,7 +169,7 @@ QPushButton[planPurchase="true"] { border: 1px solid %2; border-radius: 8px; pad
   layout->addWidget(restore);
   auto *help = new QLabel(
       tr("Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your "
-         "Gumroad receipt."),
+         "purchase receipt."),
       this
   );
   help->setWordWrap(true);
@@ -237,8 +238,7 @@ void PlansDialog::loadCatalog()
           prices.value(QStringLiteral("annually")).toInt() != expected.annualUsdCents)
         continue;
       const QUrl url(entry.value(QStringLiteral("checkout_url")).toString());
-      if (url.scheme() != QLatin1String("https") || !url.host().endsWith(QLatin1String(".gumroad.com")) ||
-          !url.path().startsWith(QLatin1String("/l/")) || !url.userInfo().isEmpty())
+      if (!isSubscriptionCheckoutUrl(url))
         continue;
       auto *button = m_purchaseButtons.value(id);
       button->setText(tr("View subscription"));

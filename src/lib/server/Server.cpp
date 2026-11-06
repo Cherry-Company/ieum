@@ -183,6 +183,7 @@ Server::~Server()
   stopSwitch();
 
   try {
+    releaseBroadcastKeys();
     // force immediate disconnection of secondary clients
     disconnect();
   } catch (std::exception &e) { // NOSONAR
@@ -1671,8 +1672,13 @@ void Server::handleKeyboardBroadcastEvent(const Event &event)
     break;
   }
 
-  // enter new state
+  if (newState && !Settings::hasPlanFeature(QStringLiteral("simultaneous-input"))) {
+    LOG_INFO("simultaneous input requires Professional Max");
+    newState = false;
+  }
+  // Release all recipients before toggling or changing the destination set.
   if (newState != m_keyboardBroadcasting || info->m_screens != m_keyboardBroadcastingScreens) {
+    releaseBroadcastKeys();
     m_keyboardBroadcasting = newState;
     m_keyboardBroadcastingScreens = info->m_screens;
     LOG(
@@ -1730,7 +1736,12 @@ void Server::onClipboardChanged(const BaseClientProxy *sender, ClipboardID id, u
   assert(sender == m_clients.find(clipboard.m_clipboardOwner)->second);
 
   // get data
-  sender->getClipboard(id, &clipboard.m_clipboard);
+  Clipboard received;
+  if (!sender->getClipboard(id, &received) ||
+      !IClipboard::copyForSharing(
+          &clipboard.m_clipboard, &received, Settings::hasPlanFeature(QStringLiteral("image-clipboard"))
+      ))
+    return;
 
   std::string data = clipboard.m_clipboard.marshall();
   if (data.size() > m_maximumClipboardSize * 1024) {
@@ -1816,21 +1827,32 @@ void Server::onKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const s
   LOG_VERBOSE("onKeyDown id=%d mask=0x%04x button=0x%04x lang=%s", id, mask, button, lang.c_str());
   assert(m_active != nullptr);
 
-  // relay
   if (!m_keyboardBroadcasting && IKeyState::KeyInfo::isDefault(screens)) {
     sendKeyDown(m_active, id, mask, button, lang);
+    return;
+  }
+  // Ordinary typing never needs a license read on the input hot path.
+  const bool licensed = Settings::hasPlanFeature(QStringLiteral("simultaneous-input"));
+  if (!licensed) {
+    releaseBroadcastKeys();
+    m_keyboardBroadcasting = false;
+  }
+  if (!licensed || (!m_keyboardBroadcasting && IKeyState::KeyInfo::isDefault(screens))) {
+    sendKeyDown(m_active, id, mask, button, lang);
   } else {
-    if (!screens && m_keyboardBroadcasting) {
+    if (IKeyState::KeyInfo::isDefault(screens) && m_keyboardBroadcasting) {
       screens = m_keyboardBroadcastingScreens.c_str();
       if (IKeyState::KeyInfo::isDefault(screens)) {
         screens = "*";
       }
     }
-    for (ClientList::const_iterator index = m_clients.begin(); index != m_clients.end(); ++index) {
-      if (IKeyState::KeyInfo::contains(screens, index->first)) {
-        sendKeyDown(index->second, id, mask, button, lang);
-      }
-    }
+    std::vector<std::string> recipients;
+    for (const auto &[name, client] : m_clients)
+      if (IKeyState::KeyInfo::contains(screens, name))
+        recipients.push_back(name);
+    if (m_broadcastKeys.remember(button, id, mask, recipients))
+      for (const auto &name : recipients)
+        sendKeyDown(m_clients.at(name), id, mask, button, lang);
   }
 }
 
@@ -1839,22 +1861,22 @@ void Server::onKeyUp(KeyID id, KeyModifierMask mask, KeyButton button, const cha
   LOG_VERBOSE("onKeyUp id=%d mask=0x%04x button=0x%04x", id, mask, button);
   assert(m_active != nullptr);
 
-  // relay
-  if (!m_keyboardBroadcasting && IKeyState::KeyInfo::isDefault(screens)) {
-    sendKeyUp(m_active, id, mask, button);
-  } else {
-    if (!screens && m_keyboardBroadcasting) {
-      screens = m_keyboardBroadcastingScreens.c_str();
-      if (IKeyState::KeyInfo::isDefault(screens)) {
-        screens = "*";
-      }
-    }
-    for (ClientList::const_iterator index = m_clients.begin(); index != m_clients.end(); ++index) {
-      if (IKeyState::KeyInfo::contains(screens, index->first)) {
-        sendKeyUp(index->second, id, mask, button);
-      }
-    }
+  (void)screens;
+  if (const auto press = m_broadcastKeys.take(button)) {
+    for (const auto &name : press->recipients)
+      if (const auto client = m_clients.find(name); client != m_clients.end())
+        sendKeyUp(client->second, id, mask, button);
+    return;
   }
+  sendKeyUp(m_active, id, mask, button);
+}
+
+void Server::releaseBroadcastKeys()
+{
+  for (const auto &[button, press] : m_broadcastKeys.releaseAll())
+    for (const auto &name : press.recipients)
+      if (const auto client = m_clients.find(name); client != m_clients.end())
+        sendKeyUp(client->second, press.key, press.mask, button);
 }
 
 void Server::onKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &lang)
@@ -1865,7 +1887,17 @@ void Server::onKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyButto
   );
   assert(m_active != nullptr);
 
-  // relay
+  if (const auto *press = m_broadcastKeys.find(button)) {
+    if (!Settings::hasPlanFeature(QStringLiteral("simultaneous-input"))) {
+      releaseBroadcastKeys();
+      m_keyboardBroadcasting = false;
+      return;
+    }
+    for (const auto &name : press->recipients)
+      if (const auto client = m_clients.find(name); client != m_clients.end())
+        sendKeyRepeat(client->second, id, mask, count, button, lang);
+    return;
+  }
   sendKeyRepeat(m_active, id, mask, count, button, lang);
 }
 
@@ -2321,6 +2353,7 @@ bool Server::removeClient(BaseClientProxy *client)
 
   // remove from list
   m_clients.erase(getName(client));
+  m_broadcastKeys.forgetPeer(getName(client));
   m_clientSet.erase(i);
   std::erase_if(m_inputLanguageControlButtons, [client](const auto &entry) { return entry.first == client; });
 

@@ -28,7 +28,7 @@ std::optional<SubscriptionPurchase> parseSubscriptionLink(const QUrl &url)
     else
       return std::nullopt;
   }
-  static const QRegularExpression keyPattern(QStringLiteral("\\A[A-Za-z0-9-]{16,128}\\z"));
+  static const QRegularExpression keyPattern(QStringLiteral("\\A[A-Za-z0-9_-]{16,128}\\z"));
   const auto plan = licensing::parsePlan(planText);
   if (!plan || *plan == licensing::Plan::Free || !keyPattern.match(key).hasMatch())
     return std::nullopt;

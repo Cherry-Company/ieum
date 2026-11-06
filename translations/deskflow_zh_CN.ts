@@ -2876,7 +2876,7 @@ Licenses are issued manually after payment verification.</source>
     </message>
     <message>
         <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your Gumroad receipt.</source>
-        <translation>活动及旧许可证密钥可在设置 → 文件中输入。请从 Gumroad 收据管理或取消订阅。</translation>
+        <translation type="vanished">活动及旧许可证密钥可在设置 → 文件中输入。请从 Gumroad 收据管理或取消订阅。</translation>
     </message>
     <message>
         <source>Current plan: %1</source>
@@ -2897,6 +2897,10 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>Your purchase is ready. Select Restore to activate it on this computer.</source>
         <translation>已载入购买信息。选择“恢复”以在此电脑上激活。</translation>
+    </message>
+    <message>
+        <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your purchase receipt.</source>
+        <translation>活动及旧许可证密钥可在设置 → 文件中输入。请从购买收据管理或取消订阅。</translation>
     </message>
 </context>
 <context>

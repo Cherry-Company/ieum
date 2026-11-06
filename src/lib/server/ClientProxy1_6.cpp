@@ -7,6 +7,7 @@
 #include "server/ClientProxy1_6.h"
 
 #include "base/Log.h"
+#include "common/Settings.h"
 #include "deskflow/ClipboardChunk.h"
 #include "deskflow/ProtocolUtil.h"
 #include "deskflow/StreamChunker.h"
@@ -37,7 +38,10 @@ void ClientProxy1_6::setClipboard(ClipboardID id, const IClipboard *clipboard)
   if (m_clipboard[id].m_dirty) {
     // this clipboard is now clean
     m_clipboard[id].m_dirty = false;
-    Clipboard::copy(&m_clipboard[id].m_clipboard, clipboard);
+    if (!IClipboard::copyForSharing(
+            &m_clipboard[id].m_clipboard, clipboard, Settings::hasPlanFeature(QStringLiteral("image-clipboard"))
+        ))
+      return;
 
     std::string data = m_clipboard[id].m_clipboard.marshall();
 

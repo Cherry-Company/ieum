@@ -14,6 +14,9 @@ class ClipboardTests : public QObject
 private Q_SLOTS:
   // Test are run in order top to bottom
   void initTestCase();
+  void sharingPreservesTextAndRequiresPermissionForImages();
+  void blockedImageDoesNotEraseDestination();
+  void malformedWireDataIsBounded();
   void basicFunction();
   void basicText();
   void longerText();

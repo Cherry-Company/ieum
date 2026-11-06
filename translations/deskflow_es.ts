@@ -2841,10 +2841,6 @@ Las licencias se emiten manualmente después de verificar el pago.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your Gumroad receipt.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Current plan: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2862,6 +2858,10 @@ Las licencias se emiten manualmente después de verificar el pago.</translation>
     </message>
     <message>
         <source>Your purchase is ready. Select Restore to activate it on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your purchase receipt.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

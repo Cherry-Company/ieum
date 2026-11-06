@@ -2964,7 +2964,7 @@ Licenses are issued manually after payment verification.</source>
     </message>
     <message>
         <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your Gumroad receipt.</source>
-        <translation>이벤트·기존 라이선스 키는 설정 → 파일에 입력하세요. 구독 관리와 해지는 Gumroad 영수증에서 할 수 있습니다.</translation>
+        <translation type="vanished">이벤트·기존 라이선스 키는 설정 → 파일에 입력하세요. 구독 관리와 해지는 Gumroad 영수증에서 할 수 있습니다.</translation>
     </message>
     <message>
         <source>Current plan: %1</source>
@@ -2985,6 +2985,10 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>Your purchase is ready. Select Restore to activate it on this computer.</source>
         <translation>구매 정보를 불러왔습니다. 복원을 누르면 이 컴퓨터에서 활성화됩니다.</translation>
+    </message>
+    <message>
+        <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your purchase receipt.</source>
+        <translation>이벤트·기존 라이선스 키는 설정 → 파일에 입력하세요. 구독 관리와 해지는 구매 영수증에서 할 수 있습니다.</translation>
     </message>
 </context>
 <context>

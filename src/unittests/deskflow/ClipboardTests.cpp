@@ -15,6 +15,64 @@ void ClipboardTests::initTestCase()
   m_log.setFilter(LogLevel::Level::Verbose);
 }
 
+void ClipboardTests::sharingPreservesTextAndRequiresPermissionForImages()
+{
+  using enum IClipboard::Format;
+  Clipboard source;
+  source.open(42);
+  source.empty();
+  source.add(Text, "Korean / English text");
+  source.add(HTML, "<img src='data:image/png;base64,AAAA'>");
+  source.add(Bitmap, "bitmap-pixels");
+  source.close();
+  Clipboard freeCopy;
+  QVERIFY(IClipboard::copyForSharing(&freeCopy, &source, false));
+  freeCopy.open(42);
+  QCOMPARE(freeCopy.get(Text), std::string("Korean / English text"));
+  QVERIFY(!freeCopy.has(Bitmap));
+  QVERIFY(!freeCopy.has(HTML));
+  freeCopy.close();
+  Clipboard maxCopy;
+  QVERIFY(IClipboard::copyForSharing(&maxCopy, &source, true));
+  QCOMPARE(maxCopy.marshall(), source.marshall());
+  QCOMPARE(maxCopy.getTime(), 42U);
+}
+
+void ClipboardTests::blockedImageDoesNotEraseDestination()
+{
+  Clipboard image;
+  image.open(1);
+  image.add(IClipboard::Format::Bitmap, "pixels");
+  image.close();
+  Clipboard destination;
+  destination.open(2);
+  destination.add(IClipboard::Format::Text, "keep this text");
+  destination.close();
+  const auto previous = destination.marshall();
+  QVERIFY(!IClipboard::copyForSharing(&destination, &image, false));
+  QCOMPARE(destination.marshall(), previous);
+}
+
+void ClipboardTests::malformedWireDataIsBounded()
+{
+  Clipboard destination;
+  destination.open(0);
+  destination.add(IClipboard::Format::Text, "keep text");
+  destination.close();
+  const auto original = destination.marshall();
+  for (size_t size = 0; size < 4; ++size) {
+    IClipboard::unmarshall(&destination, std::string(size, '\0'), 1);
+    QCOMPARE(destination.marshall(), original);
+  }
+  // One unknown format, zero bytes; a signed enum conversion must not make
+  // 0xffffffff a valid format index.
+  const unsigned char bytes[] = {0, 0, 0, 1, 255, 255, 255, 255, 0, 0, 0, 0};
+  IClipboard::unmarshall(&destination, std::string(reinterpret_cast<const char *>(bytes), sizeof(bytes)), 1);
+  destination.open(1);
+  QVERIFY(!destination.has(IClipboard::Format::Text));
+  destination.close();
+}
+
 void ClipboardTests::basicFunction()
 {
   Clipboard clipboard;

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
  */
 #include "gui/SubscriptionLink.h"
+#include "gui/SubscriptionUrls.h"
 #include <QFileOpenEvent>
 #include <QSignalSpy>
 #include <QTest>
@@ -13,6 +14,25 @@ class SubscriptionLinkTests : public QObject
 {
   Q_OBJECT
 private Q_SLOTS:
+  void allowsProviderBrandPrefixWithoutPermittingCredentialRedirects()
+  {
+    QVERIFY(
+        parseSubscriptionLink(QUrl("ieum://activate?plan=professional&key=IEUM_12345678-1234-4234-8234-123456789012"))
+    );
+    QVERIFY(isSubscriptionServiceUrl(QUrl("https://subscriptions.example.invalid")));
+    QVERIFY(isSubscriptionCheckoutUrl(QUrl("https://polar.sh/checkout/checkout-id")));
+    QVERIFY(isSubscriptionCheckoutUrl(QUrl("https://store.gumroad.com/l/product")));
+    for (const auto &text :
+         {"http://polar.sh/checkout/id", "https://polar.sh.evil.invalid/checkout/id",
+          "https://user@polar.sh/checkout/id", "https://polar.sh:444/checkout/id",
+          "https://polar.sh/checkout/id?redirect=https://evil.invalid", "https://polar.sh/checkout/..",
+          "https://polar.sh/checkout/id#credential", "https://polar.sh/checkout/id/extra"})
+      QVERIFY(!isSubscriptionCheckoutUrl(QUrl(text)));
+    for (const auto &text :
+         {"http://example.invalid", "https://user@example.invalid", "https://example.invalid/path",
+          "https://example.invalid?key=secret", "https://example.invalid#key", "https://example.invalid:443"})
+      QVERIFY(!isSubscriptionServiceUrl(QUrl(text)));
+  }
   void acceptsOnlyPurchasedPlans()
   {
     for (const auto &plan : {"professional-local", "professional", "professional-max"}) {

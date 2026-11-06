@@ -152,6 +152,11 @@ public:
   */
   static bool copy(IClipboard *dst, const IClipboard *src, Time);
 
+  // Network sharing policy: preserve plain text on every plan. Images and
+  // rich HTML (which may embed images) require the image-clipboard entitlement.
+  // A blocked image-only copy leaves the destination clipboard untouched.
+  static bool copyForSharing(IClipboard *dst, const IClipboard *src, bool allowImages);
+
   //@}
 
 private:

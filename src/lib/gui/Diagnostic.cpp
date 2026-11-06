@@ -171,6 +171,15 @@ QString redactSensitiveText(QString text)
       QRegularExpression(QStringLiteral(R"(\b[A-Za-z0-9]{8}(?:-[A-Za-z0-9]{8}){3}\b)")),
       QStringLiteral("<purchase-key>")
   );
+  normalized.replace(
+      QRegularExpression(QStringLiteral(R"(\b[A-Za-z0-9]+_[A-Za-z0-9_-]{16,128}\b)")), QStringLiteral("<purchase-key>")
+  );
+  normalized.replace(
+      QRegularExpression(
+          QStringLiteral(R"(\b[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}\b)")
+      ),
+      QStringLiteral("<identifier>")
+  );
   if (!homePath.isEmpty()) {
     normalized.replace(homePath, QStringLiteral("~"), Qt::CaseInsensitive);
   }

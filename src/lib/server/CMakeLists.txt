@@ -6,6 +6,7 @@
 add_library(server STATIC
   BaseClientProxy.cpp
   BaseClientProxy.h
+  BroadcastKeys.h
   ClientListener.cpp
   ClientListener.h
   ClientProxy.cpp

@@ -20,6 +20,7 @@
 #include "deskflow/InputLanguageTypes.h"
 #include "deskflow/KeyTypes.h"
 #include "deskflow/MouseTypes.h"
+#include "server/BroadcastKeys.h"
 #include "server/Config.h"
 
 #include <chrono>
@@ -350,6 +351,7 @@ private:
   void handleSwitchInDirectionEvent(const Event &event);
   void handleToggleScreenEvent(const Event &);
   void handleKeyboardBroadcastEvent(const Event &event);
+  void releaseBroadcastKeys();
   void handleLockCursorToScreenEvent(const Event &event);
   void handlePrimaryInputLanguageChanged(const Event &event);
 
@@ -444,6 +446,7 @@ private:
   // the client and button prevents an orphan key-up during broadcast or when
   // modifier release order differs between keyboards.
   std::set<std::pair<const BaseClientProxy *, KeyButton>> m_inputLanguageControlButtons;
+  deskflow::server::BroadcastKeys m_broadcastKeys;
 
   // all clients (including the primary client) indexed by name
   using ClientList = std::map<std::string, BaseClientProxy *>;

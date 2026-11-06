@@ -10,13 +10,42 @@
 #include "../shared/FakePlatformScreen.h"
 #include "base/EventQueue.h"
 #include "common/FullscreenGeometry.h"
+#include "common/Settings.h"
 #include "deskflow/AppUtil.h"
 #include "deskflow/Screen.h"
 #include "io/IStream.h"
+#include "server/BroadcastKeys.h"
 #include "server/ClientProxy1_11.h"
 #include "server/CursorTransform.h"
 #include "server/PrimaryClient.h"
 #include "server/Server.h"
+
+void ServerTests::broadcastKeys_releaseOriginalRecipients()
+{
+  deskflow::server::BroadcastKeys keys;
+  QVERIFY(keys.remember(42, 65, 1, {"first", "second"}));
+  QVERIFY(!keys.remember(42, 65, 1, {"third"}));
+  const auto released = keys.take(42);
+  QVERIFY(released);
+  QCOMPARE(released->recipients, (std::vector<std::string>{"first", "second"}));
+  QVERIFY(!keys.take(42));
+  QVERIFY(keys.remember(43, 66, 0, {"second"}));
+  QCOMPARE(keys.releaseAll().at(43).recipients, (std::vector<std::string>{"second"}));
+  QVERIFY(keys.find(43)->recipients.empty());
+  QVERIFY(!keys.remember(43, 66, 0, {"third"}));
+  QCOMPARE(keys.takeAll().size(), 1U);
+  QVERIFY(!keys.find(43));
+}
+
+void ServerTests::broadcastKeys_disconnectDoesNotTransferHeldKeys()
+{
+  deskflow::server::BroadcastKeys keys;
+  keys.remember(42, 65, 0, {"first", "second"});
+  keys.forgetPeer("second");
+  QCOMPARE(keys.find(42)->recipients, (std::vector<std::string>{"first"}));
+  keys.forgetPeer("first");
+  QVERIFY(keys.take(42)->recipients.empty());
+}
 
 namespace {
 
@@ -86,6 +115,16 @@ public:
   deskflow::DisplayLayout displays{{-1920, -1080, 1920, 1080}, {0, 0, 1920, 1080}};
   QPoint position{100, -500};
   int entries = 0;
+  int keyPresses = 0;
+  int keyReleases = 0;
+  void keyDown(KeyID, KeyModifierMask, KeyButton, const std::string &) override
+  {
+    ++keyPresses;
+  }
+  void keyUp(KeyID, KeyModifierMask, KeyButton) override
+  {
+    ++keyReleases;
+  }
 
   void getShape(int32_t &x, int32_t &y, int32_t &width, int32_t &height) const override
   {
@@ -127,6 +166,51 @@ void ServerTests::initTestCase()
 {
   m_arch.init();
   static TestAppUtil appUtil;
+  QVERIFY(m_settingsDirectory.isValid());
+  Settings::setSettingsFile(m_settingsDirectory.filePath(QStringLiteral("test.conf")));
+}
+
+void ServerTests::freeInputContinuesButBroadcastRequiresMax()
+{
+  QVERIFY(!Settings::hasPlanFeature(QStringLiteral("simultaneous-input")));
+  EventQueue events;
+  deskflow::server::Config config(&events);
+  QVERIFY(config.addScreen("primary"));
+  QVERIFY(config.addScreen("secondary"));
+  QVERIFY(config.addOption("", kOptionClipboardSharing, 0));
+  auto *platform = new FakePlatformScreen(&events, true);
+  deskflow::Screen screen(platform, &events);
+  PrimaryClient primary("primary", &screen);
+  Server server(config, &primary, &screen, &events);
+  auto *client = new CursorClient(&events, &server);
+  server.adoptClient(client);
+  Server::KeyboardBroadcastInfo broadcastInfo(Server::KeyboardBroadcastInfo::kOn, "*");
+  QVERIFY(events.dispatchEvent(Event(
+      EventTypes::ServerKeyboardBroadcast, config.getInputFilter(), &broadcastInfo, Event::EventFlags::DontFreeData
+  )));
+  const auto dispatchKey = [&](EventTypes type, bool explicitTargets) {
+    auto *info =
+        explicitTargets ? IKeyState::KeyInfo::alloc(65, 0, 42, 1, {"*"}) : IKeyState::KeyInfo::alloc(65, 0, 42, 1);
+    Event event(type, config.getInputFilter(), info);
+    const bool dispatched = events.dispatchEvent(event);
+    Event::deleteData(event);
+    return dispatched;
+  };
+  QVERIFY(dispatchKey(EventTypes::KeyStateKeyDown, false));
+  QVERIFY(dispatchKey(EventTypes::KeyStateKeyUp, false));
+  QVERIFY(dispatchKey(EventTypes::KeyStateKeyDown, true));
+  QVERIFY(dispatchKey(EventTypes::KeyStateKeyUp, true));
+  QCOMPARE(client->keyPresses, 0);
+  QCOMPARE(client->keyReleases, 0);
+
+  Server::SwitchToScreenInfo jump("secondary");
+  QVERIFY(events.dispatchEvent(
+      Event(EventTypes::ServerSwitchToScreen, config.getInputFilter(), &jump, Event::EventFlags::DontFreeData)
+  ));
+  QVERIFY(dispatchKey(EventTypes::KeyStateKeyDown, false));
+  QVERIFY(dispatchKey(EventTypes::KeyStateKeyUp, false));
+  QCOMPARE(client->keyPresses, 1);
+  QCOMPARE(client->keyReleases, 1);
 }
 
 void ServerTests::screenSwitch_tracksPhysicalPositionAfterGapEntry()
