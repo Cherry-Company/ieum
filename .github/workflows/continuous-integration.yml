@@ -249,14 +249,8 @@ jobs:
             arch: "arm64"
             qt-version: 6.11.1
 
-          - name: "macos-arm64"
-            # Public-repository packaging uses an ephemeral hosted Apple Silicon runner.
-            # Hardware acceptance testing remains separate from release packaging.
-            # macos-15 queued without execution; track recovery in #85.
-            runs-on: macos-26
-            timeout: 60
-            qt-version: 6.11.1
-            config-args: '-DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_OSX_DEPLOYMENT_TARGET=14'
+          # Apple Silicon packaging temporarily omitted for alpha.32: #85.
+          # Restore native arm64 build/test/package once a free runner executes.
 
           - name: "macos-x64"
             runs-on: macos-15-intel

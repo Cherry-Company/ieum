@@ -10,9 +10,9 @@
 <p align="center"><img src="artwork/screenshots/connection-home-ko.png" alt="Ieum 的 My desk 主界面，显示已保存的电脑布局与连接状态" width="760"></p>
 <p align="center"><sub>截图为 Linux 上的韩语界面，使用测试设备及连接状态。</sub></p>
 
-## alpha.31 的桌面布局
+## alpha.32 的桌面布局
 
-[当前版本：v0.1.0-alpha.31](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.31)
+[当前版本：v0.1.0-alpha.32](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.32)
 
 - **先看到自己的桌面。** 主界面显示已保存的电脑布局和实际 Ieum 连接状态。
   选择一台电脑，即可查看名称、状态、位置和下一步操作。
@@ -36,7 +36,7 @@
 ## 鼠标移过去，接着工作。
 
 将指针移过屏幕边缘，就能操作旁边的电脑。键盘输入也会一起切换。
-在一台电脑上复制文字，在另一台上粘贴。每台电脑保留自己的屏幕和应用，Ieum 共享键鼠输入，不传输远程桌面画面。
+在一台电脑上复制文字，在另一台上粘贴。每台电脑保留自己的屏幕和应用。Professional Max 还可通过共享面板查看对方主屏幕。
 
 | 想做什么 | Ieum 提供什么 |
 | --- | --- |
@@ -67,14 +67,16 @@ Tailscale 的在线状态与 Ieum 的连接状态不同；对方电脑仍需在 
 
 ## 安装
 
-从 [alpha.31 发行页面](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.31)选择对应的安装文件。
+从 [alpha.32 发行页面](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.32)选择对应的安装文件。
+
+Apple Silicon 的 alpha.32 安装包因构建运行器未能启动而暂时排除。下方 arm64 链接为**旧版 alpha.31**，不含新增共享功能。[恢复进度 #85](https://github.com/Cherry-Company/ieum/issues/85)。
 
 | 电脑 | 安装文件 |
 | --- | --- |
-| Windows 10/11，Intel 或 AMD | [x64 MSI（英文安装程序）](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.31/Ieum-0.1.0-alpha.31-win-x64.msi) |
-| Windows 10/11，ARM | [ARM64 MSI（英文安装程序）](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.31/Ieum-0.1.0-alpha.31-win-arm64.msi) |
-| Apple Silicon Mac，macOS 14 及以上 | [arm64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.31/Ieum-0.1.0-alpha.31-macos-arm64.dmg) |
-| Intel Mac，macOS 12 及以上 | [x86_64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.31/Ieum-0.1.0-alpha.31-macos-x86_64.dmg) |
+| Windows 10/11，Intel 或 AMD | [x64 MSI（英文安装程序）](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.32/Ieum-0.1.0-alpha.32-win-x64.msi) |
+| Windows 10/11，ARM | [ARM64 MSI（英文安装程序）](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.32/Ieum-0.1.0-alpha.32-win-arm64.msi) |
+| Apple Silicon Mac，macOS 14 及以上 | [alpha.31 arm64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.31/Ieum-0.1.0-alpha.31-macos-arm64.dmg) |
+| Intel Mac，macOS 12 及以上 | [x86_64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.32/Ieum-0.1.0-alpha.32-macos-x86_64.dmg) |
 | Linux | 对应发行版的软件包；实验性支持 |
 
 Mac 用户需将应用移到 Applications，并授予辅助功能权限。Windows 可能需要对应架构的 Visual C++ 运行库。
@@ -117,7 +119,7 @@ Pro Local Early Access 为一次性 USD 30，付款确认后通过邮件人工�
 
 ## 正在准备的订阅方案
 
-新订阅方案仍在开发中，**尚未开售**。当前发行版本仍为 alpha.31。
+新订阅方案仍在开发中，**尚未开售**。当前发行版本仍为 alpha.32。
 已有的 Pro Local 永久许可证继续保留文件传输权限。订阅版计划如下：
 
 | 方案 | 按月付费 | 按年付费 | 计划包含的功能 |

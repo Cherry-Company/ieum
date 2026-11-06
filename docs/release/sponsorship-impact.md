@@ -60,18 +60,26 @@ features require X11; new Wayland/Flatpak support is not included. Wake never
 unlocks a login and sleep wake depends on the hardware/LAN. Windows↔macOS hardware
 acceptance is pending; this is a preview, with subscription sales disabled.
 
+## 임시 제외 / Temporary exclusion
+
+Apple Silicon 설치 파일은 무료 호스팅 러너가 두 차례 실행 전에 취소되어 이번 alpha.32에서 제외합니다.
+소스와 기존 alpha.31 설치 파일은 유지합니다. 실행 가능한 러너에서 네이티브 빌드·테스트·패키지 검사를
+통과하면 복구합니다. / The Apple Silicon package is omitted from alpha.32 after two hosted runner attempts
+were cancelled before execution. Source remains available; restore the asset after a native build/test/package pass.
+[복구 조건 / Recovery #85](https://github.com/Cherry-Company/ieum/issues/85).
+
 ## 빌드 및 검증 범위 / Build and validation scope
 
 - Linux GUI/core 빌드, CTest 80개 대상과 레거시 검사 27개가 통과했습니다. 가상 X11/PulseAudio에서
-  네이티브 입력·키 해제·루프 차단·시스템 소리 캡처·재생도 확인했습니다. Windows 소스는 교차 문법
-  검사를 통과했고 macOS 빌드와 실기기 검수는 남았습니다. / Linux GUI/core builds, 80 CTest targets
-  and 27 legacy cases passed, along with isolated native X11/PulseAudio checks. Windows syntax was
-  cross-checked; macOS compilation and physical acceptance remain outstanding.
+  네이티브 입력·키 해제·루프 차단·시스템 소리 캡처·재생도 확인했습니다. Windows x64/ARM64는 원격 빌드·테스트·설치 전환 검사도
+  통과했습니다. Intel Mac은 태그 빌드 검사를 거쳐 게시하며 실기기 검수는 남았습니다. / Linux GUI/core builds, 80 CTest targets
+  and 27 legacy cases passed, along with isolated native X11/PulseAudio checks. Windows x64/ARM64 also passed remote builds, tests and installation migration checks.
+  Intel Mac publication requires the tag build gate; physical acceptance remains outstanding.
 - 별도 비공개 구독 서비스의 모의 데이터 테스트 43개와 로컬 Workers/D1 검사 6개, Chromium 결제/복원 흐름, 세 플랜의
   서명·만료 C++ 검증 6개가 통과했습니다. 실제 결제 검증은 아닙니다. / The separate service passed
   43 fixture tests and six local Workers/D1 tests, a Chromium checkout/recovery flow and six C++ signature/expiry checks;
   no real payment has been verified.
-- 새 소스의 Windows x64/ARM64, Apple Silicon/Intel, Linux 패키지는 해당 태그 CI와 패키지 검사가
+- 새 소스의 Windows x64/ARM64, Intel Mac, Linux 패키지는 해당 태그 CI와 패키지 검사가
   통과한 파일만 게시합니다. 소유자 마스터키젠과 개인 서명 키는 공개 패키지에 넣지 않습니다.
   / Only assets passing this tag's cross-platform build and package gates are published.
   Owner key-generation tools and private signing keys are excluded from public assets.

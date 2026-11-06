@@ -10,9 +10,9 @@
 <p align="center"><img src="artwork/screenshots/connection-home-ko.png" alt="Ieum's My desk view with the saved computer layout and connection state" width="760"></p>
 <p align="center"><sub>Screenshots show the Korean UI rendered on Linux with test devices and connection states.</sub></p>
 
-## My desk in alpha.31
+## My desk in alpha.32
 
-[Current release: v0.1.0-alpha.31](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.31)
+[Current release: v0.1.0-alpha.32](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.32)
 
 - **See your desk first.** The main screen shows the saved computer layout and actual Ieum connection state.
   Select a computer to see its name, state, position, and next steps.
@@ -37,7 +37,7 @@
 
 Push your pointer across a screen edge to control the next computer. Your keyboard follows.
 Copy text on one computer and paste it on another. Each computer keeps its own display and apps;
-Ieum shares input rather than streaming a remote desktop.
+Professional Max also provides primary-screen viewing through the sharing panel.
 
 | What you need | What Ieum provides |
 | --- | --- |
@@ -70,14 +70,16 @@ selected on the client, including whether it is already connected elsewhere.
 
 ## Install
 
-Choose a package from the [alpha.31 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.31).
+Choose a package from the [alpha.32 release](https://github.com/Cherry-Company/ieum/releases/tag/v0.1.0-alpha.32).
+
+The alpha.32 Apple Silicon package is temporarily excluded because its hosted runner did not execute. The arm64 link below is **the previous alpha.31**, without the new sharing features. [Recovery #85](https://github.com/Cherry-Company/ieum/issues/85).
 
 | Computer | Package |
 | --- | --- |
-| Windows 10/11, Intel or AMD | [x64 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.31/Ieum-0.1.0-alpha.31-win-x64.msi) |
-| Windows 10/11, ARM | [ARM64 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.31/Ieum-0.1.0-alpha.31-win-arm64.msi) |
-| Apple Silicon Mac, macOS 14+ | [arm64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.31/Ieum-0.1.0-alpha.31-macos-arm64.dmg) |
-| Intel Mac, macOS 12+ | [x86_64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.31/Ieum-0.1.0-alpha.31-macos-x86_64.dmg) |
+| Windows 10/11, Intel or AMD | [x64 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.32/Ieum-0.1.0-alpha.32-win-x64.msi) |
+| Windows 10/11, ARM | [ARM64 MSI](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.32/Ieum-0.1.0-alpha.32-win-arm64.msi) |
+| Apple Silicon Mac, macOS 14+ | [alpha.31 arm64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.31/Ieum-0.1.0-alpha.31-macos-arm64.dmg) |
+| Intel Mac, macOS 12+ | [x86_64 DMG](https://github.com/Cherry-Company/ieum/releases/download/v0.1.0-alpha.32/Ieum-0.1.0-alpha.32-macos-x86_64.dmg) |
 | Linux | Distribution package; experimental support |
 
 On Mac, move Ieum to Applications and grant Accessibility permission. Windows may need the matching Visual C++ runtime.
@@ -121,7 +123,7 @@ When using an external configuration file, manage positions in that file.
 ## Subscription plans in preparation
 
 The new subscription plans are in development and **are not on sale yet**.
-The published release remains alpha.31. Existing perpetual Pro Local keys retain
+The desktop preview is alpha.32. Existing perpetual Pro Local keys retain
 their file-transfer entitlement. The intended subscription packaging is:
 
 | Plan | Monthly | Annually | Intended features |
