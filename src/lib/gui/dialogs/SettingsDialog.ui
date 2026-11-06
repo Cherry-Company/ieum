@@ -985,13 +985,13 @@
        <item>
         <widget class="QGroupBox" name="groupProLicense">
          <property name="title">
-          <string>Pro Local license</string>
+          <string>Event or existing license</string>
          </property>
          <layout class="QVBoxLayout" name="verticalLayoutProLicense">
           <item>
            <widget class="QLabel" name="lblProLicenseHelp">
             <property name="text">
-             <string>Import the license file you received, then activate it on this computer.</string>
+             <string>Enter an event or existing license key here. Use Plans and subscription for a subscription purchase.</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>

@@ -16,12 +16,15 @@
 #include "MacApplicationLifecyclePolicy.h"
 #include "ProductIdentity.h"
 #include "StyleUtils.h"
+#include "SubscriptionClient.h"
+#include "SubscriptionLink.h"
 
 #include "dialogs/AboutDialog.h"
 #include "dialogs/ClientConfigDialog.h"
 #include "dialogs/ConnectionGuideDialog.h"
 #include "dialogs/DiagnosticDialog.h"
 #include "dialogs/FingerprintDialog.h"
+#include "dialogs/PlansDialog.h"
 #include "dialogs/ServerConfigDialog.h"
 #include "dialogs/SettingsDialog.h"
 
@@ -107,6 +110,7 @@ MainWindow::MainWindow(const QString &coreExecutablePath)
       m_networkRecoveryTimer{new QTimer(this)},
       m_autoStartRetryTimer{new QTimer(this)}
 {
+  (void)SubscriptionClient::instance();
 #ifdef Q_OS_WIN
   m_fileTransferDropBroker = std::make_unique<WindowsFileTransferDropBroker>([this](const QString &encodedValue) {
     (void)m_coreProcess.sendFileTransferEdgeDrop(encodedValue);
@@ -173,6 +177,7 @@ MainWindow::MainWindow(const QString &coreExecutablePath)
   // Setup the Instance Checking
   // In case of a previous crash remove first
   QLocalServer::removeServer(m_guiSocketName);
+  m_guiDupeChecker->setSocketOptions(QLocalServer::UserAccessOption);
   m_guiDupeChecker->listen(m_guiSocketName);
 
   createMenuBar();
@@ -782,16 +787,26 @@ void MainWindow::handleDuplicateInstanceConnection()
   while (m_guiDupeChecker->hasPendingConnections()) {
     auto *socket = m_guiDupeChecker->nextPendingConnection();
     socket->setParent(this);
+    socket->setReadBufferSize(1025);
 
     const auto handleCommand = [this, socket] {
       if (socket->property("ieumCommandHandled").toBool()) {
         return;
       }
 
-      const auto command = socket->readAll().trimmed();
-      if (command.isEmpty() && socket->state() == QLocalSocket::ConnectedState) {
+      auto buffer = socket->property("ieumCommandBuffer").toByteArray();
+      buffer.append(socket->readAll());
+      if (buffer.size() > 1024) {
+        socket->setProperty("ieumCommandHandled", true);
+        socket->abort();
+        socket->deleteLater();
         return;
       }
+      socket->setProperty("ieumCommandBuffer", buffer);
+      if (!buffer.contains('\n') && socket->state() == QLocalSocket::ConnectedState) {
+        return;
+      }
+      const auto command = buffer.trimmed();
       socket->setProperty("ieumCommandHandled", true);
 
       if (command == QByteArrayLiteral("prepare-update")) {
@@ -800,6 +815,10 @@ void MainWindow::handleDuplicateInstanceConnection()
         socket->waitForBytesWritten(1000);
         socket->disconnectFromServer();
         QTimer::singleShot(0, this, &MainWindow::quitApplication);
+      } else if (command.startsWith(QByteArrayLiteral("open-subscription "))) {
+        const auto url = QUrl::fromEncoded(command.mid(18), QUrl::StrictMode);
+        socket->disconnectFromServer();
+        QTimer::singleShot(0, this, [this, url] { openSubscriptionLink(url); });
       } else {
         showAndActivate();
         socket->disconnectFromServer();
@@ -811,7 +830,7 @@ void MainWindow::handleDuplicateInstanceConnection()
     connect(socket, &QLocalSocket::disconnected, this, handleCommand);
     QTimer::singleShot(250, socket, [this, socket, handleCommand] {
       if (!socket->property("ieumCommandHandled").toBool()) {
-        if (socket->bytesAvailable() == 0) {
+        if (socket->bytesAvailable() == 0 && socket->property("ieumCommandBuffer").toByteArray().isEmpty()) {
           socket->setProperty("ieumCommandHandled", true);
           showAndActivate();
           socket->deleteLater();
@@ -820,7 +839,31 @@ void MainWindow::handleDuplicateInstanceConnection()
         handleCommand();
       }
     });
+    QTimer::singleShot(3000, socket, [socket] {
+      if (!socket->property("ieumCommandHandled").toBool()) {
+        socket->setProperty("ieumCommandHandled", true);
+        socket->abort();
+        socket->deleteLater();
+      }
+    });
   }
+}
+
+void MainWindow::openSubscriptionLink(const QUrl &url)
+{
+  const auto purchase = parseSubscriptionLink(url);
+  if (!purchase)
+    return;
+  showAndActivate();
+  auto *dialog = findChild<PlansDialog *>();
+  if (!dialog) {
+    dialog = new PlansDialog(this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+  }
+  dialog->preparePurchase(purchase->plan, purchase->key);
+  dialog->show();
+  dialog->raise();
+  dialog->activateWindow();
 }
 
 void MainWindow::clearSettings()
@@ -1229,6 +1272,11 @@ void MainWindow::createMenuBar()
   m_menuHelp->addAction(m_actionAbout);
   m_menuHelp->addAction(m_actionReportBug);
   m_menuHelp->addAction(m_actionSponsor);
+  m_actionPlans = m_menuHelp->addAction(tr("Plans and subscription"));
+  connect(m_actionPlans, &QAction::triggered, this, [this] {
+    PlansDialog dialog(this);
+    dialog.exec();
+  });
   m_menuHelp->addSeparator();
   m_menuHelp->addAction(m_actionClearSettings);
 
@@ -1846,6 +1894,8 @@ void MainWindow::updateText()
   m_actionReportBug->setText(tr("Report a Bug"));
   //: %1 will be replaced with the app name
   m_actionSponsor->setText(tr("Sponsor %1").arg(productDisplayName()));
+  if (m_actionPlans)
+    m_actionPlans->setText(tr("Plans and subscription"));
   m_actionMinimize->setText(tr("&Minimize to tray"));
   m_actionQuit->setText(tr("&Quit"));
   m_actionTrayQuit->setText(tr("&Quit"));

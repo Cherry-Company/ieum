@@ -1,4 +1,13 @@
 <CPackWiXPatch>
+  <CPackWiXFragment Id="CM_CP_ieum.exe">
+    <RegistryKey Root="HKLM" Key="Software\Classes\ieum">
+      <RegistryValue Type="string" Value="URL:Ieum subscription" />
+      <RegistryValue Name="URL Protocol" Type="string" Value="" />
+      <RegistryKey Key="shell\open\command">
+        <RegistryValue Type="string" Value="&quot;[INSTALL_ROOT]ieum.exe&quot; --activate &quot;%1&quot;" />
+      </RegistryKey>
+    </RegistryKey>
+  </CPackWiXFragment>
   <CPackWiXFragment Id="CM_CP_ieum_daemon.exe">
     <ServiceInstall
       Id="ServiceInstall"

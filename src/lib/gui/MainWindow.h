@@ -101,6 +101,7 @@ public:
 
 public Q_SLOTS:
   void showAndActivate();
+  void openSubscriptionLink(const QUrl &url);
 
 protected:
   void changeEvent(QEvent *e) override;
@@ -276,6 +277,7 @@ private:
   QAction *m_actionClearSettings = nullptr;
   QAction *m_actionReportBug = nullptr;
   QAction *m_actionSponsor = nullptr;
+  QAction *m_actionPlans = nullptr;
   QAction *m_actionMinimize = nullptr;
   QAction *m_actionQuit = nullptr;
   QAction *m_actionTrayQuit = nullptr;

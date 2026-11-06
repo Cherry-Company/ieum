@@ -8,6 +8,7 @@
 #pragma once
 
 #include <QDateTime>
+#include <QElapsedTimer>
 #include <QSettings>
 
 #include <QDir>
@@ -15,6 +16,7 @@
 #include "common/Constants.h"
 #include "common/NetworkProtocol.h"
 #include "common/QSettingsProxy.h"
+#include "licensing/ProLicense.h"
 
 class Settings : public QObject
 {
@@ -101,6 +103,10 @@ public:
   struct Pro
   {
     inline static const auto LicenseKey = QStringLiteral("pro/licenseKey");
+    inline static const auto EventLicenseKey = QStringLiteral("pro/eventLicenseKey");
+    inline static const auto SubscriptionLease = QStringLiteral("pro/subscriptionLease");
+    inline static const auto SubscriptionKey = QStringLiteral("pro/subscriptionKey");
+    inline static const auto SubscriptionPlan = QStringLiteral("pro/subscriptionPlan");
   };
   struct Gui
   {
@@ -227,6 +233,9 @@ public:
   static QSettingsProxy &proxy();
   static NetworkProtocol networkProtocol();
   static bool hasProFileTransferEntitlement(const QDateTime &nowUtc = QDateTime::currentDateTimeUtc());
+  static deskflow::licensing::ProLicenseEntitlement
+  proEntitlement(const QDateTime &nowUtc = QDateTime::currentDateTimeUtc());
+  static bool hasPlanFeature(QStringView feature, const QDateTime &nowUtc = QDateTime::currentDateTimeUtc());
   static bool clearUnauthorizedFileTransferPreferences(const QDateTime &nowUtc = QDateTime::currentDateTimeUtc());
   static void save(bool emitSaving = true);
   static QStringList validKeys();
@@ -253,6 +262,7 @@ private:
   void cleanSettings();
   void cleanStateSettings();
   bool hasProFileTransferEntitlementAt(const QDateTime &nowUtc) const;
+  deskflow::licensing::ProLicenseEntitlement proEntitlementAt(const QDateTime &nowUtc) const;
   bool clearUnauthorizedFileTransferPreferencesAt(const QDateTime &nowUtc);
 
   /**
@@ -269,6 +279,7 @@ private:
 
   QSettings *m_settings = nullptr;
   QSettings *m_stateSettings = nullptr;
+  mutable QElapsedTimer m_entitlementSettingsRefresh;
   std::shared_ptr<QSettingsProxy> m_settingsProxy;
 
   // clang-format off
@@ -328,6 +339,10 @@ private:
     , Settings::FileTransfer::ReceiveEnabled
     , Settings::FileTransfer::DownloadDirectory
     , Settings::Pro::LicenseKey
+    , Settings::Pro::EventLicenseKey
+    , Settings::Pro::SubscriptionLease
+    , Settings::Pro::SubscriptionKey
+    , Settings::Pro::SubscriptionPlan
     , Settings::Log::File
     , Settings::Log::Level
     , Settings::Log::ToFile

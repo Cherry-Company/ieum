@@ -1424,6 +1424,10 @@ Client computer</source>
         <source>%1 connected</source>
         <translation>%1 연결됨</translation>
     </message>
+    <message>
+        <source>Plans and subscription</source>
+        <translation>플랜 및 구독</translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -2292,11 +2296,11 @@ Enabling this setting will disable the server config GUI.</source>
     </message>
     <message>
         <source>Pro Local activated</source>
-        <translation>Pro Local 활성화 완료</translation>
+        <translation type="vanished">Pro Local 활성화 완료</translation>
     </message>
     <message>
         <source>File transfer is now available on this computer.</source>
-        <translation>이제 이 컴퓨터에서 파일 전송을 사용할 수 있습니다.</translation>
+        <translation type="vanished">이제 이 컴퓨터에서 파일 전송을 사용할 수 있습니다.</translation>
     </message>
     <message>
         <source>Required messages</source>
@@ -2340,15 +2344,15 @@ Enabling this setting will disable the server config GUI.</source>
     </message>
     <message>
         <source>Pro Local active — %1 (%2)</source>
-        <translation>Pro Local 활성화됨 — %1 (%2)</translation>
+        <translation type="vanished">Pro Local 활성화됨 — %1 (%2)</translation>
     </message>
     <message>
         <source>Valid Pro Local license. Select Activate to apply it on this computer.</source>
-        <translation>유효한 Pro Local 라이선스입니다. 이 컴퓨터에 적용하려면 활성화를 누르세요.</translation>
+        <translation type="vanished">유효한 Pro Local 라이선스입니다. 이 컴퓨터에 적용하려면 활성화를 누르세요.</translation>
     </message>
     <message>
         <source>This candidate is not valid. The existing Pro Local license remains active.</source>
-        <translation>입력한 라이선스가 유효하지 않습니다. 기존 Pro Local 라이선스는 계속 활성 상태입니다.</translation>
+        <translation type="vanished">입력한 라이선스가 유효하지 않습니다. 기존 Pro Local 라이선스는 계속 활성 상태입니다.</translation>
     </message>
     <message>
         <source>This license is too large.</source>
@@ -2614,11 +2618,11 @@ Enabling this setting will disable the server config GUI.</source>
     </message>
     <message>
         <source>Pro Local license</source>
-        <translation>Pro Local 라이선스</translation>
+        <translation type="vanished">Pro Local 라이선스</translation>
     </message>
     <message>
         <source>Import the license file you received, then activate it on this computer.</source>
-        <translation>받은 라이선스 파일을 가져온 다음 이 컴퓨터에서 활성화하세요.</translation>
+        <translation type="vanished">받은 라이선스 파일을 가져온 다음 이 컴퓨터에서 활성화하세요.</translation>
     </message>
     <message>
         <source>IEUM1 license line</source>
@@ -2760,6 +2764,42 @@ Licenses are issued manually after payment verification.</source>
         <source>Tailscale manages this value. Turn off Tailscale in this section to change it.</source>
         <translation>Tailscale이 관리하는 값입니다. 바꾸려면 이 화면에서 Tailscale을 끄세요.</translation>
     </message>
+    <message>
+        <source>Event or existing license</source>
+        <translation>이벤트·기존 라이선스</translation>
+    </message>
+    <message>
+        <source>Enter an event or existing license key here. Use Plans and subscription for a subscription purchase.</source>
+        <translation>이벤트 또는 기존 라이선스 키를 입력하세요. 구독 구매는 플랜 및 구독에서 할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>Plans and subscription</source>
+        <translation>플랜 및 구독</translation>
+    </message>
+    <message>
+        <source>License activated</source>
+        <translation>라이선스 활성화 완료</translation>
+    </message>
+    <message>
+        <source>%1 is active on this computer.</source>
+        <translation>이 컴퓨터에서 %1 플랜이 활성화되었습니다.</translation>
+    </message>
+    <message>
+        <source>Active plan: %1</source>
+        <translation>활성 플랜: %1</translation>
+    </message>
+    <message>
+        <source>Valid %1 license. Select Activate to apply it.</source>
+        <translation>유효한 %1 라이선스입니다. 활성화를 눌러 적용하세요.</translation>
+    </message>
+    <message>
+        <source>This candidate is not valid. Your existing plan remains active.</source>
+        <translation>입력한 키가 유효하지 않습니다. 기존 플랜은 유지됩니다.</translation>
+    </message>
+    <message>
+        <source>Free plan. Enter an event or existing key, or view subscription plans.</source>
+        <translation>무료 플랜입니다. 이벤트·기존 키를 입력하거나 구독 플랜을 살펴보세요.</translation>
+    </message>
 </context>
 <context>
     <name>StartupManager</name>
@@ -2842,6 +2882,136 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>Encryption Disabled</source>
         <translation>암호화 사용 안 함</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::PlansDialog</name>
+    <message>
+        <source>Plans and subscription</source>
+        <translation>플랜 및 구독</translation>
+    </message>
+    <message>
+        <source>One desk. More connected.</source>
+        <translation>하나의 책상, 더 넓은 연결.</translation>
+    </message>
+    <message>
+        <source>Subscriptions are being prepared. Existing Local licenses continue to work.</source>
+        <translation>새 구독을 준비 중입니다. 기존 Local 라이선스는 계속 사용할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>The additional features below are planned for the subscription release.</source>
+        <translation>아래 추가 기능은 구독판에 포함할 예정입니다.</translation>
+    </message>
+    <message>
+        <source>US$%1 / year</source>
+        <translation>연 US$%1</translation>
+    </message>
+    <message>
+        <source>or US$%1 / month</source>
+        <translation>또는 월 US$%1</translation>
+    </message>
+    <message>
+        <source>Keyboard, mouse and text clipboard</source>
+        <translation>키보드·마우스·텍스트 클립보드</translation>
+    </message>
+    <message>
+        <source>Direct file transfer</source>
+        <translation>직접 파일 전송</translation>
+    </message>
+    <message>
+        <source>Computer audio sharing</source>
+        <translation>컴퓨터 오디오 공유</translation>
+    </message>
+    <message>
+        <source>Control from either keyboard</source>
+        <translation>양쪽 키보드로 제어</translation>
+    </message>
+    <message>
+        <source>Remote screen viewing</source>
+        <translation>원격 화면 보기</translation>
+    </message>
+    <message>
+        <source>Image clipboard</source>
+        <translation>이미지 클립보드</translation>
+    </message>
+    <message>
+        <source>Coordinated lock and wake</source>
+        <translation>잠금·깨우기 연동</translation>
+    </message>
+    <message>
+        <source>Simultaneous input</source>
+        <translation>동시 입력</translation>
+    </message>
+    <message>
+        <source>Not available yet</source>
+        <translation>출시 준비 중</translation>
+    </message>
+    <message>
+        <source>Free input sharing remains available. Annual prices are charged once per year. Taxes, if applicable, appear at checkout.</source>
+        <translation>무료 입력 공유는 계속 사용할 수 있습니다. 연간 요금은 1년분을 한 번에 결제하며, 적용되는 세금은 결제 화면에 표시합니다.</translation>
+    </message>
+    <message>
+        <source>Restore a subscription purchase</source>
+        <translation>구독 구매 복원</translation>
+    </message>
+    <message>
+        <source>Purchase key from your receipt</source>
+        <translation>영수증에 있는 구매 키</translation>
+    </message>
+    <message>
+        <source>Restore</source>
+        <translation>복원</translation>
+    </message>
+    <message>
+        <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your Gumroad receipt.</source>
+        <translation>이벤트·기존 라이선스 키는 설정 → 파일에 입력하세요. 구독 관리와 해지는 Gumroad 영수증에서 할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>Current plan: %1</source>
+        <translation>현재 플랜: %1</translation>
+    </message>
+    <message>
+        <source>View subscription</source>
+        <translation>구독 살펴보기</translation>
+    </message>
+    <message>
+        <source>Open checkout</source>
+        <translation>결제 페이지 열기</translation>
+    </message>
+    <message>
+        <source>Choose a plan, then select monthly or annual billing at checkout.</source>
+        <translation>플랜을 고른 뒤 결제 화면에서 월간·연간 결제를 선택하세요.</translation>
+    </message>
+    <message>
+        <source>Your purchase is ready. Select Restore to activate it on this computer.</source>
+        <translation>구매 정보를 불러왔습니다. 복원을 누르면 이 컴퓨터에서 활성화됩니다.</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::SubscriptionClient</name>
+    <message>
+        <source>Choose your purchased plan and enter the key from your receipt.</source>
+        <translation>구매한 플랜을 선택하고 영수증의 키를 입력하세요.</translation>
+    </message>
+    <message>
+        <source>Subscription activation is not available in this build yet.</source>
+        <translation>이 버전은 아직 구독 활성화를 지원하지 않습니다.</translation>
+    </message>
+    <message>
+        <source>%1 is active on this computer.</source>
+        <translation>이 컴퓨터에서 %1 플랜이 활성화되었습니다.</translation>
+    </message>
+    <message>
+        <source>This subscription has ended. Free features and any valid event or legacy license remain available.</source>
+        <translation>구독 이용 기간이 끝났습니다. 무료 기능과 유효한 이벤트·기존 라이선스는 계속 사용할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>This purchase key does not have an active subscription for the selected plan.</source>
+        <translation>이 구매 키에는 선택한 플랜의 활성 구독이 없습니다.</translation>
+    </message>
+    <message>
+        <source>Could not verify the subscription. Your existing signed access remains valid until its expiry.</source>
+        <translation>구독을 확인하지 못했습니다. 기존에 인증된 이용 권한은 만료 시점까지 유지됩니다.</translation>
     </message>
 </context>
 <context>

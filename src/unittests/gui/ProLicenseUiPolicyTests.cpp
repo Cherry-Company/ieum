@@ -24,6 +24,7 @@ private:
   {
     ProLicenseEntitlement result;
     result.status = status;
+    result.plan = deskflow::licensing::Plan::ProfessionalLocal;
     if (includesFileTransfer) {
       result.features = {QString::fromLatin1(kFileTransferFeature)};
     }

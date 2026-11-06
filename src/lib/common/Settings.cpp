@@ -184,7 +184,36 @@ void Settings::cleanStateSettings()
 
 bool Settings::hasProFileTransferEntitlementAt(const QDateTime &nowUtc) const
 {
-  return deskflow::licensing::permitsProductionFileTransfer(m_settings->value(Pro::LicenseKey).toString(), nowUtc);
+  return proEntitlementAt(nowUtc).permits(QString::fromLatin1(deskflow::licensing::kFileTransferFeature));
+}
+
+deskflow::licensing::ProLicenseEntitlement Settings::proEntitlement(const QDateTime &nowUtc)
+{
+  return instance()->proEntitlementAt(nowUtc);
+}
+
+deskflow::licensing::ProLicenseEntitlement Settings::proEntitlementAt(const QDateTime &nowUtc) const
+{
+  using namespace deskflow::licensing;
+  // The GUI refreshes signed leases while the core is running. Re-read them
+  // without adding disk I/O or signature verification to every transfer chunk.
+  if (!m_entitlementSettingsRefresh.isValid() || m_entitlementSettingsRefresh.hasExpired(30000)) {
+    m_settings->sync();
+    m_entitlementSettingsRefresh.start();
+  }
+  ProLicenseEntitlement best;
+  for (const auto &key : {Pro::LicenseKey, Pro::EventLicenseKey, Pro::SubscriptionLease}) {
+    const auto candidate = verifyProductionProLicense(m_settings->value(key).toString(), nowUtc);
+    if (candidate.status == ProLicenseStatus::Valid &&
+        (best.status != ProLicenseStatus::Valid || static_cast<int>(candidate.plan) > static_cast<int>(best.plan)))
+      best = candidate;
+  }
+  return best;
+}
+
+bool Settings::hasPlanFeature(QStringView feature, const QDateTime &nowUtc)
+{
+  return proEntitlement(nowUtc).permits(feature);
 }
 
 bool Settings::clearUnauthorizedFileTransferPreferencesAt(const QDateTime &nowUtc)
@@ -255,7 +284,8 @@ QVariant Settings::defaultValue(const QString &key)
     return QStringLiteral("%1/Ieum").arg(downloads);
   }
 
-  if (key == Pro::LicenseKey)
+  if (key == Pro::LicenseKey || key == Pro::EventLicenseKey || key == Pro::SubscriptionLease ||
+      key == Pro::SubscriptionKey || key == Pro::SubscriptionPlan)
     return QString();
 
   if (key == Log::Level)

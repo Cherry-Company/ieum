@@ -2,6 +2,13 @@
 # SPDX-License-Identifier: GPL-2.0-only WITH LicenseRef-OpenSSL-Exception
 
 create_test(
+  NAME PlanLicenseTests
+  DEPENDS licensing OpenSSL::Crypto
+  SOURCE PlanLicenseTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/licensing"
+)
+
+create_test(
   NAME ProLicenseTests
   DEPENDS licensing
   SOURCE ProLicenseTests.cpp

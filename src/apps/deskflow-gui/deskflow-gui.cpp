@@ -21,6 +21,7 @@
 #include "gui/SessionLifecycle.h"
 #include "gui/StartupManager.h"
 #include "gui/StyleUtils.h"
+#include "gui/SubscriptionLink.h"
 #include "gui/UpdateShutdown.h"
 #include "gui/dialogs/MacAccessibilityGuide.h"
 
@@ -129,6 +130,7 @@ int main(int argc, char *argv[])
   const auto launchObserverCleanup = qScopeGuard([] { macOSStopObservingApplicationLaunch(); });
 #endif
   QApplication app(argc, argv);
+  SubscriptionLinkHandler subscriptionLinks(&app);
   QApplication::setQuitOnLastWindowClosed(false);
 
   // Ensure the I18N object is made before strings
@@ -144,6 +146,7 @@ int main(int argc, char *argv[])
   auto resetOption = QCommandLineOption("reset", "Reset all settings");
   auto showOption = QCommandLineOption("show", "Show the main window even when background startup is enabled");
   auto backgroundOption = QCommandLineOption("background", "Start in the background without opening the main window");
+  auto activateOption = QCommandLineOption("activate", "Open a subscription receipt link", "url");
   auto prepareUpdateOption =
       QCommandLineOption("prepare-update", "Ask the running Ieum instance to exit before an update");
   auto unregisterStartupOption =
@@ -156,12 +159,23 @@ int main(int argc, char *argv[])
   parser.addOption(resetOption);
   parser.addOption(showOption);
   parser.addOption(backgroundOption);
+  parser.addOption(activateOption);
+  parser.addPositionalArgument("activation-url", "Optional Ieum subscription receipt link", "[activation-url]");
   parser.addOption(prepareUpdateOption);
   parser.addOption(unregisterStartupOption);
   parser.parse(QCoreApplication::arguments());
 
   if (!parser.errorText().isEmpty()) {
     qCritical().noquote() << parser.errorText() << "\nUse --help for more information.";
+    return s_exitArgs;
+  }
+
+  const auto positional = parser.positionalArguments();
+  const auto activationText = parser.isSet(activateOption) ? parser.value(activateOption) : positional.value(0);
+  const QUrl activationUrl(activationText, QUrl::StrictMode);
+  if (positional.size() > 1 || (parser.isSet(activateOption) && !positional.isEmpty()) ||
+      ((!activationText.isEmpty() || parser.isSet(activateOption)) && !parseSubscriptionLink(activationUrl))) {
+    qCritical("invalid subscription receipt link");
     return s_exitArgs;
   }
 
@@ -214,8 +228,10 @@ int main(int argc, char *argv[])
           nullptr, productDisplayName(), QObject::tr("%1 is already running").arg(productDisplayName())
       );
     } else {
-      const auto command =
+      auto command =
           parser.isSet(prepareUpdateOption) ? QByteArrayLiteral("prepare-update\n") : QByteArrayLiteral("show\n");
+      if (!parser.isSet(prepareUpdateOption) && !activationUrl.isEmpty())
+        command = QByteArrayLiteral("open-subscription ") + activationUrl.toEncoded() + '\n';
       socket.write(command);
       if (!socket.waitForBytesWritten(2000)) {
         return parser.isSet(prepareUpdateOption) ? s_exitFailed : s_exitDuplicate;
@@ -311,6 +327,14 @@ int main(int argc, char *argv[])
   });
 
   MainWindow mainWindow;
+  QObject::connect(
+      &subscriptionLinks, &SubscriptionLinkHandler::received, &mainWindow, &MainWindow::openSubscriptionLink
+  );
+  QTimer::singleShot(0, &mainWindow, [&subscriptionLinks, activationUrl] {
+    if (!activationUrl.isEmpty())
+      subscriptionLinks.receive(activationUrl);
+    subscriptionLinks.setReady();
+  });
   const bool forceShow = parser.isSet(showOption);
   const bool forceBackground = parser.isSet(backgroundOption);
 #if defined(Q_OS_MACOS)

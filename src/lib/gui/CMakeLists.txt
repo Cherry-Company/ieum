@@ -54,6 +54,10 @@ add_library(${target} STATIC
   StartupManager.cpp
   StartupManager.h
   StyleUtils.h
+  SubscriptionClient.cpp
+  SubscriptionClient.h
+  SubscriptionLink.cpp
+  SubscriptionLink.h
   TlsUtility.cpp
   TlsUtility.h
   UpdateShutdown.cpp
@@ -97,6 +101,8 @@ add_library(${target} STATIC
   dialogs/MacAccessibilityGuide.h
   dialogs/ProLicenseUiPolicy.cpp
   dialogs/ProLicenseUiPolicy.h
+  dialogs/PlansDialog.cpp
+  dialogs/PlansDialog.h
   dialogs/ScreenSettingsDialog.cpp
   dialogs/ScreenSettingsDialog.h
   dialogs/ScreenSettingsDialog.ui

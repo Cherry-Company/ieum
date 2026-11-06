@@ -5,6 +5,13 @@ add_subdirectory(config)
 add_subdirectory(core)
 
 create_test(
+  NAME SubscriptionLinkTests
+  DEPENDS gui
+  SOURCE SubscriptionLinkTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+create_test(
   NAME DeskWorkspaceTests
   DEPENDS gui
   SOURCE DeskWorkspaceTests.cpp

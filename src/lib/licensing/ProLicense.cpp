@@ -6,6 +6,7 @@
 
 #include "licensing/ProLicense.h"
 
+#include "licensing/PlanLicensePublicKeys.h"
 #include "licensing/ProLicensePublicKey.h"
 
 #include <QJsonArray>
@@ -18,12 +19,14 @@
 #include <openssl/evp.h>
 
 #include <memory>
+#include <mutex>
 
 namespace deskflow::licensing {
 namespace {
 
 constexpr auto kEnvelopePrefix = "IEUM1";
 constexpr auto kSchema = "ieum.pro-license.v1";
+constexpr auto kPlanSchema = "ieum.pro-license.v2";
 constexpr auto kProduct = "pro-local";
 constexpr qsizetype kEd25519PublicKeyBytes = 32;
 constexpr qsizetype kEd25519SignatureBytes = 64;
@@ -135,7 +138,7 @@ bool verifyEd25519(const QByteArray &publicKey, const QByteArray &payload, const
 
 bool ProLicenseEntitlement::permits(QStringView feature) const noexcept
 {
-  return status == ProLicenseStatus::Valid && features.contains(feature.toString());
+  return status == ProLicenseStatus::Valid && planPermits(plan, feature) && features.contains(feature.toString());
 }
 
 ProLicenseEntitlement
@@ -187,8 +190,22 @@ verifyProLicense(const QString &licenseText, const QDateTime &nowUtc, const ProL
     return rejected(ProLicenseStatus::Malformed);
   }
 
-  if (*schema != QLatin1String(kSchema) || *product != QLatin1String(kProduct)) {
+  const bool legacy = *schema == QLatin1String(kSchema);
+  if ((!legacy && *schema != QLatin1String(kPlanSchema)) ||
+      *product != (legacy ? QLatin1String(kProduct) : QLatin1String("ieum-desktop"))) {
     return rejected(ProLicenseStatus::Unsupported);
+  }
+
+  Plan plan = Plan::ProfessionalLocal;
+  QString kind = QStringLiteral("legacy");
+  if (!legacy) {
+    const auto parsedPlan = parsePlan(object.value(QStringLiteral("plan")).toString());
+    kind = object.value(QStringLiteral("kind")).toString();
+    if (!parsedPlan || *parsedPlan == Plan::Free ||
+        (kind != QLatin1String("event") && kind != QLatin1String("owner") && kind != QLatin1String("subscription"))) {
+      return rejected(ProLicenseStatus::Unsupported);
+    }
+    plan = *parsedPlan;
   }
 
   const auto key = keyRing.constFind(*keyId);
@@ -209,10 +226,19 @@ verifyProLicense(const QString &licenseText, const QDateTime &nowUtc, const ProL
   if (!features.contains(QLatin1String(kFileTransferFeature))) {
     return rejected(ProLicenseStatus::Unsupported);
   }
+  // A signed claim cannot turn a lower tier or legacy license into a higher tier.
+  for (const auto &feature : features) {
+    if (!planPermits(plan, feature) || features.count(feature) != 1) {
+      return rejected(ProLicenseStatus::Unsupported);
+    }
+  }
+  if (!legacy && features.size() != planFeatures(plan).size()) {
+    return rejected(ProLicenseStatus::Unsupported);
+  }
 
   const auto issuedAt = parseStrictUtc(*issuedAtText);
   const auto notBefore = parseStrictUtc(*notBeforeText);
-  if (!issuedAt || !notBefore) {
+  if (!issuedAt || !notBefore || (!legacy && *issuedAt > *notBefore)) {
     return rejected(ProLicenseStatus::Malformed);
   }
 
@@ -227,15 +253,23 @@ verifyProLicense(const QString &licenseText, const QDateTime &nowUtc, const ProL
     return rejected(ProLicenseStatus::Malformed);
   }
 
+  if ((expiresAt && *expiresAt <= *notBefore) ||
+      (kind == QLatin1String("subscription") && (!expiresAt || issuedAt->secsTo(*expiresAt) > 7 * 24 * 60 * 60))) {
+    return rejected(ProLicenseStatus::Malformed);
+  }
+
   if (!verifyEd25519(*key, *payload, *signature)) {
     return rejected(ProLicenseStatus::InvalidSignature);
   }
 
   const auto current = nowUtc.toUTC();
+  if (!current.isValid()) {
+    return rejected(ProLicenseStatus::Malformed);
+  }
   if (current < *notBefore) {
     return rejected(ProLicenseStatus::NotYetValid);
   }
-  if (expiresAt && current > *expiresAt) {
+  if (expiresAt && (legacy ? current > *expiresAt : current >= *expiresAt)) {
     return rejected(ProLicenseStatus::Expired);
   }
 
@@ -246,16 +280,56 @@ verifyProLicense(const QString &licenseText, const QDateTime &nowUtc, const ProL
       .features = std::move(features),
       .notBefore = *notBefore,
       .expiresAt = expiresAt,
+      .plan = plan,
+      .kind = kind,
+      .keyId = *keyId,
   };
 }
 
 ProLicenseEntitlement verifyProductionProLicense(const QString &licenseText, const QDateTime &nowUtc)
 {
-  const ProLicenseKeyRing keyRing = {{
-      QString::fromLatin1(kProductionProLicenseKeyId),
-      QByteArray::fromHex(kProductionProLicensePublicKeyHex),
-  }};
-  return verifyProLicense(licenseText, nowUtc, keyRing);
+  if (!nowUtc.isValid())
+    return rejected(ProLicenseStatus::Malformed);
+  if (licenseText.size() > kMaxProLicenseBytes)
+    return rejected(ProLicenseStatus::TooLarge);
+  // Runtime permission checks run for each transfer chunk. Verify a signature
+  // once, but re-evaluate its validity window on every check.
+  static std::mutex cacheMutex;
+  static QHash<QString, ProLicenseEntitlement> cache;
+  const std::lock_guard lock(cacheMutex);
+  const auto cached = cache.constFind(licenseText);
+  if (cached != cache.cend()) {
+    if (nowUtc < cached->notBefore)
+      return rejected(ProLicenseStatus::NotYetValid);
+    if (cached->expiresAt &&
+        (cached->kind == QLatin1String("legacy") ? nowUtc > *cached->expiresAt : nowUtc >= *cached->expiresAt))
+      return rejected(ProLicenseStatus::Expired);
+    return *cached;
+  }
+  const ProLicenseKeyRing keyRing = {
+      {
+          QString::fromLatin1(kProductionProLicenseKeyId),
+          QByteArray::fromHex(kProductionProLicensePublicKeyHex),
+      },
+      {QString::fromLatin1(kPlanEventKeyId), QByteArray::fromHex(kPlanEventPublicKeyHex)},
+      {QString::fromLatin1(kPlanSubscriptionKeyId), QByteArray::fromHex(kPlanSubscriptionPublicKeyHex)}
+  };
+  auto result = verifyProLicense(licenseText, nowUtc, keyRing);
+  if (result.status != ProLicenseStatus::Valid)
+    return result;
+  const bool legacy =
+      result.keyId == QLatin1String(kProductionProLicenseKeyId) && result.kind == QLatin1String("legacy");
+  const bool event = result.keyId == QLatin1String(kPlanEventKeyId) &&
+                     (result.kind == QLatin1String("event") || result.kind == QLatin1String("owner"));
+  const bool subscription =
+      result.keyId == QLatin1String(kPlanSubscriptionKeyId) && result.kind == QLatin1String("subscription");
+  // The online service has a short-lived signing authority, never owner powers.
+  if (!legacy && !event && !subscription)
+    return rejected(ProLicenseStatus::Unsupported);
+  if (cache.size() >= 8)
+    cache.clear();
+  cache.insert(licenseText, result);
+  return result;
 }
 
 bool permitsProductionFileTransfer(const QString &licenseText, const QDateTime &nowUtc)

@@ -1347,6 +1347,10 @@ Client computer</source>
         <source>Connection settings</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Plans and subscription</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -2199,14 +2203,6 @@ Enabling this setting will disable the server config GUI.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pro Local activated</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>File transfer is now available on this computer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Required messages</source>
         <translation>必須のメッセージ</translation>
     </message>
@@ -2245,18 +2241,6 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Reset to default values</source>
         <translation>デフォルト値にリセットする</translation>
-    </message>
-    <message>
-        <source>Pro Local active — %1 (%2)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Valid Pro Local license. Select Activate to apply it on this computer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This candidate is not valid. The existing Pro Local license remains active.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>This license is too large.</source>
@@ -2519,14 +2503,6 @@ Enabling this setting will disable the server config GUI.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pro Local license</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Import the license file you received, then activate it on this computer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>IEUM1 license line</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2666,6 +2642,42 @@ Licenses are issued manually after payment verification.</source>
         <source>Logs &amp; diagnostics</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Event or existing license</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter an event or existing license key here. Use Plans and subscription for a subscription purchase.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plans and subscription</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>License activated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is active on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Active plan: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Valid %1 license. Select Activate to apply it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This candidate is not valid. Your existing plan remains active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Free plan. Enter an event or existing key, or view subscription plans.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>StartupManager</name>
@@ -2748,6 +2760,136 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>Encryption Disabled</source>
         <translation>暗号化無効</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::PlansDialog</name>
+    <message>
+        <source>Plans and subscription</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>One desk. More connected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscriptions are being prepared. Existing Local licenses continue to work.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The additional features below are planned for the subscription release.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>US$%1 / year</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>or US$%1 / month</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keyboard, mouse and text clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Direct file transfer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer audio sharing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Control from either keyboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remote screen viewing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Image clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Coordinated lock and wake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Simultaneous input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not available yet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Free input sharing remains available. Annual prices are charged once per year. Taxes, if applicable, appear at checkout.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restore a subscription purchase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Purchase key from your receipt</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Restore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your Gumroad receipt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Current plan: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>View subscription</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open checkout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a plan, then select monthly or annual billing at checkout.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your purchase is ready. Select Restore to activate it on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::SubscriptionClient</name>
+    <message>
+        <source>Choose your purchased plan and enter the key from your receipt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Subscription activation is not available in this build yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 is active on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This subscription has ended. Free features and any valid event or legacy license remain available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This purchase key does not have an active subscription for the selected plan.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not verify the subscription. Your existing signed access remains valid until its expiry.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

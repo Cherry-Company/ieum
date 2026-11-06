@@ -160,6 +160,17 @@ QString redactSensitiveText(QString text)
 
   const auto homePath = QDir::fromNativeSeparators(QDir::homePath());
   auto normalized = QDir::fromNativeSeparators(text);
+  normalized.replace(
+      QRegularExpression(QStringLiteral(R"(\bieum:[^\s<>"']+)"), QRegularExpression::CaseInsensitiveOption),
+      QStringLiteral("<subscription-link>")
+  );
+  normalized.replace(
+      QRegularExpression(QStringLiteral(R"(\bIEUM1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+)")), QStringLiteral("<license>")
+  );
+  normalized.replace(
+      QRegularExpression(QStringLiteral(R"(\b[A-Za-z0-9]{8}(?:-[A-Za-z0-9]{8}){3}\b)")),
+      QStringLiteral("<purchase-key>")
+  );
   if (!homePath.isEmpty()) {
     normalized.replace(homePath, QStringLiteral("~"), Qt::CaseInsensitive);
   }
@@ -276,7 +287,18 @@ bool openNativeCrashReports()
 void restart()
 {
   QString program = QCoreApplication::applicationFilePath();
-  QStringList arguments = QCoreApplication::arguments();
+  QStringList arguments = QCoreApplication::arguments().mid(1);
+
+  // Receipt links contain a purchase credential and are a one-time launch
+  // action. Do not replay them when settings or language changes restart Ieum.
+  for (int index = arguments.size() - 1; index >= 0; --index) {
+    if (arguments.at(index).startsWith(QStringLiteral("--activate=")) ||
+        arguments.at(index).startsWith(QStringLiteral("ieum:"), Qt::CaseInsensitive)) {
+      arguments.removeAt(index);
+    }
+  }
+  if (const int activation = arguments.indexOf(QStringLiteral("--activate")); activation >= 0)
+    arguments.removeAt(activation);
 
   // look for and remove --reset option if found
   if (int resetIndex = arguments.indexOf("--reset"); resetIndex != -1)

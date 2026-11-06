@@ -10,6 +10,7 @@
 #include "gui/dialogs/ClientConfigDialog.h"
 #include "gui/dialogs/ConnectionGuideDialog.h"
 #include "gui/dialogs/DiagnosticDialog.h"
+#include "gui/dialogs/PlansDialog.h"
 #include "gui/dialogs/ScreenSettingsDialog.h"
 #include "gui/dialogs/ServerConfigDialog.h"
 #include "gui/dialogs/SettingsDialog.h"
@@ -22,6 +23,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QListWidget>
+#include <QLocalSocket>
 #include <QProcessEnvironment>
 #include <QPushButton>
 #include <QRadioButton>
@@ -265,6 +267,38 @@ private Q_SLOTS:
     QFile::remove(report.filePath);
   }
 
+  void subscriptionReceiptWaitsForCompleteMessageAndUserActivation()
+  {
+    MainWindow window(helperPath());
+    const auto oldLicense = Settings::value(Settings::Pro::LicenseKey);
+    const auto oldLease = Settings::value(Settings::Pro::SubscriptionLease);
+    QLocalSocket sender;
+    sender.connectToServer(QString::fromLatin1(kGuiIpcName));
+    QTRY_COMPARE(sender.state(), QLocalSocket::ConnectedState);
+    sender.write("open-subscription ieum://activate?plan=professional");
+    sender.flush();
+    QTest::qWait(30);
+    QVERIFY(!window.findChild<deskflow::gui::PlansDialog *>());
+    sender.write("-max&key=12345678-ABCD1234\n");
+    sender.flush();
+    QTRY_VERIFY(window.findChild<deskflow::gui::PlansDialog *>());
+    auto *dialog = window.findChild<deskflow::gui::PlansDialog *>();
+    QCOMPARE(
+        dialog->findChild<QComboBox *>("restorePlan")->currentData().toString(), QStringLiteral("professional-max")
+    );
+    const auto *key = dialog->findChild<QLineEdit *>("restoreKey");
+    QCOMPARE(key->text(), QStringLiteral("12345678-ABCD1234"));
+    QCOMPARE(key->echoMode(), QLineEdit::Password);
+    QCOMPARE(Settings::value(Settings::Pro::LicenseKey), oldLicense);
+    QCOMPARE(Settings::value(Settings::Pro::SubscriptionLease), oldLease);
+    // No checkout is enabled before a verified service catalog arrives.
+    for (auto *button : dialog->findChildren<QPushButton *>()) {
+      if (button->property("planPurchase").toBool())
+        QVERIFY(!button->isEnabled());
+    }
+    dialog->close();
+  }
+
   void captureKoreanPreviews()
   {
     const auto translation = qEnvironmentVariable("IEUM_PREVIEW_TRANSLATION");
@@ -311,6 +345,8 @@ private Q_SLOTS:
     window.stopCore();
     QTRY_COMPARE_WITH_TIMEOUT(window.m_coreProcess.processState(), ProcessState::Stopped, 8000);
     SettingsDialog settings(&window, window.serverConfig());
+    deskflow::gui::PlansDialog plans(&window);
+    savePreview(plans, "plans-ko.png");
     settings.selectPage("tabInput");
     savePreview(settings, "settings-ko.png");
     settings.findChild<QLineEdit *>("settingsSearch")->setText(QStringLiteral("Tailscale"));

@@ -118,6 +118,28 @@ manually by email after payment verification. [Activation and scope](docs/dev/pr
 If another window changes the layout, Ieum asks you to reload rather than overwrite it.
 When using an external configuration file, manage positions in that file.
 
+## Subscription plans in preparation
+
+The new subscription plans are in development and **are not on sale yet**.
+The published release remains alpha.31. Existing perpetual Pro Local keys retain
+their file-transfer entitlement. The intended subscription packaging is:
+
+| Plan | Monthly | Annually | Intended features |
+| --- | ---: | ---: | --- |
+| Free | Free | Free | Keyboard/mouse, Korean/English synchronization, text clipboard and TLS |
+| Professional Local | US$1.99 | US$14.99 | Free plus direct file transfer |
+| Professional | US$2.99 | US$24.99 | Local plus audio sharing |
+| Professional Max | US$4.99 | US$39.99 | Professional plus control from either keyboard/mouse, remote viewing, image clipboard, coordinated lock/wake and simultaneous input |
+
+Annual prices are charged once per year; applicable taxes appear at checkout.
+Normal purchases will use Gumroad subscriptions, with a separate field for event
+and owner keys. Cancellation retains access through the paid period; free
+features and valid existing keys remain afterward. Audio, remote viewing and
+bidirectional control still need implementation and physical acceptance, and
+the live seller account must be connected. Moving existing image clipboard and
+keyboard broadcast into Max is a policy change for that subscription release.
+See the [pricing evidence and release conditions](docs/product/professional-plans.md).
+
 ## When a connection gets stuck
 
 - **Host keeps waiting:** start sharing on the host and select that host on the client. If the client is connected elsewhere, switch hosts there.

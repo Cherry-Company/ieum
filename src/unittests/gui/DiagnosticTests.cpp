@@ -37,6 +37,19 @@ void DiagnosticTests::redactSensitiveText_limitsUntrustedMessages()
   QVERIFY(!redacted.contains(QStringLiteral("```")));
 }
 
+void DiagnosticTests::redactSensitiveText_removesPurchaseCredentials()
+{
+  const auto redacted = deskflow::gui::diagnostic::redactSensitiveText(QStringLiteral(
+      "receipt ieum://activate?plan=professional-max&key=private-receipt-token "
+      "IEUM1.privatePayload.privateSignature 12345678-ABCD1234-EFGH5678-87654321"
+  ));
+  QVERIFY(!redacted.contains(QStringLiteral("private")));
+  QVERIFY(!redacted.contains(QStringLiteral("ABCD1234")));
+  QVERIFY(redacted.contains(QStringLiteral("<subscription-link>")));
+  QVERIFY(redacted.contains(QStringLiteral("<license>")));
+  QVERIFY(redacted.contains(QStringLiteral("<purchase-key>")));
+}
+
 void DiagnosticTests::sessionMarker_detectsUncleanExit()
 {
   using namespace deskflow::gui::diagnostic;

@@ -14,6 +14,7 @@ class DiagnosticTests : public QObject
 private Q_SLOTS:
   void redactSensitiveText_removesHomePathsAndAddresses();
   void redactSensitiveText_limitsUntrustedMessages();
+  void redactSensitiveText_removesPurchaseCredentials();
   void sessionMarker_detectsUncleanExit();
   void sessionMarker_previousBootIsNotAnAppCrash();
   void sessionMarker_missingBootIdIsNotCrashEvidence();

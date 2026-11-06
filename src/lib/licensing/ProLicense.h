@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "licensing/PlanCatalog.h"
+
 #include <QByteArray>
 #include <QDateTime>
 #include <QHash>
@@ -41,6 +43,9 @@ struct ProLicenseEntitlement
   QStringList features;
   QDateTime notBefore;
   std::optional<QDateTime> expiresAt;
+  Plan plan{Plan::Free};
+  QString kind;
+  QString keyId;
 
   [[nodiscard]] bool permits(QStringView feature) const noexcept;
 };

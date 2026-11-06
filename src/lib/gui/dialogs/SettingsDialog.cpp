@@ -20,6 +20,7 @@
 #include "gui/StyleUtils.h"
 #include "gui/TlsUtility.h"
 #include "gui/core/NetworkMonitor.h"
+#include "gui/dialogs/PlansDialog.h"
 #include "gui/dialogs/ProLicenseUiPolicy.h"
 #include "licensing/ProEarlyAccessClaim.h"
 #include "licensing/ProLicense.h"
@@ -84,6 +85,13 @@ SettingsDialog::SettingsDialog(QWidget *parent, const ServerConfig &serverConfig
   ui->setupUi(this);
   ensureProEarlyAccessClaim();
   applyIeumDialogStyle(*this);
+  auto *plans = new QPushButton(tr("Plans and subscription"), this);
+  ui->verticalLayoutFileTransfer->insertWidget(0, plans);
+  connect(plans, &QPushButton::clicked, this, [this] {
+    PlansDialog dialog(this);
+    dialog.exec();
+    updateFileTransferControls();
+  });
 
   ui->comboCjkRawScancode->addItem(tr("Automatic"), QStringLiteral("auto"));
   ui->comboCjkRawScancode->addItem(tr("Always"), QStringLiteral("on"));
@@ -708,7 +716,7 @@ void SettingsDialog::activateProLicense()
 
   const auto candidate = ui->lineProLicense->text().trimmed();
   const auto entitlement = deskflow::licensing::verifyProductionProLicense(candidate);
-  if (!shouldActivateProFileTransferLicense(entitlement)) {
+  if (!shouldActivateProFileTransferLicense(entitlement) || entitlement.kind == QLatin1String("subscription")) {
     QMessageBox::warning(
         this, tr("License not activated"),
         tr("This license is invalid, expired, not active yet, or does not include Pro Local file transfer.")
@@ -717,10 +725,16 @@ void SettingsDialog::activateProLicense()
     return;
   }
 
-  Settings::setValue(Settings::Pro::LicenseKey, candidate);
+  Settings::setValue(
+      entitlement.kind == QLatin1String("legacy") ? Settings::Pro::LicenseKey : Settings::Pro::EventLicenseKey,
+      candidate
+  );
   ui->lineProLicense->setText(candidate);
   updateFileTransferControls();
-  QMessageBox::information(this, tr("Pro Local activated"), tr("File transfer is now available on this computer."));
+  QMessageBox::information(
+      this, tr("License activated"),
+      tr("%1 is active on this computer.").arg(deskflow::licensing::planName(entitlement.plan))
+  );
 }
 
 void SettingsDialog::removeProLicense()
@@ -729,12 +743,17 @@ void SettingsDialog::removeProLicense()
     return;
   }
 
-  Settings::setValue(Settings::Pro::LicenseKey, QString{});
-  Settings::setValue(Settings::FileTransfer::Enabled, false);
-  Settings::setValue(Settings::FileTransfer::ReceiveEnabled, false);
-  ui->lineProLicense->clear();
-  ui->cbFileTransferEnabled->setChecked(false);
-  ui->cbFileTransferReceive->setChecked(false);
+  const auto key = Settings::value(Settings::Pro::EventLicenseKey).toString().isEmpty()
+                       ? Settings::Pro::LicenseKey
+                       : Settings::Pro::EventLicenseKey;
+  Settings::setValue(key, QString{});
+  ui->lineProLicense->setText(Settings::value(Settings::Pro::LicenseKey).toString());
+  if (!Settings::hasProFileTransferEntitlement()) {
+    Settings::setValue(Settings::FileTransfer::Enabled, false);
+    Settings::setValue(Settings::FileTransfer::ReceiveEnabled, false);
+    ui->cbFileTransferEnabled->setChecked(false);
+    ui->cbFileTransferReceive->setChecked(false);
+  }
   updateFileTransferControls();
   setButtonBoxEnabledButtons();
 }
@@ -958,7 +977,10 @@ void SettingsDialog::loadFromConfig()
   ui->cbFileTransferEnabled->setChecked(Settings::value(Settings::FileTransfer::Enabled).toBool());
   ui->cbFileTransferReceive->setChecked(Settings::value(Settings::FileTransfer::ReceiveEnabled).toBool());
   ui->lineFileTransferDirectory->setText(Settings::value(Settings::FileTransfer::DownloadDirectory).toString());
-  ui->lineProLicense->setText(Settings::value(Settings::Pro::LicenseKey).toString());
+  const auto eventLicense = Settings::value(Settings::Pro::EventLicenseKey).toString();
+  ui->lineProLicense->setText(
+      eventLicense.isEmpty() ? Settings::value(Settings::Pro::LicenseKey).toString() : eventLicense
+  );
 
   const auto processMode = Settings::value(Settings::Core::ProcessMode).value<Settings::ProcessMode>();
   ui->groupService->setChecked(processMode == Settings::ProcessMode::Service);
@@ -1039,8 +1061,10 @@ void SettingsDialog::updateTlsControlsEnabled()
 
 void SettingsDialog::updateFileTransferControls()
 {
-  const auto storedLicense = Settings::value(Settings::Pro::LicenseKey).toString().trimmed();
-  const auto storedEntitlement = deskflow::licensing::verifyProductionProLicense(storedLicense);
+  const auto eventLicense = Settings::value(Settings::Pro::EventLicenseKey).toString().trimmed();
+  const auto storedLicense =
+      eventLicense.isEmpty() ? Settings::value(Settings::Pro::LicenseKey).toString().trimmed() : eventLicense;
+  const auto storedEntitlement = Settings::proEntitlement();
   const auto state = proFileTransferUiState(
       storedEntitlement, !storedLicense.isEmpty(), Settings::isWritable(), fileTransferPlatformSupport(),
       ui->groupSecurity->isChecked()
@@ -1049,7 +1073,8 @@ void SettingsDialog::updateFileTransferControls()
   const auto candidate = ui->lineProLicense->text().trimmed();
   const auto candidateEntitlement = deskflow::licensing::verifyProductionProLicense(candidate);
   const auto storedLicenseActive = shouldActivateProFileTransferLicense(storedEntitlement);
-  const auto candidateCanActivate = shouldActivateProFileTransferLicense(candidateEntitlement);
+  const auto candidateCanActivate = shouldActivateProFileTransferLicense(candidateEntitlement) &&
+                                    candidateEntitlement.kind != QLatin1String("subscription");
   const auto candidateIsStored = candidate == storedLicense;
 
   ui->lineProLicense->setEnabled(state.licenseActionsEnabled);
@@ -1057,7 +1082,7 @@ void SettingsDialog::updateFileTransferControls()
   ui->btnActivateProLicense->setEnabled(state.licenseActionsEnabled && candidateCanActivate && !candidateIsStored);
   ui->btnRemoveProLicense->setEnabled(state.removeLicenseEnabled);
   ensureProEarlyAccessClaim();
-  ui->widgetProEarlyAccess->setVisible(state.purchaseActionsVisible);
+  ui->widgetProEarlyAccess->setVisible(false);
   const auto claimAvailable = deskflow::licensing::isValidProEarlyAccessClaim(m_proEarlyAccessClaim);
   ui->btnGetProEarlyAccess->setEnabled(claimAvailable);
   ui->btnCopyProEarlyAccessClaim->setEnabled(claimAvailable);
@@ -1065,15 +1090,16 @@ void SettingsDialog::updateFileTransferControls()
 
   QString licenseStatus;
   if (candidateIsStored && storedLicenseActive) {
-    licenseStatus = tr("Pro Local active — %1 (%2)").arg(storedEntitlement.licenseId, storedEntitlement.recipient);
+    licenseStatus = tr("Active plan: %1").arg(deskflow::licensing::planName(storedEntitlement.plan));
   } else if (candidateCanActivate) {
-    licenseStatus = tr("Valid Pro Local license. Select Activate to apply it on this computer.");
+    licenseStatus = tr("Valid %1 license. Select Activate to apply it.")
+                        .arg(deskflow::licensing::planName(candidateEntitlement.plan));
   } else if (!candidateIsStored && storedLicenseActive) {
-    licenseStatus = tr("This candidate is not valid. The existing Pro Local license remains active.");
+    licenseStatus = tr("This candidate is not valid. Your existing plan remains active.");
   } else {
     switch (candidateEntitlement.status) {
     case deskflow::licensing::ProLicenseStatus::Missing:
-      licenseStatus = tr("Pro Local is locked. Import a license file, then select Activate.");
+      licenseStatus = tr("Free plan. Enter an event or existing key, or view subscription plans.");
       break;
     case deskflow::licensing::ProLicenseStatus::TooLarge:
       licenseStatus = tr("This license is too large.");

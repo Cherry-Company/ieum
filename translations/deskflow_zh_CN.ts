@@ -1367,6 +1367,10 @@ Client computer</source>
         <source>Connection settings</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Plans and subscription</source>
+        <translation>方案与订阅</translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -2231,14 +2235,6 @@ Enabling this setting will disable the server config GUI.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pro Local activated</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>File transfer is now available on this computer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Required messages</source>
         <translation>必要消息</translation>
     </message>
@@ -2277,18 +2273,6 @@ Enabling this setting will disable the server config GUI.</source>
     <message>
         <source>Reset to default values</source>
         <translation type="unfinished">重置为默认值</translation>
-    </message>
-    <message>
-        <source>Pro Local active — %1 (%2)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Valid Pro Local license. Select Activate to apply it on this computer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>This candidate is not valid. The existing Pro Local license remains active.</source>
-        <translation type="unfinished"></translation>
     </message>
     <message>
         <source>This license is too large.</source>
@@ -2553,14 +2537,6 @@ Enabling this setting will disable the server config GUI.</source>
         <translation>系统(&amp;S)</translation>
     </message>
     <message>
-        <source>Pro Local license</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Import the license file you received, then activate it on this computer.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>IEUM1 license line</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2700,6 +2676,42 @@ Licenses are issued manually after payment verification.</source>
         <source>Logs &amp; diagnostics</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Event or existing license</source>
+        <translation>活动或旧许可证</translation>
+    </message>
+    <message>
+        <source>Enter an event or existing license key here. Use Plans and subscription for a subscription purchase.</source>
+        <translation>在此输入活动或旧许可证密钥。订阅购买请使用方案与订阅。</translation>
+    </message>
+    <message>
+        <source>Plans and subscription</source>
+        <translation>方案与订阅</translation>
+    </message>
+    <message>
+        <source>License activated</source>
+        <translation>许可证已激活</translation>
+    </message>
+    <message>
+        <source>%1 is active on this computer.</source>
+        <translation>已在此电脑上激活 %1。</translation>
+    </message>
+    <message>
+        <source>Active plan: %1</source>
+        <translation>已激活方案：%1</translation>
+    </message>
+    <message>
+        <source>Valid %1 license. Select Activate to apply it.</source>
+        <translation>有效的 %1 许可证。点击激活以应用。</translation>
+    </message>
+    <message>
+        <source>This candidate is not valid. Your existing plan remains active.</source>
+        <translation>输入的密钥无效。现有方案继续有效。</translation>
+    </message>
+    <message>
+        <source>Free plan. Enter an event or existing key, or view subscription plans.</source>
+        <translation>当前为免费方案。可输入活动或旧密钥，或查看订阅方案。</translation>
+    </message>
 </context>
 <context>
     <name>StartupManager</name>
@@ -2782,6 +2794,136 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>Encryption Disabled</source>
         <translation>加密已禁用</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::PlansDialog</name>
+    <message>
+        <source>Plans and subscription</source>
+        <translation>方案与订阅</translation>
+    </message>
+    <message>
+        <source>One desk. More connected.</source>
+        <translation>一张桌面，更多连接。</translation>
+    </message>
+    <message>
+        <source>Subscriptions are being prepared. Existing Local licenses continue to work.</source>
+        <translation>订阅方案正在准备中。已有 Local 许可证可继续使用。</translation>
+    </message>
+    <message>
+        <source>The additional features below are planned for the subscription release.</source>
+        <translation>以下附加功能计划在订阅版中提供。</translation>
+    </message>
+    <message>
+        <source>US$%1 / year</source>
+        <translation>每年 US$%1</translation>
+    </message>
+    <message>
+        <source>or US$%1 / month</source>
+        <translation>或每月 US$%1</translation>
+    </message>
+    <message>
+        <source>Keyboard, mouse and text clipboard</source>
+        <translation>键盘、鼠标及文本剪贴板</translation>
+    </message>
+    <message>
+        <source>Direct file transfer</source>
+        <translation>直接文件传输</translation>
+    </message>
+    <message>
+        <source>Computer audio sharing</source>
+        <translation>电脑音频共享</translation>
+    </message>
+    <message>
+        <source>Control from either keyboard</source>
+        <translation>使用任一键盘控制</translation>
+    </message>
+    <message>
+        <source>Remote screen viewing</source>
+        <translation>查看远程画面</translation>
+    </message>
+    <message>
+        <source>Image clipboard</source>
+        <translation>图像剪贴板</translation>
+    </message>
+    <message>
+        <source>Coordinated lock and wake</source>
+        <translation>联动锁定与唤醒</translation>
+    </message>
+    <message>
+        <source>Simultaneous input</source>
+        <translation>同时输入</translation>
+    </message>
+    <message>
+        <source>Not available yet</source>
+        <translation>尚未开售</translation>
+    </message>
+    <message>
+        <source>Free input sharing remains available. Annual prices are charged once per year. Taxes, if applicable, appear at checkout.</source>
+        <translation>免费输入共享继续可用。年费每年收取一次，适用税费在结账时显示。</translation>
+    </message>
+    <message>
+        <source>Restore a subscription purchase</source>
+        <translation>恢复订阅购买</translation>
+    </message>
+    <message>
+        <source>Purchase key from your receipt</source>
+        <translation>收据中的购买密钥</translation>
+    </message>
+    <message>
+        <source>Restore</source>
+        <translation>恢复</translation>
+    </message>
+    <message>
+        <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your Gumroad receipt.</source>
+        <translation>活动及旧许可证密钥可在设置 → 文件中输入。请从 Gumroad 收据管理或取消订阅。</translation>
+    </message>
+    <message>
+        <source>Current plan: %1</source>
+        <translation>当前方案：%1</translation>
+    </message>
+    <message>
+        <source>View subscription</source>
+        <translation>查看订阅</translation>
+    </message>
+    <message>
+        <source>Open checkout</source>
+        <translation>打开结账页面</translation>
+    </message>
+    <message>
+        <source>Choose a plan, then select monthly or annual billing at checkout.</source>
+        <translation>选择方案后，在结账时选择按月或按年付费。</translation>
+    </message>
+    <message>
+        <source>Your purchase is ready. Select Restore to activate it on this computer.</source>
+        <translation>已载入购买信息。选择“恢复”以在此电脑上激活。</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::SubscriptionClient</name>
+    <message>
+        <source>Choose your purchased plan and enter the key from your receipt.</source>
+        <translation>请选择已购买的方案并输入收据中的密钥。</translation>
+    </message>
+    <message>
+        <source>Subscription activation is not available in this build yet.</source>
+        <translation>此版本暂不支持订阅激活。</translation>
+    </message>
+    <message>
+        <source>%1 is active on this computer.</source>
+        <translation>已在此电脑上激活 %1。</translation>
+    </message>
+    <message>
+        <source>This subscription has ended. Free features and any valid event or legacy license remain available.</source>
+        <translation>订阅已结束。免费功能及有效的活动或旧许可证仍可使用。</translation>
+    </message>
+    <message>
+        <source>This purchase key does not have an active subscription for the selected plan.</source>
+        <translation>此购买密钥没有所选方案的有效订阅。</translation>
+    </message>
+    <message>
+        <source>Could not verify the subscription. Your existing signed access remains valid until its expiry.</source>
+        <translation>无法验证订阅。已有的已签名权限将在到期前继续有效。</translation>
     </message>
 </context>
 <context>

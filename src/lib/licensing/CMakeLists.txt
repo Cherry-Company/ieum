@@ -4,6 +4,9 @@
 find_package(OpenSSL ${REQUIRED_OPENSSL_VERSION} REQUIRED COMPONENTS Crypto)
 
 add_library(licensing STATIC
+  PlanCatalog.cpp
+  PlanCatalog.h
+  PlanLicensePublicKeys.h
   ProEarlyAccessClaim.cpp
   ProEarlyAccessClaim.h
   ProLicense.cpp

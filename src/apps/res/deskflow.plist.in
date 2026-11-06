@@ -34,6 +34,17 @@
 	<string>@BUNDLE_COPYRIGHT@</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>@BUNDLE_GUI_IDENTIFIER@.subscription</string>
+			<key>CFBundleURLSchemes</key>
+			<array><string>ieum</string></array>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+		</dict>
+	</array>
 
 	<!-- Prevent macOS from terminating during memory pressure -->
 	<key>NSSupportsAutomaticTermination</key>
