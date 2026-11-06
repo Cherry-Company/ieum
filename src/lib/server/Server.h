@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "common/ProfessionalMessage.h"
+
 #include "base/Event.h"
 #include "base/Stopwatch.h"
 #include "common/NetworkProtocol.h"
@@ -51,6 +53,9 @@ class Server
   using ServerConfig = deskflow::server::Config;
 
 public:
+  bool routeProfessional(BaseClientProxy *sender, deskflow::professional::Message message);
+  bool sendProfessional(deskflow::professional::Message message);
+  void setProfessionalInputActive(bool active);
   //! Lock cursor to screen data
   class LockCursorToScreenInfo : public EventData
   {
@@ -424,6 +429,12 @@ private:
   // state saved when screen saver activates
   BaseClientProxy *m_activeSaver = nullptr;
 
+  bool professionalInputActive() const;
+  void pauseForProfessionalInput();
+  deskflow::professional::InputLeaseBook m_professionalInputLeases;
+  deskflow::professional::SessionRouteBook m_professionalRoutes;
+  QHash<QString, QString> m_professionalConnections;
+  std::chrono::steady_clock::time_point m_professionalInputUntil{};
   BaseClientProxy *m_switchScreen = nullptr;
   double m_switchWaitDelay = 0.0;
   EventQueueTimer *m_switchWaitTimer = nullptr;

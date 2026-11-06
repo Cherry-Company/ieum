@@ -9,6 +9,8 @@
  */
 
 #include "MainWindow.h"
+#include "gui/session/SessionController.h"
+#include "gui/session/SessionWindow.h"
 #include "ui_MainWindow.h"
 
 #include "Diagnostic.h"
@@ -184,6 +186,7 @@ MainWindow::MainWindow(const QString &coreExecutablePath)
   setupControls();
   updateText();
   connectSlots();
+  setupProfessionalSessions();
   connect(
       m_tailscaleIntegration, &deskflow::network::TailscaleIntegration::queryStarted, this,
       &MainWindow::tailscaleQueryStarted
@@ -246,6 +249,12 @@ MainWindow::MainWindow(const QString &coreExecutablePath)
 }
 MainWindow::~MainWindow()
 {
+  if (m_sessionController)
+    m_sessionController->stopAll();
+  delete m_sessionWindow;
+  delete m_sessionController;
+  m_sessionWindow = nullptr;
+  m_sessionController = nullptr;
   qApp->removeEventFilter(this);
 #ifdef Q_OS_MACOS
   macOSRemoveApplicationTerminationHandler();
@@ -400,6 +409,57 @@ void MainWindow::setupDeskWorkspace()
     updateConnectionGuide();
   });
   resize(1080, 760);
+}
+
+void MainWindow::setupProfessionalSessions()
+{
+  using namespace deskflow::gui::session;
+  m_sessionController = new SessionController(
+      {.send = [this](const QByteArray &bytes) { return m_coreProcess.sendProfessional(bytes); },
+       .localInputMode = [this](bool active) { m_coreProcess.setProfessionalInputMode(active); },
+       .authorized =
+           [](const QString &feature) {
+             return Settings::value(Settings::Security::TlsEnabled).toBool() && Settings::hasPlanFeature(feature);
+           },
+       .now = {}},
+      createSessionPlatform(), this
+  );
+  m_sessionWindow = new SessionWindow(m_sessionController, this);
+  m_sharingButton = new QPushButton(tr("Workspace sharing"), this);
+  m_sharingButton->setObjectName(QStringLiteral("workspaceSharing"));
+  ui->identityLayout->addWidget(m_sharingButton);
+  connect(m_sharingButton, &QPushButton::clicked, this, [this] {
+    m_sessionWindow->show();
+    m_sessionWindow->raise();
+    m_sessionWindow->activateWindow();
+  });
+  connect(&m_coreProcess, &CoreProcess::professionalReceived, m_sessionController, &SessionController::receive);
+  connect(
+      &m_coreProcess, &CoreProcess::professionalInputReady, m_sessionController, &SessionController::inputModeReady
+  );
+  const auto update = [this] {
+    const bool online = m_coreProcess.isStarted() && (m_coreProcess.mode() == CoreMode::Server ||
+                                                      m_coreProcess.connectionState() == ConnectionState::Connected);
+    m_sessionController->setOnline(online, Settings::value(Settings::Core::ComputerName).toString());
+  };
+  connect(&m_coreProcess, &CoreProcess::processStateChanged, m_sessionController, update);
+  connect(&m_coreProcess, &CoreProcess::connectionStateChanged, m_sessionController, update);
+  connect(m_sessionController, &SessionController::sessionChanged, this, [this] {
+    const auto count = m_sessionController->activeCount();
+    m_sharingButton->setText(count ? tr("Sharing · %1").arg(count) : tr("Workspace sharing"));
+    updateSharingTrayTooltip();
+  });
+  update();
+}
+
+void MainWindow::updateSharingTrayTooltip()
+{
+  auto tooltip = productDisplayName();
+  if (m_inputLanguageCategory >= 0)
+    tooltip += '\n' + m_actionInputLanguageStatus->toolTip();
+  if (m_sessionController && m_sessionController->activeCount())
+    tooltip += '\n' + tr("Sharing · %1").arg(m_sessionController->activeCount());
+  m_trayIcon->setToolTip(tooltip);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -628,7 +688,7 @@ void MainWindow::updateInputLanguagePresentation()
   m_actionInputLanguageStatus->setText(status);
   m_actionInputLanguageStatus->setToolTip(description);
   m_actionInputLanguageStatus->setVisible(true);
-  m_trayIcon->setToolTip(QStringLiteral("%1\n%2").arg(productDisplayName(), description));
+  updateSharingTrayTooltip();
 }
 
 void MainWindow::clearInputLanguagePresentation()
@@ -638,7 +698,7 @@ void MainWindow::clearInputLanguagePresentation()
   m_inputLanguageCategory = -1;
   m_statusBar->clearInputLanguageStatus();
   m_actionInputLanguageStatus->setVisible(false);
-  m_trayIcon->setToolTip(productDisplayName());
+  updateSharingTrayTooltip();
 }
 
 void MainWindow::coreProcessError(CoreProcess::Error error)
@@ -1298,6 +1358,14 @@ void MainWindow::setupTrayIcon()
       {m_actionStartCore, m_actionRestartCore, m_actionStopCore, m_actionMinimize, m_actionRestore, m_actionTrayQuit}
   );
   m_trayMenu->insertSeparator(m_actionMinimize);
+  auto *stopSharing = new QAction(tr("Stop workspace sharing"), m_trayMenu);
+  m_trayMenu->insertAction(m_actionMinimize, stopSharing);
+  stopSharing->setVisible(false);
+  connect(stopSharing, &QAction::triggered, m_sessionController, &deskflow::gui::session::SessionController::stopAll);
+  connect(
+      m_sessionController, &deskflow::gui::session::SessionController::sessionChanged, stopSharing,
+      [this, stopSharing] { stopSharing->setVisible(m_sessionController->activeCount() > 0); }
+  );
   m_trayMenu->insertSeparator(m_actionTrayQuit);
   m_trayIcon->setContextMenu(m_trayMenu);
   m_trayIcon->setToolTip(productDisplayName());

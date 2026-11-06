@@ -1351,6 +1351,18 @@ Client computer</source>
         <source>Plans and subscription</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Workspace sharing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sharing · %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop workspace sharing</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -2777,10 +2789,6 @@ Licenses are issued manually after payment verification.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>The additional features below are planned for the subscription release.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>US$%1 / year</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2864,6 +2872,10 @@ Licenses are issued manually after payment verification.</source>
         <source>Subscription recovery code</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Additional sharing features are in preview. Subscriptions are not on sale yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::SubscriptionClient</name>
@@ -2889,6 +2901,335 @@ Licenses are issued manually after payment verification.</source>
     </message>
     <message>
         <source>Choose your purchased plan and enter your subscription recovery code.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::session::SessionController</name>
+    <message>
+        <source>Connect both computers with the current Ieum version first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This feature requires an active matching plan.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Finish an existing sharing session first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop the current input session before switching control.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Receive one audio source at a time. Stop other audio sessions first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The sharing request could not be sent.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Waiting for %1 to allow sharing…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This computer already has an input owner or an incompatible audio session.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sharing with %1. You can stop it at any time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Saved sharing permissions were revoked. Each computer must ask again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input sharing could not take ownership. Restart sharing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen capture is unavailable or the desktop is locked.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Input control returned to this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Wake requires Professional Max.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Wake request sent. Sleep wake needs Wake-on-LAN enabled in the computer and network adapter.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connect this computer once to learn its network address, or start lock/wake sharing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start lock/wake sharing with a computer first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::session::SessionPlatform</name>
+    <message>
+        <source>System audio capture stopped. Check the PulseAudio/PipeWire device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System audio capture ended.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio output is unavailable.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen sharing currently requires an X11 desktop on Linux.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Install PulseAudio utilities (parec, pactl and paplay) to share system audio.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The default audio output could not be found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The default audio output is invalid.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not start system audio capture.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Install paplay to play shared audio.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Audio output could not be started.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>XInput2 is unavailable.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Another application owns the keyboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Another application owns the pointer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Physical input sharing requires X11 on this Linux build.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The desktop session lock service is unavailable.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The desktop refused the lock request.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display wake requires X11. Sleeping computers can use Wake-on-LAN.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Physical input sharing requires an X11 desktop.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Another input sharing session is active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Windows did not allow input capture.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Windows refused input. Run Ieum at the same privilege level as the target app.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Windows refused pointer input.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Windows could not lock this session.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The Windows audio device is unavailable or changed. Restart audio sharing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::session::SessionWindow</name>
+    <message>
+        <source>Share your workspace</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>One workspace. Every computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose a connected computer. Sharing starts after that computer allows it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>View screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Listen to audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Control selected computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add to simultaneous input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Link lock and wake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Professional or higher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Professional Max</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Wake computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Control uses your physical keyboard and mouse. Ctrl+Alt+Esc returns control. Simultaneous input also stays active on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Active sharing sessions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop all sharing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lock together</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No sharing session is active.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Revoke saved permissions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Plans</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 · %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sharing is active. Closing this panel keeps it running; Stop all sharing ends it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>System audio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Screen viewing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Keyboard and mouse control</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Simultaneous keyboard and mouse</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Lock and wake</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 · offline</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start sharing on both computers to see available devices.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allow sharing?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 wants to use %2 on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>This allows coordinated locking and waking the display. It never unlocks your login screen.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your computer&apos;s audio will be sent to this trusted computer. Microphone audio is not recorded.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Your primary screen will be visible to this trusted computer until you stop sharing.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The other computer can type and click here. Local input or Ctrl+Alt+Esc takes control back.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 — Screen</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Stop viewing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Allow this feature while this computer stays connected</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -215,7 +215,7 @@ void rejectsTruncatedAndMalformedFrames()
 
 void exposesProtocolFourteenFeatureGate()
 {
-  require(kProtocolMinorVersion == 14, "current protocol should negotiate minor 14");
+  require(kProtocolMinorVersion == 15, "current protocol should negotiate minor 14");
   require(kProtocolFileTransferEdgeMinorVersion == 14, "edge discovery gate should be minor 14");
   require(std::string_view(kMsgDFileTransferEdge, 4) == "DFTE", "edge message code should be DFTE");
 }

@@ -8,6 +8,7 @@
 
 #include "common/Enums.h"
 
+#include <QByteArray>
 #include <QString>
 
 #include <cstdint>
@@ -15,3 +16,4 @@
 void ipcSendToClient(const QString &command, const QString &args = "");
 void ipcSendConnectionState(deskflow::core::ConnectionState state);
 void ipcSendFileTransferActiveSides(std::uint32_t activeSides);
+void ipcSendProfessional(const QByteArray &bytes);

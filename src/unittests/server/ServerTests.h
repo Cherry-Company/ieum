@@ -19,6 +19,7 @@ private Q_SLOTS:
   void broadcastKeys_releaseOriginalRecipients();
   void broadcastKeys_disconnectDoesNotTransferHeldKeys();
   void freeInputContinuesButBroadcastRequiresMax();
+  void professionalRoutesUseTransportIdentityAndVersionAndPlanGates();
   void SwitchToScreenInfo_alloc_screen();
   void KeyboardBroadcastInfo_alloc_stateAndSceens();
   void cursorTransform_clampsOutOfBounds();

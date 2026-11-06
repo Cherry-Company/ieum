@@ -8,6 +8,7 @@
 
 #include "common/Constants.h"
 #include "common/FileTransferEdgeDropIpc.h"
+#include "common/ProfessionalMessage.h"
 
 #include <QDebug>
 #include <QLocalSocket>
@@ -41,6 +42,24 @@ CoreIpcClient::CoreIpcClient(QObject *parent, const QString &socketName, const i
 void CoreIpcClient::sendStop()
 {
   sendMessage(QStringLiteral("stop"));
+}
+
+bool CoreIpcClient::sendProfessional(const QByteArray &bytes)
+{
+  return m_exactVersionConnected && professional::decode(bytes).has_value() &&
+         sendBoundedMessage(QStringLiteral("professional=%1").arg(QString::fromLatin1(bytes.toBase64())));
+}
+
+void CoreIpcClient::registerProfessional()
+{
+  if (m_exactVersionConnected)
+    sendMessage(QStringLiteral("professionalRegister"));
+}
+
+void CoreIpcClient::setProfessionalInputMode(bool active)
+{
+  if (m_exactVersionConnected)
+    sendMessage(QStringLiteral("professionalMode=%1").arg(active ? 1 : 0));
 }
 
 void CoreIpcClient::sendReloadConfig()

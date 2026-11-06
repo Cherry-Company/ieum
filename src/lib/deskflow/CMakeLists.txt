@@ -37,7 +37,6 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   AppUtil.h
   Chunk.cpp
   Chunk.h
-  CanonicalScancode.cpp
   CanonicalScancode.h
   ClientApp.cpp
   ClientApp.h
@@ -109,6 +108,8 @@ add_library(${lib_name} STATIC ${PLATFORM_CODE}
   PacketStreamFilter.h
   PlatformScreen.cpp
   PlatformScreen.h
+  ProfessionalProtocol.cpp
+  ProfessionalProtocol.h
   ProtocolTypes.cpp
   ProtocolTypes.h
   ProtocolUtil.cpp

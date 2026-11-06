@@ -23,6 +23,9 @@ public:
 
   void sendStop();
   void sendReloadConfig();
+  bool sendProfessional(const QByteArray &bytes);
+  void registerProfessional();
+  void setProfessionalInputMode(bool active);
   void requestFileTransferActiveSides();
   [[nodiscard]] bool sendFileTransferEdgeDrop(const QString &encodedValue);
 

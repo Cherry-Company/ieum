@@ -196,6 +196,7 @@ void IpcServer::handleNewConnection()
   }
 
   LOG_DEBUG("%s ipc server got new connection", m_typeName.constData());
+  clientSocket->setReadBufferSize(128 * 1024);
   m_clients.insert(clientSocket);
   m_receiveBuffers.insert(clientSocket, {});
 
@@ -209,14 +210,16 @@ void IpcServer::handleReadyRead()
   const auto clientSocket = qobject_cast<QLocalSocket *>(sender());
   LOG_VERBOSE("%s ipc server ready to read data", m_typeName.constData());
 
-  auto &buffer = m_receiveBuffers[clientSocket];
-  buffer.append(clientSocket->readAll());
+  if (!clientSocket || !m_clients.contains(clientSocket))
+    return;
+  auto buffer = m_receiveBuffers.take(clientSocket);
+  buffer.append(clientSocket->read(64 * 1024));
   if (buffer.isEmpty()) {
     LOG_WARN("%s ipc server got empty message", m_typeName.constData());
     return;
   }
 
-  if (buffer.size() > kMaxIpcMessageBytes) {
+  if (buffer.size() > kMaxIpcMessageBytes && (buffer.indexOf('\n') < 0 || buffer.indexOf('\n') > kMaxIpcMessageBytes)) {
     LOG_ERR("%s ipc server message exceeded %d bytes", m_typeName.constData(), kMaxIpcMessageBytes);
     m_receiveBuffers.remove(clientSocket);
     m_currentVersionClients.remove(clientSocket);
@@ -226,14 +229,27 @@ void IpcServer::handleReadyRead()
 
   qsizetype delimiter = -1;
   while ((delimiter = buffer.indexOf('\n')) >= 0) {
+    if (delimiter > kMaxIpcMessageBytes) {
+      clientSocket->disconnectFromServer();
+      return;
+    }
     auto messageData = buffer.left(delimiter);
     buffer.remove(0, delimiter + 1);
     if (messageData.endsWith('\r')) {
       messageData.chop(1);
     }
     processMessage(clientSocket, QString::fromUtf8(messageData));
+    if (!m_clients.contains(clientSocket) || clientSocket->state() != QLocalSocket::ConnectedState)
+      return;
   }
 
+  if (buffer.size() > kMaxIpcMessageBytes) {
+    clientSocket->disconnectFromServer();
+    return;
+  }
+  m_receiveBuffers.insert(clientSocket, buffer);
+  if (clientSocket->bytesAvailable() > 0)
+    QMetaObject::invokeMethod(clientSocket, "readyRead", Qt::QueuedConnection);
   if (!buffer.isEmpty()) {
     LOG_VERBOSE("%s ipc server buffered %d incomplete bytes", m_typeName.constData(), buffer.size());
   }

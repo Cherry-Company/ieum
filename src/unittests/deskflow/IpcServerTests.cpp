@@ -8,6 +8,7 @@
 
 #include "base/ILogOutputter.h"
 #include "common/FileTransferEdgeDropIpc.h"
+#include "common/ProfessionalMessage.h"
 #include "common/VersionInfo.h"
 #include "deskflow/ipc/CoreIpcServer.h"
 #include "deskflow/ipc/DaemonIpcServer.h"
@@ -847,6 +848,66 @@ void IpcServerTests::acknowledgesLegacyDaemonCommandsAfterCompletion()
   server.completeCommand(stopRequestId, true);
   QTRY_VERIFY_WITH_TIMEOUT(!readyReadSpy.isEmpty(), 1000);
   QCOMPARE(QString::fromUtf8(client.readAll()), QStringLiteral("ok\n"));
+}
+
+void IpcServerTests::acceptsBatchedBoundedFramesAndRejectsOversizedResidual()
+{
+  TestIpcServer server(uniqueSocketName());
+  QVERIFY(server.listen());
+  QLocalSocket client;
+  client.connectToServer(uniqueSocketName());
+  QVERIFY(client.waitForConnected(1000));
+  const auto line = QByteArray("bounded=") + QByteArray(32000, 'x') + '\n';
+  client.write(currentHello() + line + line + line);
+  client.flush();
+  QTRY_COMPARE(server.commands().size(), 3);
+  QCOMPARE(client.state(), QLocalSocket::ConnectedState);
+  client.write(line + QByteArray(65537, 'x'));
+  client.flush();
+  QTRY_COMPARE(server.commands().size(), 4);
+  QTRY_COMPARE(client.state(), QLocalSocket::UnconnectedState);
+}
+
+void IpcServerTests::professionalMediaRequiresRegistrationAndIsNotReplayed()
+{
+  using deskflow::core::ipc::CoreIpcServer;
+  TestCoreIpcServer server(uniqueSocketName(), [](QLocalSocket *) { return true; });
+  QVERIFY(server.listen());
+  const auto bytes = deskflow::professional::encode({{}, {}, "discover", {}, {}, {}});
+  server.publishProfessional(bytes);
+  QCoreApplication::processEvents();
+  QLocalSocket client;
+  client.connectToServer(uniqueSocketName());
+  QVERIFY(client.waitForConnected(1000));
+  client.write(currentHello());
+  client.flush();
+  QTRY_VERIFY(client.bytesAvailable() > 0);
+  QCOMPARE(client.readAll(), currentHello());
+  QSignalSpy messages(&server, &CoreIpcServer::professionalReceived);
+  const auto frame = QByteArray("professional=") + bytes.toBase64() + '\n';
+  client.write(frame);
+  client.flush();
+  QTest::qWait(30);
+  QCOMPARE(messages.size(), 0);
+  server.publishProfessional(bytes);
+  QTest::qWait(30);
+  QCOMPARE(client.bytesAvailable(), 0);
+  client.write("professionalRegister\n" + frame);
+  client.flush();
+  QTRY_COMPARE(messages.size(), 1);
+  QCOMPARE(messages.first().first().toByteArray(), bytes);
+  server.professionalRequestHandled();
+  server.publishProfessional(bytes);
+  QTRY_VERIFY(client.bytesAvailable() > 0);
+  QCOMPARE(client.readAll(), frame);
+  client.write("hello=old-version\n" + frame);
+  client.flush();
+  QTest::qWait(30);
+  QCOMPARE(messages.size(), 1);
+  client.readAll();
+  server.publishProfessional(bytes);
+  QTest::qWait(30);
+  QCOMPARE(client.bytesAvailable(), 0);
 }
 
 QTEST_GUILESS_MAIN(IpcServerTests)

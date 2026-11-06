@@ -9,8 +9,8 @@ Release: v0.1.0-alpha.32
 - 후원금으로 완료한 작업 / Work claimed as sponsor-funded: **없음 / None**
 - 이번 릴리스에 배정된 후원금 없이 독립적으로 개발했습니다. / Developed independently without
   sponsor funds allocated to this release. Advertised prices are not counted as received revenue.
-- 다음 우선순위 / Next priorities: 남은 네이티브 기능 구현, Paddle 운영 검수, Windows 정식 코드 서명,
-  Apple Developer ID 서명·공증과 실기기 회귀 검사. / Remaining native features, Paddle production
+- 다음 우선순위 / Next priorities: 네이티브 기능 실기기 검수, Paddle 운영 검수, Windows 정식 코드 서명,
+  Apple Developer ID 서명·공증과 실기기 회귀 검사. / Native hardware acceptance, Paddle production
   acceptance, Windows signing, Apple Developer ID/notarization and physical regression testing.
 
 ## 변경 내용 / Changes
@@ -38,24 +38,38 @@ Release: v0.1.0-alpha.32
   보완했습니다. 잘못된 클립보드 헤더의 읽기 경계 오류도 수정했습니다. / Tracks broadcast key recipients
   through mode changes, entitlement expiry and disconnects, and fixes malformed clipboard header reads.
 
-## 아직 포함되지 않은 기능 / Features not yet complete
+## 추가 공유 기능 미리보기 / Native sharing preview
 
-오디오 캡처·재생, 원격 화면 전송, 양쪽 기기의 물리 키보드·마우스 제어, 실제 잠금·깨우기,
-마우스 동시 입력과 주 컴퓨터 입력 주입은 아직 완성되지 않았습니다. 플랜 화면의 추가 기능은
-출시 예정 구성입니다. 이번 버전을 여섯 기능 전체가 완성된 상용 구독판으로 안내하지 않습니다.
+시스템 오디오 캡처·재생, 주 화면 전송, 양쪽 물리 키보드·마우스 제어, 잠금·깨우기,
+마우스를 포함한 동시 입력을 구현했습니다. 공유 패널에서 상대의 기능별 허용을 받고,
+저장된 허용 취소·트레이 중지·Ctrl+Alt+Esc·연결 종료 시 입력 해제를 지원합니다.
+기존 TLS 연결의 프로토콜 1.15로 전달하며 별도 수신 포트를 열지 않습니다.
 
-Audio capture/playback, remote screen transport, input from both computers' physical devices,
-coordinated lock/wake, mouse broadcast and primary-host input injection remain incomplete.
-The additional plan features describe intended packaging, not completed capabilities.
+Implements system audio, primary-screen viewing, bidirectional physical input,
+lock/wake and simultaneous keyboard/mouse input. The sharing panel adds receiver
+consent, saved-permission revocation, tray stop and emergency release. Sessions
+use protocol 1.15 on the existing authenticated TLS connection.
+
+화면은 최대 720p·5fps, macOS 시스템 오디오는 13 이상입니다. Linux의 새 화면·입력 기능은
+X11을 사용하며, 새 기능의 Wayland·Flatpak 지원은 포함하지 않습니다. 깨우기는 로그인을
+해제하지 않으며 절전 해제는 하드웨어와 LAN 조건이 필요합니다. Windows↔macOS 실기기
+검증 전인 미리보기이며 상용 구독 판매 완료 상태가 아닙니다.
+
+Screen viewing is capped at 720p/5fps. macOS audio needs 13+. New Linux screen/input
+features require X11; new Wayland/Flatpak support is not included. Wake never
+unlocks a login and sleep wake depends on the hardware/LAN. Windows↔macOS hardware
+acceptance is pending; this is a preview, with subscription sales disabled.
 
 ## 빌드 및 검증 범위 / Build and validation scope
 
-- 로컬 Linux Qt GUI/core 빌드와 네이티브 테스트 131개가 통과했습니다. Windows 관련 진단 검사
-  1개는 Linux에서 건너뛰었습니다. / Local Linux GUI/core builds and 131 native test cases passed;
-  one Windows-specific diagnostic test was skipped on Linux.
-- 별도 비공개 구독 서비스의 모의 데이터 테스트 39개, Chromium 결제/복원 흐름, 세 플랜의
+- Linux GUI/core 빌드, CTest 80개 대상과 레거시 검사 27개가 통과했습니다. 가상 X11/PulseAudio에서
+  네이티브 입력·키 해제·루프 차단·시스템 소리 캡처·재생도 확인했습니다. Windows 소스는 교차 문법
+  검사를 통과했고 macOS 빌드와 실기기 검수는 남았습니다. / Linux GUI/core builds, 80 CTest targets
+  and 27 legacy cases passed, along with isolated native X11/PulseAudio checks. Windows syntax was
+  cross-checked; macOS compilation and physical acceptance remain outstanding.
+- 별도 비공개 구독 서비스의 모의 데이터 테스트 43개와 로컬 Workers/D1 검사 6개, Chromium 결제/복원 흐름, 세 플랜의
   서명·만료 C++ 검증 6개가 통과했습니다. 실제 결제 검증은 아닙니다. / The separate service passed
-  39 fixture tests, a Chromium checkout/recovery flow and six C++ signature/expiry checks;
+  43 fixture tests and six local Workers/D1 tests, a Chromium checkout/recovery flow and six C++ signature/expiry checks;
   no real payment has been verified.
 - 새 소스의 Windows x64/ARM64, Apple Silicon/Intel, Linux 패키지는 해당 태그 CI와 패키지 검사가
   통과한 파일만 게시합니다. 소유자 마스터키젠과 개인 서명 키는 공개 패키지에 넣지 않습니다.

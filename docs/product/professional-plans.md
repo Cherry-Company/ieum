@@ -21,9 +21,8 @@ legacy or event license or stop free input sharing.
 
 Image clipboard and keyboard broadcast already exist in the inherited core.
 Moving them into Max changes the entitlement policy; it is not new feature
-development. That change must be disclosed in the release notes. Audio,
-bidirectional control and remote viewing require native implementation and
-cross-computer acceptance before they can be sold as available.
+development. That change must be disclosed in the release notes. The branch now includes native audio, bidirectional control and screen viewing.
+Cross-computer Windows/macOS acceptance is still required before public sale.
 
 ## Implementation status
 
@@ -33,15 +32,37 @@ subscription refresh, a translated plans dialog, and activation-link handling.
 The owner-only issuer and subscription API are separate private workspaces.
 Native Linux builds, license boundaries and local API fixtures have been tested.
 
-Audio capture/playback, remote screen transport and bidirectional input
-ownership are not implemented in this branch. Coordinated lock/wake remains
-incomplete. Image clipboard and keyboard broadcast now check the Max entitlement
-in the core. Free clipboard sharing retains plain text, including text copied
-alongside an image; HTML is excluded because it can embed images. Broadcast
-repeats and key releases follow the original recipient set through a mode change,
-license expiry or peer disconnect. This is keyboard broadcast, not completed
-mouse broadcast or control from a secondary computer's physical keyboard.
-The six-feature bundle is not ready for public sale.
+Native session code now covers system-audio capture/playback, primary-screen
+viewing, control from either computer's physical keyboard and mouse, lock/display
+wake, remembered Wake-on-LAN addresses, and full keyboard/mouse broadcast.
+The shared GUI includes per-feature receiver consent, optional remembered
+permission, permission revocation, active-session visibility, a tray stop action,
+local takeover and Ctrl+Alt+Esc. Sessions use the existing authenticated TLS
+connection (protocol 1.15); peers and the hub need matching entitlements.
+
+Windows uses WASAPI and low-level input hooks/SendInput. macOS uses
+ScreenCaptureKit for system audio (macOS 13+) and accessibility event taps.
+Linux uses X11/XInput2/XTest plus PulseAudio/PipeWire utilities and logind.
+New screen/input sharing on Wayland and new features in Flatpak are not supported
+by this implementation. Existing basic KVM platform support is unchanged.
+Screen viewing is the primary display only, capped at 1280×720 and 5 fps.
+Wake never bypasses the login screen; sleep wake depends on LAN/firmware support.
+
+Image clipboard checks the Max entitlement in the core. Free clipboard sharing
+retains plain text, including text copied alongside an image; HTML is excluded
+because it can embed images. Keyboard-only legacy broadcast remains compatible;
+the new sharing panel adds physical mouse movement, buttons and wheel, with
+ownership and disconnect release for simultaneous input.
+
+Linux compilation and automated session/transport/IPC tests pass. An isolated
+Xvfb/PulseAudio fixture also verifies native key injection, held-key/button
+release, injection-loop suppression, monitor capture and playback. Windows source
+passes a MinGW syntax check using Windows headers; this is not an MSVC build or
+hardware acceptance. macOS has not been built in this Linux workspace. Real
+Windows↔macOS audio/IME/permission/multi-monitor/lock/reboot checks remain open.
+The bundle is implemented as a preview and is not yet ready for public sale.
+See [the user guide](workspace-sharing.ko.md) and
+[protocol, limits and verification](../dev/workspace-sharing.md).
 
 Checkout is unavailable in the desktop until a verified HTTPS service address
 is set through the release-time CMake option `IEUM_SUBSCRIPTION_SERVICE_URL`.

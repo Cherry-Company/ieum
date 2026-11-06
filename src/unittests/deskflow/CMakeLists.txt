@@ -6,6 +6,14 @@ if(WIN32)
 endif()
 
 create_test(
+  NAME ProfessionalProtocolTests
+  DEPENDS app
+  LIBS arch base io ${extra_libs}
+  SOURCE ProfessionalProtocolTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/deskflow"
+)
+
+create_test(
   NAME CanonicalScancodeTests
   DEPENDS app
   LIBS arch base ${extra_libs}

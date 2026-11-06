@@ -65,7 +65,8 @@ QPushButton[planPurchase="true"] { border: 1px solid %2; border-radius: 8px; pad
   m_availability = new QLabel(tr("Subscriptions are being prepared. Existing Local licenses continue to work."), this);
   m_availability->setWordWrap(true);
   layout->addWidget(m_availability);
-  auto *preview = new QLabel(tr("The additional features below are planned for the subscription release."), this);
+  auto *preview =
+      new QLabel(tr("Additional sharing features are in preview. Subscriptions are not on sale yet."), this);
   preview->setWordWrap(true);
   layout->addWidget(preview);
 

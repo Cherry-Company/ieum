@@ -48,6 +48,8 @@ public:
   void stop(std::optional<ProcessMode> processMode = std::nullopt);
   void restart();
   bool reloadServerConfig();
+  bool sendProfessional(const QByteArray &bytes);
+  void setProfessionalInputMode(bool active);
   void cleanup();
   void applyLogLevel();
   void clearSettings();
@@ -95,6 +97,8 @@ public:
   }
 
 Q_SIGNALS:
+  void professionalReceived(const QByteArray &bytes);
+  void professionalInputReady(bool active);
   void error(deskflow::gui::CoreProcess::Error error);
   void logLine(const QString &line);
   void connectionStateChanged(deskflow::core::ConnectionState state);

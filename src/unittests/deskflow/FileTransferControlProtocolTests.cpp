@@ -258,7 +258,7 @@ void rejectsSpoofedMessageRoles()
 
 void exposesProtocolTwelveFeatureGate()
 {
-  require(kProtocolMinorVersion == 14, "current protocol should negotiate minor 14");
+  require(kProtocolMinorVersion == 15, "current protocol should negotiate minor 14");
   require(kProtocolFileTransferControlMinorVersion == 12, "file control feature gate should be minor 12");
   require(std::string_view(kMsgDFileTransferControl, 4) == "DFTC", "file control message code should be DFTC");
 }

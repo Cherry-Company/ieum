@@ -15,6 +15,8 @@ class IpcServerTests : public QObject
   Q_OBJECT
 private Q_SLOTS:
   void initTestCase();
+  void acceptsBatchedBoundedFramesAndRejectsOversizedResidual();
+  void professionalMediaRequiresRegistrationAndIsNotReplayed();
   void replaysLatestStateAfterRetryStorm();
   void boundsPendingEventsAndPreservesCurrentState();
   void rejectsOversizedPendingMessages();

@@ -7,6 +7,8 @@
  */
 
 #include "server/Server.h"
+#include <QJsonArray>
+#include <QUuid>
 
 #include "base/IEventQueue.h"
 #include "base/Log.h"
@@ -1824,6 +1826,8 @@ void Server::onScreensaver(bool activated)
 
 void Server::onKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const std::string &lang, const char *screens)
 {
+  if (professionalInputActive())
+    return;
   LOG_VERBOSE("onKeyDown id=%d mask=0x%04x button=0x%04x lang=%s", id, mask, button, lang.c_str());
   assert(m_active != nullptr);
 
@@ -1858,6 +1862,8 @@ void Server::onKeyDown(KeyID id, KeyModifierMask mask, KeyButton button, const s
 
 void Server::onKeyUp(KeyID id, KeyModifierMask mask, KeyButton button, const char *screens)
 {
+  if (professionalInputActive())
+    return;
   LOG_VERBOSE("onKeyUp id=%d mask=0x%04x button=0x%04x", id, mask, button);
   assert(m_active != nullptr);
 
@@ -1881,6 +1887,8 @@ void Server::releaseBroadcastKeys()
 
 void Server::onKeyRepeat(KeyID id, KeyModifierMask mask, int32_t count, KeyButton button, const std::string &lang)
 {
+  if (professionalInputActive())
+    return;
   LOG(
       (CLOG_VERBOSE "onKeyRepeat id=%d mask=0x%04x count=%d button=0x%04x lang=\"%s\"", id, mask, count, button,
        lang.c_str())
@@ -2011,6 +2019,8 @@ void Server::handlePrimaryInputLanguageChanged(const Event &event)
 
 void Server::onMouseDown(ButtonID id)
 {
+  if (professionalInputActive())
+    return;
   LOG_VERBOSE("onMouseDown id=%d", id);
   assert(m_active != nullptr);
 
@@ -2020,6 +2030,8 @@ void Server::onMouseDown(ButtonID id)
 
 void Server::onMouseUp(ButtonID id)
 {
+  if (professionalInputActive())
+    return;
   LOG_VERBOSE("onMouseUp id=%d", id);
   assert(m_active != nullptr);
 
@@ -2029,6 +2041,8 @@ void Server::onMouseUp(ButtonID id)
 
 bool Server::onMouseMovePrimary(int32_t x, int32_t y)
 {
+  if (professionalInputActive())
+    return false;
   LOG_VERBOSE("onMouseMovePrimary %d,%d", x, y);
 
   // mouse move on primary (server's) screen
@@ -2133,6 +2147,8 @@ bool Server::onMouseMovePrimary(int32_t x, int32_t y)
 
 void Server::onMouseMoveSecondary(int32_t dx, int32_t dy)
 {
+  if (professionalInputActive())
+    return;
   LOG_VERBOSE("mouse move on secondary: %+d,%+d", dx, dy);
 
   // mouse move on secondary (client's) screen
@@ -2296,6 +2312,8 @@ void Server::onMouseMoveSecondary(int32_t dx, int32_t dy)
 
 void Server::onMouseWheel(int32_t xDelta, int32_t yDelta)
 {
+  if (professionalInputActive())
+    return;
   LOG_VERBOSE("onMouseWheel %+d,%+d", xDelta, yDelta);
   assert(m_active != nullptr);
 
@@ -2352,6 +2370,10 @@ bool Server::removeClient(BaseClientProxy *client)
   m_events->removeHandler(ClipboardChanged, client->getEventTarget());
 
   // remove from list
+  const auto disconnectedPeer = QString::fromStdString(client->getName());
+  m_professionalInputLeases.forget(disconnectedPeer);
+  m_professionalRoutes.forget(disconnectedPeer);
+  m_professionalConnections.remove(disconnectedPeer);
   m_clients.erase(getName(client));
   m_broadcastKeys.forgetPeer(getName(client));
   m_clientSet.erase(i);
@@ -2483,4 +2505,107 @@ void Server::forceLeaveClient(const BaseClientProxy *client)
 
   // tell primary client about the active sides
   m_primaryClient->reconfigure(getActivePrimarySides());
+}
+
+bool Server::professionalInputActive() const
+{
+  const auto now = std::chrono::steady_clock::now();
+  return now < m_professionalInputUntil ||
+         m_professionalInputLeases.active(
+             std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count()
+         );
+}
+
+void Server::pauseForProfessionalInput()
+{
+  releaseBroadcastKeys();
+  m_keyboardBroadcasting = false;
+  if (m_active != m_primaryClient) {
+    int32_t x = 0, y = 0;
+    m_primaryClient->getCursorPos(x, y);
+    switchScreen(m_primaryClient, x, y, false);
+  }
+}
+void Server::setProfessionalInputActive(bool active)
+{
+  if (active && !Settings::hasPlanFeature(QStringLiteral("bidirectional-control")))
+    return;
+  if (active && !professionalInputActive()) {
+    pauseForProfessionalInput();
+  }
+  m_professionalInputUntil = active ? std::chrono::steady_clock::now() + std::chrono::milliseconds(6000)
+                                    : std::chrono::steady_clock::time_point{};
+}
+
+bool Server::sendProfessional(deskflow::professional::Message message)
+{
+  return routeProfessional(m_primaryClient, std::move(message));
+}
+
+bool Server::routeProfessional(BaseClientProxy *sender, deskflow::professional::Message message)
+{
+  using namespace deskflow::professional;
+  if (!sender || !validMessage(message) || !entitled(message))
+    return false;
+  // The transport identity overrides every claimed source in the payload.
+  message.source = QString::fromStdString(sender->getName());
+  if (message.operation == QStringLiteral("discover")) {
+    QJsonArray peers;
+    for (const auto &[name, peer] : m_clients)
+      if (peer != sender && (peer->isPrimary() || peer->protocolMinorVersion() >= kProtocolMinor) && peers.size() < 64)
+        peers.append(QString::fromStdString(peer->getName()));
+    Message reply{
+        QString::fromStdString(m_primaryClient->getName()),
+        message.source,
+        QStringLiteral("peers"),
+        {},
+        {},
+        {{"peers", peers}}
+    };
+    if (sender->isPrimary()) {
+      ipcSendProfessional(encode(reply));
+      return true;
+    }
+    return sender->sendProfessional(reply);
+  }
+  // Only the hub can supply discovery results.
+  if (message.operation == QStringLiteral("peers"))
+    return false;
+  auto canonical = m_config->getCanonicalName(message.target.toStdString());
+  if (canonical.empty())
+    canonical = message.target.toStdString();
+  const auto found = m_clients.find(canonical);
+  if (found == m_clients.end() || found->second == sender)
+    return false;
+  if (!found->second->isPrimary() && found->second->protocolMinorVersion() < kProtocolMinor)
+    return false;
+  message.target = QString::fromStdString(found->second->getName());
+  const auto connection = [this](const QString &peer) {
+    auto &id = m_professionalConnections[peer];
+    if (id.isEmpty())
+      id = QUuid::createUuid().toString(QUuid::WithoutBraces);
+    return id;
+  };
+  const auto sourceConnection = connection(message.source), targetConnection = connection(message.target);
+  const auto time =
+      std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())
+          .count();
+  if (!m_professionalRoutes.observe(message, sourceConnection, targetConnection, time))
+    return false;
+  if (message.operation == "open")
+    message.body["connection"] = sourceConnection;
+  const bool wasActive = professionalInputActive();
+  if (!m_professionalInputLeases.observe(
+          message,
+          std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch())
+              .count()
+      ))
+    return false;
+  if (!wasActive && professionalInputActive())
+    pauseForProfessionalInput();
+  if (found->second->isPrimary()) {
+    ipcSendProfessional(encode(message));
+    return true;
+  }
+  return found->second->protocolMinorVersion() >= kProtocolMinor && found->second->sendProfessional(message);
 }

@@ -45,7 +45,7 @@ static const int16_t kProtocolMajorVersion = 1;
  * @note When incrementing the minor version, the Deskflow application version should also increment
  * @since Protocol version 1.0
  */
-static const int16_t kProtocolMinorVersion = 14;
+static const int16_t kProtocolMinorVersion = 15;
 
 //! First minor version that negotiates the canonical-scancode button flag.
 static const int16_t kProtocolCanonicalScancodeMinorVersion = 10;

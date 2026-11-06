@@ -58,6 +58,7 @@ protected:
   }
 
   void sendMessage(const QString &message);
+  bool sendBoundedMessage(const QString &message);
 
 private:
   void attemptConnection();

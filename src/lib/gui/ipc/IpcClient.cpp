@@ -25,6 +25,7 @@ IpcClient::IpcClient(
       m_retryDelayMs(retryDelayMs),
       m_typeName(typeName)
 {
+  m_socket->setReadBufferSize(128 * 1024);
   m_retryTimer.setSingleShot(true);
   connect(&m_retryTimer, &QTimer::timeout, this, &IpcClient::attemptConnection);
   connect(m_socket, &QLocalSocket::connected, this, &IpcClient::handleConnected);
@@ -80,6 +81,7 @@ void IpcClient::attemptConnection()
 
 void IpcClient::disconnectFromServer()
 {
+  m_readBuffer.clear();
   m_retryTimer.stop();
   m_state = State::Disconnecting;
   qDebug().noquote() << QStringLiteral("%1 ipc client disconnecting from server").arg(m_typeName);
@@ -100,6 +102,7 @@ void IpcClient::handleConnected()
 
 void IpcClient::handleDisconnected()
 {
+  m_readBuffer.clear();
   if (m_state == State::Connecting) {
     return;
   }
@@ -134,11 +137,16 @@ void IpcClient::handleErrorOccurred()
 
 void IpcClient::handleReadyRead()
 {
-  QByteArray data = m_readBuffer + m_socket->readAll();
+  QByteArray data = m_readBuffer + m_socket->read(64 * 1024);
   m_readBuffer.clear();
 
   while (data.contains('\n')) {
     const auto index = data.indexOf('\n');
+    if (index > 64 * 1024) {
+      disconnectFromServer();
+      Q_EMIT connectionFailed();
+      return;
+    }
     const auto message = QString::fromUtf8(data.left(index));
     data.remove(0, index + 1);
     const auto sanitizedMessage = ::deskflow::ipc::sanitizeMessageForLog(message);
@@ -152,6 +160,8 @@ void IpcClient::handleReadyRead()
 
     if (m_state == State::Connecting) {
       handleHandshakeMessage(parts);
+      if (m_state != State::Connecting && m_state != State::Connected)
+        return;
       continue;
     }
 
@@ -163,8 +173,17 @@ void IpcClient::handleReadyRead()
     }
 
     processCommand(parts.at(0), parts);
+    if (m_state != State::Connected)
+      return;
   }
 
+  if (data.size() > 64 * 1024) {
+    disconnectFromServer();
+    Q_EMIT connectionFailed();
+    return;
+  }
+  if (m_socket->bytesAvailable() > 0)
+    QMetaObject::invokeMethod(m_socket, "readyRead", Qt::QueuedConnection);
   if (!data.isEmpty()) {
     m_readBuffer = data;
   }
@@ -218,6 +237,14 @@ void IpcClient::sendMessage(const QString &message)
   m_socket->flush();
   const auto sanitizedMessage = ::deskflow::ipc::sanitizeMessageForLog(message);
   qDebug().noquote() << QStringLiteral("%1 ipc client sent message: %2").arg(m_typeName, sanitizedMessage);
+}
+
+bool IpcClient::sendBoundedMessage(const QString &message)
+{
+  if (m_state != State::Connected || m_socket->bytesToWrite() > 256 * 1024)
+    return false;
+  const auto bytes = message.toUtf8() + '\n';
+  return bytes.size() <= 64 * 1024 && m_socket->write(bytes) == bytes.size();
 }
 
 } // namespace deskflow::gui::ipc

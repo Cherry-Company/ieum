@@ -24,6 +24,7 @@
 #include "deskflow/FileTransferEdgeEvent.h"
 #include "deskflow/FileTransferEdgeProtocol.h"
 #include "deskflow/OptionTypes.h"
+#include "deskflow/ProfessionalProtocol.h"
 #include "deskflow/ProtocolTypes.h"
 #include "deskflow/ProtocolUtil.h"
 #include "deskflow/StreamChunker.h"
@@ -365,6 +366,17 @@ ServerProxy::ConnectionResult ServerProxy::parseMessage(const uint8_t *code)
     receiveFileTransferData();
   }
 
+  else if (memcmp(code, "DPRF", 4) == 0) {
+    const auto message = deskflow::professional::readFrame(m_stream);
+    if (!message) {
+      requestDisconnect("invalid professional session frame");
+      return ConnectionResult::Disconnect;
+    }
+    if (message->target == QString::fromStdString(m_client->getName()) &&
+        deskflow::professional::validPeer(message->source) && deskflow::professional::entitled(*message))
+      ipcSendProfessional(deskflow::professional::encode(*message));
+  }
+
   else if (memcmp(code, kMsgDFileTransferEdge, 4) == 0) {
     receiveFileTransferEdge();
   }
@@ -490,6 +502,14 @@ void ServerProxy::receiveFileTransferData()
       EventTypes::FileTransferDataReceived, m_clientEventTarget,
       new deskflow::filetransfer::FileTransferDataEventData(std::move(*received.message))
   ));
+}
+
+bool ServerProxy::sendProfessional(const deskflow::professional::Message &input)
+{
+  auto message = input;
+  message.source = QString::fromStdString(m_client->getName());
+  return m_client->protocolMinorVersion() >= deskflow::professional::kProtocolMinor &&
+         deskflow::professional::entitled(message) && deskflow::professional::writeFrame(m_stream, message);
 }
 
 bool ServerProxy::sendFileTransferEdge(const deskflow::filetransfer::FileTransferEdgeMessage &message)

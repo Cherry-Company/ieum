@@ -19,6 +19,7 @@
 #include "server/CursorTransform.h"
 #include "server/PrimaryClient.h"
 #include "server/Server.h"
+#include <QJsonArray>
 
 void ServerTests::broadcastKeys_releaseOriginalRecipients()
 {
@@ -108,7 +109,8 @@ public:
 class CursorClient : public ClientProxy1_11
 {
 public:
-  CursorClient(IEventQueue *events, Server *server) : ClientProxy1_11("secondary", new SinkStream, server, events)
+  CursorClient(IEventQueue *events, Server *server, const char *name = "secondary")
+      : ClientProxy1_11(name, new SinkStream, server, events)
   {
   }
   deskflow::DisplayGeometry shape{-1920, -1080, 3840, 2160};
@@ -151,6 +153,24 @@ public:
   {
     position = {x, y};
   }
+};
+
+class SessionClient final : public CursorClient
+{
+public:
+  SessionClient(IEventQueue *events, Server *server, const char *name) : CursorClient(events, server, name)
+  {
+  }
+  int16_t protocolMinorVersion() const override
+  {
+    return 15;
+  }
+  bool sendProfessional(const deskflow::professional::Message &message) override
+  {
+    messages.append(message);
+    return true;
+  }
+  QList<deskflow::professional::Message> messages;
 };
 
 void dispatchMotion(EventQueue &events, EventTypes type, void *target, int32_t x, int32_t y)
@@ -211,6 +231,58 @@ void ServerTests::freeInputContinuesButBroadcastRequiresMax()
   QVERIFY(dispatchKey(EventTypes::KeyStateKeyUp, false));
   QCOMPARE(client->keyPresses, 1);
   QCOMPARE(client->keyReleases, 1);
+}
+
+void ServerTests::professionalRoutesUseTransportIdentityAndVersionAndPlanGates()
+{
+  using deskflow::professional::Message;
+  const auto tls = Settings::value(Settings::Security::TlsEnabled);
+  Settings::setValue(Settings::Security::TlsEnabled, true);
+  EventQueue events;
+  deskflow::server::Config config(&events);
+  for (const auto *name : {"primary", "sender", "target", "legacy"})
+    QVERIFY(config.addScreen(name));
+  QVERIFY(config.addOption("", kOptionClipboardSharing, 0));
+  auto *platform = new FakePlatformScreen(&events, true);
+  deskflow::Screen screen(platform, &events);
+  PrimaryClient primary("primary", &screen);
+  Server server(config, &primary, &screen, &events);
+  auto *sender = new SessionClient(&events, &server, "sender");
+  auto *target = new SessionClient(&events, &server, "target");
+  server.adoptClient(sender);
+  server.adoptClient(target);
+  server.adoptClient(new CursorClient(&events, &server, "legacy"));
+  Message close{
+      "spoofed-primary", "target", "close", "bidirectional-control", "c78e37de-8b03-40b5-80b7-ff6e74073043", {}
+  };
+  QVERIFY(server.routeProfessional(sender, close));
+  QCOMPARE(target->messages.size(), 1);
+  QCOMPARE(target->messages.first().source, QString("sender"));
+  QCOMPARE(target->messages.first().target, QString("target"));
+  auto request = close;
+  request.operation = "open";
+  QVERIFY(!Settings::hasPlanFeature(QStringLiteral("bidirectional-control")));
+  QVERIFY(!server.routeProfessional(sender, request));
+  QCOMPARE(target->messages.size(), 1);
+  request = close;
+  request.target = "legacy";
+  QVERIFY(!server.routeProfessional(sender, request));
+  request.target = "missing";
+  QVERIFY(!server.routeProfessional(sender, request));
+  request.target = "sender";
+  QVERIFY(!server.routeProfessional(sender, request));
+  QVERIFY(!server.routeProfessional(
+      sender, {"spoofed-primary", "target", "peers", {}, {}, {{"peers", QJsonArray{"sender"}}}}
+  ));
+  QVERIFY(server.routeProfessional(sender, {"spoofed-primary", {}, "discover", {}, {}, {}}));
+  const auto peers = sender->messages.last().body.value("peers").toArray();
+  QVERIFY(peers.contains("primary"));
+  QVERIFY(peers.contains("target"));
+  QVERIFY(!peers.contains("sender"));
+  QVERIFY(!peers.contains("legacy"));
+  Settings::setValue(Settings::Security::TlsEnabled, false);
+  QVERIFY(!server.routeProfessional(sender, close));
+  Settings::setValue(Settings::Security::TlsEnabled, tls);
 }
 
 void ServerTests::screenSwitch_tracksPhysicalPositionAfterGapEntry()

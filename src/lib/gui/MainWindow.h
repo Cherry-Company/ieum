@@ -33,6 +33,10 @@ class QLocalServer;
 class QTimer;
 class QPushButton;
 class DeskWorkspace;
+namespace deskflow::gui::session {
+class SessionController;
+class SessionWindow;
+} // namespace deskflow::gui::session
 
 class DeskflowApplication;
 class LogDock;
@@ -184,6 +188,8 @@ private:
   void restoreWindow();
   void setupControls();
   void setupDeskWorkspace();
+  void setupProfessionalSessions();
+  void updateSharingTrayTooltip();
   void showFirstConnectedMessage();
   void updateStatus();
   void showHostNameEditor();
@@ -243,6 +249,9 @@ private:
   QPushButton *m_connectionSettingsButton = nullptr;
   ServerConfig m_serverConfig;
   deskflow::gui::CoreProcess m_coreProcess;
+  deskflow::gui::session::SessionController *m_sessionController = nullptr;
+  deskflow::gui::session::SessionWindow *m_sessionWindow = nullptr;
+  QPushButton *m_sharingButton = nullptr;
 #ifdef Q_OS_WIN
   std::unique_ptr<deskflow::gui::WindowsFileTransferDropBroker> m_fileTransferDropBroker;
 #endif

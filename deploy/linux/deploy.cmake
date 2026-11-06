@@ -36,10 +36,11 @@ configure_file(
 set(CPACK_DEBIAN_PACKAGE_SECTION "utils")
 set(CPACK_DEBIAN_PACKAGE_NAME "ieum")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qt6-svg-plugins")
+set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qt6-svg-plugins, pulseaudio-utils")
 set(CPACK_RPM_PACKAGE_LICENSE "GPLv2")
 set(CPACK_RPM_PACKAGE_NAME "ieum")
 set(CPACK_RPM_PACKAGE_GROUP "Applications/System")
+set(CPACK_RPM_PACKAGE_SUGGESTS "pulseaudio-utils")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   # Get Distro name information

@@ -345,6 +345,7 @@ void CoreProcess::connectCoreIpc(quint64 startGeneration)
     m_duplicateRecoveryAttempts = 0;
     qDebug("connected to core ipc server");
     client->requestFileTransferActiveSides();
+    client->registerProfessional();
     if (m_processState == ProcessState::Starting) {
       m_serviceStartCoordinator->coreConnected(startGeneration);
     }
@@ -940,6 +941,17 @@ bool CoreProcess::sendFileTransferEdgeDrop(const QString &encodedValue)
 
 void CoreProcess::onCoreIpcMessageReceived(const QString &command, const QString &args)
 {
+  if (command == "professionalModeReady") {
+    if (args == "0" || args == "1")
+      Q_EMIT professionalInputReady(args == "1");
+    return;
+  }
+  if (command == QStringLiteral("professional")) {
+    if (args.size() <= 32772)
+      Q_EMIT professionalReceived(QByteArray::fromBase64(args.toLatin1(), QByteArray::AbortOnBase64DecodingErrors));
+    return;
+  }
+
   if (command == "connectionState") {
     const auto metaEnum = QMetaEnum::fromType<ConnectionState>();
     bool ok = false;
@@ -1057,6 +1069,16 @@ void CoreProcess::clearSettings()
 void CoreProcess::retryDaemon()
 {
   m_daemonIpcClient->connectToServer();
+}
+
+bool CoreProcess::sendProfessional(const QByteArray &bytes)
+{
+  return m_coreIpcClient && m_coreIpcClient->sendProfessional(bytes);
+}
+void CoreProcess::setProfessionalInputMode(bool active)
+{
+  if (m_coreIpcClient)
+    m_coreIpcClient->setProfessionalInputMode(active);
 }
 
 } // namespace deskflow::gui

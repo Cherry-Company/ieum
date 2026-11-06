@@ -136,9 +136,14 @@ Normal purchases will use Paddle subscriptions. After payment, activate Ieum and
 save the separate subscription recovery code. Event and owner keys have their own
 field. Hosting is prepared for Cloudflare Workers + D1 Free, with an owned subdomain
 connected later; the service is not deployed yet. Cancellation retains access through the paid period; free
-features and valid existing keys remain afterward. Audio, remote viewing and
-bidirectional control still need implementation and physical acceptance, and
-the live seller account must be connected. Moving existing image clipboard and
+features and valid existing keys remain afterward. The development branch now
+implements system audio, screen viewing, bidirectional physical keyboard/mouse
+control, coordinated lock/wake and full simultaneous input. Open **Workspace
+sharing**, choose a peer and obtain its consent. Saved permissions can be revoked;
+sharing can also be stopped from the tray. Screen viewing is the primary display
+at up to 720p/5fps. macOS system audio requires 13+; new Linux screen/input
+features require X11. Windows↔macOS physical acceptance and the live seller
+account are still pending. See [support and implementation limits](docs/dev/workspace-sharing.md). Moving existing image clipboard and
 keyboard broadcast into Max is a policy change for that subscription release.
 See the [pricing evidence and release conditions](docs/product/professional-plans.md).
 

@@ -477,4 +477,34 @@ void IpcClientTests::correlatesDaemonCommandResults()
   QLocalServer::removeServer(socketName);
 }
 
+void IpcClientTests::reconnectDropsPartialMediaAndBoundsIncomingLines()
+{
+  const auto name = uniqueSocketName();
+  QLocalServer server;
+  QVERIFY(server.listen(name));
+  TestIpcClient client(name, 1, 0);
+  QSignalSpy connected(&client, &IpcClient::connected);
+  QLocalSocket *peer = nullptr;
+  connect(&server, &QLocalServer::newConnection, this, [&] {
+    peer = server.nextPendingConnection();
+    connect(peer, &QLocalSocket::readyRead, peer, [socket = peer] {
+      const auto hello = socket->readAll();
+      socket->write(hello);
+      socket->flush();
+    });
+  });
+  client.connectToServer();
+  QTRY_COMPARE(connected.size(), 1);
+  peer->write("professional=unfinished");
+  peer->flush();
+  QTest::qWait(30);
+  client.disconnectFromServer();
+  client.connectToServer();
+  QTRY_COMPARE(connected.size(), 2);
+  peer->write(QByteArray(65537, 'x'));
+  peer->flush();
+  QTRY_VERIFY(!client.isConnected());
+  QVERIFY(client.commands().isEmpty());
+}
+
 QTEST_MAIN(IpcClientTests)

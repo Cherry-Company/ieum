@@ -332,6 +332,11 @@ bool Client::sendFileTransferData(const deskflow::filetransfer::FileTransferData
   return m_server != nullptr && m_server->sendFileTransferData(message);
 }
 
+bool Client::sendProfessional(const deskflow::professional::Message &message)
+{
+  return m_server != nullptr && m_server->sendProfessional(message);
+}
+
 bool Client::sendFileTransferEdge(const deskflow::filetransfer::FileTransferEdgeMessage &message)
 {
   return m_server != nullptr && m_server->sendFileTransferEdge(message);

@@ -1428,6 +1428,18 @@ Client computer</source>
         <source>Plans and subscription</source>
         <translation>플랜 및 구독</translation>
     </message>
+    <message>
+        <source>Workspace sharing</source>
+        <translation type="unfinished">작업 공간 공유</translation>
+    </message>
+    <message>
+        <source>Sharing · %1</source>
+        <translation type="unfinished">공유 중 · %1</translation>
+    </message>
+    <message>
+        <source>Stop workspace sharing</source>
+        <translation>작업 공간 공유 중지</translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -2899,8 +2911,8 @@ Licenses are issued manually after payment verification.</source>
         <translation>새 구독을 준비 중입니다. 기존 Local 라이선스는 계속 사용할 수 있습니다.</translation>
     </message>
     <message>
-        <source>The additional features below are planned for the subscription release.</source>
-        <translation>아래 추가 기능은 구독판에 포함할 예정입니다.</translation>
+        <source>Additional sharing features are in preview. Subscriptions are not on sale yet.</source>
+        <translation>추가 공유 기능은 미리보기 단계입니다. 구독은 아직 판매하지 않습니다.</translation>
     </message>
     <message>
         <source>US$%1 / year</source>
@@ -3024,6 +3036,367 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>Choose your purchased plan and enter your subscription recovery code.</source>
         <translation>구매한 플랜을 선택하고 구독 복원 코드를 입력하세요.</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::session::SessionController</name>
+    <message>
+        <source>Connect both computers with the current Ieum version first.</source>
+        <translation type="unfinished">먼저 두 컴퓨터를 최신 이음으로 연결하세요.</translation>
+    </message>
+    <message>
+        <source>This feature requires an active matching plan.</source>
+        <translation type="unfinished">이 기능이 포함된 유효한 플랜이 필요합니다.</translation>
+    </message>
+    <message>
+        <source>Finish an existing sharing session first.</source>
+        <translation type="unfinished">진행 중인 공유를 먼저 종료하세요.</translation>
+    </message>
+    <message>
+        <source>Stop the current input session before switching control.</source>
+        <translation type="unfinished">제어 대상을 바꾸려면 현재 입력 공유를 종료하세요.</translation>
+    </message>
+    <message>
+        <source>Receive one audio source at a time. Stop other audio sessions first.</source>
+        <translation type="unfinished">오디오는 한 컴퓨터에서만 받을 수 있습니다. 다른 오디오 공유를 먼저 종료하세요.</translation>
+    </message>
+    <message>
+        <source>The sharing request could not be sent.</source>
+        <translation type="unfinished">공유 요청을 보내지 못했습니다.</translation>
+    </message>
+    <message>
+        <source>Waiting for %1 to allow sharing…</source>
+        <translation type="unfinished">%1의 공유 허용을 기다리는 중…</translation>
+    </message>
+    <message>
+        <source>This computer already has an input owner or an incompatible audio session.</source>
+        <translation type="unfinished">이미 다른 컴퓨터가 입력을 제어하거나 함께 사용할 수 없는 오디오 공유가 진행 중입니다.</translation>
+    </message>
+    <message>
+        <source>Sharing with %1. You can stop it at any time.</source>
+        <translation type="unfinished">%1과 공유 중입니다. 언제든 중지할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>Saved sharing permissions were revoked. Each computer must ask again.</source>
+        <translation type="unfinished">저장된 공유 허용을 취소했습니다. 다음 공유 요청부터 다시 확인합니다.</translation>
+    </message>
+    <message>
+        <source>Input sharing could not take ownership. Restart sharing.</source>
+        <translation type="unfinished">입력 제어를 시작하지 못했습니다. 공유를 다시 시작하세요.</translation>
+    </message>
+    <message>
+        <source>Screen capture is unavailable or the desktop is locked.</source>
+        <translation type="unfinished">화면을 캡처할 수 없거나 컴퓨터가 잠겨 있습니다.</translation>
+    </message>
+    <message>
+        <source>Input control returned to this computer.</source>
+        <translation type="unfinished">이 컴퓨터로 입력 제어가 돌아왔습니다.</translation>
+    </message>
+    <message>
+        <source>Wake requires Professional Max.</source>
+        <translation type="unfinished">깨우기는 Professional Max에서 사용할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>Wake request sent. Sleep wake needs Wake-on-LAN enabled in the computer and network adapter.</source>
+        <translation type="unfinished">깨우기 요청을 보냈습니다. 절전 해제는 컴퓨터와 네트워크 어댑터에서 Wake-on-LAN을 켜야 합니다.</translation>
+    </message>
+    <message>
+        <source>Connect this computer once to learn its network address, or start lock/wake sharing.</source>
+        <translation type="unfinished">해당 컴퓨터를 한 번 연결해 주소를 저장하거나 잠금·깨우기 연동을 시작하세요.</translation>
+    </message>
+    <message>
+        <source>Start lock/wake sharing with a computer first.</source>
+        <translation type="unfinished">먼저 상대 컴퓨터와 잠금·깨우기 연동을 시작하세요.</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::session::SessionPlatform</name>
+    <message>
+        <source>System audio capture stopped. Check the PulseAudio/PipeWire device.</source>
+        <translation type="unfinished">시스템 오디오 캡처가 중단됐습니다. PulseAudio/PipeWire 장치를 확인하세요.</translation>
+    </message>
+    <message>
+        <source>System audio capture ended.</source>
+        <translation type="unfinished">시스템 오디오 캡처가 종료됐습니다.</translation>
+    </message>
+    <message>
+        <source>Audio output is unavailable.</source>
+        <translation type="unfinished">오디오 출력 장치를 사용할 수 없습니다.</translation>
+    </message>
+    <message>
+        <source>Screen sharing currently requires an X11 desktop on Linux.</source>
+        <translation type="unfinished">Linux 화면 공유는 현재 X11 데스크톱에서 사용할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>Install PulseAudio utilities (parec, pactl and paplay) to share system audio.</source>
+        <translation type="unfinished">시스템 오디오를 공유하려면 PulseAudio 도구(parec, pactl, paplay)를 설치하세요.</translation>
+    </message>
+    <message>
+        <source>The default audio output could not be found.</source>
+        <translation type="unfinished">기본 오디오 출력 장치를 찾지 못했습니다.</translation>
+    </message>
+    <message>
+        <source>The default audio output is invalid.</source>
+        <translation type="unfinished">기본 오디오 출력 장치 정보가 올바르지 않습니다.</translation>
+    </message>
+    <message>
+        <source>Could not start system audio capture.</source>
+        <translation type="unfinished">시스템 오디오 캡처를 시작하지 못했습니다.</translation>
+    </message>
+    <message>
+        <source>Install paplay to play shared audio.</source>
+        <translation type="unfinished">공유 오디오를 재생하려면 paplay를 설치하세요.</translation>
+    </message>
+    <message>
+        <source>Audio output could not be started.</source>
+        <translation type="unfinished">오디오 출력을 시작하지 못했습니다.</translation>
+    </message>
+    <message>
+        <source>XInput2 is unavailable.</source>
+        <translation type="unfinished">XInput2를 사용할 수 없습니다.</translation>
+    </message>
+    <message>
+        <source>Another application owns the keyboard.</source>
+        <translation type="unfinished">다른 앱이 키보드를 독점하고 있습니다.</translation>
+    </message>
+    <message>
+        <source>Another application owns the pointer.</source>
+        <translation type="unfinished">다른 앱이 마우스를 독점하고 있습니다.</translation>
+    </message>
+    <message>
+        <source>Physical input sharing requires X11 on this Linux build.</source>
+        <translation type="unfinished">이 Linux 빌드에서 물리 입력을 공유하려면 X11이 필요합니다.</translation>
+    </message>
+    <message>
+        <source>The desktop session lock service is unavailable.</source>
+        <translation type="unfinished">데스크톱 잠금 서비스를 사용할 수 없습니다.</translation>
+    </message>
+    <message>
+        <source>The desktop refused the lock request.</source>
+        <translation type="unfinished">데스크톱에서 잠금 요청을 거부했습니다.</translation>
+    </message>
+    <message>
+        <source>Display wake requires X11. Sleeping computers can use Wake-on-LAN.</source>
+        <translation type="unfinished">화면 깨우기는 X11이 필요합니다. 절전 중인 컴퓨터는 Wake-on-LAN을 사용할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>Physical input sharing requires an X11 desktop.</source>
+        <translation type="unfinished">물리 입력 공유는 X11 데스크톱이 필요합니다.</translation>
+    </message>
+    <message>
+        <source>Another input sharing session is active.</source>
+        <translation type="unfinished">다른 입력 공유가 진행 중입니다.</translation>
+    </message>
+    <message>
+        <source>Windows did not allow input capture.</source>
+        <translation type="unfinished">Windows에서 입력 캡처를 허용하지 않았습니다.</translation>
+    </message>
+    <message>
+        <source>Windows refused input. Run Ieum at the same privilege level as the target app.</source>
+        <translation type="unfinished">Windows에서 입력을 차단했습니다. 이음과 대상 앱을 같은 권한으로 실행하세요.</translation>
+    </message>
+    <message>
+        <source>Windows refused pointer input.</source>
+        <translation type="unfinished">Windows에서 마우스 입력을 차단했습니다.</translation>
+    </message>
+    <message>
+        <source>Windows could not lock this session.</source>
+        <translation type="unfinished">Windows 세션을 잠그지 못했습니다.</translation>
+    </message>
+    <message>
+        <source>The Windows audio device is unavailable or changed. Restart audio sharing.</source>
+        <translation type="unfinished">Windows 오디오 장치가 바뀌었거나 사용할 수 없습니다. 오디오 공유를 다시 시작하세요.</translation>
+    </message>
+    <message>
+        <source>Allow Ieum in System Settings → Privacy &amp; Security → Screen Recording, then reopen Ieum.</source>
+        <translation type="vanished">시스템 설정 → 개인정보 보호 및 보안 → 화면 기록에서 이음을 허용한 뒤 다시 실행하세요.</translation>
+    </message>
+    <message>
+        <source>macOS system audio capture stopped. Check recording permission.</source>
+        <translation type="vanished">macOS 시스템 오디오 캡처가 중단됐습니다. 화면 기록 권한을 확인하세요.</translation>
+    </message>
+    <message>
+        <source>Sharing system audio requires macOS 13 or later.</source>
+        <translation type="vanished">시스템 오디오 공유는 macOS 13 이상이 필요합니다.</translation>
+    </message>
+    <message>
+        <source>macOS audio output is unavailable.</source>
+        <translation type="vanished">macOS 오디오 출력을 사용할 수 없습니다.</translation>
+    </message>
+    <message>
+        <source>Allow Ieum in System Settings → Privacy &amp; Security → Accessibility.</source>
+        <translation type="vanished">시스템 설정 → 개인정보 보호 및 보안 → 손쉬운 사용에서 이음을 허용하세요.</translation>
+    </message>
+    <message>
+        <source>macOS did not allow input monitoring.</source>
+        <translation type="vanished">macOS에서 입력 모니터링을 허용하지 않았습니다.</translation>
+    </message>
+    <message>
+        <source>macOS could not lock the current session.</source>
+        <translation type="vanished">macOS 세션을 잠그지 못했습니다.</translation>
+    </message>
+    <message>
+        <source>macOS paused input capture. Restart the sharing session.</source>
+        <translation type="vanished">macOS에서 입력 캡처를 중지했습니다. 공유를 다시 시작하세요.</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::session::SessionWindow</name>
+    <message>
+        <source>Share your workspace</source>
+        <translation type="unfinished">작업 공간 공유</translation>
+    </message>
+    <message>
+        <source>One workspace. Every computer.</source>
+        <translation type="unfinished">여러 컴퓨터를 하나의 작업 공간으로.</translation>
+    </message>
+    <message>
+        <source>Choose a connected computer. Sharing starts after that computer allows it.</source>
+        <translation type="unfinished">연결된 컴퓨터를 선택하세요. 상대가 허용하면 공유를 시작합니다.</translation>
+    </message>
+    <message>
+        <source>Computer</source>
+        <translation type="unfinished">컴퓨터</translation>
+    </message>
+    <message>
+        <source>View screen</source>
+        <translation type="unfinished">화면 보기</translation>
+    </message>
+    <message>
+        <source>Listen to audio</source>
+        <translation type="unfinished">오디오 듣기</translation>
+    </message>
+    <message>
+        <source>Control selected computer</source>
+        <translation type="unfinished">선택한 컴퓨터 제어</translation>
+    </message>
+    <message>
+        <source>Add to simultaneous input</source>
+        <translation type="unfinished">동시 입력에 추가</translation>
+    </message>
+    <message>
+        <source>Link lock and wake</source>
+        <translation type="unfinished">잠금·깨우기 연동</translation>
+    </message>
+    <message>
+        <source>Professional or higher</source>
+        <translation type="unfinished">Professional 이상</translation>
+    </message>
+    <message>
+        <source>Professional Max</source>
+        <translation type="unfinished">Professional Max</translation>
+    </message>
+    <message>
+        <source>Wake computer</source>
+        <translation type="unfinished">컴퓨터 깨우기</translation>
+    </message>
+    <message>
+        <source>Control uses your physical keyboard and mouse. Ctrl+Alt+Esc returns control. Simultaneous input also stays active on this computer.</source>
+        <translation type="unfinished">이 컴퓨터의 키보드와 마우스로 제어합니다. Ctrl+Alt+Esc로 제어를 되돌릴 수 있습니다. 동시 입력은 이 컴퓨터에도 함께 적용됩니다.</translation>
+    </message>
+    <message>
+        <source>Active sharing sessions</source>
+        <translation type="unfinished">진행 중인 공유</translation>
+    </message>
+    <message>
+        <source>Stop selected</source>
+        <translation type="unfinished">선택한 공유 중지</translation>
+    </message>
+    <message>
+        <source>Stop all sharing</source>
+        <translation type="unfinished">모든 공유 중지</translation>
+    </message>
+    <message>
+        <source>Lock together</source>
+        <translation type="unfinished">함께 잠그기</translation>
+    </message>
+    <message>
+        <source>No sharing session is active.</source>
+        <translation type="unfinished">진행 중인 공유가 없습니다.</translation>
+    </message>
+    <message>
+        <source>Revoke saved permissions</source>
+        <translation type="unfinished">저장된 허용 취소</translation>
+    </message>
+    <message>
+        <source>Plans</source>
+        <translation type="unfinished">플랜</translation>
+    </message>
+    <message>
+        <source>%1 · %2</source>
+        <translation type="unfinished">%1 · %2</translation>
+    </message>
+    <message>
+        <source>Sharing is active. Closing this panel keeps it running; Stop all sharing ends it.</source>
+        <translation type="unfinished">공유 중입니다. 이 창을 닫아도 계속됩니다. 종료하려면 ‘모든 공유 중지’를 누르세요.</translation>
+    </message>
+    <message>
+        <source>System audio</source>
+        <translation type="unfinished">시스템 오디오</translation>
+    </message>
+    <message>
+        <source>Screen viewing</source>
+        <translation type="unfinished">화면 보기</translation>
+    </message>
+    <message>
+        <source>Keyboard and mouse control</source>
+        <translation type="unfinished">키보드·마우스 제어</translation>
+    </message>
+    <message>
+        <source>Simultaneous keyboard and mouse</source>
+        <translation type="unfinished">키보드·마우스 동시 입력</translation>
+    </message>
+    <message>
+        <source>Lock and wake</source>
+        <translation type="unfinished">잠금·깨우기</translation>
+    </message>
+    <message>
+        <source>%1 · offline</source>
+        <translation type="unfinished">%1 · 오프라인</translation>
+    </message>
+    <message>
+        <source>Start sharing on both computers to see available devices.</source>
+        <translation type="unfinished">두 컴퓨터에서 이음 연결을 시작하면 목록에 표시됩니다.</translation>
+    </message>
+    <message>
+        <source>Allow sharing?</source>
+        <translation type="unfinished">공유를 허용할까요?</translation>
+    </message>
+    <message>
+        <source>%1 wants to use %2 on this computer.</source>
+        <translation type="unfinished">%1에서 이 컴퓨터의 %2 기능을 요청했습니다.</translation>
+    </message>
+    <message>
+        <source>Allow this feature while this computer stays connected</source>
+        <translation>상대의 연결이 유지되는 동안 이 기능 허용</translation>
+    </message>
+    <message>
+        <source>This allows coordinated locking and waking the display. It never unlocks your login screen.</source>
+        <translation type="unfinished">함께 잠그기와 화면 깨우기를 허용합니다. 로그인 잠금은 해제하지 않습니다.</translation>
+    </message>
+    <message>
+        <source>Your computer&apos;s audio will be sent to this trusted computer. Microphone audio is not recorded.</source>
+        <translation type="unfinished">이 컴퓨터의 시스템 오디오를 상대에게 보냅니다. 마이크 소리는 녹음하지 않습니다.</translation>
+    </message>
+    <message>
+        <source>Your primary screen will be visible to this trusted computer until you stop sharing.</source>
+        <translation type="unfinished">공유를 중지할 때까지 상대가 이 컴퓨터의 주 화면을 볼 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>The other computer can type and click here. Local input or Ctrl+Alt+Esc takes control back.</source>
+        <translation type="unfinished">상대가 이 컴퓨터에 입력하고 클릭할 수 있습니다. 직접 입력하거나 Ctrl+Alt+Esc를 누르면 제어가 돌아옵니다.</translation>
+    </message>
+    <message>
+        <source>%1 — Screen</source>
+        <translation type="unfinished">%1 — 화면</translation>
+    </message>
+    <message>
+        <source>Stop viewing</source>
+        <translation type="unfinished">화면 보기 중지</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>닫기</translation>
     </message>
 </context>
 <context>

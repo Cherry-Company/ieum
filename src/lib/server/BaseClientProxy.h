@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "common/ProfessionalMessage.h"
+
 #include "deskflow/DisplayGeometry.h"
 #include "deskflow/FileTransferControlCodec.h"
 #include "deskflow/FileTransferDataCodec.h"
@@ -88,6 +90,10 @@ public:
     return false;
   }
   virtual bool sendFileTransferData(const deskflow::filetransfer::FileTransferDataMessage &)
+  {
+    return false;
+  }
+  virtual bool sendProfessional(const deskflow::professional::Message &)
   {
     return false;
   }

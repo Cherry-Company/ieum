@@ -23,6 +23,9 @@ inline QStringList splitCommandMessage(const QString &message)
 inline QString sanitizeMessageForLog(const QString &message)
 {
   const auto command = splitCommandMessage(message).first();
+  if (command == QLatin1String("professional")) {
+    return QStringLiteral("professional=<redacted>");
+  }
   if (command == QLatin1String("fileTransferEdgeDrop")) {
     return QStringLiteral("fileTransferEdgeDrop=<redacted>");
   }

@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include "common/ProfessionalMessage.h"
+
 #include "common/Enums.h"
 #include "deskflow/ClipboardChunk.h"
 #include "deskflow/ClipboardTypes.h"
@@ -61,6 +63,7 @@ public:
   void onClipboardChanged(ClipboardID, const IClipboard *);
   bool sendFileTransferControl(const deskflow::filetransfer::FileTransferControlMessage &message);
   bool sendFileTransferData(const deskflow::filetransfer::FileTransferDataMessage &message);
+  bool sendProfessional(const deskflow::professional::Message &message);
   bool sendFileTransferEdge(const deskflow::filetransfer::FileTransferEdgeMessage &message);
 
   //! Release raw keys while the platform screen is still enabled.

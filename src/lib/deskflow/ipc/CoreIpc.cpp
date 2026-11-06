@@ -31,3 +31,8 @@ void ipcSendFileTransferActiveSides(const std::uint32_t activeSides)
 {
   deskflow::core::ipc::CoreIpcServer::instance().publishFileTransferActiveSides(activeSides);
 }
+
+void ipcSendProfessional(const QByteArray &bytes)
+{
+  deskflow::core::ipc::CoreIpcServer::instance().publishProfessional(bytes);
+}

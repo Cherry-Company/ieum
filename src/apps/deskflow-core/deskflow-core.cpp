@@ -11,12 +11,15 @@
 #include "arch/Arch.h"
 #include "base/EventQueue.h"
 #include "base/Log.h"
+#include "client/Client.h"
 #include "common/Constants.h"
 #include "common/ExitCodes.h"
+#include "common/ProfessionalMessage.h"
 #include "deskflow/ClientApp.h"
 #include "deskflow/ServerApp.h"
 #include "deskflow/ipc/CoreIpcServer.h"
 #include "platform/FileTransferPlatformFactory.h"
+#include "server/Server.h"
 
 #if defined(Q_OS_WIN)
 #include "arch/win32/ArchMiscWindows.h"
@@ -155,6 +158,32 @@ int main(int argc, char **argv)
   } else if (auto *clientApp = dynamic_cast<ClientApp *>(coreApp); clientApp != nullptr) {
     connectFileTransferEdgeDrops(clientApp);
   }
+
+  QObject::connect(
+      ipcServer, &deskflow::core::ipc::CoreIpcServer::professionalReceived, coreApp,
+      [coreApp, ipcServer](const QByteArray &bytes) {
+        const auto message = deskflow::professional::decode(bytes);
+        if (message) {
+          if (auto *serverApp = dynamic_cast<ServerApp *>(coreApp); serverApp && serverApp->getServerPtr())
+            (void)serverApp->getServerPtr()->sendProfessional(*message);
+          else if (auto *clientApp = dynamic_cast<ClientApp *>(coreApp); clientApp && clientApp->getClientPtr())
+            (void)clientApp->getClientPtr()->sendProfessional(*message);
+        }
+        ipcServer->professionalRequestHandled();
+      },
+      Qt::QueuedConnection
+  );
+  QObject::connect(
+      ipcServer, &deskflow::core::ipc::CoreIpcServer::professionalInputMode, coreApp,
+      [coreApp, ipcServer](bool active) {
+        active = active && Settings::value(Settings::Security::TlsEnabled).toBool() &&
+                 Settings::hasPlanFeature(QStringLiteral("bidirectional-control"));
+        if (auto *serverApp = dynamic_cast<ServerApp *>(coreApp); serverApp && serverApp->getServerPtr())
+          serverApp->getServerPtr()->setProfessionalInputActive(active);
+        ipcServer->publishProfessionalInputReady(active);
+      },
+      Qt::QueuedConnection
+  );
 
   QThread coreThread;
   QObject::connect(&coreThread, &QThread::finished, &app, &QApplication::quit);

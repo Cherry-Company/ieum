@@ -31,9 +31,17 @@ public:
 
   static CoreIpcServer &instance();
   void publishFileTransferActiveSides(std::uint32_t activeSides);
+  void publishProfessional(const QByteArray &bytes);
+  void publishProfessionalInputReady(bool active);
+  void professionalRequestHandled()
+  {
+    m_professionalRequests.fetch_sub(1);
+  }
 
 Q_SIGNALS:
   void reloadConfigRequested();
+  void professionalReceived(const QByteArray &bytes);
+  void professionalInputMode(bool active);
   void fileTransferEdgeDropRequested(Direction direction, qint32 x, qint32 y, const QStringList &paths);
 
 protected:
@@ -45,6 +53,10 @@ private:
   void processCommand(QLocalSocket *clientSocket, const QString &command, const QStringList &parts) override;
 
   ClientValidator m_clientValidator;
+  bool authorizeProfessional(QLocalSocket *socket) const;
+  QSet<QLocalSocket *> m_professionalClients;
+  std::atomic<int> m_professionalRequests{0};
+  std::atomic<qsizetype> m_professionalBytes{0};
   std::atomic<std::uint32_t> m_fileTransferActiveSides{0};
 };
 

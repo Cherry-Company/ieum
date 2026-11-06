@@ -5,6 +5,13 @@ add_subdirectory(config)
 add_subdirectory(core)
 
 create_test(
+  NAME ProfessionalSessionTests
+  DEPENDS gui
+  SOURCE ProfessionalSessionTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+
+create_test(
   NAME SubscriptionLinkTests
   DEPENDS gui
   SOURCE SubscriptionLinkTests.cpp
@@ -202,3 +209,13 @@ create_test(
   SOURCE ProLicenseUiPolicyTests.cpp
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
 )
+create_test(
+  NAME NativeSessionBackendTests
+  DEPENDS gui
+  LIBS common
+  SOURCE NativeSessionBackendTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+if(BUILD_X11_SUPPORT AND UNIX AND NOT APPLE)
+  target_compile_definitions(NativeSessionBackendTests PRIVATE IEUM_TEST_X11)
+endif()

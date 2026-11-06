@@ -1371,6 +1371,18 @@ Client computer</source>
         <source>Plans and subscription</source>
         <translation>方案与订阅</translation>
     </message>
+    <message>
+        <source>Workspace sharing</source>
+        <translation type="unfinished">工作空间共享</translation>
+    </message>
+    <message>
+        <source>Sharing · %1</source>
+        <translation type="unfinished">共享中 · %1</translation>
+    </message>
+    <message>
+        <source>Stop workspace sharing</source>
+        <translation>停止工作空间共享</translation>
+    </message>
 </context>
 <context>
     <name>NewScreenWidget</name>
@@ -2811,8 +2823,8 @@ Licenses are issued manually after payment verification.</source>
         <translation>订阅方案正在准备中。已有 Local 许可证可继续使用。</translation>
     </message>
     <message>
-        <source>The additional features below are planned for the subscription release.</source>
-        <translation>以下附加功能计划在订阅版中提供。</translation>
+        <source>Additional sharing features are in preview. Subscriptions are not on sale yet.</source>
+        <translation>附加共享功能处于预览阶段。订阅尚未开售。</translation>
     </message>
     <message>
         <source>US$%1 / year</source>
@@ -2936,6 +2948,367 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>Choose your purchased plan and enter your subscription recovery code.</source>
         <translation>选择已购买的方案并输入订阅恢复码。</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::session::SessionController</name>
+    <message>
+        <source>Connect both computers with the current Ieum version first.</source>
+        <translation type="unfinished">请先使用当前版本的 Ieum 连接两台电脑。</translation>
+    </message>
+    <message>
+        <source>This feature requires an active matching plan.</source>
+        <translation type="unfinished">此功能需要有效的对应方案。</translation>
+    </message>
+    <message>
+        <source>Finish an existing sharing session first.</source>
+        <translation type="unfinished">请先结束现有共享。</translation>
+    </message>
+    <message>
+        <source>Stop the current input session before switching control.</source>
+        <translation type="unfinished">切换控制前，请结束当前输入共享。</translation>
+    </message>
+    <message>
+        <source>Receive one audio source at a time. Stop other audio sessions first.</source>
+        <translation type="unfinished">一次只能接收一个音频源。请先停止其他音频共享。</translation>
+    </message>
+    <message>
+        <source>The sharing request could not be sent.</source>
+        <translation type="unfinished">无法发送共享请求。</translation>
+    </message>
+    <message>
+        <source>Waiting for %1 to allow sharing…</source>
+        <translation type="unfinished">正在等待 %1 允许共享…</translation>
+    </message>
+    <message>
+        <source>This computer already has an input owner or an incompatible audio session.</source>
+        <translation type="unfinished">已有输入控制方或不兼容的音频共享。</translation>
+    </message>
+    <message>
+        <source>Sharing with %1. You can stop it at any time.</source>
+        <translation type="unfinished">正在与 %1 共享。可随时停止。</translation>
+    </message>
+    <message>
+        <source>Saved sharing permissions were revoked. Each computer must ask again.</source>
+        <translation type="unfinished">已撤销保存的共享权限。各电脑需要重新请求。</translation>
+    </message>
+    <message>
+        <source>Input sharing could not take ownership. Restart sharing.</source>
+        <translation type="unfinished">无法取得输入控制权。请重新开始共享。</translation>
+    </message>
+    <message>
+        <source>Screen capture is unavailable or the desktop is locked.</source>
+        <translation type="unfinished">无法捕获屏幕，或桌面已锁定。</translation>
+    </message>
+    <message>
+        <source>Input control returned to this computer.</source>
+        <translation type="unfinished">输入控制已返回本机。</translation>
+    </message>
+    <message>
+        <source>Wake requires Professional Max.</source>
+        <translation type="unfinished">唤醒需要 Professional Max。</translation>
+    </message>
+    <message>
+        <source>Wake request sent. Sleep wake needs Wake-on-LAN enabled in the computer and network adapter.</source>
+        <translation type="unfinished">已发送唤醒请求。从睡眠唤醒需在电脑和网卡上启用 Wake-on-LAN。</translation>
+    </message>
+    <message>
+        <source>Connect this computer once to learn its network address, or start lock/wake sharing.</source>
+        <translation type="unfinished">请先连接一次以保存网络地址，或开始锁定与唤醒联动。</translation>
+    </message>
+    <message>
+        <source>Start lock/wake sharing with a computer first.</source>
+        <translation type="unfinished">请先与电脑开始锁定与唤醒联动。</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::session::SessionPlatform</name>
+    <message>
+        <source>System audio capture stopped. Check the PulseAudio/PipeWire device.</source>
+        <translation type="unfinished">系统音频捕获已停止。请检查 PulseAudio/PipeWire 设备。</translation>
+    </message>
+    <message>
+        <source>System audio capture ended.</source>
+        <translation type="unfinished">系统音频捕获已结束。</translation>
+    </message>
+    <message>
+        <source>Audio output is unavailable.</source>
+        <translation type="unfinished">音频输出不可用。</translation>
+    </message>
+    <message>
+        <source>Screen sharing currently requires an X11 desktop on Linux.</source>
+        <translation type="unfinished">Linux 屏幕共享目前需要 X11 桌面。</translation>
+    </message>
+    <message>
+        <source>Install PulseAudio utilities (parec, pactl and paplay) to share system audio.</source>
+        <translation type="unfinished">共享系统音频需安装 PulseAudio 工具（parec、pactl 和 paplay）。</translation>
+    </message>
+    <message>
+        <source>The default audio output could not be found.</source>
+        <translation type="unfinished">找不到默认音频输出。</translation>
+    </message>
+    <message>
+        <source>The default audio output is invalid.</source>
+        <translation type="unfinished">默认音频输出无效。</translation>
+    </message>
+    <message>
+        <source>Could not start system audio capture.</source>
+        <translation type="unfinished">无法开始系统音频捕获。</translation>
+    </message>
+    <message>
+        <source>Install paplay to play shared audio.</source>
+        <translation type="unfinished">播放共享音频需安装 paplay。</translation>
+    </message>
+    <message>
+        <source>Audio output could not be started.</source>
+        <translation type="unfinished">无法启动音频输出。</translation>
+    </message>
+    <message>
+        <source>XInput2 is unavailable.</source>
+        <translation type="unfinished">XInput2 不可用。</translation>
+    </message>
+    <message>
+        <source>Another application owns the keyboard.</source>
+        <translation type="unfinished">其他应用正在独占键盘。</translation>
+    </message>
+    <message>
+        <source>Another application owns the pointer.</source>
+        <translation type="unfinished">其他应用正在独占指针。</translation>
+    </message>
+    <message>
+        <source>Physical input sharing requires X11 on this Linux build.</source>
+        <translation type="unfinished">此 Linux 版本的物理输入共享需要 X11。</translation>
+    </message>
+    <message>
+        <source>The desktop session lock service is unavailable.</source>
+        <translation type="unfinished">桌面锁定服务不可用。</translation>
+    </message>
+    <message>
+        <source>The desktop refused the lock request.</source>
+        <translation type="unfinished">桌面拒绝了锁定请求。</translation>
+    </message>
+    <message>
+        <source>Display wake requires X11. Sleeping computers can use Wake-on-LAN.</source>
+        <translation type="unfinished">唤醒显示器需要 X11。睡眠中的电脑可使用 Wake-on-LAN。</translation>
+    </message>
+    <message>
+        <source>Physical input sharing requires an X11 desktop.</source>
+        <translation type="unfinished">物理输入共享需要 X11 桌面。</translation>
+    </message>
+    <message>
+        <source>Another input sharing session is active.</source>
+        <translation type="unfinished">已有其他输入共享正在进行。</translation>
+    </message>
+    <message>
+        <source>Windows did not allow input capture.</source>
+        <translation type="unfinished">Windows 未允许输入捕获。</translation>
+    </message>
+    <message>
+        <source>Windows refused input. Run Ieum at the same privilege level as the target app.</source>
+        <translation type="unfinished">Windows 拒绝了输入。请以与目标应用相同的权限运行 Ieum。</translation>
+    </message>
+    <message>
+        <source>Windows refused pointer input.</source>
+        <translation type="unfinished">Windows 拒绝了指针输入。</translation>
+    </message>
+    <message>
+        <source>Windows could not lock this session.</source>
+        <translation type="unfinished">Windows 无法锁定此会话。</translation>
+    </message>
+    <message>
+        <source>The Windows audio device is unavailable or changed. Restart audio sharing.</source>
+        <translation type="unfinished">Windows 音频设备不可用或已更改。请重新开始音频共享。</translation>
+    </message>
+    <message>
+        <source>Allow Ieum in System Settings → Privacy &amp; Security → Screen Recording, then reopen Ieum.</source>
+        <translation type="vanished">请在系统设置 → 隐私与安全性 → 屏幕录制中允许 Ieum，然后重新打开。</translation>
+    </message>
+    <message>
+        <source>macOS system audio capture stopped. Check recording permission.</source>
+        <translation type="vanished">macOS 系统音频捕获已停止。请检查录制权限。</translation>
+    </message>
+    <message>
+        <source>Sharing system audio requires macOS 13 or later.</source>
+        <translation type="vanished">系统音频共享需要 macOS 13 或更高版本。</translation>
+    </message>
+    <message>
+        <source>macOS audio output is unavailable.</source>
+        <translation type="vanished">macOS 音频输出不可用。</translation>
+    </message>
+    <message>
+        <source>Allow Ieum in System Settings → Privacy &amp; Security → Accessibility.</source>
+        <translation type="vanished">请在系统设置 → 隐私与安全性 → 辅助功能中允许 Ieum。</translation>
+    </message>
+    <message>
+        <source>macOS did not allow input monitoring.</source>
+        <translation type="vanished">macOS 未允许输入监控。</translation>
+    </message>
+    <message>
+        <source>macOS could not lock the current session.</source>
+        <translation type="vanished">macOS 无法锁定当前会话。</translation>
+    </message>
+    <message>
+        <source>macOS paused input capture. Restart the sharing session.</source>
+        <translation type="vanished">macOS 暂停了输入捕获。请重新开始共享。</translation>
+    </message>
+</context>
+<context>
+    <name>deskflow::gui::session::SessionWindow</name>
+    <message>
+        <source>Share your workspace</source>
+        <translation type="unfinished">共享工作空间</translation>
+    </message>
+    <message>
+        <source>One workspace. Every computer.</source>
+        <translation type="unfinished">多台电脑，一个工作空间。</translation>
+    </message>
+    <message>
+        <source>Choose a connected computer. Sharing starts after that computer allows it.</source>
+        <translation type="unfinished">选择已连接的电脑。对方允许后开始共享。</translation>
+    </message>
+    <message>
+        <source>Computer</source>
+        <translation type="unfinished">电脑</translation>
+    </message>
+    <message>
+        <source>View screen</source>
+        <translation type="unfinished">查看屏幕</translation>
+    </message>
+    <message>
+        <source>Listen to audio</source>
+        <translation type="unfinished">收听音频</translation>
+    </message>
+    <message>
+        <source>Control selected computer</source>
+        <translation type="unfinished">控制所选电脑</translation>
+    </message>
+    <message>
+        <source>Add to simultaneous input</source>
+        <translation type="unfinished">添加到同时输入</translation>
+    </message>
+    <message>
+        <source>Link lock and wake</source>
+        <translation type="unfinished">联动锁定与唤醒</translation>
+    </message>
+    <message>
+        <source>Professional or higher</source>
+        <translation type="unfinished">Professional 或更高方案</translation>
+    </message>
+    <message>
+        <source>Professional Max</source>
+        <translation type="unfinished">Professional Max</translation>
+    </message>
+    <message>
+        <source>Wake computer</source>
+        <translation type="unfinished">唤醒电脑</translation>
+    </message>
+    <message>
+        <source>Control uses your physical keyboard and mouse. Ctrl+Alt+Esc returns control. Simultaneous input also stays active on this computer.</source>
+        <translation type="unfinished">使用本机的物理键盘鼠标控制。Ctrl+Alt+Esc 可收回控制。同时输入也会作用于本机。</translation>
+    </message>
+    <message>
+        <source>Active sharing sessions</source>
+        <translation type="unfinished">正在进行的共享</translation>
+    </message>
+    <message>
+        <source>Stop selected</source>
+        <translation type="unfinished">停止所选共享</translation>
+    </message>
+    <message>
+        <source>Stop all sharing</source>
+        <translation type="unfinished">停止所有共享</translation>
+    </message>
+    <message>
+        <source>Lock together</source>
+        <translation type="unfinished">一起锁定</translation>
+    </message>
+    <message>
+        <source>No sharing session is active.</source>
+        <translation type="unfinished">当前没有共享。</translation>
+    </message>
+    <message>
+        <source>Revoke saved permissions</source>
+        <translation type="unfinished">撤销已保存的权限</translation>
+    </message>
+    <message>
+        <source>Plans</source>
+        <translation type="unfinished">方案</translation>
+    </message>
+    <message>
+        <source>%1 · %2</source>
+        <translation type="unfinished">%1 · %2</translation>
+    </message>
+    <message>
+        <source>Sharing is active. Closing this panel keeps it running; Stop all sharing ends it.</source>
+        <translation type="unfinished">共享进行中。关闭此面板会继续共享；点击“停止所有共享”可结束。</translation>
+    </message>
+    <message>
+        <source>System audio</source>
+        <translation type="unfinished">系统音频</translation>
+    </message>
+    <message>
+        <source>Screen viewing</source>
+        <translation type="unfinished">屏幕查看</translation>
+    </message>
+    <message>
+        <source>Keyboard and mouse control</source>
+        <translation type="unfinished">键盘鼠标控制</translation>
+    </message>
+    <message>
+        <source>Simultaneous keyboard and mouse</source>
+        <translation type="unfinished">键盘鼠标同时输入</translation>
+    </message>
+    <message>
+        <source>Lock and wake</source>
+        <translation type="unfinished">锁定与唤醒</translation>
+    </message>
+    <message>
+        <source>%1 · offline</source>
+        <translation type="unfinished">%1 · 离线</translation>
+    </message>
+    <message>
+        <source>Start sharing on both computers to see available devices.</source>
+        <translation type="unfinished">在两台电脑上启动 Ieum 连接，即可显示可用设备。</translation>
+    </message>
+    <message>
+        <source>Allow sharing?</source>
+        <translation type="unfinished">允许共享？</translation>
+    </message>
+    <message>
+        <source>%1 wants to use %2 on this computer.</source>
+        <translation type="unfinished">%1 请求在本机使用%2。</translation>
+    </message>
+    <message>
+        <source>Allow this feature while this computer stays connected</source>
+        <translation>对方保持连接期间允许此功能</translation>
+    </message>
+    <message>
+        <source>This allows coordinated locking and waking the display. It never unlocks your login screen.</source>
+        <translation type="unfinished">允许联动锁定及唤醒显示器。不会解锁登录界面。</translation>
+    </message>
+    <message>
+        <source>Your computer&apos;s audio will be sent to this trusted computer. Microphone audio is not recorded.</source>
+        <translation type="unfinished">本机系统音频将发送给对方。不会录制麦克风音频。</translation>
+    </message>
+    <message>
+        <source>Your primary screen will be visible to this trusted computer until you stop sharing.</source>
+        <translation type="unfinished">停止共享前，对方可以查看本机的主屏幕。</translation>
+    </message>
+    <message>
+        <source>The other computer can type and click here. Local input or Ctrl+Alt+Esc takes control back.</source>
+        <translation type="unfinished">对方可以在本机输入和点击。使用本机输入或 Ctrl+Alt+Esc 可收回控制。</translation>
+    </message>
+    <message>
+        <source>%1 — Screen</source>
+        <translation type="unfinished">%1 — 屏幕</translation>
+    </message>
+    <message>
+        <source>Stop viewing</source>
+        <translation type="unfinished">停止查看</translation>
+    </message>
+    <message>
+        <source>Close</source>
+        <translation>关闭</translation>
     </message>
 </context>
 <context>

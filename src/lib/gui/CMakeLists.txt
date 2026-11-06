@@ -48,6 +48,12 @@ add_library(${target} STATIC
   Logger.h
   MacApplicationLifecyclePolicy.h
   MacLoginItems.h
+  session/SessionPlatform.cpp
+  session/SessionPlatform.h
+  session/SessionController.cpp
+  session/SessionController.h
+  session/SessionWindow.cpp
+  session/SessionWindow.h
   MainWindow.cpp
   MainWindow.h
   MainWindow.ui
@@ -197,4 +203,20 @@ if(WIN32)
     net
     Ole32
   )
+endif()
+
+if(WIN32)
+  target_sources(gui PRIVATE session/SessionPlatformWindows.cpp)
+  target_link_libraries(gui Ole32 User32)
+elseif(APPLE)
+  target_sources(gui PRIVATE session/SessionPlatformMac.mm)
+  set_source_files_properties(session/SessionPlatformMac.mm PROPERTIES COMPILE_FLAGS "-fobjc-arc")
+  target_link_options(gui INTERFACE "SHELL:-weak_framework ScreenCaptureKit")
+  target_link_libraries(gui "-framework AudioToolbox" "-framework CoreMedia" "-framework IOKit" "-framework Carbon")
+else()
+  target_sources(gui PRIVATE session/SessionPlatformLinux.cpp)
+  target_link_libraries(gui Qt6::DBus)
+  if(BUILD_X11_SUPPORT)
+    target_compile_definitions(gui PRIVATE IEUM_SESSION_X11)
+  endif()
 endif()
