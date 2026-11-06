@@ -300,6 +300,161 @@ Client</source>
     </message>
 </context>
 <context>
+    <name>DeskWorkspace</name>
+    <message>
+        <source>This computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Not connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Below</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Above</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>On %1, select %2 as the host and connect.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start sharing on this computer, then select this host and connect from %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The layout changed elsewhere. Cancel these edits and try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enter the other computer’s exact device name, without spaces or special symbols.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>That computer name or alias is already in this layout.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>That position is occupied or outside the layout. Choose another side.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save the layout, then connect to this host from the other computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>That position is outside the layout.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>My desk</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save layout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open layout settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit layout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer settings</source>
+        <translation type="unfinished">Настройки компьютера</translation>
+    </message>
+    <message>
+        <source>Show connection details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Remove computer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>More settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close computer details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Drag computers or select one and use the direction buttons. Save when finished.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Place computers like your desk. Move the pointer across a shared edge.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use your host’s keyboard and mouse here. Edit positions on the host.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Positions are managed by your external configuration file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Other computer’s device name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position relative to this host</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move left</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move right</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Computer positions. Select a computer to edit, move, or remove it.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>DiagnosticDialog</name>
     <message>
         <source>Review and report a problem</source>
@@ -1182,6 +1337,14 @@ Client computer</source>
     </message>
     <message>
         <source>Tailscale is not ready. Check its connection, then refresh.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Connection settings</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

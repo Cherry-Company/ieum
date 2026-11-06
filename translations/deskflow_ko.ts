@@ -302,6 +302,161 @@ Client</source>
     </message>
 </context>
 <context>
+    <name>DeskWorkspace</name>
+    <message>
+        <source>My desk</source>
+        <translation>내 책상</translation>
+    </message>
+    <message>
+        <source>Save layout</source>
+        <translation>배치 저장</translation>
+    </message>
+    <message>
+        <source>Edit layout</source>
+        <translation>배치 편집</translation>
+    </message>
+    <message>
+        <source>Open layout settings</source>
+        <translation>배치 설정 열기</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>취소</translation>
+    </message>
+    <message>
+        <source>Add computer</source>
+        <translation>컴퓨터 추가</translation>
+    </message>
+    <message>
+        <source>Computer settings</source>
+        <translation>기기 설정</translation>
+    </message>
+    <message>
+        <source>Remove computer</source>
+        <translation>컴퓨터 제거</translation>
+    </message>
+    <message>
+        <source>More settings</source>
+        <translation>상세 설정</translation>
+    </message>
+    <message>
+        <source>Close computer details</source>
+        <translation>기기 정보 닫기</translation>
+    </message>
+    <message>
+        <source>This computer</source>
+        <translation>이 컴퓨터</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation>연결됨</translation>
+    </message>
+    <message>
+        <source>Not connected</source>
+        <translation>연결 안 됨</translation>
+    </message>
+    <message>
+        <source>Position: %1</source>
+        <translation>위치: %1</translation>
+    </message>
+    <message>
+        <source>Right</source>
+        <translation>오른쪽</translation>
+    </message>
+    <message>
+        <source>Left</source>
+        <translation>왼쪽</translation>
+    </message>
+    <message>
+        <source>Above</source>
+        <translation>위</translation>
+    </message>
+    <message>
+        <source>Below</source>
+        <translation>아래</translation>
+    </message>
+    <message>
+        <source>Move up</source>
+        <translation>위로 이동</translation>
+    </message>
+    <message>
+        <source>Move left</source>
+        <translation>왼쪽으로 이동</translation>
+    </message>
+    <message>
+        <source>Move right</source>
+        <translation>오른쪽으로 이동</translation>
+    </message>
+    <message>
+        <source>Move down</source>
+        <translation>아래로 이동</translation>
+    </message>
+    <message>
+        <source>Other computer’s device name</source>
+        <translation>다른 컴퓨터의 기기 이름</translation>
+    </message>
+    <message>
+        <source>Position relative to this host</source>
+        <translation>이 호스트를 기준으로 한 위치</translation>
+    </message>
+    <message>
+        <source>Drag computers or select one and use the direction buttons. Save when finished.</source>
+        <translation>컴퓨터를 드래그하거나 선택 후 방향 버튼으로 옮기세요. 완료하면 배치를 저장하세요.</translation>
+    </message>
+    <message>
+        <source>Place computers like your desk. Move the pointer across a shared edge.</source>
+        <translation>책상처럼 컴퓨터를 배치하고, 화면 끝으로 마우스를 옮겨보세요.</translation>
+    </message>
+    <message>
+        <source>Use your host’s keyboard and mouse here. Edit positions on the host.</source>
+        <translation>호스트의 키보드와 마우스를 이 컴퓨터에서 사용합니다. 배치는 호스트에서 편집하세요.</translation>
+    </message>
+    <message>
+        <source>Positions are managed by your external configuration file.</source>
+        <translation>외부 설정 파일에서 컴퓨터 배치를 관리하고 있습니다.</translation>
+    </message>
+    <message>
+        <source>Computer positions. Select a computer to edit, move, or remove it.</source>
+        <translation>컴퓨터 배치. 컴퓨터를 선택해 편집하거나 이동·제거할 수 있습니다.</translation>
+    </message>
+    <message>
+        <source>The layout changed elsewhere. Cancel these edits and try again.</source>
+        <translation>다른 곳에서 배치가 변경됐습니다. 편집을 취소하고 다시 시도하세요.</translation>
+    </message>
+    <message>
+        <source>Enter the other computer’s exact device name, without spaces or special symbols.</source>
+        <translation>공백이나 특수기호 없이 다른 컴퓨터의 기기 이름을 정확하게 입력하세요.</translation>
+    </message>
+    <message>
+        <source>That computer name or alias is already in this layout.</source>
+        <translation>이미 배치에 있는 기기 이름 또는 별칭입니다.</translation>
+    </message>
+    <message>
+        <source>That position is occupied or outside the layout. Choose another side.</source>
+        <translation>해당 위치에 다른 컴퓨터가 있거나 배치 범위를 벗어납니다. 다른 방향을 고르세요.</translation>
+    </message>
+    <message>
+        <source>Save the layout, then connect to this host from the other computer.</source>
+        <translation>배치를 저장한 뒤 다른 컴퓨터에서 이 호스트에 연결하세요.</translation>
+    </message>
+    <message>
+        <source>That position is outside the layout.</source>
+        <translation>배치 범위를 벗어난 위치입니다.</translation>
+    </message>
+    <message>
+        <source>Start sharing on this computer, then select this host and connect from %1.</source>
+        <translation>이 컴퓨터에서 공유를 시작한 뒤, %1에서 이 호스트를 선택해 연결하세요.</translation>
+    </message>
+    <message>
+        <source>Show connection details</source>
+        <translation>연결 정보 보기</translation>
+    </message>
+    <message>
+        <source>On %1, select %2 as the host and connect.</source>
+        <translation>%1에서 %2을(를) 호스트로 선택해 연결하세요.</translation>
+    </message>
+</context>
+<context>
     <name>DiagnosticDialog</name>
     <message>
         <source>Review and report a problem</source>
@@ -2729,161 +2884,6 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>A computer with this name already exists</source>
         <translation>동명의 컴퓨터가 이미 존재합니다</translation>
-    </message>
-</context>
-<context>
-    <name>DeskWorkspace</name>
-    <message>
-        <source>My desk</source>
-        <translation>내 책상</translation>
-    </message>
-    <message>
-        <source>Save layout</source>
-        <translation>배치 저장</translation>
-    </message>
-    <message>
-        <source>Edit layout</source>
-        <translation>배치 편집</translation>
-    </message>
-    <message>
-        <source>Open layout settings</source>
-        <translation>배치 설정 열기</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>취소</translation>
-    </message>
-    <message>
-        <source>Add computer</source>
-        <translation>컴퓨터 추가</translation>
-    </message>
-    <message>
-        <source>Computer settings</source>
-        <translation>기기 설정</translation>
-    </message>
-    <message>
-        <source>Remove computer</source>
-        <translation>컴퓨터 제거</translation>
-    </message>
-    <message>
-        <source>More settings</source>
-        <translation>상세 설정</translation>
-    </message>
-    <message>
-        <source>Close computer details</source>
-        <translation>기기 정보 닫기</translation>
-    </message>
-    <message>
-        <source>This computer</source>
-        <translation>이 컴퓨터</translation>
-    </message>
-    <message>
-        <source>Connected</source>
-        <translation>연결됨</translation>
-    </message>
-    <message>
-        <source>Not connected</source>
-        <translation>연결 안 됨</translation>
-    </message>
-    <message>
-        <source>Position: %1</source>
-        <translation>위치: %1</translation>
-    </message>
-    <message>
-        <source>Right</source>
-        <translation>오른쪽</translation>
-    </message>
-    <message>
-        <source>Left</source>
-        <translation>왼쪽</translation>
-    </message>
-    <message>
-        <source>Above</source>
-        <translation>위</translation>
-    </message>
-    <message>
-        <source>Below</source>
-        <translation>아래</translation>
-    </message>
-    <message>
-        <source>Move up</source>
-        <translation>위로 이동</translation>
-    </message>
-    <message>
-        <source>Move left</source>
-        <translation>왼쪽으로 이동</translation>
-    </message>
-    <message>
-        <source>Move right</source>
-        <translation>오른쪽으로 이동</translation>
-    </message>
-    <message>
-        <source>Move down</source>
-        <translation>아래로 이동</translation>
-    </message>
-    <message>
-        <source>Other computer’s device name</source>
-        <translation>다른 컴퓨터의 기기 이름</translation>
-    </message>
-    <message>
-        <source>Position relative to this host</source>
-        <translation>이 호스트를 기준으로 한 위치</translation>
-    </message>
-    <message>
-        <source>Drag computers or select one and use the direction buttons. Save when finished.</source>
-        <translation>컴퓨터를 드래그하거나 선택 후 방향 버튼으로 옮기세요. 완료하면 배치를 저장하세요.</translation>
-    </message>
-    <message>
-        <source>Place computers like your desk. Move the pointer across a shared edge.</source>
-        <translation>책상처럼 컴퓨터를 배치하고, 화면 끝으로 마우스를 옮겨보세요.</translation>
-    </message>
-    <message>
-        <source>Use your host’s keyboard and mouse here. Edit positions on the host.</source>
-        <translation>호스트의 키보드와 마우스를 이 컴퓨터에서 사용합니다. 배치는 호스트에서 편집하세요.</translation>
-    </message>
-    <message>
-        <source>Positions are managed by your external configuration file.</source>
-        <translation>외부 설정 파일에서 컴퓨터 배치를 관리하고 있습니다.</translation>
-    </message>
-    <message>
-        <source>Computer positions. Select a computer to edit, move, or remove it.</source>
-        <translation>컴퓨터 배치. 컴퓨터를 선택해 편집하거나 이동·제거할 수 있습니다.</translation>
-    </message>
-    <message>
-        <source>The layout changed elsewhere. Cancel these edits and try again.</source>
-        <translation>다른 곳에서 배치가 변경됐습니다. 편집을 취소하고 다시 시도하세요.</translation>
-    </message>
-    <message>
-        <source>Enter the other computer’s exact device name, without spaces or special symbols.</source>
-        <translation>공백이나 특수기호 없이 다른 컴퓨터의 기기 이름을 정확하게 입력하세요.</translation>
-    </message>
-    <message>
-        <source>That computer name or alias is already in this layout.</source>
-        <translation>이미 배치에 있는 기기 이름 또는 별칭입니다.</translation>
-    </message>
-    <message>
-        <source>That position is occupied or outside the layout. Choose another side.</source>
-        <translation>해당 위치에 다른 컴퓨터가 있거나 배치 범위를 벗어납니다. 다른 방향을 고르세요.</translation>
-    </message>
-    <message>
-        <source>Save the layout, then connect to this host from the other computer.</source>
-        <translation>배치를 저장한 뒤 다른 컴퓨터에서 이 호스트에 연결하세요.</translation>
-    </message>
-    <message>
-        <source>That position is outside the layout.</source>
-        <translation>배치 범위를 벗어난 위치입니다.</translation>
-    </message>
-    <message>
-        <source>Start sharing on this computer, then select this host and connect from %1.</source>
-        <translation>이 컴퓨터에서 공유를 시작한 뒤, %1에서 이 호스트를 선택해 연결하세요.</translation>
-    </message>
-    <message>
-        <source>Show connection details</source>
-        <translation>연결 정보 보기</translation>
-    </message>
-    <message>
-        <source>On %1, select %2 as the host and connect.</source>
-        <translation>%1에서 %2을(를) 호스트로 선택해 연결하세요.</translation>
     </message>
 </context>
 </TS>
