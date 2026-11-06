@@ -3,7 +3,7 @@
 
 ## 후원 투명성 / Sponsorship transparency
 
-Release: v0.1.0-alpha.30
+Release: v0.1.0-alpha.31
 
 - 이번 릴리스에 배분된 GitHub Sponsors 후원금 / Sponsor funds allocated to this release: **USD 0**
 - 후원금으로 완료한 작업 / Work claimed as sponsor-funded: **없음 / None**
@@ -28,24 +28,23 @@ Release: v0.1.0-alpha.30
   after ARM64 compilation and CTest, DMG creation and mounting, `codesign --verify --deep --strict`, ARM64 Mach-O
   inspection, and artifact upload all pass. Windows x64 and ARM64 packages must also pass build, MSI structure,
   replacement-install, and service-coexistence checks.
-- alpha.30은 macOS 로그인 자동 실행을 앱 로그인 항목으로 전환하고 이전 LaunchAgent를 정리합니다.
-  이전 항목이 새 앱의 실행 제약과 맞지 않아 발생하는 `CODESIGNING / Launch Constraint Violation`
-  보고 경로를 수정합니다. 실제 재부팅 확인은 별도 수용 테스트입니다. / Alpha.30 switches macOS
-  startup to an application login item and retires the previous LaunchAgent. Native reboot acceptance
-  remains separate from CI compilation and package checks.
-- 숨겨진 로그 대기열과 표시 문서의 전체 문자 수를 제한하고 최신 오류 내용을 남깁니다.
-  Mac·Linux에서 파일 감시가 동작하면 보조 확인 주기를 2초에서 30초로 늘립니다. Windows는
-  기존 2초 복구 주기를 유지합니다. / Hidden and rendered logs retain recent context within character
-  budgets. Healthy Mac/Linux file watches use a 30-second safety poll; Windows retains 2-second recovery.
-- 같은 Linux Debug 조건의 로그 폭주 시험 3회 중앙값은 RSS 48.39 → 25.65 MiB였습니다.
-  일반 유휴 CPU나 Mac 전체 앱의 개선율을 뜻하지 않습니다. 조건과 원본 수치는
-  `docs/dev/reboot-resource-followup-2026-10-25.md`에 있습니다. / Median probe RSS in three matching
-  Linux Debug log-burst runs fell from 48.39 to 25.65 MiB. General idle CPU and native Mac savings
-  are not established; see the follow-up record for raw data and limitations.
-- Debug 테스트가 누락한 코어 IPC 싱글턴을 초기화하도록 두 픽스처를 수정했습니다.
-  전체 Linux Debug CTest 74/74를 통과했습니다. Windows 실행 파일 버전은 `0.1.130.0`입니다. /
-  Two Debug fixtures now construct the core IPC singleton; all 74 Linux Debug CTest programs passed.
-  Windows executable versions increase to `0.1.130.0`.
+- alpha.31은 내 책상을 기본 화면으로 바꾸고, 기기를 선택했을 때 정보 패널을 엽니다. 역할·주소는
+  접을 수 있는 연결 설정에 두며 배치 편집은 저장·취소를 지원합니다. 외부 파일과 다른 창에서 바뀐
+  배치를 보호하고, 좁은 창과 밝음/어두움에 대응합니다. / Alpha.31 introduces a desk-first workspace,
+  contextual computer details and transactional layout editing, with external-file and concurrent-edit protection.
+- Mac 상단 조작부는 시스템 반투명 재질을 사용하고, 투명도 줄이기·고대비에서는 불투명하게
+  표시합니다. 최신 Liquid Glass와 동일한 광학 표현을 보장하지 않습니다. / The Mac toolbar uses a
+  native system material with opaque accessibility fallbacks; it does not claim identical latest Liquid Glass optics.
+- 이전 로그인 항목 정리를 손쉬운 사용 권한 안내보다 먼저 실행합니다. 권한 안내를 닫아도 정리
+  시도를 건너뛰지 않습니다. 실제 `Launch Constraint Violation` 재발 여부는 설치된 Mac의 재부팅으로
+  확인해야 합니다. / Legacy login-item cleanup now runs before Accessibility approval, so closing the guide
+  cannot skip migration. Installed-Mac reboot acceptance is still required.
+- Linux Debug에서 관련 GUI CTest 프로그램 25개와 밝음/어두움·작은 창 렌더링을 확인했습니다.
+  새 UI에 반복 애니메이션이나 주기적인 타이머를 추가하지 않았지만, 새 CPU/RAM 절감률을 측정한 것은
+  아닙니다. / All 25 related Linux Debug GUI CTest programs passed. No new resource-saving percentage is claimed.
+- Windows 실행 파일 버전은 `0.1.131.0`입니다. 기존 입력 공유·호스트 전환·지문 승인·로그 제한을
+  유지합니다. / Windows executable versions increase to `0.1.131.0`; existing sharing, host switching,
+  fingerprint approval and bounded logging behavior remain available.
 - Windows·macOS 재부팅/로그아웃, 실제 Tailscale 경로, 절전 복귀·다중 모니터·장시간 연결은
   실기 검증이 남아 있습니다. / Reboot/logout, actual Tailscale paths, sleep/wake, multiple monitors and
   long sessions remain physical acceptance tests.

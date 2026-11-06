@@ -35,6 +35,7 @@
 #include "gui/core/CoreActionPolicy.h"
 #include "gui/core/CoreProcess.h"
 #include "gui/ipc/DaemonIpcClient.h"
+#include "gui/widgets/DeskWorkspace.h"
 #include "gui/widgets/LogDock.h"
 #include "net/FingerprintDatabase.h"
 #include "widgets/StatusBar.h"
@@ -60,8 +61,10 @@
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
 #include <QScreen>
+#include <QScrollArea>
 #include <QScrollBar>
 #include <QSignalBlocker>
+#include <QStyle>
 #include <QTimer>
 
 #include <algorithm>
@@ -313,6 +316,85 @@ void MainWindow::setupControls()
   guide->setIcon(QIcon::fromTheme(QStringLiteral("help-contents")));
   ui->deviceLayout->addWidget(guide);
   connect(guide, &QPushButton::clicked, this, &MainWindow::openConnectionGuide);
+  setupDeskWorkspace();
+}
+
+void MainWindow::setupDeskWorkspace()
+{
+  ui->topLevelWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  ui->identityBar->setMinimumHeight(64);
+  ui->identityLayout->setContentsMargins(14, 8, 14, 8);
+  ui->lblBrandIcon->setFixedSize(32, 32);
+  ui->lblTagline->hide();
+#ifdef Q_OS_MACOS
+  macOSApplyToolbarMaterial(ui->identityBar);
+#endif
+  // Keep address and device editing with the connection form, rather than
+  // giving them permanent prominence in the navigation material.
+  ui->identityLayout->removeWidget(ui->lblIpAddresses);
+  ui->deviceLayout->insertWidget(3, ui->lblIpAddresses);
+  for (auto *button : {ui->btnInputSettings, ui->btnFileSettings, ui->btnAllSettings}) {
+    ui->quickActionsLayout->removeWidget(button);
+    ui->identityLayout->addWidget(button);
+  }
+
+  for (auto *widget : {ui->deviceBand, ui->modeSurface, ui->connectionSurface, ui->quickActions})
+    ui->rootLayout->removeWidget(widget);
+  ui->connectionSurface->hide(); // Existing state labels remain the source of accessible status text.
+
+  auto *actions = new QHBoxLayout;
+  m_connectionSettingsButton = new QPushButton(this);
+  m_connectionSettingsButton->setObjectName(QStringLiteral("connectionSettingsToggle"));
+  m_connectionSettingsButton->setCheckable(true);
+  actions->addWidget(m_connectionSettingsButton);
+  actions->addStretch();
+  ui->coreActionsLayout->removeWidget(ui->btnToggleCore);
+  ui->coreActionsLayout->removeWidget(ui->btnRestartCore);
+  actions->addWidget(ui->btnToggleCore);
+  actions->addWidget(ui->btnRestartCore);
+  ui->rootLayout->addLayout(actions);
+  ui->quickActions->hide();
+
+  auto *connectionContents = new QWidget(this);
+  auto *connectionLayout = new QVBoxLayout(connectionContents);
+  connectionLayout->setContentsMargins(0, 0, 0, 0);
+  connectionLayout->addWidget(ui->deviceBand);
+  connectionLayout->addWidget(ui->modeSurface);
+  auto *connectionPanel = new QScrollArea(this);
+  connectionPanel->setObjectName(QStringLiteral("connectionSettingsPanel"));
+  connectionPanel->setWidgetResizable(true);
+  connectionPanel->setFrameShape(QFrame::NoFrame);
+  connectionPanel->setWidget(connectionContents);
+  connectionPanel->setMaximumHeight(300);
+  connectionPanel->setMinimumHeight(220);
+  ui->rootLayout->addWidget(connectionPanel);
+  connect(m_connectionSettingsButton, &QPushButton::toggled, connectionPanel, &QWidget::setVisible);
+  const bool firstConnection = Settings::value(Settings::Core::CoreMode).value<CoreMode>() == CoreMode::None;
+  connectionPanel->setVisible(firstConnection);
+  m_connectionSettingsButton->setChecked(firstConnection);
+
+  m_deskWorkspace = new DeskWorkspace(m_serverConfig, this);
+  ui->rootLayout->addWidget(m_deskWorkspace, 1);
+  connect(m_deskWorkspace, &DeskWorkspace::connectionSettingsRequested, this, [this] {
+    m_connectionSettingsButton->setChecked(true);
+    if (m_coreProcess.mode() == CoreMode::None)
+      ui->rbModeServer->setFocus();
+    else if (m_coreProcess.mode() == CoreMode::Client)
+      ui->lineHostname->setFocus();
+  });
+  connect(m_deskWorkspace, &DeskWorkspace::advancedSettingsRequested, this, [this] {
+    if (m_coreProcess.mode() == CoreMode::Server)
+      showConfigureServer({});
+    else
+      showConfigureClient();
+  });
+  connect(m_deskWorkspace, &DeskWorkspace::configurationCommitted, this, [this] {
+    updateScreenName();
+    if (m_coreProcess.isStarted() && !m_coreProcess.reloadServerConfig())
+      m_coreProcess.restart();
+    updateConnectionGuide();
+  });
+  resize(1080, 760);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -556,6 +638,8 @@ void MainWindow::clearInputLanguagePresentation()
 
 void MainWindow::coreProcessError(CoreProcess::Error error)
 {
+  if (m_connectionSettingsButton)
+    m_connectionSettingsButton->setChecked(true);
   if (m_automaticStartPending) {
     m_automaticStartPending = false;
     qWarning() << "automatic core start failed:" << static_cast<int>(error);
@@ -675,7 +759,7 @@ void MainWindow::stopCore()
   ui->btnRefreshTailscalePeers->setEnabled(
       Settings::value(Settings::Core::UseTailscale).toBool() && m_coreProcess.mode() == CoreMode::Client
   );
-  if (ui->comboTailscalePeer->isVisible()) {
+  if (!ui->comboTailscalePeer->isHidden()) {
     ui->comboTailscalePeer->setEnabled(m_tailscaleReady);
   }
   Settings::setValue(Settings::Gui::AutoStartCore, false);
@@ -1019,6 +1103,12 @@ void MainWindow::updateModeControlLabels()
   m_actionStartCore->setIcon(startIcon);
   m_actionStopCore->setText(stopText);
   m_actionStopCore->setIcon(stopIcon);
+  const bool active = state != ProcessState::Stopped;
+  if (ui->btnToggleCore->property("coreActive").toBool() != active) {
+    ui->btnToggleCore->setProperty("coreActive", active);
+    ui->btnToggleCore->style()->unpolish(ui->btnToggleCore);
+    ui->btnToggleCore->style()->polish(ui->btnToggleCore);
+  }
 
   if (state == ProcessState::Stopping) {
     ui->btnToggleCore->setText(
@@ -1116,9 +1206,8 @@ void MainWindow::open(bool forceShow, bool forceBackground)
   } else if (ui->rbModeClient->isChecked() && Settings::value(Settings::Core::UseTailscale).toBool()) {
     QTimer::singleShot(0, this, &MainWindow::refreshTailscalePeers);
   }
-  if (!forceBackground && m_coreProcess.mode() == CoreMode::None) {
-    QTimer::singleShot(0, this, &MainWindow::openConnectionGuide);
-  }
+  // First connection is configured inline; the full guide stays available in
+  // Help and via F1 instead of opening on top of the same connection form.
 }
 
 void MainWindow::createMenuBar()
@@ -1530,6 +1619,8 @@ void MainWindow::coreProcessStateChanged(ProcessState state)
   }
   updateStatus();
   if (state == Started) {
+    if (m_connectionSettingsButton)
+      m_connectionSettingsButton->setChecked(false);
     m_autoStartRetryTimer->stop();
     m_autoStartRetryCount = 0;
     m_automaticStartPending = false;
@@ -1607,7 +1698,8 @@ void MainWindow::updateConnectionGuide()
                     "host, select this host there to switch. Tailscale alone does not move an Ieum connection.")
                      .arg(Settings::value(Settings::Core::ComputerName).toString());
       } else {
-        title = tr("Your computers are connected");
+        title = m_connectedClients.size() == 1 ? tr("%1 connected").arg(m_connectedClients.first())
+                                               : tr("Your computers are connected");
         detail = tr("Connected: %1. Arrange computers to match your desk, then move the pointer across a screen edge.")
                      .arg(m_connectedClients.join(QStringLiteral(", ")));
       }
@@ -1630,7 +1722,7 @@ void MainWindow::updateConnectionGuide()
         tr("Press Start, then connect from your other computer. Arrange computers to choose which screen edge "
            "moves the pointer.");
   } else if (selectedHost.isEmpty() ||
-             (tailscale && ui->comboTailscalePeer->isVisible() && ui->comboTailscalePeer->currentIndex() <= 0)) {
+             (tailscale && !ui->comboTailscalePeer->isHidden() && ui->comboTailscalePeer->currentIndex() <= 0)) {
     title = tr("Choose the host with your keyboard and mouse");
     detail =
         tr("Select a host above, then press Connect. A Tailscale device being online does not mean it is sharing "
@@ -1643,6 +1735,16 @@ void MainWindow::updateConnectionGuide()
   ui->lblConnectionTitle->setText(title);
   ui->lblConnectionDetail->setText(detail);
   ui->lblConnectionTitle->setAccessibleName(title);
+  if (m_deskWorkspace) {
+    const bool host = mode == CoreMode::Server;
+    const bool connected = process == ProcessState::Started &&
+                           (host ? !m_connectedClients.isEmpty() : connection == ConnectionState::Connected);
+    m_deskWorkspace->refresh(
+        host, Settings::value(Settings::Core::ComputerName).toString(),
+        process == ProcessState::Started ? m_connectedClients : QStringList{}
+    );
+    m_deskWorkspace->setStatus(title, detail, connected, host && process == ProcessState::Started);
+  }
 }
 
 void MainWindow::coreConnectionStateChanged(ConnectionState state)
@@ -1726,6 +1828,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 void MainWindow::updateText()
 {
+  if (m_connectionSettingsButton)
+    m_connectionSettingsButton->setText(tr("Connection settings"));
   m_actionConnectionGuide->setText(tr("First connection"));
   if (auto *guide = findChild<QPushButton *>(QStringLiteral("btnConnectionGuide"))) {
     guide->setText(tr("First connection"));
@@ -1779,6 +1883,7 @@ void MainWindow::showConfigureServer(const QString &message)
       m_coreProcess.restart();
     }
   }
+  updateConnectionGuide();
 }
 
 void MainWindow::showConfigureClient()
@@ -2100,7 +2205,7 @@ void MainWindow::tailscaleQueryStarted()
 {
   m_tailscaleStatusMessage = tr("Checking Tailscale…");
   ui->btnRefreshTailscalePeers->setEnabled(false);
-  if (ui->comboTailscalePeer->isVisible()) {
+  if (!ui->comboTailscalePeer->isHidden()) {
     ui->comboTailscalePeer->setEnabled(false);
   }
   toggleCanRunCore(false);

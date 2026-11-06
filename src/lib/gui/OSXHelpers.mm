@@ -12,6 +12,7 @@
 #import <Cocoa/Cocoa.h>
 #import <CoreData/CoreData.h>
 #import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
 #import <ServiceManagement/ServiceManagement.h>
 #import <UserNotifications/UNNotification.h>
 #import <UserNotifications/UNNotificationContent.h>
@@ -21,15 +22,30 @@
 
 #import <QtGlobal>
 
+#include <QEvent>
 #include <QGuiApplication>
 #include <QMetaObject>
 #include <QObject>
 #include <QPointer>
+#include <QScopedValueRollback>
+#include <QStyle>
+#include <QWidget>
 
 #include <utility>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
+@interface IeumToolbarEffectView : NSVisualEffectView
+@end
+
+@implementation IeumToolbarEffectView
+- (NSView *)hitTest:(NSPoint)point
+{
+  (void)point;
+  return nil;
+}
+@end
 
 @interface IeumApplicationReopenHandler : NSObject {
   QPointer<QObject> m_receiver;
@@ -148,6 +164,100 @@ void forceAppActive()
 {
   [[NSApplication sharedApplication] setActivationPolicy:NSApplicationActivationPolicyRegular];
   [[NSApplication sharedApplication] activateIgnoringOtherApps:YES];
+}
+
+namespace {
+class ToolbarMaterial final : public QObject
+{
+public:
+  explicit ToolbarMaterial(QWidget *toolbar) : QObject(toolbar), m_toolbar(toolbar)
+  {
+    toolbar->setAttribute(Qt::WA_NativeWindow);
+    toolbar->setAttribute(Qt::WA_TranslucentBackground);
+    toolbar->installEventFilter(this);
+    m_observer = [[[NSWorkspace sharedWorkspace].notificationCenter
+        addObserverForName:NSWorkspaceAccessibilityDisplayOptionsDidChangeNotification
+                    object:nil
+                     queue:nil
+                usingBlock:^(NSNotification *) {
+                  QMetaObject::invokeMethod(this, [this] { updateMaterial(); }, Qt::QueuedConnection);
+                }] retain];
+    updateMaterial();
+  }
+
+  ~ToolbarMaterial() override
+  {
+    [[NSWorkspace sharedWorkspace].notificationCenter removeObserver:m_observer];
+    [m_observer release];
+    [m_effect removeFromSuperview];
+    [m_effect release];
+  }
+
+protected:
+  bool eventFilter(QObject *object, QEvent *event) override
+  {
+    if (event->type() == QEvent::Show || event->type() == QEvent::WinIdChange || event->type() == QEvent::Resize ||
+        event->type() == QEvent::Move)
+      QMetaObject::invokeMethod(this, [this] { updateMaterial(); }, Qt::QueuedConnection);
+    return QObject::eventFilter(object, event);
+  }
+
+private:
+  void updateMaterial()
+  {
+    if (m_updating)
+      return;
+    const QScopedValueRollback<bool> updating(m_updating, true);
+    const bool opaque = NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceTransparency ||
+                        NSWorkspace.sharedWorkspace.accessibilityDisplayShouldIncreaseContrast;
+    if (opaque) {
+      [m_effect removeFromSuperview];
+    } else {
+      auto *view = reinterpret_cast<NSView *>(m_toolbar->winId());
+      auto *container = view.superview;
+      if (container == nil)
+        return;
+      if (m_effect == nil) {
+        m_effect = [[IeumToolbarEffectView alloc] initWithFrame:view.frame];
+        m_effect.material = NSVisualEffectMaterialHeaderView;
+        m_effect.blendingMode = NSVisualEffectBlendingModeWithinWindow;
+        m_effect.state = NSVisualEffectStateFollowsWindowActiveState;
+        m_effect.autoresizingMask = NSViewNotSizable;
+        m_effect.wantsLayer = YES;
+        m_effect.layer.cornerRadius = 18;
+        m_effect.layer.masksToBounds = YES;
+      }
+      // Qt paints non-native controls into the toolbar's NSView. The material
+      // must be a sibling behind it, otherwise an effect subview covers them.
+      if (m_effect.superview != container) {
+        [m_effect removeFromSuperview];
+        [container addSubview:m_effect positioned:NSWindowBelow relativeTo:view];
+      }
+      m_effect.frame = view.frame;
+    }
+    if (m_toolbar->property("nativeMaterial").toBool() != !opaque) {
+      m_toolbar->setProperty("nativeMaterial", !opaque);
+      m_toolbar->style()->unpolish(m_toolbar);
+      m_toolbar->style()->polish(m_toolbar);
+      m_toolbar->update();
+    }
+  }
+
+  QWidget *m_toolbar;
+  NSVisualEffectView *m_effect = nil;
+  id m_observer = nil;
+  bool m_updating = false;
+};
+} // namespace
+
+void macOSApplyToolbarMaterial(QWidget *toolbar)
+{
+  if (QGuiApplication::platformName() == QStringLiteral("cocoa") &&
+      !toolbar->property("ieumToolbarMaterialInstalled").toBool()) {
+    toolbar->setProperty("ieumToolbarMaterialInstalled", true);
+    toolbar->setProperty("nativeMaterial", false);
+    new ToolbarMaterial(toolbar);
+  }
 }
 
 namespace {

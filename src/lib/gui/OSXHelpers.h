@@ -11,6 +11,9 @@
 #include <functional>
 
 class QObject;
+class QWidget;
+
+void macOSApplyToolbarMaterial(QWidget *toolbar);
 
 // Install before QApplication so launch Apple Events are captured even if
 // startup enters a native event loop (for example, an Accessibility dialog).

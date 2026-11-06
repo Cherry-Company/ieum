@@ -4,6 +4,14 @@
 add_subdirectory(config)
 add_subdirectory(core)
 
+create_test(
+  NAME DeskWorkspaceTests
+  DEPENDS gui
+  SOURCE DeskWorkspaceTests.cpp
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/src/lib/gui"
+)
+target_sources(DeskWorkspaceTests PRIVATE "${CMAKE_SOURCE_DIR}/src/apps/res/deskflow.qrc")
+
 add_executable(CoreProcessTestHelper CoreProcessTestHelper.cpp)
 target_link_libraries(CoreProcessTestHelper PRIVATE Qt::Core)
 set_target_properties(CoreProcessTestHelper PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")

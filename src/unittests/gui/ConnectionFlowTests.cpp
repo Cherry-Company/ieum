@@ -13,6 +13,7 @@
 #include "gui/dialogs/ScreenSettingsDialog.h"
 #include "gui/dialogs/ServerConfigDialog.h"
 #include "gui/dialogs/SettingsDialog.h"
+#include "gui/widgets/DeskWorkspace.h"
 
 #include <QClipboard>
 #include <QComboBox>
@@ -31,6 +32,7 @@
 #include <QTemporaryDir>
 #include <QTest>
 #include <QTextEdit>
+#include <QToolButton>
 #include <QTranslator>
 
 using deskflow::core::ProcessState;
@@ -279,6 +281,35 @@ private Q_SLOTS:
     Settings::setValue(Settings::Security::Certificate, "~/.config/Ieum/tls/ieum.pem");
     MainWindow window(helperPath());
     savePreview(window, "home-ko.png");
+    window.findChild<QPushButton *>("deskAddComputer")->click();
+    window.findChild<QLineEdit *>("deskNewComputerName")->setText(QStringLiteral("MacBook"));
+    window.findChild<QPushButton *>("deskConfirmAddComputer")->click();
+    window.findChild<QPushButton *>("editDeskLayout")->click();
+    window.findChild<QToolButton *>("closeDeviceInspector")->click();
+    window.resize(1280, 850);
+    savePreview(window, "hybrid-ready-ko.png");
+    window.startCoreProcess();
+    QTRY_COMPARE(window.m_coreProcess.processState(), ProcessState::Started);
+    window.serverClientsChanged({QStringLiteral("MacBook")});
+    savePreview(window, "hybrid-connected-ko.png");
+    for (auto *button : window.findChildren<QToolButton *>()) {
+      if (button->property("deskComputer").toBool() && button->text().startsWith(QStringLiteral("MacBook\n"))) {
+        button->click();
+        break;
+      }
+    }
+    savePreview(window, "hybrid-selected-ko.png");
+    window.resize(700, 850);
+    savePreview(window, "hybrid-narrow-ko.png");
+    window.resize(1280, 850);
+    window.findChild<QPushButton *>("editDeskLayout")->click();
+    savePreview(window, "hybrid-editing-ko.png");
+    window.resize(700, 850);
+    savePreview(window, "hybrid-narrow-editing-ko.png");
+    window.resize(1280, 850);
+    window.findChild<QPushButton *>("cancelDeskLayout")->click();
+    window.stopCore();
+    QTRY_COMPARE_WITH_TIMEOUT(window.m_coreProcess.processState(), ProcessState::Stopped, 8000);
     SettingsDialog settings(&window, window.serverConfig());
     settings.selectPage("tabInput");
     savePreview(settings, "settings-ko.png");

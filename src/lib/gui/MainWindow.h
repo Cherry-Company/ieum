@@ -31,6 +31,8 @@ class QAction;
 class QMenu;
 class QLocalServer;
 class QTimer;
+class QPushButton;
+class DeskWorkspace;
 
 class DeskflowApplication;
 class LogDock;
@@ -180,6 +182,7 @@ private:
   void showConfigureClient();
   void restoreWindow();
   void setupControls();
+  void setupDeskWorkspace();
   void showFirstConnectedMessage();
   void updateStatus();
   void showHostNameEditor();
@@ -235,6 +238,8 @@ private:
   QString m_activeRemoteHost;
   QString m_tailscaleStatusMessage;
   QStringList m_connectedClients;
+  DeskWorkspace *m_deskWorkspace = nullptr;
+  QPushButton *m_connectionSettingsButton = nullptr;
   ServerConfig m_serverConfig;
   deskflow::gui::CoreProcess m_coreProcess;
 #ifdef Q_OS_WIN

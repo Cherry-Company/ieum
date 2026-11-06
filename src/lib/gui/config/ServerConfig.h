@@ -24,6 +24,7 @@ class ServerConfigDialog;
 class ServerConfig : public ScreenConfig
 {
   friend class ServerConfigDialog;
+  friend class DeskWorkspace;
   friend QTextStream &operator<<(QTextStream &outStream, const ServerConfig &config);
 
 public:

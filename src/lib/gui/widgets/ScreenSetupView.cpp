@@ -56,30 +56,43 @@ public:
     painter->setPen(QPen(selected ? accent : border, selected ? 2 : 1));
     painter->setBrush(palette.color(QPalette::Base));
     painter->drawRoundedRect(card, 8, 8);
-    const auto screen = QRectF(card.center().x() - 21, card.center().y() - 38, 42, 29);
+    const bool compact = card.height() < 112;
+    const auto screen = compact ? QRectF(card.center().x() - 16, card.top() + 5, 32, 20)
+                                : QRectF(card.center().x() - 21, card.center().y() - 38, 42, 29);
     auto fill = accent;
     fill.setAlpha(host ? 50 : 18);
     painter->setBrush(fill);
     painter->setPen(QPen(accent, 2));
     painter->drawRoundedRect(screen, 3, 3);
-    painter->drawLine(QPointF(screen.center().x(), screen.bottom()), QPointF(screen.center().x(), screen.bottom() + 7));
+    const auto foot = compact ? 5 : 7;
     painter->drawLine(
-        QPointF(screen.center().x() - 10, screen.bottom() + 7), QPointF(screen.center().x() + 10, screen.bottom() + 7)
+        QPointF(screen.center().x(), screen.bottom()), QPointF(screen.center().x(), screen.bottom() + foot)
+    );
+    painter->drawLine(
+        QPointF(screen.center().x() - 10, screen.bottom() + foot),
+        QPointF(screen.center().x() + 10, screen.bottom() + foot)
     );
     auto font = option.font;
     font.setBold(true);
     painter->setFont(font);
     painter->setPen(palette.color(QPalette::Text));
     painter->drawText(
-        QRect(card.left() + 6, card.center().y() + 10, card.width() - 12, 22), Qt::AlignCenter,
-        QFontMetrics(font).elidedText(name, Qt::ElideMiddle, card.width() - 12)
+        QRect(
+            card.left() + 6, compact ? card.top() + 34 : card.center().y() + 10, card.width() - 12, compact ? 16 : 22
+        ),
+        Qt::AlignCenter, QFontMetrics(font).elidedText(name, Qt::ElideMiddle, card.width() - 12)
     );
     font.setBold(false);
     painter->setFont(font);
     painter->setPen(palette.color(QPalette::PlaceholderText));
     const auto subtitle = host ? QCoreApplication::translate("ScreenSetupView", "This host")
                                : QCoreApplication::translate("ScreenSetupView", "Other computer");
-    painter->drawText(QRect(card.left() + 6, card.center().y() + 34, card.width() - 12, 20), Qt::AlignCenter, subtitle);
+    painter->drawText(
+        QRect(
+            card.left() + 6, compact ? card.top() + 51 : card.center().y() + 34, card.width() - 12, compact ? 15 : 20
+        ),
+        Qt::AlignCenter, subtitle
+    );
     painter->restore();
   }
 };
