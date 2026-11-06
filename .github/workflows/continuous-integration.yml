@@ -168,6 +168,13 @@ jobs:
       - name: Run workflow policy regressions
         run: python3 -m unittest discover -s tools/ci/tests -p 'test_*.py' -v
 
+      - name: Report Apple runner routing configuration
+        env:
+          CUSTOM_APPLE_RUNNER: ${{ vars.CI_MACOS_ARM64_RUNNER != '' }}
+        run: |
+          echo "Apple runner override configured: $CUSTOM_APPLE_RUNNER"
+          echo "Without an override, trusted builds require self-hosted, macOS, ARM64 labels."
+
   # Summary of test results, combined from test result artifacts.
   # Runs even if the tests fail to provide a summary of the failures.
   test-results:
@@ -253,7 +260,7 @@ jobs:
             # Use the owner's registered Apple Silicon machines for trusted code.
             # A repository can itself be a fork: compare the PR source identity,
             # not head.repo.fork, before assigning an owner-managed runner.
-            runs-on: ${{ fromJSON(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && '["macos-26"]' || '["self-hosted","macOS","ARM64"]') }}
+            runs-on: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository && 'macos-26' || vars.CI_MACOS_ARM64_RUNNER || fromJSON('["self-hosted","macOS","ARM64"]') }}
             timeout: 60
             qt-version: 6.11.1
             config-args: '-DCMAKE_OSX_ARCHITECTURES="arm64" -DCMAKE_OSX_DEPLOYMENT_TARGET=14'
@@ -386,8 +393,8 @@ jobs:
           elif [ "${{matrix.target.like}}" == "fedora" ]; then
             dnf install -y git
           elif [ "${{matrix.target.like}}" == "suse" ]; then
-            if [ "$(uname -m)" == "aarch64" ]; then
-              # Keep ARM repository metadata and RPMs on the same official
+            if [ "${{matrix.target.like}}" == "suse" ]; then
+              # Keep repository metadata and RPMs on the same official
               # origin while rolling mirrors carry inconsistent noarch files.
               repo_http='http://download.opensuse.org/'
               repo_https='https://download.opensuse.org/'
