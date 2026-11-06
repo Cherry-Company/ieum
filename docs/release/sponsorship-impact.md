@@ -3,7 +3,7 @@
 
 ## 후원 투명성 / Sponsorship transparency
 
-Release: v0.1.0-alpha.32
+Release: v0.1.0-alpha.33
 
 - 이번 릴리스에 배분된 GitHub Sponsors 후원금 / Sponsor funds allocated to this release: **USD 0**
 - 후원금으로 완료한 작업 / Work claimed as sponsor-funded: **없음 / None**
@@ -60,13 +60,13 @@ features require X11; new Wayland/Flatpak support is not included. Wake never
 unlocks a login and sleep wake depends on the hardware/LAN. Windows↔macOS hardware
 acceptance is pending; this is a preview, with subscription sales disabled.
 
-## 임시 제외 / Temporary exclusion
+## Apple Silicon 빌드 복구 / Apple Silicon build recovery
 
-Apple Silicon 설치 파일은 무료 호스팅 러너가 두 차례 실행 전에 취소되어 이번 alpha.32에서 제외합니다.
-소스와 기존 alpha.31 설치 파일은 유지합니다. 실행 가능한 러너에서 네이티브 빌드·테스트·패키지 검사를
-통과하면 복구합니다. / The Apple Silicon package is omitted from alpha.32 after two hosted runner attempts
-were cancelled before execution. Source remains available; restore the asset after a native build/test/package pass.
-[복구 조건 / Recovery #85](https://github.com/Cherry-Company/ieum/issues/85).
+등록된 self-hosted macOS ARM64 러너에서 네이티브 빌드·자동 테스트·DMG 검사 후 설치 파일을 게시합니다.
+외부 포크 PR은 호스팅 러너에서만 실행합니다. 기존 alpha.32 설치 파일과 태그는 변경하지 않습니다.
+/ Apple Silicon packages are built and tested natively on the owner's registered macOS ARM64 runner.
+External fork PRs remain on hosted runners. Existing alpha.32 artifacts and its tag are unchanged.
+[복구 기록 / Recovery #85](https://github.com/Cherry-Company/ieum/issues/85).
 
 ## 빌드 및 검증 범위 / Build and validation scope
 
@@ -79,11 +79,11 @@ were cancelled before execution. Source remains available; restore the asset aft
   서명·만료 C++ 검증 6개가 통과했습니다. 실제 결제 검증은 아닙니다. / The separate service passed
   43 fixture tests and six local Workers/D1 tests, a Chromium checkout/recovery flow and six C++ signature/expiry checks;
   no real payment has been verified.
-- 새 소스의 Windows x64/ARM64, Intel Mac, Linux 패키지는 해당 태그 CI와 패키지 검사가
+- 새 소스의 Windows x64/ARM64, Apple Silicon/Intel Mac, Linux 패키지는 해당 태그 CI와 패키지 검사가
   통과한 파일만 게시합니다. 소유자 마스터키젠과 개인 서명 키는 공개 패키지에 넣지 않습니다.
   / Only assets passing this tag's cross-platform build and package gates are published.
   Owner key-generation tools and private signing keys are excluded from public assets.
-- Windows 실행 파일 버전은 `0.1.132.0`입니다. / Windows executable version: `0.1.132.0`.
+- Windows 실행 파일 버전은 `0.1.133.0`입니다. / Windows executable version: `0.1.133.0`.
 - Windows 정식 코드 서명 및 Apple Developer ID/공증은 아직 구성되지 않았습니다. Mac 패키지는
   ad-hoc 서명 프리릴리스이며 수동 실행 승인이 필요할 수 있습니다. / Windows production signing
   and Apple Developer ID/notarization are not configured; macOS uses ad-hoc signing.
@@ -92,4 +92,4 @@ were cancelled before execution. Source remains available; restore the asset aft
   reboot/sleep, network and long-running input acceptance remain, as do Paddle onboarding, hosting
   and live purchase/renewal/cancellation/refund validation.
 
-[플랜·가격 근거와 출시 조건 / Plan evidence and release conditions](https://github.com/Cherry-Company/ieum/blob/v0.1.0-alpha.32/docs/product/professional-plans.md)
+[플랜·가격 근거와 출시 조건 / Plan evidence and release conditions](https://github.com/Cherry-Company/ieum/blob/v0.1.0-alpha.33/docs/product/professional-plans.md)
