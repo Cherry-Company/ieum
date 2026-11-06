@@ -2833,10 +2833,6 @@ Las licencias se emiten manualmente después de verificar el pago.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Purchase key from your receipt</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Restore</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2864,13 +2860,13 @@ Las licencias se emiten manualmente después de verificar el pago.</translation>
         <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your purchase receipt.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Subscription recovery code</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::SubscriptionClient</name>
-    <message>
-        <source>Choose your purchased plan and enter the key from your receipt.</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Subscription activation is not available in this build yet.</source>
         <translation type="unfinished"></translation>
@@ -2889,6 +2885,10 @@ Las licencias se emiten manualmente después de verificar el pago.</translation>
     </message>
     <message>
         <source>Could not verify the subscription. Your existing signed access remains valid until its expiry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose your purchased plan and enter your subscription recovery code.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

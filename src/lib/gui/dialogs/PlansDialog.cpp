@@ -147,7 +147,7 @@ QPushButton[planPurchase="true"] { border: 1px solid %2; border-radius: 8px; pad
   key->setObjectName(QStringLiteral("restoreKey"));
   key->setEchoMode(QLineEdit::Password);
   key->setMaxLength(128);
-  key->setPlaceholderText(tr("Purchase key from your receipt"));
+  key->setPlaceholderText(tr("Subscription recovery code"));
   auto *activate = new QPushButton(tr("Restore"), restore);
   activate->setObjectName(QStringLiteral("restoreSubscription"));
   auto *client = SubscriptionClient::instance();
@@ -217,7 +217,7 @@ void PlansDialog::loadCatalog()
     if (bytes->size() > 16384)
       reply->abort();
   });
-  connect(reply, &QNetworkReply::finished, this, [this, reply, bytes] {
+  connect(reply, &QNetworkReply::finished, this, [this, reply, bytes, base] {
     bytes->append(reply->readAll());
     reply->deleteLater();
     if (reply->error() != QNetworkReply::NoError || bytes->size() > 16384)
@@ -238,7 +238,7 @@ void PlansDialog::loadCatalog()
           prices.value(QStringLiteral("annually")).toInt() != expected.annualUsdCents)
         continue;
       const QUrl url(entry.value(QStringLiteral("checkout_url")).toString());
-      if (!isSubscriptionCheckoutUrl(url))
+      if (!isSubscriptionCheckoutUrl(url, base))
         continue;
       auto *button = m_purchaseButtons.value(id);
       button->setText(tr("View subscription"));

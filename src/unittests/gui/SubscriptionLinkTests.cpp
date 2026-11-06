@@ -22,6 +22,14 @@ private Q_SLOTS:
     QVERIFY(isSubscriptionServiceUrl(QUrl("https://subscriptions.example.invalid")));
     QVERIFY(isSubscriptionCheckoutUrl(QUrl("https://polar.sh/checkout/checkout-id")));
     QVERIFY(isSubscriptionCheckoutUrl(QUrl("https://store.gumroad.com/l/product")));
+    const QUrl service("https://subscriptions.example.invalid");
+    QVERIFY(isSubscriptionCheckoutUrl(QUrl("https://subscriptions.example.invalid/checkout/professional"), service));
+    QVERIFY(!isSubscriptionCheckoutUrl(QUrl("https://subscriptions.example.invalid/checkout/professional")));
+    QVERIFY(!isSubscriptionCheckoutUrl(QUrl("https://attacker.invalid/checkout/professional"), service));
+    QVERIFY(!isSubscriptionCheckoutUrl(QUrl("https://subscriptions.example.invalid/checkout/free"), service));
+    QVERIFY(!isSubscriptionCheckoutUrl(
+        QUrl("https://subscriptions.example.invalid/checkout/professional?key=secret"), service
+    ));
     for (const auto &text :
          {"http://polar.sh/checkout/id", "https://polar.sh.evil.invalid/checkout/id",
           "https://user@polar.sh/checkout/id", "https://polar.sh:444/checkout/id",

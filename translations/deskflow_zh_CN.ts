@@ -2868,7 +2868,7 @@ Licenses are issued manually after payment verification.</source>
     </message>
     <message>
         <source>Purchase key from your receipt</source>
-        <translation>收据中的购买密钥</translation>
+        <translation type="vanished">收据中的购买密钥</translation>
     </message>
     <message>
         <source>Restore</source>
@@ -2902,12 +2902,16 @@ Licenses are issued manually after payment verification.</source>
         <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your purchase receipt.</source>
         <translation>活动及旧许可证密钥可在设置 → 文件中输入。请从购买收据管理或取消订阅。</translation>
     </message>
+    <message>
+        <source>Subscription recovery code</source>
+        <translation>订阅恢复码</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::SubscriptionClient</name>
     <message>
         <source>Choose your purchased plan and enter the key from your receipt.</source>
-        <translation>请选择已购买的方案并输入收据中的密钥。</translation>
+        <translation type="vanished">请选择已购买的方案并输入收据中的密钥。</translation>
     </message>
     <message>
         <source>Subscription activation is not available in this build yet.</source>
@@ -2928,6 +2932,10 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>Could not verify the subscription. Your existing signed access remains valid until its expiry.</source>
         <translation>无法验证订阅。已有的已签名权限将在到期前继续有效。</translation>
+    </message>
+    <message>
+        <source>Choose your purchased plan and enter your subscription recovery code.</source>
+        <translation>选择已购买的方案并输入订阅恢复码。</translation>
     </message>
 </context>
 <context>

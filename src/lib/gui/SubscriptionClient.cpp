@@ -51,7 +51,7 @@ void SubscriptionClient::activate(Plan plan, const QString &purchaseKey)
   if (m_busy || !Settings::isWritable())
     return;
   if (plan == Plan::Free || purchaseKey.trimmed().isEmpty() || purchaseKey.size() > 128) {
-    Q_EMIT completed(false, tr("Choose your purchased plan and enter the key from your receipt."));
+    Q_EMIT completed(false, tr("Choose your purchased plan and enter your subscription recovery code."));
     return;
   }
   verify(plan, purchaseKey.trimmed(), true);
@@ -119,10 +119,10 @@ void SubscriptionClient::verify(Plan plan, const QString &key, bool activation)
     const bool activeCredential = key == Settings::value(Settings::Pro::SubscriptionKey).toString();
     if (!*oversized && bytes->size() <= 8192 && error == QNetworkReply::NoError && status == 200 &&
         entitlement.status == ProLicenseStatus::Valid && entitlement.kind == QLatin1String("subscription") &&
-        entitlement.plan == plan && (activation || activeCredential)) {
+        (!activation || entitlement.plan == plan) && (activation || activeCredential)) {
       Settings::setValue(Settings::Pro::SubscriptionLease, lease);
       Settings::setValue(Settings::Pro::SubscriptionKey, key);
-      Settings::setValue(Settings::Pro::SubscriptionPlan, planId(plan));
+      Settings::setValue(Settings::Pro::SubscriptionPlan, planId(entitlement.plan));
       m_timer.start(60 * 60 * 1000);
       Q_EMIT completed(true, tr("%1 is active on this computer.").arg(planName(entitlement.plan)));
     } else if (!activation && activeCredential && !*oversized && bytes->size() <= 8192 && status == 403 &&

@@ -13,7 +13,7 @@ inline bool isSubscriptionServiceUrl(const QUrl &url)
          url.port() == -1 && !url.hasQuery() && !url.hasFragment() &&
          (url.path().isEmpty() || url.path() == QLatin1String("/"));
 }
-inline bool isSubscriptionCheckoutUrl(const QUrl &url)
+inline bool isSubscriptionCheckoutUrl(const QUrl &url, const QUrl &service = {})
 {
   if (!url.isValid() || url.scheme() != QLatin1String("https") || !url.userInfo().isEmpty() || url.port() != -1 ||
       url.hasQuery() || url.hasFragment())
@@ -21,6 +21,9 @@ inline bool isSubscriptionCheckoutUrl(const QUrl &url)
   const auto parts = url.path().split(QLatin1Char('/'));
   if (parts.size() != 3 || parts[2].isEmpty() || parts[2] == QLatin1String(".") || parts[2] == QLatin1String(".."))
     return false;
+  if (isSubscriptionServiceUrl(service) && url.host() == service.host() && parts[1] == QLatin1String("checkout"))
+    return parts[2] == QLatin1String("professional-local") || parts[2] == QLatin1String("professional") ||
+           parts[2] == QLatin1String("professional-max");
   return (url.host() == QLatin1String("polar.sh") && parts[1] == QLatin1String("checkout")) ||
          (url.host().endsWith(QLatin1String(".gumroad.com")) && parts[1] == QLatin1String("l"));
 }

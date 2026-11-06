@@ -2956,7 +2956,7 @@ Licenses are issued manually after payment verification.</source>
     </message>
     <message>
         <source>Purchase key from your receipt</source>
-        <translation>영수증에 있는 구매 키</translation>
+        <translation type="vanished">영수증에 있는 구매 키</translation>
     </message>
     <message>
         <source>Restore</source>
@@ -2990,12 +2990,16 @@ Licenses are issued manually after payment verification.</source>
         <source>Event and existing license keys can be entered in Settings → Files. Manage or cancel billing from your purchase receipt.</source>
         <translation>이벤트·기존 라이선스 키는 설정 → 파일에 입력하세요. 구독 관리와 해지는 구매 영수증에서 할 수 있습니다.</translation>
     </message>
+    <message>
+        <source>Subscription recovery code</source>
+        <translation>구독 복원 코드</translation>
+    </message>
 </context>
 <context>
     <name>deskflow::gui::SubscriptionClient</name>
     <message>
         <source>Choose your purchased plan and enter the key from your receipt.</source>
-        <translation>구매한 플랜을 선택하고 영수증의 키를 입력하세요.</translation>
+        <translation type="vanished">구매한 플랜을 선택하고 영수증의 키를 입력하세요.</translation>
     </message>
     <message>
         <source>Subscription activation is not available in this build yet.</source>
@@ -3016,6 +3020,10 @@ Licenses are issued manually after payment verification.</source>
     <message>
         <source>Could not verify the subscription. Your existing signed access remains valid until its expiry.</source>
         <translation>구독을 확인하지 못했습니다. 기존에 인증된 이용 권한은 만료 시점까지 유지됩니다.</translation>
+    </message>
+    <message>
+        <source>Choose your purchased plan and enter your subscription recovery code.</source>
+        <translation>구매한 플랜을 선택하고 구독 복원 코드를 입력하세요.</translation>
     </message>
 </context>
 <context>
