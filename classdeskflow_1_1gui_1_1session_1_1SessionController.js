@@ -1,0 +1,26 @@
+var classdeskflow_1_1gui_1_1session_1_1SessionController =
+[
+    [ "Transport", "structdeskflow_1_1gui_1_1session_1_1SessionController_1_1Transport.html", "structdeskflow_1_1gui_1_1session_1_1SessionController_1_1Transport" ],
+    [ "SessionController", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a574d2b39d601f2d87c449c0144400142", null ],
+    [ "~SessionController", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#af4983dbac7f2c1d2c185c5eda00f9858", null ],
+    [ "activeCount", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a2d403c6ce2d87129388594c3b00900ce", null ],
+    [ "consent", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a8ee26fc0e87cf6b4ea6abb88c27c236f", null ],
+    [ "consentRequested", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#acd61b878aeb3e3b657d10519030f387f", null ],
+    [ "frameReceived", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#ae80c5d97a5d89bca8c23965b53cddec9", null ],
+    [ "inputModeReady", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a07838ee2467000330e47cdd64b5dec40", null ],
+    [ "lockTogether", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a13c0fbdb7feed6c485e10ded78b22724", null ],
+    [ "peers", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a3d91680ab934ddc2e2dc4cba85a275d6", null ],
+    [ "peersChanged", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a38f282f67ace120063c5d69d03f40615", null ],
+    [ "permitted", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a251ab604fedad152c1627eaf51e91f37", null ],
+    [ "receive", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a270b0193c9d7ee374d234488769c9f64", null ],
+    [ "rememberedPeers", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a2d384ed25d61138229006f278474b21e", null ],
+    [ "request", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a31d5675216c668d70861e72308638d58", null ],
+    [ "revokePermissions", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a4eea4b2365565c6dc69b1dddb252afc2", null ],
+    [ "sessionChanged", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#ab0368a09ed69973ac359d8482374ff2c", null ],
+    [ "setOnline", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a59810c24944c76ee5ae4fdab83d44f69", null ],
+    [ "status", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#ab97aa11983524f95cd8eca2ef681d651", null ],
+    [ "stop", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a2437b10e7d3903aa581dad124cb5812b", null ],
+    [ "stopAll", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a3333862b001200dcc530ce243e080a46", null ],
+    [ "tick", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#aacf9841f874f79e3877c9bc57ca9ebd7", null ],
+    [ "wake", "classdeskflow_1_1gui_1_1session_1_1SessionController.html#a954f565497763e9cbf22ce2ec5bbb8e1", null ]
+];

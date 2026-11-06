@@ -1,0 +1,24 @@
+<map id="src/lib/deskflow/ProtocolUtil.h" name="src/lib/deskflow/ProtocolUtil.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="319,5,484,44"/>
+<area shape="rect" id="Node000002" href="$DeskflowException_8h.html" title=" " alt="" coords="5,92,206,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="328,47,166,90,164,85,331,42"/>
+<area shape="rect" id="Node000008" href="$IOException_8h.html" title=" " alt="" coords="230,92,347,117"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="376,43,319,85,316,81,372,46"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="371,92,432,117"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="403,42,404,77,399,75,400,47"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="455,92,524,117"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="423,42,468,82,462,82,422,47"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="548,92,604,117"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="444,42,539,85,533,86,444,47"/>
+<area shape="rect" id="Node000003" href="$BaseException_8h.html" title=" " alt="" coords="120,165,272,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="121,115,172,154,167,156,120,120"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="20,237,98,262"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="176,190,96,232,94,227,171,190"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="122,237,175,262"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="191,189,166,226,163,222,186,191"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="200,237,289,262"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="205,188,230,225,225,224,203,192"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="313,237,378,262"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="221,187,310,230,304,231,220,192"/>
+<area shape="poly" id="edge8_Node000008_Node000003" title=" " alt="" coords="275,116,225,157,222,153,271,119"/>
+</map>

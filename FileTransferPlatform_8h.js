@@ -1,0 +1,37 @@
+var FileTransferPlatform_8h =
+[
+    [ "deskflow::filetransfer::FileTransferSourceInspection", "structdeskflow_1_1filetransfer_1_1FileTransferSourceInspection.html", "structdeskflow_1_1filetransfer_1_1FileTransferSourceInspection" ],
+    [ "deskflow::filetransfer::FileTransferReadResult", "structdeskflow_1_1filetransfer_1_1FileTransferReadResult.html", "structdeskflow_1_1filetransfer_1_1FileTransferReadResult" ],
+    [ "deskflow::filetransfer::IFileTransferReader", "classdeskflow_1_1filetransfer_1_1IFileTransferReader.html", "classdeskflow_1_1filetransfer_1_1IFileTransferReader" ],
+    [ "deskflow::filetransfer::FileTransferReaderOpenResult", "structdeskflow_1_1filetransfer_1_1FileTransferReaderOpenResult.html", "structdeskflow_1_1filetransfer_1_1FileTransferReaderOpenResult" ],
+    [ "deskflow::filetransfer::FileTransferWriterMutation", "structdeskflow_1_1filetransfer_1_1FileTransferWriterMutation.html", "structdeskflow_1_1filetransfer_1_1FileTransferWriterMutation" ],
+    [ "deskflow::filetransfer::IFileTransferWriter", "classdeskflow_1_1filetransfer_1_1IFileTransferWriter.html", "classdeskflow_1_1filetransfer_1_1IFileTransferWriter" ],
+    [ "deskflow::filetransfer::FileTransferWriterCreateResult", "structdeskflow_1_1filetransfer_1_1FileTransferWriterCreateResult.html", "structdeskflow_1_1filetransfer_1_1FileTransferWriterCreateResult" ],
+    [ "deskflow::filetransfer::IFileTransferPlatform", "classdeskflow_1_1filetransfer_1_1IFileTransferPlatform.html", "classdeskflow_1_1filetransfer_1_1IFileTransferPlatform" ],
+    [ "deskflow::filetransfer::FileTransferIoError", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7b", [
+      [ "deskflow::filetransfer::FileTransferIoError::None", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba6adf97f83acf6453d4a6a4b1070f3754", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::EmptyPaths", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba5df01fbc3ee31284b895c6df3c5007f9", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::TooManyPaths", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba65ff5a715f850abff3d562539e79a478", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::EmptyPath", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7bafa6b1c43447d7773a84c585fe0b2b384", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::RelativePath", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba50d72a7b6a8baa24bcdbf5d0334c4897", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::OpenFailed", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7bac60b10c14b43d15f91424c6addfc31ac", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::MetadataReadFailed", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba0bf9443d68a681f48d0e618c4824cf36", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::LinkOrSpecialFile", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba85177571344153431e583d84e3821fe2", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::FilenameConversionFailed", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7baa69151dd583f4d4f8e47ce02a5553302", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::SourceChanged", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7baffb1d023b408802272ebd8f345d7957e", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::ReadFailed", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba723ee677cab1d41ba376d588d78146ed", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::InvalidOffer", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7bad2af2120dac41f60b5aa966011ceebfd", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::InvalidDestination", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba734ba20165168b58d05bc13a726a8e0c", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::DestinationDenied", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7baded417953b0fd43a36dee9c6056accdf", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::WrongPhase", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7bafecceaf033d74e6cf62461783dd6f127", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::RouteMismatch", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba167e9a4ca878f0c45d736f3313442537", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::WrongItem", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7baa853b5fe0cb6fd24c3658bceffc32151", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::WrongOffset", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba6ce885b415dd2babf1845ae339fe052f", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::SizeExceeded", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba0d847d6c2b67896aa8b81585a357a777", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::WriteFailed", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba490d6710e12fd4a37fb7e42b4d46b1fa", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::HashFailed", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7bab1b14c58362806e7fce991922afcb384", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::IntegrityMismatch", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba75f7108d7f70c9ad0c55d3b6f86ca756", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::PublishFailed", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba69a09127619d061c68ed85a8abe2899e", null ],
+      [ "deskflow::filetransfer::FileTransferIoError::RandomUnavailable", "namespacedeskflow_1_1filetransfer.html#a8a60c6abaa2c366f0e9db4c9d49afe7ba198e184075b90bc51561dba5b07de86e", null ]
+    ] ]
+];

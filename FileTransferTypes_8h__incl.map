@@ -1,0 +1,15 @@
+<map id="src/lib/deskflow/FileTransferTypes.h" name="src/lib/deskflow/FileTransferTypes.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="150,5,335,44"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,92,56,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,47,71,91,69,86,190,42"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="80,92,144,117"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="213,44,146,86,143,81,208,45"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="168,92,229,117"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="234,43,214,80,211,76,230,46"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="253,92,320,117"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="254,42,275,79,270,78,252,47"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="344,92,397,117"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="274,42,341,84,336,84,273,47"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="421,92,477,117"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="293,42,409,87,404,87,292,47"/>
+</map>

@@ -1,0 +1,29 @@
+<map id="src/lib/platform/OSXFileTransferEdgeDropHost.h" name="src/lib/platform/OSXFileTransferEdgeDropHost.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="364,5,528,44"/>
+<area shape="rect" id="Node000002" href="$DisplayGeometry_8h.html" title=" " alt="" coords="31,99,220,124"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="373,47,186,97,184,92,376,42"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="178,251,239,276"/>
+<area shape="poly" id="edge13_Node000001_Node000003" title=" " alt="" coords="361,28,269,33,166,44,118,52,76,63,43,77,21,94,10,116,11,138,24,159,46,180,105,216,167,245,162,247,102,221,43,184,20,163,6,140,4,115,17,90,40,72,75,58,117,47,165,39,268,28,366,25"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="130,179,186,203"/>
+<area shape="poly" id="edge16_Node000001_Node000004" title=" " alt="" coords="387,46,338,68,285,94,186,171,182,167,282,90,336,63,391,43"/>
+<area shape="rect" id="Node000005" href="$FileTransferEdgeDrop_8h.html" title=" " alt="" coords="295,92,471,131"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="434,43,408,81,404,77,430,46"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="535,179,615,203"/>
+<area shape="poly" id="edge14_Node000001_Node000007" title=" " alt="" coords="461,42,559,167,554,166,459,47"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="546,99,607,124"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="475,42,549,90,543,91,474,47"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="631,99,695,124"/>
+<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="496,42,620,90,624,93,618,93,618,94,495,47"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="719,99,788,124"/>
+<area shape="poly" id="edge15_Node000001_Node000011" title=" " alt="" coords="528,41,616,63,708,89,714,93,708,93,706,95,614,68,528,47"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="122,122,114,161,114,182,120,202,140,226,167,245,162,245,136,230,115,205,109,183,109,161,120,126"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="131,122,150,165,145,164,130,127"/>
+<area shape="poly" id="edge7_Node000005_Node000003" title=" " alt="" coords="370,130,340,168,301,205,244,245,241,241,297,201,336,164,366,133"/>
+<area shape="poly" id="edge10_Node000005_Node000004" title=" " alt="" coords="326,133,202,177,200,172,331,130"/>
+<area shape="rect" id="Node000006" href="$DirectionTypes_8h.html" title=" " alt="" coords="361,179,512,203"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="397,129,423,167,417,165,395,134"/>
+<area shape="poly" id="edge8_Node000005_Node000007" title=" " alt="" coords="430,129,535,172,530,173,429,134"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="210,179,287,203"/>
+<area shape="poly" id="edge9_Node000005_Node000008" title=" " alt="" coords="353,130,283,173,280,168,348,132"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="401,204,255,251,253,246,396,204"/>
+</map>

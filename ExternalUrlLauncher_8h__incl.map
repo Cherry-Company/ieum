@@ -1,0 +1,9 @@
+<map id="src/lib/gui/ExternalUrlLauncher.h" name="src/lib/gui/ExternalUrlLauncher.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="14,5,224,30"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,78,71,103"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="108,30,64,70,61,66,103,31"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="95,78,144,103"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="121,29,122,64,117,61,118,33"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="167,78,245,103"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="135,28,183,68,178,68,133,33"/>
+</map>

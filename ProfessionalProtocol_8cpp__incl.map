@@ -1,0 +1,23 @@
+<map id="src/lib/deskflow/ProfessionalProtocol.cpp" name="src/lib/deskflow/ProfessionalProtocol.cpp">
+<area shape="rect" id="Node000001" title=" " alt="" coords="316,5,504,44"/>
+<area shape="rect" id="Node000002" href="$ProfessionalProtocol_8h.html" title=" " alt="" coords="184,92,337,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="372,46,298,87,295,82,376,43"/>
+<area shape="rect" id="Node000009" href="$IStream_8h.html" title=" " alt="" coords="364,92,456,117"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="412,42,412,77,408,75,408,47"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="480,92,556,117"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="437,42,492,83,487,83,436,47"/>
+<area shape="rect" id="Node000003" href="$ProfessionalMessage_8h.html" title=" " alt="" coords="148,165,360,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="261,115,259,150,254,148,258,119"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,237,95,262"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="221,192,99,234,97,229,219,187"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="119,237,181,262"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="239,189,181,231,178,226,234,191"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="205,237,303,262"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="256,188,256,223,252,220,252,192"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="327,237,392,262"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="272,187,332,228,327,228,271,192"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="416,237,482,262"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="287,187,405,231,400,232,286,193"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="384,165,444,189"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="412,115,415,151,410,148,409,119"/>
+</map>

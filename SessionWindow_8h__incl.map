@@ -1,0 +1,9 @@
+<map id="src/lib/gui/session/SessionWindow.h" name="src/lib/gui/session/SessionWindow.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="64,5,194,44"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,92,74,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="110,44,66,84,63,80,105,45"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="98,92,160,117"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="131,43,131,77,126,75,127,47"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="185,92,257,117"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="152,42,198,82,193,82,150,47"/>
+</map>

@@ -1,0 +1,15 @@
+<map id="src/lib/gui/session/SessionPlatform.h" name="src/lib/gui/session/SessionPlatform.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="229,5,361,44"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,92,73,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="234,47,88,91,87,86,232,42"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="97,92,194,117"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="261,44,183,87,181,82,256,45"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="219,92,288,117"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="287,43,269,80,265,76,283,46"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="312,92,363,117"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="307,42,326,79,321,77,304,47"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="387,92,456,117"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="326,42,393,84,387,84,325,47"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="480,92,547,117"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="348,42,469,86,464,87,347,47"/>
+</map>

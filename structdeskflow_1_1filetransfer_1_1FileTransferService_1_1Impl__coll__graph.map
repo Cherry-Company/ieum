@@ -1,0 +1,9 @@
+<map id="deskflow::filetransfer::FileTransferService::Impl" name="deskflow::filetransfer::FileTransferService::Impl">
+<area shape="rect" id="Node000001" title=" " alt="" coords="135,114,310,153"/>
+<area shape="rect" id="Node000002" href="$classIEventQueue.html" title="Event queue interface." alt="" coords="5,12,102,37"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="85,43,196,112,191,115,83,48"/>
+<area shape="rect" id="Node000003" href="$classdeskflow_1_1filetransfer_1_1FileTransferSessionRegistry.html" title=" " alt="" coords="126,5,320,44"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="225,58,225,115,220,112,221,61"/>
+<area shape="rect" id="Node000004" href="$classEventQueueTimer.html" title=" " alt="" coords="344,12,470,37"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="376,45,256,116,254,111,371,46"/>
+</map>

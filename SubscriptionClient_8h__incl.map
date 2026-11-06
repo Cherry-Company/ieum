@@ -1,0 +1,21 @@
+<map id="src/lib/gui/SubscriptionClient.h" name="src/lib/gui/SubscriptionClient.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="453,5,607,44"/>
+<area shape="rect" id="Node000002" href="$PlanCatalog_8h.html" title=" " alt="" coords="117,92,274,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="450,45,261,91,260,85,455,43"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="298,92,472,117"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="497,44,421,87,419,82,492,46"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="495,92,565,117"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="532,43,532,78,528,75,528,47"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="588,92,653,117"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="553,42,598,82,593,81,551,47"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="676,92,725,117"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="572,42,665,86,659,86,571,47"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,165,71,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="170,120,79,160,77,156,168,115"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="95,165,181,189"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="188,116,159,155,155,151,183,118"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="206,165,300,189"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="206,115,236,153,231,152,204,120"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="324,165,390,189"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="223,115,319,158,313,158,221,120"/>
+</map>

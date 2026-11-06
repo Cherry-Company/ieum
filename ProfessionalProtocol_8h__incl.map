@@ -1,0 +1,15 @@
+<map id="src/lib/deskflow/ProfessionalProtocol.h" name="src/lib/deskflow/ProfessionalProtocol.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="160,5,348,44"/>
+<area shape="rect" id="Node000002" href="$ProfessionalMessage_8h.html" title=" " alt="" coords="148,92,360,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="256,42,256,77,252,75,252,47"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,165,95,189"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="221,120,99,162,97,157,219,115"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="119,165,181,189"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="239,117,181,158,178,153,234,118"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="205,165,303,189"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="256,115,256,151,252,148,252,119"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="327,165,392,189"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="272,115,332,156,327,156,271,120"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="416,165,482,189"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="287,115,405,159,400,159,286,120"/>
+</map>

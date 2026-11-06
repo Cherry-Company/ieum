@@ -1,0 +1,19 @@
+<map id="src/lib/gui/ScreenSetupModel.h" name="src/lib/gui/ScreenSetupModel.h">
+<area shape="rect" id="Node000001" title=" " alt="" coords="479,5,681,30"/>
+<area shape="rect" id="Node000002" href="$ScreenSetupModel_8cpp.html" title=" " alt="" coords="5,85,222,110"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="494,36,185,87,183,82,495,30"/>
+<area shape="rect" id="Node000003" href="$ServerConfigDialog_8h.html" title=" " alt="" coords="246,78,395,117"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="524,36,384,80,382,75,529,34"/>
+<area shape="rect" id="Node000006" href="$DeskWorkspace_8cpp.html" title=" " alt="" coords="418,78,566,117"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="558,39,515,80,512,75,554,41"/>
+<area shape="rect" id="Node000007" href="$NewScreenWidget_8cpp.html" title=" " alt="" coords="590,78,749,117"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="605,38,651,78,645,77,604,43"/>
+<area shape="rect" id="Node000008" href="$ScreenSetupView_8cpp.html" title=" " alt="" coords="773,78,926,117"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="635,32,787,77,782,78,635,37"/>
+<area shape="rect" id="Node000009" href="$TrashScreenWidget_8cpp.html" title=" " alt="" coords="950,78,1114,117"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="670,30,939,75,953,80,948,80,938,81,670,36"/>
+<area shape="rect" id="Node000004" href="$MainWindow_8cpp.html" title=" " alt="" coords="131,172,312,196"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="289,126,236,173,234,169,284,128"/>
+<area shape="rect" id="Node000005" href="$ServerConfigDialog_8cpp.html" title=" " alt="" coords="336,165,499,203"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="354,125,399,165,393,164,352,130"/>
+</map>

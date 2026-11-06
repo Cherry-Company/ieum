@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['acceptance_20criteria_0',['Acceptance criteria',['../md_docs_2dev_2update-delivery.html#autotoc_md74',1,'']]],
+  ['access_20범위와_20가격_1',['Early Access 범위와 가격',['../md_docs_2dev_2pro__local__file__transfer.html#autotoc_md18',1,'']]],
+  ['advanced_20features_2',['Advanced Features',['../protocol_reference.html#autotoc_md53',1,'']]],
+  ['alive_20mechanism_20protocol_20v1_203_3',['Keep-Alive Mechanism (Protocol v1.3+)',['../protocol_reference.html#autotoc_md38',1,'']]],
+  ['alpha_2031_4',['내 책상 UI — alpha.31',['../md_docs_2dev_2desk-workspace.html#autotoc_md12',1,'']]],
+  ['alpha_20behavior_5',['Current alpha behavior',['../md_docs_2dev_2update-delivery.html#autotoc_md75',1,'']]],
+  ['analysis_20workflows_6',['Static Analysis Workflows',['../contributing_guide.html#autotoc_md11',1,'']]],
+  ['and_20connected_20cores_7',['Follow-up: repeated GUI idle and connected cores',['../md_docs_2dev_2resource-comparison-2026-10-15.html#autotoc_md69',1,'']]],
+  ['and_20consent_8',['Session ownership and consent',['../md_docs_2dev_2workspace-sharing.html#autotoc_md78',1,'']]],
+  ['and_20data_20size_20limits_9',['Message and Data Size Limits',['../protocol_reference.html#autotoc_md34',1,'']]],
+  ['and_20event_20wait_20correction_10',['Common clock and event-wait correction',['../md_docs_2dev_2resource-comparison-2026-10-15.html#autotoc_md70',1,'']]],
+  ['and_20measurements_11',['Resource change and measurements',['../md_docs_2dev_2reboot-resource-followup-2026-10-25.html#autotoc_md66',1,'']]],
+  ['and_20modifier_20mapping_12',['Key Code and Modifier Mapping',['../protocol_reference.html#autotoc_md36',1,'']]],
+  ['and_20qt_13',['Windows and Qt',['../md_docs_2dev_2build.html#autotoc_md3',1,'']]],
+  ['and_20release_20boundaries_14',['CI and release boundaries',['../md_docs_2dev_2public-privacy-guard.html#autotoc_md63',1,'']]],
+  ['and_20remaining_20native_20work_15',['Validation and remaining native work',['../md_docs_2dev_2reboot-resource-followup-2026-10-25.html#autotoc_md67',1,'']]],
+  ['and_20resource_20bounds_16',['Native backends and resource bounds',['../md_docs_2dev_2workspace-sharing.html#autotoc_md79',1,'']]],
+  ['and_20resource_20follow_20up_20—_202026_2010_2025_17',['Login startup and resource follow-up — 2026-10-25',['../md_docs_2dev_2reboot-resource-followup-2026-10-25.html#autotoc_md64',1,'']]],
+  ['and_20resources_18',['Support and Resources',['../protocol_reference.html#autotoc_md56',1,'']]],
+  ['and_20security_20protocol_20v1_204_19',['TLS Handshake and Security (Protocol v1.4+)',['../protocol_reference.html#autotoc_md35',1,'']]],
+  ['and_20synchronization_20',['Timing and Synchronization',['../protocol_reference.html#autotoc_md37',1,'']]],
+  ['and_20troubleshooting_21',['Debugging and Troubleshooting',['../protocol_reference.html#autotoc_md47',1,'']]],
+  ['and_20trust_22',['Transport and trust',['../md_docs_2dev_2workspace-sharing.html#autotoc_md77',1,'']]],
+  ['and_20verify_20the_20pre_20push_20hook_23',['Install and verify the pre-push hook',['../md_docs_2dev_2public-privacy-guard.html#autotoc_md62',1,'']]],
+  ['architecture_24',['Protocol Architecture',['../protocol_reference.html#autotoc_md27',1,'']]]
+];

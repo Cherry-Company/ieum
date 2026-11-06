@@ -1,0 +1,5 @@
+<map id="deskflow::gui::PlansDialog" name="deskflow::gui::PlansDialog">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,78,181,103"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="59,5,127,30"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,44,95,79,91,77,91,48"/>
+</map>
